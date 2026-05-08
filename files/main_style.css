@@ -1,0 +1,44 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+ .hero { background: linear-gradient(to right,#1e3a8a,#3b82f6); color: white; text-align: center; padding: 100px 20px; }
+ .hero-content h1 { font-size: 3rem; margin-bottom: 10px; }
+ .hero-content h2 { font-size: 1.8rem; margin-bottom: 15px; }
+ .hero-content div.paragraph { font-size: 1.2rem; margin-bottom: 20px; }
+ .hero-content p { font-size: 1.2rem; margin-bottom: 20px; }
+ .cta-button { display: inline-block; padding: 12px 25px; background: #f59e0b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background 0.3s; }
+ .cta-button:hover { background: #d97706; }
+ .about { padding: 50px 20px; text-align: center; background: #f9f9f9; }
+ .about h3 { font-size: 2rem; margin-bottom: 20px; }
+ .about div.paragraph { max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+ .about p { max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+ .mission { padding: 50px 20px; text-align: center; }
+ .mission h3 { font-size: 2rem; margin-bottom: 20px; }
+ .mission div.paragraph { max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+ .mission p { max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+ .contact { padding: 50px 20px; background: #f9f9f9; text-align: center; }
+ .contact h3 { font-size: 2rem; margin-bottom: 20px; }
+ .contact form { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+ .contact input, .contact textarea { padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 5px; }
+ .contact textarea { height: 150px; }
+ .contact button { padding: 12px; background: #1e3a8a; color: white; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
+ .contact button:hover { background: #3b82f6; }
+ footer { text-align: center; padding: 20px; background: #1e3a8a; color: white; }
+ @media (max-width: 768px) {
+ .hero-content h1 { font-size: 2rem; }
+ .hero-content h2 { font-size: 1.5rem; }
+ .hero-content div.paragraph { font-size: 1rem; }
+ .hero-content p { font-size: 1rem; }
+ .about h3, .mission h3, .contact h3 { font-size: 1.5rem; }
+ }
+ .highlight { font-size: 2rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); animation: fadeInScale 1s ease-in-out; }
+ @keyframes fadeInScale { 0% 
+ 100% { opacity: 1; transform: scale(1); }
+ }
+ @media (max-width: 768px) {
+ .highlight { font-size: 1.5rem; }
+ }
+
+div.paragraph ul, div.paragraph ol { padding-left: 3em !important; margin: 5px 0 !important; }
+div.paragraph li { padding-left: 5px !important; margin: 3px 0 0 !important; }
+div.paragraph ul, div.paragraph ul li { list-style: disc outside !important; }
+div.paragraph ol, div.paragraph ol li { list-style: decimal outside !important; }
