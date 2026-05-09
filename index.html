@@ -242,12 +242,46 @@
         </div>
     </section>
 
-    <!-- BUY & HOLD CALCULATOR (Full Tool) -->
-    <section id="buy-hold-calculator" style="padding: 100px 20px; background: #ffffff; display: none;">
+       <!-- BUY & HOLD CALCULATOR -->
+    <section id="buy-hold-calculator" style="padding: 100px 20px; background: #f8fafc;">
         <div style="max-width: 1200px; margin: 0 auto;">
-            <h2 style="text-align: center; margin-bottom: 40px;">Investor Buy & Hold Calculator</h2>
-            <!-- We'll build the actual calculator here in the next step -->
-            <p style="text-align: center; color: #666;">Calculator interface loading... (next baby step)</p>
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 2.4rem;">Investor Buy & Hold Calculator</h2>
+                <p style="color: #666; max-width: 700px; margin: 0 auto;">Model your next deal with cash flow, Cash-on-Cash, IRR, and equity build-up.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+
+                <!-- INPUTS -->
+                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <h3 style="margin-bottom: 24px; color: #1e3a8a;">Deal Inputs</h3>
+                    
+                    <div id="calculator-inputs">
+                        <!-- Populated by JavaScript in next step -->
+                        <p style="text-align:center; padding: 80px 20px; color:#888;">
+                            Building the form...<br>
+                            (Next message will have full working version)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- OUTPUTS + CHART -->
+                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <h3 style="margin-bottom: 24px; color: #1e3a8a;">Results • 5 Year Hold</h3>
+                    
+                    <div id="results" style="line-height: 2.2; font-size: 1.1rem;">
+                        <div><strong>Cash-on-Cash Return:</strong> <span id="coc" style="color:#10b981; font-size:1.3rem;">--.--%</span></div>
+                        <div><strong>Monthly Cash Flow:</strong> <span id="monthly-cf">$ --</span></div>
+                        <div><strong>IRR:</strong> <span id="irr">--.--%</span></div>
+                        <div><strong>Total Equity:</strong> <span id="total-equity">$ --</span></div>
+                        <div><strong>Cap Rate:</strong> <span id="cap-rate">--.--%</span></div>
+                    </div>
+
+                    <div style="margin-top: 40px;">
+                        <canvas id="return-chart" height="280"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
