@@ -187,69 +187,53 @@
         </div>
     </section>
 
-       <!-- Vibe Coding -->
-    <section id="projects" style="padding: 100px 20px; background: #f8fafc;">
-        <div style="max-width: 1100px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 60px;">
-                <h2 style="font-size: 2.6rem; margin-bottom: 16px;">Vibe Coding</h2>
-                <p style="font-size: 1.25rem; max-width: 680px; margin: 0 auto; color: #555;">
-                    Personal experiments, creative tools, and random things I build for fun.
-                </p>
-            </div>
+   <!-- BUY & HOLD CALCULATOR - Terminal Style -->
+<section id="projects" style="padding: 100px 20px; background: #0a0a0a; color: #00ff9d; font-family: 'Courier New', monospace;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 2.8rem; margin-bottom: 8px; color: #00ff9d;">BUY &amp; HOLD CALCULATOR</h2>
+            <p style="color: #00cc7a; font-size: 1.1rem;">vibe coding session • real estate investor edition</p>
+        </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 32px;">
+        <div style="background: #111111; border: 3px solid #00ff9d; border-radius: 8px; padding: 20px; box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);">
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
 
-                <!-- Buy & Hold Calculator -->
-                <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s;">
-                    <div style="height: 200px; background: linear-gradient(135deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.35rem; font-weight: 700;">
-                        Buy & Hold
+                <!-- INPUT TERMINAL -->
+                <div style="flex: 1; min-width: 420px;">
+                    <div style="background: #1a1a1a; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                        <span style="color: #00ff9d;">$</span> <span style="color: #ffcc00;">investor-buy-hold-calculator</span>
                     </div>
-                    <div style="padding: 28px;">
-                        <h3 style="margin-bottom: 12px;">Investor Buy & Hold Calculator</h3>
-                        <p style="color: #666; line-height: 1.65;">
-                            A personal tool to quickly model long-term real estate investments — cash flow, appreciation, taxes, and realistic returns.
+
+                    <div id="calculator-form">
+                        <!-- Inputs will go here in next step -->
+                        <p style="color: #666; text-align: center; padding: 60px 20px;">
+                            Loading terminal interface...<br>
+                            <em>(building the most powerful personal buy &amp; hold tool)</em>
                         </p>
-                        <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #ecfdf5; color: #0f766e; border-radius: 9999px; font-size: 0.9rem;">
-                            In Progress
-                        </span>
                     </div>
                 </div>
 
-                <!-- Placeholder 2 -->
-                <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s;">
-                    <div style="height: 200px; background: linear-gradient(135deg, #ec4899, #f43f5e); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; font-weight: 600;">
-                        Coming Soon
+                <!-- OUTPUT TERMINAL -->
+                <div style="flex: 1; min-width: 420px; background: #0f1a0f; padding: 20px; border-radius: 4px; border: 2px solid #00cc7a;">
+                    <div style="margin-bottom: 20px; color: #00cc7a; font-size: 1.1rem;">
+                        RESULTS <span style="float: right; color: #666; font-size: 0.9rem;">5-YEAR HOLD</span>
                     </div>
-                    <div style="padding: 28px;">
-                        <h3 style="margin-bottom: 12px;">Next Vibe Project</h3>
-                        <p style="color: #666; line-height: 1.65;">
-                            Another fun experiment or tool I'm tinkering with.
-                        </p>
-                        <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #fefce8; color: #854d0e; border-radius: 9999px; font-size: 0.9rem;">
-                            Exploring
-                        </span>
+
+                    <div id="results-output" style="line-height: 1.8; font-size: 1.1rem;">
+                        Cash-on-Cash Return: <span style="color:#00ff9d; font-weight: bold;">--.--%</span><br>
+                        Monthly Cash Flow: <span style="color:#00ff9d;">$ --</span><br>
+                        IRR: <span style="color:#00ff9d;">--.--%</span><br>
+                        Total Equity: <span style="color:#00ff9d;">$ --</span>
+                    </div>
+
+                    <div style="margin-top: 40px;">
+                        <canvas id="cashflow-chart" width="500" height="280"></canvas>
                     </div>
                 </div>
-
-                <!-- Placeholder 3 -->
-                <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s;">
-                    <div style="height: 200px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.3rem; font-weight: 600;">
-                        Coming Soon
-                    </div>
-                    <div style="padding: 28px;">
-                        <h3 style="margin-bottom: 12px;">Future Vibes</h3>
-                        <p style="color: #666; line-height: 1.65;">
-                            More personal tools, visualizers, and creative coding sessions.
-                        </p>
-                        <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #f1f5f9; color: #475569; border-radius: 9999px; font-size: 0.9rem;">
-                            Idea Stage
-                        </span>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Working Contact Form -->
     <section id="contact" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
