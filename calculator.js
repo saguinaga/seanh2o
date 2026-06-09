@@ -10,10 +10,16 @@
     return document.querySelector('#buy-hold-calculator') ? '#buy-hold-calculator' : '#calculator';
   }
 
-  const $ = (sel) => document.querySelector(sel);
-  const fmt = (n, dec = 0) =>
-    n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: dec, maximumFractionDigits: dec });
-  const pct = (n, dec = 1) => n.toFixed(dec) + '%';
+  const $ = (sel) => calcRoot.querySelector(sel);
+  const parseNum = (raw, fallback) => {
+    const n = typeof raw === 'number' ? raw : parseFloat(raw);
+    return Number.isFinite(n) ? n : fallback;
+  };
+  const fmt = (n, dec = 0) => {
+    if (!Number.isFinite(n)) return '-';
+    return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: dec, maximumFractionDigits: dec });
+  };
+  const pct = (n, dec = 1) => (Number.isFinite(n) ? n.toFixed(dec) : '-') + (Number.isFinite(n) ? '%' : '');
 
   const URL_KEYS = {
     purchasePrice: 'p', downPayment: 'd', interestRate: 'i', loanTerm: 't',
@@ -56,7 +62,7 @@
   const syncFns = {};
 
   function monthlyMortgage(principal, annualRate, years) {
-    if (principal <= 0) return 0;
+    if (principal <= 0 || years <= 0) return 0;
     const r = annualRate / 100 / 12;
     const n = years * 12;
     if (r === 0) return principal / n;
@@ -64,7 +70,7 @@
   }
 
   function remainingBalance(principal, annualRate, years, monthsPaid) {
-    if (principal <= 0) return 0;
+    if (principal <= 0 || years <= 0) return 0;
     const r = annualRate / 100 / 12;
     const n = years * 12;
     if (r === 0) return Math.max(0, principal - (principal / n) * monthsPaid);
@@ -75,7 +81,7 @@
   function getValues() {
     const v = {};
     for (const [key, cfg] of Object.entries(inputs)) {
-      v[key] = parseFloat($(cfg.el)?.value) ?? cfg.default;
+      v[key] = parseNum($(cfg.el)?.value, cfg.default);
     }
     return v;
   }
@@ -156,12 +162,13 @@
       card.classList.add(cls);
     }
 
-    if (typeof targetNum !== 'number' || isNaN(targetNum)) {
-      el.textContent = formatter(targetNum);
+    if (!Number.isFinite(targetNum)) {
+      el.textContent = '-';
       return;
     }
 
-    const start = metricAnim[id] ?? targetNum;
+    const prev = metricAnim[id];
+    const start = Number.isFinite(prev) ? prev : targetNum;
     metricAnim[id] = targetNum;
 
     if (animFrame) cancelAnimationFrame(animFrame);
@@ -327,7 +334,7 @@
     const params = new URLSearchParams(window.location.search);
     const loaded = {};
     for (const [key, short] of Object.entries(URL_KEYS)) {
-      if (params.has(short)) loaded[key] = parseFloat(params.get(short));
+      if (params.has(short)) loaded[key] = parseNum(params.get(short), inputs[key].default);
     }
     return loaded;
   }
@@ -378,19 +385,20 @@
       return fmt(val);
     };
 
-    const sync = (val, skipHistory) => {
+    const sync = (val, skipRender) => {
+      val = parseNum(val, cfg.default);
       val = Math.min(cfg.max, Math.max(cfg.min, val));
       input.value = val;
       slider.value = val;
       if (display) display.textContent = formatDisplay(val);
-      render(skipHistory === true ? false : undefined);
+      if (!skipRender) render();
     };
 
     syncFns[key] = sync;
 
-    slider.addEventListener('input', () => sync(parseFloat(slider.value)));
-    input.addEventListener('input', () => sync(parseFloat(input.value) || cfg.default));
-    input.addEventListener('change', () => sync(parseFloat(input.value) || cfg.default));
+    slider.addEventListener('input', () => sync(parseNum(slider.value, cfg.default)));
+    input.addEventListener('input', () => sync(parseNum(input.value, cfg.default)));
+    input.addEventListener('change', () => sync(parseNum(input.value, cfg.default)));
 
     return sync;
   }
