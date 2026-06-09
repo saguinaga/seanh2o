@@ -26,6 +26,7 @@
     monthlyRent: 'r', vacancyRate: 'v', propertyTax: 'pt', insurance: 'ins',
     hoa: 'h', maintenance: 'm', management: 'mg', appreciation: 'a', holdingYears: 'y',
   };
+  const FINANCING_KEYS = ['downPayment', 'interestRate', 'loanTerm'];
 
   const inputs = {
     purchasePrice: { el: '#purchasePrice', slider: '#purchasePriceSlider', min: 50000, max: 2000000, step: 5000, default: 350000 },
@@ -46,7 +47,7 @@
   const SENSITIVITY_SCENARIOS = [
     { label: 'Your Scenario', key: 'base' },
     { label: 'Rent drops 10%', overrides: { monthlyRent: (v) => v.monthlyRent * 0.9 } },
-    { label: 'Rate rises 1%', overrides: { interestRate: (v) => v.interestRate + 1 } },
+    { label: 'Rate rises 1%', skipWhenCash: true, overrides: { interestRate: (v) => v.interestRate + 1 } },
     { label: 'Vacancy +5 pts', overrides: { vacancyRate: (v) => Math.min(20, v.vacancyRate + 5) } },
     { label: 'Price 5% lower', overrides: { purchasePrice: (v) => v.purchasePrice * 0.95 } },
     { label: 'Expenses +15%', overrides: {
@@ -60,6 +61,7 @@
   let animFrame = null;
   const metricAnim = {};
   const syncFns = {};
+  let savedDownPayment = inputs.downPayment.default;
 
   function monthlyMortgage(principal, annualRate, years) {
     if (principal <= 0 || years <= 0) return 0;
@@ -78,11 +80,16 @@
     return principal * Math.pow(1 + r, monthsPaid) - payment * ((Math.pow(1 + r, monthsPaid) - 1) / r);
   }
 
+  function isCashPurchase() {
+    return $('#cashPurchase')?.checked === true;
+  }
+
   function getValues() {
     const v = {};
     for (const [key, cfg] of Object.entries(inputs)) {
       v[key] = parseNum($(cfg.el)?.value, cfg.default);
     }
+    v.cashPurchase = isCashPurchase();
     return v;
   }
 
@@ -96,9 +103,10 @@
   }
 
   function calculateFrom(v) {
-    const downAmount = v.purchasePrice * (v.downPayment / 100);
-    const loanAmount = v.purchasePrice - downAmount;
-    const mortgage = monthlyMortgage(loanAmount, v.interestRate, v.loanTerm);
+    const cash = !!v.cashPurchase;
+    const downAmount = cash ? v.purchasePrice : v.purchasePrice * (v.downPayment / 100);
+    const loanAmount = cash ? 0 : v.purchasePrice - downAmount;
+    const mortgage = cash ? 0 : monthlyMortgage(loanAmount, v.interestRate, v.loanTerm);
 
     const grossRent = v.monthlyRent * 12;
     const effectiveRent = grossRent * (1 - v.vacancyRate / 100);
@@ -140,7 +148,7 @@
     }
 
     return {
-      v, downAmount, loanAmount, mortgage, grossRent, effectiveRent,
+      v, cash, downAmount, loanAmount, mortgage, grossRent, effectiveRent,
       maintenanceCost, managementCost, hoaAnnual, totalExpenses, noi,
       annualDebtService, annualCashFlow, monthlyCashFlow,
       capRate, cashOnCash, futureValue, loanRemaining, equity,
@@ -179,7 +187,7 @@
       const t = Math.min(1, (now - t0) / duration);
       const eased = 1 - Math.pow(1 - t, 3);
       const current = start + (targetNum - start) * eased;
-      el.textContent = formatter(current);
+      el.textContent = Number.isFinite(current) ? formatter(current) : '-';
       if (t < 1) {
         animFrame = requestAnimationFrame(tick);
       } else {
@@ -248,7 +256,7 @@
       <tr><th>Property Management (${pct(r.v.management)})</th><td class="expense">-${fmt(r.managementCost)}</td></tr>
       <tr><th>HOA Fees</th><td class="expense">-${fmt(r.hoaAnnual)}</td></tr>
       <tr><th>Net Operating Income</th><td>${fmt(r.noi)}</td></tr>
-      <tr><th>Mortgage Payment (annual)</th><td class="expense">-${fmt(r.annualDebtService)}</td></tr>
+      <tr><th>Mortgage Payment (annual)</th><td class="expense">${r.cash ? 'None (cash purchase)' : '-' + fmt(r.annualDebtService)}</td></tr>
       <tr><th>Annual Cash Flow</th><td class="${r.annualCashFlow >= 0 ? 'income' : 'expense'}">${fmt(r.annualCashFlow)}</td></tr>`;
   }
 
@@ -257,6 +265,14 @@
     if (!grid) return;
 
     grid.innerHTML = SENSITIVITY_SCENARIOS.map((scenario) => {
+      if (scenario.skipWhenCash && base.v.cashPurchase) {
+        return `
+        <div class="sensitivity-card muted">
+          <div class="scenario-label">${scenario.label}</div>
+          <div class="scenario-value" style="color:#94a3b8">N/A</div>
+          <div class="scenario-delta flat">cash purchase</div>
+        </div>`;
+      }
       const r = scenario.key === 'base' ? base : calculateFrom(applyOverrides(base.v, scenario.overrides));
       const delta = r.monthlyCashFlow - base.monthlyCashFlow;
       const isBase = scenario.key === 'base';
@@ -282,15 +298,15 @@
     if (!canvas || typeof Chart === 'undefined') return;
 
     const labels = r.projections.map((p) => 'Year ' + p.year);
-    const data = {
-      labels,
-      datasets: [
-        { label: 'Property Value', data: r.projections.map((p) => p.propertyValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
-        { label: 'Equity', data: r.projections.map((p) => p.equity), borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3 },
-        { label: 'Cumulative Cash Flow', data: r.projections.map((p) => p.cumulativeCashFlow), borderColor: '#d97706', backgroundColor: 'rgba(217,119,6,0.1)', fill: true, tension: 0.3 },
-        { label: 'Loan Balance', data: r.projections.map((p) => p.loanBalance), borderColor: '#dc2626', borderDash: [5, 5], fill: false, tension: 0.3 },
-      ],
-    };
+    const datasets = [
+      { label: 'Property Value', data: r.projections.map((p) => p.propertyValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
+      { label: 'Equity', data: r.projections.map((p) => p.equity), borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3 },
+      { label: 'Cumulative Cash Flow', data: r.projections.map((p) => p.cumulativeCashFlow), borderColor: '#d97706', backgroundColor: 'rgba(217,119,6,0.1)', fill: true, tension: 0.3 },
+    ];
+    if (!r.cash) {
+      datasets.push({ label: 'Loan Balance', data: r.projections.map((p) => p.loanBalance), borderColor: '#dc2626', borderDash: [5, 5], fill: false, tension: 0.3 });
+    }
+    const data = { labels, datasets };
 
     const opts = {
       responsive: true,
@@ -305,7 +321,7 @@
       },
       scales: {
         y: {
-          ticks: { callback: (v) => '$' + (v / 1000).toFixed(0) + 'k' },
+          ticks: { callback: (v) => (Number.isFinite(v) ? '$' + (v / 1000).toFixed(0) + 'k' : '') },
           grid: { color: 'rgba(0,0,0,0.05)' },
         },
         x: { grid: { display: false } },
@@ -326,17 +342,87 @@
     for (const [key, short] of Object.entries(URL_KEYS)) {
       params.set(short, v[key]);
     }
+    params.set('cash', v.cashPurchase ? '1' : '0');
     const base = window.location.href.split('#')[0].split('?')[0];
     return base + '?' + params.toString() + calcHash();
   }
 
+  function sanitizeUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    let dirty = false;
+
+    for (const short of Object.values(URL_KEYS)) {
+      if (!params.has(short)) continue;
+      const raw = params.get(short);
+      if (raw === 'NaN' || raw === '' || !Number.isFinite(parseFloat(raw))) {
+        params.delete(short);
+        dirty = true;
+      }
+    }
+
+    if (params.has('cash') && params.get('cash') !== '0' && params.get('cash') !== '1') {
+      params.delete('cash');
+      dirty = true;
+    }
+
+    if (!dirty) return;
+
+    const clean = params.toString();
+    const base = window.location.href.split('#')[0].split('?')[0];
+    const hash = window.location.hash || calcHash();
+    history.replaceState(null, '', base + (clean ? '?' + clean : '') + hash);
+  }
+
   function loadFromUrl() {
+    sanitizeUrlParams();
     const params = new URLSearchParams(window.location.search);
     const loaded = {};
     for (const [key, short] of Object.entries(URL_KEYS)) {
       if (params.has(short)) loaded[key] = parseNum(params.get(short), inputs[key].default);
     }
+    if (params.has('cash')) loaded.cashPurchase = params.get('cash') === '1';
     return loaded;
+  }
+
+  function updateFinancingUI(cash) {
+    const wrap = $('#financingFields');
+    if (wrap) wrap.classList.toggle('is-disabled', cash);
+    calcRoot.classList.toggle('cash-purchase', cash);
+
+    for (const key of FINANCING_KEYS) {
+      const cfg = inputs[key];
+      const input = $(cfg.el);
+      const slider = $(cfg.slider);
+      if (input) input.disabled = cash;
+      if (slider) slider.disabled = cash;
+    }
+
+    const mortgageSub = $('#mortgageSub');
+    if (mortgageSub) mortgageSub.textContent = cash ? 'Paid in cash - no loan' : 'Principal & interest';
+
+    const cocSub = $('#cashOnCashSub');
+    if (cocSub) cocSub.textContent = cash ? 'Annual return on purchase price' : 'Annual return on down payment';
+
+    const loanLegend = $('#loanBalanceLegend');
+    if (loanLegend) loanLegend.style.display = cash ? 'none' : '';
+  }
+
+  function setCashPurchase(cash, skipRender) {
+    const cb = $('#cashPurchase');
+    if (!cb) return;
+
+    if (cash) {
+      savedDownPayment = parseNum($('#downPayment')?.value, savedDownPayment);
+    }
+
+    cb.checked = cash;
+    updateFinancingUI(cash);
+
+    if (!cash && syncFns.downPayment) {
+      syncFns.downPayment(savedDownPayment, true);
+    }
+
+    if (!skipRender) render();
   }
 
   function updateUrlQuiet() {
@@ -365,6 +451,7 @@
     setMetricText('#cashOnCash', pct(r.cashOnCash), r.cashOnCash >= 6 ? 'positive' : r.cashOnCash >= 0 ? 'neutral' : 'negative');
     setMetricText('#totalROI', pct(r.roi), 'accent');
 
+    updateFinancingUI(r.cash);
     updateVerdict(r);
     updateBreakdown(r);
     updateSensitivity(r);
@@ -404,6 +491,8 @@
   }
 
   function resetDefaults() {
+    setCashPurchase(false, true);
+    savedDownPayment = inputs.downPayment.default;
     for (const [key, cfg] of Object.entries(inputs)) {
       if (syncFns[key]) syncFns[key](cfg.default, true);
     }
@@ -432,6 +521,9 @@
       sync(startVal, true);
     }
 
+    setCashPurchase(!!urlValues.cashPurchase, true);
+
+    $('#cashPurchase')?.addEventListener('change', (e) => setCashPurchase(e.target.checked));
     $('#shareScenario')?.addEventListener('click', shareScenario);
     $('#resetScenario')?.addEventListener('click', resetDefaults);
 

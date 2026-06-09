@@ -265,22 +265,28 @@
           <input type="range" id="purchasePriceSlider" min="50000" max="2000000" step="5000">
           <input type="number" id="purchasePrice" min="50000" max="2000000" step="5000">
         </div>
-        <div class="input-row">
-          <div class="input-group">
-            <label>Down Payment <span class="value-display" id="downPaymentDisplay"></span></label>
-            <input type="range" id="downPaymentSlider" min="0" max="50" step="1">
-            <input type="number" id="downPayment" min="0" max="50" step="1">
+        <label class="cash-toggle">
+          <input type="checkbox" id="cashPurchase">
+          <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
+        </label>
+        <div id="financingFields" class="financing-fields">
+          <div class="input-row">
+            <div class="input-group">
+              <label>Down Payment <span class="value-display" id="downPaymentDisplay"></span></label>
+              <input type="range" id="downPaymentSlider" min="0" max="50" step="1">
+              <input type="number" id="downPayment" min="0" max="50" step="1">
+            </div>
+            <div class="input-group">
+              <label>Interest Rate <span class="value-display" id="interestRateDisplay"></span></label>
+              <input type="range" id="interestRateSlider" min="2" max="12" step="0.125">
+              <input type="number" id="interestRate" min="2" max="12" step="0.125">
+            </div>
           </div>
           <div class="input-group">
-            <label>Interest Rate <span class="value-display" id="interestRateDisplay"></span></label>
-            <input type="range" id="interestRateSlider" min="2" max="12" step="0.125">
-            <input type="number" id="interestRate" min="2" max="12" step="0.125">
+            <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
+            <input type="range" id="loanTermSlider" min="10" max="30" step="1">
+            <input type="number" id="loanTerm" min="10" max="30" step="1">
           </div>
-        </div>
-        <div class="input-group">
-          <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
-          <input type="range" id="loanTermSlider" min="10" max="30" step="1">
-          <input type="number" id="loanTerm" min="10" max="30" step="1">
         </div>
       </div>
       <div class="calc-panel">
@@ -358,7 +364,7 @@
           <div class="metric-card neutral">
             <div class="metric-label">Cash-on-Cash</div>
             <div class="metric-value" id="cashOnCash">-</div>
-            <div class="metric-sub">Annual return on down payment</div>
+            <div class="metric-sub" id="cashOnCashSub">Annual return on down payment</div>
           </div>
           <div class="metric-card accent">
             <div class="metric-label">Total ROI</div>
@@ -378,7 +384,7 @@
           <div class="metric-card neutral">
             <div class="metric-label">Mortgage Payment</div>
             <div class="metric-value" id="mortgagePayment">-</div>
-            <div class="metric-sub">Principal &amp; interest</div>
+            <div class="metric-sub" id="mortgageSub">Principal &amp; interest</div>
           </div>
           <div class="metric-card positive">
             <div class="metric-label">Annual Cash Flow</div>
@@ -393,7 +399,7 @@
             <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
             <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
             <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
-            <span class="legend-item"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
+            <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
           </div>
         </div>
         <div class="chart-wrap">
@@ -430,6 +436,6 @@
         <p>(c) 2026 Sean Aguinaga | IT Innovator in Real Estate Tech</p>
     </footer>
 
-    <script src="calculator.js"></script>
+    <script src="calculator.js?v=3"></script>
 </body>
 </html>
