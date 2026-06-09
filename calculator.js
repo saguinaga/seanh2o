@@ -49,17 +49,18 @@
   const FINANCING_KEYS = ['downPayment', 'interestRate', 'loanTerm'];
 
   const inputs = {
-    purchasePrice: { el: '#purchasePrice', slider: '#purchasePriceSlider', display: '#purchasePriceDisplay', min: 50000, max: 2000000, step: 5000, default: 350000 },
-    downPayment: { el: '#downPayment', slider: '#downPaymentSlider', display: '#downPaymentDisplay', min: 0, max: 50, step: 1, default: 20, suffix: '%' },
-    interestRate: { el: '#interestRate', slider: '#interestRateSlider', display: '#interestRateDisplay', min: 2, max: 12, step: 0.125, default: 6.5, suffix: '%', decimals: 2 },
+    // Defaults: Marion County, IN investor SFR (~$175k 3/2, 2026 market)
+    purchasePrice: { el: '#purchasePrice', slider: '#purchasePriceSlider', display: '#purchasePriceDisplay', min: 50000, max: 2000000, step: 5000, default: 175000 },
+    downPayment: { el: '#downPayment', slider: '#downPaymentSlider', display: '#downPaymentDisplay', min: 0, max: 50, step: 1, default: 25, suffix: '%' },
+    interestRate: { el: '#interestRate', slider: '#interestRateSlider', display: '#interestRateDisplay', min: 2, max: 12, step: 0.125, default: 6.75, suffix: '%', decimals: 2 },
     loanTerm: { el: '#loanTerm', slider: '#loanTermSlider', display: '#loanTermDisplay', min: 10, max: 30, step: 1, default: 30, suffix: ' yr' },
-    monthlyRent: { el: '#monthlyRent', slider: '#monthlyRentSlider', display: '#monthlyRentDisplay', min: 500, max: 10000, step: 50, default: 2200 },
-    vacancyRate: { el: '#vacancyRate', slider: '#vacancyRateSlider', display: '#vacancyRateDisplay', min: 0, max: 20, step: 1, default: 5, suffix: '%' },
-    propertyTax: { el: '#propertyTax', slider: '#propertyTaxSlider', display: '#propertyTaxDisplay', min: 0, max: 20000, step: 100, default: 4200 },
-    insurance: { el: '#insurance', slider: '#insuranceSlider', display: '#insuranceDisplay', min: 0, max: 5000, step: 50, default: 1400 },
+    monthlyRent: { el: '#monthlyRent', slider: '#monthlyRentSlider', display: '#monthlyRentDisplay', min: 500, max: 10000, step: 50, default: 1495 },
+    vacancyRate: { el: '#vacancyRate', slider: '#vacancyRateSlider', display: '#vacancyRateDisplay', min: 0, max: 20, step: 1, default: 6, suffix: '%' },
+    propertyTax: { el: '#propertyTax', slider: '#propertyTaxSlider', display: '#propertyTaxDisplay', min: 0, max: 20000, step: 100, default: 2250 },
+    insurance: { el: '#insurance', slider: '#insuranceSlider', display: '#insuranceDisplay', min: 0, max: 5000, step: 50, default: 1075 },
     hoa: { el: '#hoa', slider: '#hoaSlider', display: '#hoaDisplay', min: 0, max: 1000, step: 25, default: 0 },
-    maintenance: { el: '#maintenance', slider: '#maintenanceSlider', display: '#maintenanceDisplay', min: 0, max: 15, step: 0.5, default: 5, suffix: '%' },
-    management: { el: '#management', slider: '#managementSlider', display: '#managementDisplay', min: 0, max: 15, step: 0.5, default: 8, suffix: '%' },
+    maintenance: { el: '#maintenance', slider: '#maintenanceSlider', display: '#maintenanceDisplay', min: 0, max: 15, step: 0.5, default: 2.5, suffix: '%' },
+    management: { el: '#management', slider: '#managementSlider', display: '#managementDisplay', min: 0, max: 15, step: 0.5, default: 9, suffix: '%' },
     appreciation: { el: '#appreciation', slider: '#appreciationSlider', display: '#appreciationDisplay', min: 0, max: 10, step: 0.25, default: 3, suffix: '%', decimals: 1 },
     holdingYears: { el: '#holdingYears', slider: '#holdingYearsSlider', display: '#holdingYearsDisplay', min: 1, max: 30, step: 1, default: 10, suffix: ' yr' },
   };
