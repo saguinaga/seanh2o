@@ -1,47 +1,67 @@
 (function () {
   'use strict';
 
-  if (window.__buyHoldCalcInit) return;
-  const calcRoot = document.querySelector('#buy-hold-calculator, #calculator');
-  if (!calcRoot) return;
-  window.__buyHoldCalcInit = true;
+  if (window.__buyHoldCalcReady) return;
+
+  let calcRoot = null;
+  let $ = null;
+  let chart = null;
+  const syncFns = {};
+  let savedDownPayment = 20;
+
+  function mount() {
+    calcRoot = document.querySelector('#buy-hold-calculator, #calculator');
+    if (!calcRoot) return false;
+    $ = (sel) => calcRoot.querySelector(sel);
+    return true;
+  }
 
   function calcHash() {
     return document.querySelector('#buy-hold-calculator') ? '#buy-hold-calculator' : '#calculator';
   }
 
-  const $ = (sel) => calcRoot.querySelector(sel);
   const parseNum = (raw, fallback) => {
-    const n = typeof raw === 'number' ? raw : parseFloat(raw);
+    const n = typeof raw === 'number' ? raw : parseFloat(String(raw).replace(/,/g, ''));
     return Number.isFinite(n) ? n : fallback;
   };
+
   const fmt = (n, dec = 0) => {
-    if (!Number.isFinite(n)) return '-';
-    return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: dec, maximumFractionDigits: dec });
+    if (!Number.isFinite(n)) return '$0';
+    return n.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: dec,
+      maximumFractionDigits: dec,
+    });
   };
-  const pct = (n, dec = 1) => (Number.isFinite(n) ? n.toFixed(dec) : '-') + (Number.isFinite(n) ? '%' : '');
+
+  const pct = (n, dec = 1) => {
+    if (!Number.isFinite(n)) return '0.0%';
+    return n.toFixed(dec) + '%';
+  };
 
   const URL_KEYS = {
     purchasePrice: 'p', downPayment: 'd', interestRate: 'i', loanTerm: 't',
     monthlyRent: 'r', vacancyRate: 'v', propertyTax: 'pt', insurance: 'ins',
     hoa: 'h', maintenance: 'm', management: 'mg', appreciation: 'a', holdingYears: 'y',
   };
+
   const FINANCING_KEYS = ['downPayment', 'interestRate', 'loanTerm'];
 
   const inputs = {
-    purchasePrice: { el: '#purchasePrice', slider: '#purchasePriceSlider', min: 50000, max: 2000000, step: 5000, default: 350000 },
-    downPayment: { el: '#downPayment', slider: '#downPaymentSlider', min: 0, max: 50, step: 1, default: 20, suffix: '%' },
-    interestRate: { el: '#interestRate', slider: '#interestRateSlider', min: 2, max: 12, step: 0.125, default: 6.5, suffix: '%', decimals: 2 },
-    loanTerm: { el: '#loanTerm', slider: '#loanTermSlider', min: 10, max: 30, step: 1, default: 30, suffix: ' yr' },
-    monthlyRent: { el: '#monthlyRent', slider: '#monthlyRentSlider', min: 500, max: 10000, step: 50, default: 2200 },
-    vacancyRate: { el: '#vacancyRate', slider: '#vacancyRateSlider', min: 0, max: 20, step: 1, default: 5, suffix: '%' },
-    propertyTax: { el: '#propertyTax', slider: '#propertyTaxSlider', min: 0, max: 20000, step: 100, default: 4200 },
-    insurance: { el: '#insurance', slider: '#insuranceSlider', min: 0, max: 5000, step: 50, default: 1400 },
-    hoa: { el: '#hoa', slider: '#hoaSlider', min: 0, max: 1000, step: 25, default: 0 },
-    maintenance: { el: '#maintenance', slider: '#maintenanceSlider', min: 0, max: 15, step: 0.5, default: 5, suffix: '%' },
-    management: { el: '#management', slider: '#managementSlider', min: 0, max: 15, step: 0.5, default: 8, suffix: '%' },
-    appreciation: { el: '#appreciation', slider: '#appreciationSlider', min: 0, max: 10, step: 0.25, default: 3, suffix: '%', decimals: 1 },
-    holdingYears: { el: '#holdingYears', slider: '#holdingYearsSlider', min: 1, max: 30, step: 1, default: 10, suffix: ' yr' },
+    purchasePrice: { el: '#purchasePrice', slider: '#purchasePriceSlider', display: '#purchasePriceDisplay', min: 50000, max: 2000000, step: 5000, default: 350000 },
+    downPayment: { el: '#downPayment', slider: '#downPaymentSlider', display: '#downPaymentDisplay', min: 0, max: 50, step: 1, default: 20, suffix: '%' },
+    interestRate: { el: '#interestRate', slider: '#interestRateSlider', display: '#interestRateDisplay', min: 2, max: 12, step: 0.125, default: 6.5, suffix: '%', decimals: 2 },
+    loanTerm: { el: '#loanTerm', slider: '#loanTermSlider', display: '#loanTermDisplay', min: 10, max: 30, step: 1, default: 30, suffix: ' yr' },
+    monthlyRent: { el: '#monthlyRent', slider: '#monthlyRentSlider', display: '#monthlyRentDisplay', min: 500, max: 10000, step: 50, default: 2200 },
+    vacancyRate: { el: '#vacancyRate', slider: '#vacancyRateSlider', display: '#vacancyRateDisplay', min: 0, max: 20, step: 1, default: 5, suffix: '%' },
+    propertyTax: { el: '#propertyTax', slider: '#propertyTaxSlider', display: '#propertyTaxDisplay', min: 0, max: 20000, step: 100, default: 4200 },
+    insurance: { el: '#insurance', slider: '#insuranceSlider', display: '#insuranceDisplay', min: 0, max: 5000, step: 50, default: 1400 },
+    hoa: { el: '#hoa', slider: '#hoaSlider', display: '#hoaDisplay', min: 0, max: 1000, step: 25, default: 0 },
+    maintenance: { el: '#maintenance', slider: '#maintenanceSlider', display: '#maintenanceDisplay', min: 0, max: 15, step: 0.5, default: 5, suffix: '%' },
+    management: { el: '#management', slider: '#managementSlider', display: '#managementDisplay', min: 0, max: 15, step: 0.5, default: 8, suffix: '%' },
+    appreciation: { el: '#appreciation', slider: '#appreciationSlider', display: '#appreciationDisplay', min: 0, max: 10, step: 0.25, default: 3, suffix: '%', decimals: 1 },
+    holdingYears: { el: '#holdingYears', slider: '#holdingYearsSlider', display: '#holdingYearsDisplay', min: 1, max: 30, step: 1, default: 10, suffix: ' yr' },
   };
 
   const SENSITIVITY_SCENARIOS = [
@@ -57,11 +77,7 @@
     }},
   ];
 
-  let chart = null;
-  const animFrames = {};
-  const metricAnim = {};
-  const syncFns = {};
-  let savedDownPayment = inputs.downPayment.default;
+  savedDownPayment = inputs.downPayment.default;
 
   function monthlyMortgage(principal, annualRate, years) {
     if (principal <= 0 || years <= 0) return 0;
@@ -81,20 +97,23 @@
   }
 
   function isCashPurchase() {
-    return $('#cashPurchase')?.checked === true;
+    const cb = $('#cashPurchase');
+    return cb ? cb.checked === true : false;
   }
 
   function getValues() {
     const v = {};
     for (const [key, cfg] of Object.entries(inputs)) {
-      v[key] = parseNum($(cfg.el)?.value, cfg.default);
+      const input = $(cfg.el);
+      const raw = input ? input.value : cfg.default;
+      v[key] = parseNum(raw, cfg.default);
     }
     v.cashPurchase = isCashPurchase();
     return v;
   }
 
   function applyOverrides(base, overrides) {
-    const v = { ...base };
+    const v = Object.assign({}, base);
     if (!overrides) return v;
     for (const [key, fn] of Object.entries(overrides)) {
       v[key] = typeof fn === 'function' ? fn(base) : fn;
@@ -161,81 +180,25 @@
   }
 
   function applyMetricCardClass(el, cls) {
+    if (!el || !cls) return;
     const card = el.closest('.metric-card');
-    if (card && cls) {
-      card.classList.remove('positive', 'negative', 'neutral', 'accent');
-      card.classList.add(cls);
-    }
+    if (!card) return;
+    card.classList.remove('positive', 'negative', 'neutral', 'accent');
+    card.classList.add(cls);
   }
 
-  function setMetricValue(id, targetNum, formatter, cls) {
-    const el = $(id);
-    if (!el) return;
-
-    applyMetricCardClass(el, cls);
-
-    if (!Number.isFinite(targetNum)) {
-      el.textContent = '-';
-      return;
-    }
-
-    metricAnim[id] = targetNum;
-    el.textContent = formatter(targetNum);
-  }
-
-  function animateMetric(id, targetNum, formatter, cls) {
-    const el = $(id);
-    if (!el) return;
-
-    applyMetricCardClass(el, cls);
-
-    if (!Number.isFinite(targetNum)) {
-      el.textContent = '-';
-      return;
-    }
-
-    const prev = metricAnim[id];
-    const start = Number.isFinite(prev) ? prev : targetNum;
-    metricAnim[id] = targetNum;
-
-    if (animFrames[id]) cancelAnimationFrame(animFrames[id]);
-
-    // Always paint the final value immediately so metrics never stay stuck on "-"
-    el.textContent = formatter(targetNum);
-
-    if (Math.abs(start - targetNum) < 0.01) return;
-
-    const duration = 280;
-    const t0 = performance.now();
-
-    function tick(now) {
-      const t = Math.min(1, (now - t0) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      const current = start + (targetNum - start) * eased;
-      el.textContent = Number.isFinite(current) ? formatter(current) : '-';
-      if (t < 1) {
-        animFrames[id] = requestAnimationFrame(tick);
-      } else {
-        el.textContent = formatter(targetNum);
-        delete animFrames[id];
-        el.classList.remove('pulse');
-        void el.offsetWidth;
-        el.classList.add('pulse');
-      }
-    }
-
-    animFrames[id] = requestAnimationFrame(tick);
-  }
-
-  function setMetricText(id, value, cls) {
+  function setMetricValue(id, value, cls) {
     const el = $(id);
     if (!el) return;
     el.textContent = value;
-    const card = el.closest('.metric-card');
-    if (card && cls) {
-      card.classList.remove('positive', 'negative', 'neutral', 'accent');
-      card.classList.add(cls);
-    }
+    applyMetricCardClass(el, cls);
+  }
+
+  function setMetricNumber(id, targetNum, formatter, cls) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = formatter(Number.isFinite(targetNum) ? targetNum : 0);
+    applyMetricCardClass(el, cls);
   }
 
   function updateVerdict(r) {
@@ -246,59 +209,54 @@
     if (r.monthlyCashFlow > 200 && r.cashOnCash >= 8) {
       cls = 'good'; icon = '🏆';
       title = 'Strong Buy & Hold Candidate';
-      desc = `Positive cash flow of ${fmt(r.monthlyCashFlow)}/mo with ${pct(r.cashOnCash)} cash-on-cash return. Equity grows to ${fmt(r.equity)} over ${r.v.holdingYears} years.`;
+      desc = 'Positive cash flow of ' + fmt(r.monthlyCashFlow) + '/mo with ' + pct(r.cashOnCash) + ' cash-on-cash return. Equity grows to ' + fmt(r.equity) + ' over ' + r.v.holdingYears + ' years.';
     } else if (r.monthlyCashFlow >= 0 && r.cashOnCash >= 4) {
       cls = 'moderate'; icon = '📊';
       title = 'Solid Long-Term Hold';
-      desc = `Break-even to modest cash flow. Appreciation (${pct(r.v.appreciation)}) builds ${fmt(r.equity - r.downAmount)} in equity over ${r.v.holdingYears} years.`;
+      desc = 'Break-even to modest cash flow. Appreciation (' + pct(r.v.appreciation) + ') builds ' + fmt(r.equity - r.downAmount) + ' in equity over ' + r.v.holdingYears + ' years.';
     } else if (r.monthlyCashFlow >= -200) {
       cls = 'moderate'; icon = '⚖️';
       title = 'Appreciation-Dependent Play';
-      desc = `Monthly cash flow is ${fmt(r.monthlyCashFlow)}. Viable if you believe in ${pct(r.v.appreciation)} annual appreciation in this market.`;
+      desc = 'Monthly cash flow is ' + fmt(r.monthlyCashFlow) + '. Viable if you believe in ' + pct(r.v.appreciation) + ' annual appreciation in this market.';
     } else {
       cls = 'poor'; icon = '⚠️';
       title = 'Numbers Are Tight';
-      desc = `Negative cash flow of ${fmt(r.monthlyCashFlow)}/mo. Consider negotiating price, increasing rent, or reducing expenses.`;
+      desc = 'Negative cash flow of ' + fmt(r.monthlyCashFlow) + '/mo. Consider negotiating price, increasing rent, or reducing expenses.';
     }
 
     banner.className = 'verdict-banner ' + cls;
-    banner.innerHTML = `
-      <div class="verdict-icon">${icon}</div>
-      <div class="verdict-text">
-        <h5>${title}</h5>
-        <p>${desc}</p>
-      </div>`;
+    banner.innerHTML =
+      '<div class="verdict-icon">' + icon + '</div>' +
+      '<div class="verdict-text"><h5>' + title + '</h5><p>' + desc + '</p></div>';
   }
 
   function updateBreakdown(r) {
     const tbody = $('#breakdownBody');
     if (!tbody) return;
-    tbody.innerHTML = `
-      <tr><th>Gross Annual Rent</th><td class="income">${fmt(r.grossRent)}</td></tr>
-      <tr><th>Vacancy Loss (${pct(r.v.vacancyRate)})</th><td class="expense">-${fmt(r.grossRent - r.effectiveRent)}</td></tr>
-      <tr><th>Effective Rental Income</th><td class="income">${fmt(r.effectiveRent)}</td></tr>
-      <tr><th>Property Taxes</th><td class="expense">-${fmt(r.v.propertyTax)}</td></tr>
-      <tr><th>Insurance</th><td class="expense">-${fmt(r.v.insurance)}</td></tr>
-      <tr><th>Maintenance (${pct(r.v.maintenance)})</th><td class="expense">-${fmt(r.maintenanceCost)}</td></tr>
-      <tr><th>Property Management (${pct(r.v.management)})</th><td class="expense">-${fmt(r.managementCost)}</td></tr>
-      <tr><th>HOA Fees</th><td class="expense">-${fmt(r.hoaAnnual)}</td></tr>
-      <tr><th>Net Operating Income</th><td>${fmt(r.noi)}</td></tr>
-      <tr><th>Mortgage Payment (annual)</th><td class="expense">${r.cash ? 'None (cash purchase)' : '-' + fmt(r.annualDebtService)}</td></tr>
-      <tr><th>Annual Cash Flow</th><td class="${r.annualCashFlow >= 0 ? 'income' : 'expense'}">${fmt(r.annualCashFlow)}</td></tr>`;
+    tbody.innerHTML =
+      '<tr><th>Gross Annual Rent</th><td class="income">' + fmt(r.grossRent) + '</td></tr>' +
+      '<tr><th>Vacancy Loss (' + pct(r.v.vacancyRate) + ')</th><td class="expense">-' + fmt(r.grossRent - r.effectiveRent) + '</td></tr>' +
+      '<tr><th>Effective Rental Income</th><td class="income">' + fmt(r.effectiveRent) + '</td></tr>' +
+      '<tr><th>Property Taxes</th><td class="expense">-' + fmt(r.v.propertyTax) + '</td></tr>' +
+      '<tr><th>Insurance</th><td class="expense">-' + fmt(r.v.insurance) + '</td></tr>' +
+      '<tr><th>Maintenance (' + pct(r.v.maintenance) + ')</th><td class="expense">-' + fmt(r.maintenanceCost) + '</td></tr>' +
+      '<tr><th>Property Management (' + pct(r.v.management) + ')</th><td class="expense">-' + fmt(r.managementCost) + '</td></tr>' +
+      '<tr><th>HOA Fees</th><td class="expense">-' + fmt(r.hoaAnnual) + '</td></tr>' +
+      '<tr><th>Net Operating Income</th><td>' + fmt(r.noi) + '</td></tr>' +
+      '<tr><th>Mortgage Payment (annual)</th><td class="expense">' + (r.cash ? 'None (cash purchase)' : '-' + fmt(r.annualDebtService)) + '</td></tr>' +
+      '<tr><th>Annual Cash Flow</th><td class="' + (r.annualCashFlow >= 0 ? 'income' : 'expense') + '">' + fmt(r.annualCashFlow) + '</td></tr>';
   }
 
   function updateSensitivity(base) {
     const grid = $('#sensitivityGrid');
     if (!grid) return;
 
-    grid.innerHTML = SENSITIVITY_SCENARIOS.map((scenario) => {
+    grid.innerHTML = SENSITIVITY_SCENARIOS.map(function (scenario) {
       if (scenario.skipWhenCash && base.v.cashPurchase) {
-        return `
-        <div class="sensitivity-card muted">
-          <div class="scenario-label">${scenario.label}</div>
-          <div class="scenario-value" style="color:#94a3b8">N/A</div>
-          <div class="scenario-delta flat">cash purchase</div>
-        </div>`;
+        return '<div class="sensitivity-card muted">' +
+          '<div class="scenario-label">' + scenario.label + '</div>' +
+          '<div class="scenario-value" style="color:#94a3b8">N/A</div>' +
+          '<div class="scenario-delta flat">cash purchase</div></div>';
       }
       const r = scenario.key === 'base' ? base : calculateFrom(applyOverrides(base.v, scenario.overrides));
       const delta = r.monthlyCashFlow - base.monthlyCashFlow;
@@ -310,13 +268,11 @@
         else if (delta < -5) { deltaClass = 'down'; deltaText = fmt(delta) + '/mo vs base'; }
         else { deltaText = '~ unchanged'; }
       }
-      const valueClass = r.monthlyCashFlow >= 0 ? 'up' : 'down';
-      return `
-        <div class="sensitivity-card${isBase ? ' base' : ''}">
-          <div class="scenario-label">${scenario.label}</div>
-          <div class="scenario-value" style="color:${r.monthlyCashFlow >= 0 ? '#059669' : '#dc2626'}">${fmt(r.monthlyCashFlow)}<span style="font-size:0.7em;font-weight:600">/mo</span></div>
-          <div class="scenario-delta ${deltaClass}">${deltaText}</div>
-        </div>`;
+      return '<div class="sensitivity-card' + (isBase ? ' base' : '') + '">' +
+        '<div class="scenario-label">' + scenario.label + '</div>' +
+        '<div class="scenario-value" style="color:' + (r.monthlyCashFlow >= 0 ? '#059669' : '#dc2626') + '">' +
+        fmt(r.monthlyCashFlow) + '<span style="font-size:0.7em;font-weight:600">/mo</span></div>' +
+        '<div class="scenario-delta ' + deltaClass + '">' + deltaText + '</div></div>';
     }).join('');
   }
 
@@ -324,16 +280,15 @@
     const canvas = $('#wealthChart');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    const labels = r.projections.map((p) => 'Year ' + p.year);
+    const labels = r.projections.map(function (p) { return 'Year ' + p.year; });
     const datasets = [
-      { label: 'Property Value', data: r.projections.map((p) => p.propertyValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
-      { label: 'Equity', data: r.projections.map((p) => p.equity), borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3 },
-      { label: 'Cumulative Cash Flow', data: r.projections.map((p) => p.cumulativeCashFlow), borderColor: '#d97706', backgroundColor: 'rgba(217,119,6,0.1)', fill: true, tension: 0.3 },
+      { label: 'Property Value', data: r.projections.map(function (p) { return p.propertyValue; }), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
+      { label: 'Equity', data: r.projections.map(function (p) { return p.equity; }), borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3 },
+      { label: 'Cumulative Cash Flow', data: r.projections.map(function (p) { return p.cumulativeCashFlow; }), borderColor: '#d97706', backgroundColor: 'rgba(217,119,6,0.1)', fill: true, tension: 0.3 },
     ];
     if (!r.cash) {
-      datasets.push({ label: 'Loan Balance', data: r.projections.map((p) => p.loanBalance), borderColor: '#dc2626', borderDash: [5, 5], fill: false, tension: 0.3 });
+      datasets.push({ label: 'Loan Balance', data: r.projections.map(function (p) { return p.loanBalance; }), borderColor: '#dc2626', borderDash: [5, 5], fill: false, tension: 0.3 });
     }
-    const data = { labels, datasets };
 
     const opts = {
       responsive: true,
@@ -344,13 +299,13 @@
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (ctx) => ctx.dataset.label + ': ' + fmt(ctx.parsed.y),
+            label: function (ctx) { return ctx.dataset.label + ': ' + fmt(ctx.parsed.y); },
           },
         },
       },
       scales: {
         y: {
-          ticks: { callback: (v) => (Number.isFinite(v) ? '$' + (v / 1000).toFixed(0) + 'k' : '') },
+          ticks: { callback: function (v) { return Number.isFinite(v) ? '$' + (v / 1000).toFixed(0) + 'k' : ''; } },
           grid: { color: 'rgba(0,0,0,0.05)' },
         },
         x: { grid: { display: false } },
@@ -358,10 +313,10 @@
     };
 
     if (chart) {
-      chart.data = data;
+      chart.data = { labels: labels, datasets: datasets };
       chart.update('active');
     } else {
-      chart = new Chart(canvas, { type: 'line', data, options: opts });
+      chart = new Chart(canvas, { type: 'line', data: { labels: labels, datasets: datasets }, options: opts });
     }
   }
 
@@ -441,7 +396,8 @@
     if (!cb) return;
 
     if (cash) {
-      savedDownPayment = parseNum($('#downPayment')?.value, savedDownPayment);
+      const dp = $('#downPayment');
+      savedDownPayment = parseNum(dp ? dp.value : savedDownPayment, savedDownPayment);
     }
 
     cb.checked = cash;
@@ -455,8 +411,7 @@
   }
 
   function updateUrlQuiet() {
-    const url = buildShareUrl();
-    history.replaceState(null, '', url);
+    history.replaceState(null, '', buildShareUrl());
   }
 
   function showToast(msg) {
@@ -464,21 +419,20 @@
     if (!toast) return;
     toast.textContent = msg;
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
+    setTimeout(function () { toast.classList.remove('show'); }, 2500);
   }
 
   function render(updateHistory) {
     const r = calculate();
 
-    animateMetric('#monthlyCashFlow', r.monthlyCashFlow, (n) => fmt(n), r.monthlyCashFlow >= 0 ? 'positive' : 'negative');
-    animateMetric('#annualCashFlow', r.annualCashFlow, (n) => fmt(n), r.annualCashFlow >= 0 ? 'positive' : 'negative');
-    animateMetric('#futureEquity', r.equity, (n) => fmt(n), 'positive');
-    animateMetric('#mortgagePayment', r.mortgage, (n) => fmt(n), 'neutral');
-    animateMetric('#totalWealth', r.equity + r.totalCashFlow, (n) => fmt(n), 'accent');
-
-    setMetricText('#capRate', pct(r.capRate), 'neutral');
-    setMetricText('#cashOnCash', pct(r.cashOnCash), r.cashOnCash >= 6 ? 'positive' : r.cashOnCash >= 0 ? 'neutral' : 'negative');
-    setMetricText('#totalROI', pct(r.roi), 'accent');
+    setMetricNumber('#monthlyCashFlow', r.monthlyCashFlow, fmt, r.monthlyCashFlow >= 0 ? 'positive' : 'negative');
+    setMetricNumber('#annualCashFlow', r.annualCashFlow, fmt, r.annualCashFlow >= 0 ? 'positive' : 'negative');
+    setMetricNumber('#futureEquity', r.equity, fmt, 'positive');
+    setMetricNumber('#mortgagePayment', r.mortgage, fmt, 'neutral');
+    setMetricNumber('#totalWealth', r.equity + r.totalCashFlow, fmt, 'accent');
+    setMetricValue('#capRate', pct(r.capRate), 'neutral');
+    setMetricValue('#cashOnCash', pct(r.cashOnCash), r.cashOnCash >= 6 ? 'positive' : r.cashOnCash >= 0 ? 'neutral' : 'negative');
+    setMetricValue('#totalROI', pct(r.roi), 'accent');
 
     updateFinancingUI(r.cash);
     updateVerdict(r);
@@ -492,17 +446,16 @@
   function bindInput(key, cfg) {
     const input = $(cfg.el);
     const slider = $(cfg.slider);
-    const displayId = cfg.el.slice(1) + 'Display';
-    const display = $('#' + displayId);
-    if (!input || !slider) return;
+    const display = cfg.display ? $(cfg.display) : null;
+    if (!input || !slider) return null;
 
-    const formatDisplay = (val) => {
+    const formatDisplay = function (val) {
       if (cfg.suffix === '%') return pct(val, cfg.decimals || 1);
       if (cfg.suffix === ' yr') return val + ' yr';
       return fmt(val);
     };
 
-    const sync = (val, skipRender) => {
+    const sync = function (val, skipRender) {
       val = parseNum(val, cfg.default);
       val = Math.min(cfg.max, Math.max(cfg.min, val));
       input.value = val;
@@ -512,10 +465,9 @@
     };
 
     syncFns[key] = sync;
-
-    slider.addEventListener('input', () => sync(parseNum(slider.value, cfg.default)));
-    input.addEventListener('input', () => sync(parseNum(input.value, cfg.default)));
-    input.addEventListener('change', () => sync(parseNum(input.value, cfg.default)));
+    slider.addEventListener('input', function () { sync(slider.value, false); });
+    input.addEventListener('input', function () { sync(input.value, false); });
+    input.addEventListener('change', function () { sync(input.value, false); });
 
     return sync;
   }
@@ -531,12 +483,15 @@
     showToast('Reset to defaults');
   }
 
-  async function shareScenario() {
+  function shareScenario() {
     const url = buildShareUrl();
-    try {
-      await navigator.clipboard.writeText(url);
-      showToast('Link copied - share this scenario!');
-    } catch {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function () {
+        showToast('Link copied - share this scenario!');
+      }).catch(function () {
+        showToast('Copy this URL from the address bar');
+      });
+    } else {
       showToast('Copy this URL from the address bar');
       window.prompt('Copy this link:', url);
     }
@@ -547,15 +502,18 @@
 
     for (const [key, cfg] of Object.entries(inputs)) {
       const sync = bindInput(key, cfg);
-      const startVal = urlValues[key] ?? cfg.default;
+      const startVal = urlValues[key] !== undefined ? urlValues[key] : cfg.default;
       if (sync) sync(startVal, true);
     }
 
     setCashPurchase(!!urlValues.cashPurchase, true);
 
-    $('#cashPurchase')?.addEventListener('change', (e) => setCashPurchase(e.target.checked));
-    $('#shareScenario')?.addEventListener('click', shareScenario);
-    $('#resetScenario')?.addEventListener('click', resetDefaults);
+    const cashCb = $('#cashPurchase');
+    const shareBtn = $('#shareScenario');
+    const resetBtn = $('#resetScenario');
+    if (cashCb) cashCb.addEventListener('change', function (e) { setCashPurchase(e.target.checked); });
+    if (shareBtn) shareBtn.addEventListener('click', shareScenario);
+    if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
 
     if (Object.keys(urlValues).length && window.location.hash !== calcHash()) {
       history.replaceState(null, '', window.location.href.split('#')[0] + calcHash());
@@ -564,9 +522,19 @@
     render(false);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  function boot() {
+    if (window.__buyHoldCalcReady) return;
+    if (!mount()) return;
+    window.__buyHoldCalcReady = true;
+    try {
+      init();
+    } catch (err) {
+      window.__buyHoldCalcReady = false;
+      console.error('Buy & Hold calculator failed to start:', err);
+    }
   }
+
+  boot();
+  document.addEventListener('DOMContentLoaded', boot);
+  window.addEventListener('load', boot);
 })();
