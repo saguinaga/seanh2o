@@ -7,6 +7,8 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
     
     <style>
@@ -103,6 +105,7 @@
                 <a href="#mission">Mission</a>
                 <a href="#current-work">Current Work</a>
                 <a href="#projects">Projects</a>
+                <a href="#buy-hold-calculator">Calculator</a>
                 <a href="#contact">Contact</a>
             </div>
         </div>
@@ -114,7 +117,7 @@
             <h1>Sean Aguinaga</h1>
             <span class="highlight">Passionate IT Innovator</span>
             <p>Transforming real estate transactions to be fast, easy, and reliable for everyone.</p>
-            <a href="#contact" class="cta-button">Get In Touch</a>
+            <a href="#buy-hold-calculator" class="cta-button">Try the Calculator</a>
         </div>
     </section>
 
@@ -242,48 +245,171 @@
         </div>
     </section>
 
-       <!-- BUY & HOLD CALCULATOR -->
-    <section id="buy-hold-calculator" style="padding: 100px 20px; background: #f8fafc;">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 50px;">
-                <h2 style="font-size: 2.4rem;">Investor Buy & Hold Calculator</h2>
-                <p style="color: #666; max-width: 700px; margin: 0 auto;">Model your next deal with cash flow, Cash-on-Cash, IRR, and equity build-up.</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
-
-                <!-- INPUTS -->
-                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <h3 style="margin-bottom: 24px; color: #1e3a8a;">Deal Inputs</h3>
-                    
-                    <div id="calculator-inputs">
-                        <!-- Populated by JavaScript in next step -->
-                        <p style="text-align:center; padding: 80px 20px; color:#888;">
-                            Building the form...<br>
-                            (Next message will have full working version)
-                        </p>
-                    </div>
-                </div>
-
-                <!-- OUTPUTS + CHART -->
-                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <h3 style="margin-bottom: 24px; color: #1e3a8a;">Results • 5 Year Hold</h3>
-                    
-                    <div id="results" style="line-height: 2.2; font-size: 1.1rem;">
-                        <div><strong>Cash-on-Cash Return:</strong> <span id="coc" style="color:#10b981; font-size:1.3rem;">--.--%</span></div>
-                        <div><strong>Monthly Cash Flow:</strong> <span id="monthly-cf">$ --</span></div>
-                        <div><strong>IRR:</strong> <span id="irr">--.--%</span></div>
-                        <div><strong>Total Equity:</strong> <span id="total-equity">$ --</span></div>
-                        <div><strong>Cap Rate:</strong> <span id="cap-rate">--.--%</span></div>
-                    </div>
-
-                    <div style="margin-top: 40px;">
-                        <canvas id="return-chart" height="280"></canvas>
-                    </div>
-                </div>
-            </div>
+    <!-- BUY & HOLD CALCULATOR -->
+  <section id="buy-hold-calculator" class="calc-section">
+    <div class="calc-header">
+      <span class="calc-badge">Free Tool</span>
+      <h3>Buy &amp; Hold Calculator</h3>
+      <p>Model rental property investments in real time. Adjust the sliders, see your cash flow, cap rate, and long-term wealth projection instantly.</p>
+      <div class="calc-toolbar">
+        <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
+        <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
+        <span class="calc-toast" id="shareToast" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-panel">
+        <h4>Property &amp; Financing</h4>
+        <div class="input-group">
+          <label>Purchase Price <span class="value-display" id="purchasePriceDisplay"></span></label>
+          <input type="range" id="purchasePriceSlider" min="50000" max="2000000" step="5000">
+          <input type="number" id="purchasePrice" min="50000" max="2000000" step="5000">
         </div>
-    </section>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Down Payment <span class="value-display" id="downPaymentDisplay"></span></label>
+            <input type="range" id="downPaymentSlider" min="0" max="50" step="1">
+            <input type="number" id="downPayment" min="0" max="50" step="1">
+          </div>
+          <div class="input-group">
+            <label>Interest Rate <span class="value-display" id="interestRateDisplay"></span></label>
+            <input type="range" id="interestRateSlider" min="2" max="12" step="0.125">
+            <input type="number" id="interestRate" min="2" max="12" step="0.125">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
+          <input type="range" id="loanTermSlider" min="10" max="30" step="1">
+          <input type="number" id="loanTerm" min="10" max="30" step="1">
+        </div>
+      </div>
+      <div class="calc-panel">
+        <h4>Income &amp; Expenses</h4>
+        <div class="input-group">
+          <label>Monthly Rent <span class="value-display" id="monthlyRentDisplay"></span></label>
+          <input type="range" id="monthlyRentSlider" min="500" max="10000" step="50">
+          <input type="number" id="monthlyRent" min="500" max="10000" step="50">
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Vacancy Rate <span class="value-display" id="vacancyRateDisplay"></span></label>
+            <input type="range" id="vacancyRateSlider" min="0" max="20" step="1">
+            <input type="number" id="vacancyRate" min="0" max="20" step="1">
+          </div>
+          <div class="input-group">
+            <label>Maintenance <span class="value-display" id="maintenanceDisplay"></span></label>
+            <input type="range" id="maintenanceSlider" min="0" max="15" step="0.5">
+            <input type="number" id="maintenance" min="0" max="15" step="0.5">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Property Tax (yr) <span class="value-display" id="propertyTaxDisplay"></span></label>
+            <input type="range" id="propertyTaxSlider" min="0" max="20000" step="100">
+            <input type="number" id="propertyTax" min="0" max="20000" step="100">
+          </div>
+          <div class="input-group">
+            <label>Insurance (yr) <span class="value-display" id="insuranceDisplay"></span></label>
+            <input type="range" id="insuranceSlider" min="0" max="5000" step="50">
+            <input type="number" id="insurance" min="0" max="5000" step="50">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>HOA (mo) <span class="value-display" id="hoaDisplay"></span></label>
+            <input type="range" id="hoaSlider" min="0" max="1000" step="25">
+            <input type="number" id="hoa" min="0" max="1000" step="25">
+          </div>
+          <div class="input-group">
+            <label>Management Fee <span class="value-display" id="managementDisplay"></span></label>
+            <input type="range" id="managementSlider" min="0" max="15" step="0.5">
+            <input type="number" id="management" min="0" max="15" step="0.5">
+          </div>
+        </div>
+      </div>
+      <div class="calc-panel">
+        <h4>Long-Term Projection</h4>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Annual Appreciation <span class="value-display" id="appreciationDisplay"></span></label>
+            <input type="range" id="appreciationSlider" min="0" max="10" step="0.25">
+            <input type="number" id="appreciation" min="0" max="10" step="0.25">
+          </div>
+          <div class="input-group">
+            <label>Holding Period <span class="value-display" id="holdingYearsDisplay"></span></label>
+            <input type="range" id="holdingYearsSlider" min="1" max="30" step="1">
+            <input type="number" id="holdingYears" min="1" max="30" step="1">
+          </div>
+        </div>
+      </div>
+      <div class="calc-panel results-panel">
+        <div id="verdictBanner" class="verdict-banner moderate"></div>
+        <div class="metrics-grid">
+          <div class="metric-card positive">
+            <div class="metric-label">Monthly Cash Flow</div>
+            <div class="metric-value" id="monthlyCashFlow">—</div>
+            <div class="metric-sub">After all expenses</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Cap Rate</div>
+            <div class="metric-value" id="capRate">—</div>
+            <div class="metric-sub">NOI / Purchase Price</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Cash-on-Cash</div>
+            <div class="metric-value" id="cashOnCash">—</div>
+            <div class="metric-sub">Annual return on down payment</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label">Total ROI</div>
+            <div class="metric-value" id="totalROI">—</div>
+            <div class="metric-sub">Cash flow + equity gain</div>
+          </div>
+          <div class="metric-card positive">
+            <div class="metric-label">Future Equity</div>
+            <div class="metric-value" id="futureEquity">—</div>
+            <div class="metric-sub">Value minus loan balance</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label">Total Wealth</div>
+            <div class="metric-value" id="totalWealth">—</div>
+            <div class="metric-sub">Equity + cumulative cash flow</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Mortgage Payment</div>
+            <div class="metric-value" id="mortgagePayment">—</div>
+            <div class="metric-sub">Principal &amp; interest</div>
+          </div>
+          <div class="metric-card positive">
+            <div class="metric-label">Annual Cash Flow</div>
+            <div class="metric-value" id="annualCashFlow">—</div>
+            <div class="metric-sub">Year 1 net income</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <h5>Wealth Projection Over Time</h5>
+          <canvas id="wealthChart" height="120"></canvas>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <h5>What-If Sensitivity</h5>
+          <p class="chart-desc">How monthly cash flow shifts if one variable moves against you.</p>
+          <div class="sensitivity-grid" id="sensitivityGrid"></div>
+        </div>
+        <div class="chart-wrap">
+          <h5>Annual Income &amp; Expense Breakdown</h5>
+          <table class="breakdown-table">
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
 
     <!-- Working Contact Form -->
     <section id="contact" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
@@ -301,8 +427,9 @@
     </section>
 
     <footer style="text-align:center; padding:40px; background:#1e3a8a; color:white;">
-        <p>© 2025 Sean Aguinaga • IT Innovator in Real Estate Tech</p>
+        <p>© 2026 Sean Aguinaga • IT Innovator in Real Estate Tech</p>
     </footer>
 
+    <script src="calculator.js"></script>
 </body>
 </html>
