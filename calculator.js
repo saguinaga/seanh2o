@@ -310,6 +310,8 @@
 
     const opts = {
       responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: window.innerWidth < 600 ? 1.15 : 2.2,
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
