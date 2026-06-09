@@ -354,7 +354,7 @@
     const clean = params.toString();
     const base = window.location.href.split('#')[0].split('?')[0];
     const hash = window.location.hash || calcHash();
-    history.replaceState(null, '', base + (clean ? '?' + clean : '') + hash);
+    safeReplaceState(base + (clean ? '?' + clean : '') + hash);
   }
 
   function loadFromUrl() {
@@ -410,8 +410,16 @@
     if (!skipRender) render();
   }
 
+  function safeReplaceState(url) {
+    try {
+      history.replaceState(null, '', url);
+    } catch (e) {
+      /* file:// and other restricted contexts */
+    }
+  }
+
   function updateUrlQuiet() {
-    history.replaceState(null, '', buildShareUrl());
+    safeReplaceState(buildShareUrl());
   }
 
   function showToast(msg) {
@@ -478,7 +486,7 @@
     for (const [key, cfg] of Object.entries(inputs)) {
       if (syncFns[key]) syncFns[key](cfg.default, true);
     }
-    history.replaceState(null, '', window.location.pathname + calcHash());
+    safeReplaceState(window.location.pathname + calcHash());
     render();
     showToast('Reset to defaults');
   }
@@ -516,7 +524,7 @@
     if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
 
     if (Object.keys(urlValues).length && window.location.hash !== calcHash()) {
-      history.replaceState(null, '', window.location.href.split('#')[0] + calcHash());
+      safeReplaceState(window.location.href.split('#')[0] + calcHash());
     }
 
     render(false);
@@ -525,11 +533,10 @@
   function boot() {
     if (window.__buyHoldCalcReady) return;
     if (!mount()) return;
-    window.__buyHoldCalcReady = true;
     try {
       init();
+      window.__buyHoldCalcReady = true;
     } catch (err) {
-      window.__buyHoldCalcReady = false;
       console.error('Buy & Hold calculator failed to start:', err);
     }
   }
