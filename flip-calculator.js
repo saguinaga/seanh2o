@@ -5,8 +5,15 @@
 
   let calcRoot = null;
   let $ = null;
-  let chart = null;
+  let waterfallChart = null;
+  let capitalChart = null;
+  let burnChart = null;
   const syncFns = {};
+  let targetProfit = 25000;
+  let activeMarket = 'marion';
+  let activeRehab = 'standard';
+
+  const SCORE_RING_CIRC = 2 * Math.PI * 52;
 
   function mount() {
     calcRoot = document.querySelector('#fix-flip-calculator');
@@ -35,6 +42,31 @@
     return n.toFixed(dec) + '%';
   };
 
+  const MARKET_PRESETS = {
+    marion: {
+      purchasePrice: 118000, arv: 189000, rehabBudget: 35000, rehabContingency: 10,
+      holdMonths: 4, propertyTaxMo: 175, insuranceMo: 90, utilitiesMo: 175,
+      purchaseRate: 11.5, rehabRate: 12, buyClosing: 3000,
+    },
+    midwest: {
+      purchasePrice: 145000, arv: 218000, rehabBudget: 28000, rehabContingency: 10,
+      holdMonths: 5, propertyTaxMo: 195, insuranceMo: 110, utilitiesMo: 200,
+      purchaseRate: 10.75, rehabRate: 11.25, buyClosing: 3500,
+    },
+    sunbelt: {
+      purchasePrice: 185000, arv: 292000, rehabBudget: 48000, rehabContingency: 12,
+      holdMonths: 5, propertyTaxMo: 240, insuranceMo: 140, utilitiesMo: 250,
+      purchaseRate: 11, rehabRate: 12.5, buyClosing: 4200,
+    },
+  };
+
+  const REHAB_PRESETS = {
+    cosmetic: { rehabBudget: 15000, rehabContingency: 8, holdMonths: 3 },
+    standard: { rehabBudget: 35000, rehabContingency: 10, holdMonths: 4 },
+    heavy: { rehabBudget: 65000, rehabContingency: 15, holdMonths: 6 },
+    structural: { rehabBudget: 95000, rehabContingency: 20, holdMonths: 8 },
+  };
+
   const inputs = {
     purchasePrice: { el: '#flipPurchasePrice', slider: '#flipPurchasePriceSlider', display: '#flipPurchasePriceDisplay', min: 40000, max: 800000, step: 5000, default: 118000 },
     arv: { el: '#flipArv', slider: '#flipArvSlider', display: '#flipArvDisplay', min: 60000, max: 1200000, step: 5000, default: 189000 },
@@ -55,12 +87,21 @@
     seventyRulePct: { el: '#flipSeventyRulePct', slider: '#flipSeventyRulePctSlider', display: '#flipSeventyRulePctDisplay', min: 60, max: 80, step: 1, default: 70, suffix: '%' },
   };
 
+  const FLIP_URL_KEYS = {
+    purchasePrice: 'fp', arv: 'fa', rehabBudget: 'fr', rehabContingency: 'fc',
+    holdMonths: 'fh', purchaseDown: 'fd', purchaseRate: 'fpr', purchasePoints: 'fpt',
+    rehabRate: 'frr', propertyTaxMo: 'ftx', insuranceMo: 'fins', utilitiesMo: 'fut',
+    hoaMo: 'fho', buyClosing: 'fbc', sellingAgentPct: 'fsa', sellerClosingPct: 'fsc',
+    seventyRulePct: 'f70', targetProfit: 'ftp',
+  };
+
   const FLIP_SCENARIOS = [
     { label: 'Your Deal', key: 'base' },
     { label: 'Rehab +20%', overrides: { rehabBudget: (v) => v.rehabBudget * 1.2 } },
     { label: 'ARV -5%', overrides: { arv: (v) => v.arv * 0.95 } },
     { label: 'Hold +2 mo', overrides: { holdMonths: (v) => Math.min(18, v.holdMonths + 2) } },
     { label: 'Rate +1%', overrides: { purchaseRate: (v) => v.purchaseRate + 1, rehabRate: (v) => v.rehabRate + 1 } },
+    { label: 'ARV -10% + Hold +3', overrides: { arv: (v) => v.arv * 0.9, holdMonths: (v) => Math.min(18, v.holdMonths + 3) } },
   ];
 
   function getValues() {
@@ -123,16 +164,40 @@
 
     const spread = arv - purchase - rehabTotal;
     const spreadPct = purchase > 0 ? (spread / purchase) * 100 : 0;
+    const rehabPctOfArv = arv > 0 ? (rehabTotal / arv) * 100 : 0;
+    const allInCost = purchase + rehabTotal + buyClosing + pointsCost + holdingCosts
+      + purchaseInterest + rehabInterest;
+    const profitPerDollar = allInCost > 0 ? netProfit / allInCost : 0;
+
+    const monthlyBurn = [];
+    for (let m = 1; m <= hold; m++) {
+      const moInterest = loanAmount * (v.purchaseRate / 100 / 12)
+        + rehabLoan * (v.rehabRate / 100 / 12) * (m / hold) * 0.55;
+      monthlyBurn.push({
+        month: m,
+        carry: holdingMonthly,
+        interest: moInterest,
+        total: holdingMonthly + moInterest,
+      });
+    }
+
+    const capitalStack = [
+      { label: 'Down Payment', value: downCash },
+      { label: 'Buy Closing & Points', value: buyClosing + pointsCost },
+      { label: 'Rehab (cash)', value: rehabCash },
+      { label: 'Holding Costs', value: holdingCosts },
+      { label: 'Loan Interest', value: purchaseInterest + rehabInterest },
+    ].filter(function (row) { return row.value > 0; });
 
     const waterfall = [
-      { label: 'Purchase', value: purchase, type: 'cost' },
-      { label: 'Rehab (incl. contingency)', value: rehabTotal, type: 'cost' },
-      { label: 'Buy closing & points', value: buyClosing + pointsCost, type: 'cost' },
-      { label: 'Holding & utilities', value: holdingCosts, type: 'cost' },
-      { label: 'Loan interest', value: purchaseInterest + rehabInterest, type: 'cost' },
-      { label: 'Selling costs', value: sellCosts, type: 'cost' },
-      { label: 'ARV (sale price)', value: arv, type: 'income' },
-      { label: 'Net profit', value: netProfit, type: 'net' },
+      { label: 'ARV', value: arv, type: 'start' },
+      { label: 'Selling costs', value: -sellCosts, type: 'step' },
+      { label: 'Purchase', value: -purchase, type: 'step' },
+      { label: 'Rehab', value: -rehabTotal, type: 'step' },
+      { label: 'Buy close & points', value: -(buyClosing + pointsCost), type: 'step' },
+      { label: 'Holding', value: -holdingCosts, type: 'step' },
+      { label: 'Interest', value: -(purchaseInterest + rehabInterest), type: 'step' },
+      { label: 'Net profit', value: netProfit, type: 'end' },
     ];
 
     return {
@@ -140,12 +205,79 @@
       rehabCash, rehabLoan, purchaseInterest, rehabInterest, holdingMonthly, holdingCosts,
       sellCosts, netSaleProceeds, totalProjectCost, netProfit, profitMargin,
       cashInvested, roi, annualizedRoi, profitPerMonth, maxOffer70, offerGap,
-      spread, spreadPct, waterfall,
+      spread, spreadPct, rehabPctOfArv, allInCost, profitPerDollar, monthlyBurn,
+      capitalStack, waterfall,
     };
   }
 
   function calculate(overrides) {
     return calculateFrom(applyOverrides(getValues(), overrides));
+  }
+
+  function computeDealScore(r) {
+    let score = 0;
+    const factors = [];
+
+    if (r.offerGap <= 0) {
+      score += 22;
+      factors.push({ label: '70% rule', pts: 22, ok: true });
+    } else if (r.offerGap <= 10000) {
+      score += 12;
+      factors.push({ label: '70% rule', pts: 12, ok: false });
+    } else {
+      factors.push({ label: '70% rule', pts: 0, ok: false });
+    }
+
+    if (r.netProfit >= 30000) { score += 22; factors.push({ label: 'Net profit', pts: 22, ok: true }); }
+    else if (r.netProfit >= 20000) { score += 18; factors.push({ label: 'Net profit', pts: 18, ok: true }); }
+    else if (r.netProfit >= 10000) { score += 12; factors.push({ label: 'Net profit', pts: 12, ok: false }); }
+    else if (r.netProfit >= 0) { score += 5; factors.push({ label: 'Net profit', pts: 5, ok: false }); }
+    else { factors.push({ label: 'Net profit', pts: 0, ok: false }); }
+
+    if (r.roi >= 30) { score += 18; factors.push({ label: 'ROI on cash', pts: 18, ok: true }); }
+    else if (r.roi >= 20) { score += 14; factors.push({ label: 'ROI on cash', pts: 14, ok: true }); }
+    else if (r.roi >= 12) { score += 8; factors.push({ label: 'ROI on cash', pts: 8, ok: false }); }
+    else if (r.roi >= 0) { score += 3; factors.push({ label: 'ROI on cash', pts: 3, ok: false }); }
+    else { factors.push({ label: 'ROI on cash', pts: 0, ok: false }); }
+
+    if (r.annualizedRoi >= 60) { score += 14; factors.push({ label: 'Annualized ROI', pts: 14, ok: true }); }
+    else if (r.annualizedRoi >= 40) { score += 10; factors.push({ label: 'Annualized ROI', pts: 10, ok: true }); }
+    else if (r.annualizedRoi >= 25) { score += 6; factors.push({ label: 'Annualized ROI', pts: 6, ok: false }); }
+    else { factors.push({ label: 'Annualized ROI', pts: 0, ok: false }); }
+
+    if (r.profitMargin >= 15) { score += 12; factors.push({ label: 'Profit margin', pts: 12, ok: true }); }
+    else if (r.profitMargin >= 10) { score += 8; factors.push({ label: 'Profit margin', pts: 8, ok: false }); }
+    else if (r.profitMargin >= 5) { score += 4; factors.push({ label: 'Profit margin', pts: 4, ok: false }); }
+    else { factors.push({ label: 'Profit margin', pts: 0, ok: false }); }
+
+    if (r.hold <= 5) { score += 8; factors.push({ label: 'Timeline', pts: 8, ok: true }); }
+    else if (r.hold <= 8) { score += 4; factors.push({ label: 'Timeline', pts: 4, ok: false }); }
+    else { factors.push({ label: 'Timeline', pts: 0, ok: false }); }
+
+    if (r.rehabPctOfArv <= 25) { score += 4; factors.push({ label: 'Rehab % of ARV', pts: 4, ok: true }); }
+    else if (r.rehabPctOfArv <= 35) { score += 2; factors.push({ label: 'Rehab % of ARV', pts: 2, ok: false }); }
+    else { factors.push({ label: 'Rehab % of ARV', pts: 0, ok: false }); }
+
+    return { score: Math.min(100, score), factors };
+  }
+
+  function solveMaxPurchaseForProfit(target, baseV) {
+    let lo = inputs.purchasePrice.min;
+    let hi = inputs.purchasePrice.max;
+    let best = lo;
+
+    for (let i = 0; i < 40; i++) {
+      const mid = Math.round((lo + hi) / 2 / inputs.purchasePrice.step) * inputs.purchasePrice.step;
+      const trial = Object.assign({}, baseV, { purchasePrice: mid });
+      const profit = calculateFrom(trial).netProfit;
+      if (profit >= target) {
+        best = mid;
+        lo = mid + inputs.purchasePrice.step;
+      } else {
+        hi = mid - inputs.purchasePrice.step;
+      }
+    }
+    return Math.max(inputs.purchasePrice.min, Math.min(inputs.purchasePrice.max, best));
   }
 
   function applyMetricCardClass(el, cls) {
@@ -170,36 +302,134 @@
     applyMetricCardClass(el, cls);
   }
 
+  function updateDealScore(r) {
+    const ds = computeDealScore(r);
+    const scoreEl = $('#flipDealScore');
+    const ringEl = $('#flipScoreRing');
+    const breakdownEl = $('#flipScoreBreakdown');
+
+    if (scoreEl) {
+      scoreEl.textContent = ds.score;
+      scoreEl.className = 'score-number' + (ds.score >= 75 ? ' hot' : ds.score >= 50 ? ' warm' : ' cold');
+    }
+
+    if (ringEl) {
+      const offset = SCORE_RING_CIRC * (1 - ds.score / 100);
+      ringEl.style.strokeDasharray = SCORE_RING_CIRC;
+      ringEl.style.strokeDashoffset = offset;
+      ringEl.setAttribute('class', 'score-ring-fill' + (ds.score >= 75 ? ' hot' : ds.score >= 50 ? ' warm' : ' cold'));
+    }
+
+    if (breakdownEl) {
+      breakdownEl.innerHTML = ds.factors.map(function (f) {
+        return '<div class="score-factor' + (f.ok ? ' pass' : ' warn') + '">' +
+          '<span>' + f.label + '</span><span>+' + f.pts + '</span></div>';
+      }).join('');
+    }
+  }
+
+  function updateOptimizer(r) {
+    const display = $('#flipTargetProfitDisplay');
+    const offerEl = $('#flipOptimizedOffer');
+    if (display) display.textContent = fmt(targetProfit);
+
+    const maxOffer = solveMaxPurchaseForProfit(targetProfit, r.v);
+    if (offerEl) {
+      offerEl.textContent = fmt(maxOffer);
+      const gap = r.purchase - maxOffer;
+      offerEl.className = 'optimizer-value' + (gap <= 0 ? ' good' : ' over');
+    }
+  }
+
+  function flipBenchmarkStatus(kind, value, r) {
+    if (kind === 'seventy') {
+      if (r.offerGap <= 0) return { cls: 'pass', note: 'At or under ' + r.v.seventyRulePct + '% rule max offer' };
+      if (r.offerGap <= 8000) return { cls: 'warn', note: fmt(r.offerGap) + ' over max — negotiate harder' };
+      return { cls: 'fail', note: fmt(r.offerGap) + ' over rule — thin or negative after stress' };
+    }
+    if (kind === 'minProfit') {
+      if (value >= 25000) return { cls: 'pass', note: 'Meets $25k+ flip profit target' };
+      if (value >= 15000) return { cls: 'warn', note: 'Workable but below typical $25k floor' };
+      if (value >= 0) return { cls: 'warn', note: 'Positive but thin — one overrun kills it' };
+      return { cls: 'fail', note: 'Underwater at current assumptions' };
+    }
+    if (kind === 'margin') {
+      if (value >= 12) return { cls: 'pass', note: 'Healthy margin on ARV' };
+      if (value >= 8) return { cls: 'warn', note: 'Acceptable in tight markets' };
+      return { cls: 'fail', note: 'Low margin — fees and slippage hurt' };
+    }
+    if (kind === 'annualized') {
+      if (value >= 50) return { cls: 'pass', note: 'Strong velocity-adjusted return' };
+      if (value >= 30) return { cls: 'warn', note: 'Decent if timeline holds' };
+      return { cls: 'fail', note: 'Capital tied up too long for return' };
+    }
+    if (kind === 'spread') {
+      if (value >= 35) return { cls: 'pass', note: 'Wide spread vs purchase + rehab' };
+      if (value >= 20) return { cls: 'warn', note: 'Tighter — watch rehab scope' };
+      return { cls: 'fail', note: 'Spread may not cover friction costs' };
+    }
+    if (kind === 'rehabPct') {
+      if (value <= 25) return { cls: 'pass', note: 'Rehab is reasonable share of ARV' };
+      if (value <= 35) return { cls: 'warn', note: 'Heavier scope — contingency matters' };
+      return { cls: 'fail', note: 'Rehab eating too much of exit value' };
+    }
+    return { cls: 'neutral', note: '' };
+  }
+
+  function flipBenchmarkCard(label, valueHtml, kind, value, r) {
+    const st = flipBenchmarkStatus(kind, value, r);
+    return '<div class="benchmark-card ' + st.cls + '">' +
+      '<div class="benchmark-label">' + label + '</div>' +
+      '<div class="benchmark-value">' + valueHtml + '</div>' +
+      '<div class="benchmark-note">' + st.note + '</div></div>';
+  }
+
+  function updateBenchmarks(r) {
+    const grid = $('#flipBenchmarkGrid');
+    if (!grid) return;
+
+    grid.innerHTML = [
+      flipBenchmarkCard('70% Rule Check', r.offerGap <= 0 ? 'PASS' : fmt(r.offerGap) + ' over', 'seventy', r.offerGap, r),
+      flipBenchmarkCard('Min Profit ($25k)', fmt(r.netProfit), 'minProfit', r.netProfit, r),
+      flipBenchmarkCard('Profit Margin', pct(r.profitMargin), 'margin', r.profitMargin, r),
+      flipBenchmarkCard('Annualized ROI', pct(r.annualizedRoi), 'annualized', r.annualizedRoi, r),
+      flipBenchmarkCard('Spread %', pct(r.spreadPct), 'spread', r.spreadPct, r),
+      flipBenchmarkCard('Rehab % of ARV', pct(r.rehabPctOfArv), 'rehabPct', r.rehabPctOfArv, r),
+      flipBenchmarkCard('Profit / $1 Invested', (r.profitPerDollar * 100).toFixed(1) + '¢', 'neutral', 0, r),
+      flipBenchmarkCard('Max 70% Offer', fmt(r.maxOffer70), 'neutral', 0, r),
+    ].join('');
+  }
+
   function updateVerdict(r) {
     const banner = $('#flipVerdictBanner');
     if (!banner) return;
+    const ds = computeDealScore(r);
 
     let cls, title, desc;
-    if (r.netProfit >= 25000 && r.roi >= 25) {
+    if (ds.score >= 75 && r.netProfit >= 20000) {
       cls = 'good';
       title = 'Strong Flip';
-      desc = 'Net profit of ' + fmt(r.netProfit) + ' on ' + fmt(r.cashInvested) + ' cash (' + pct(r.roi) + ' ROI). '
-        + 'At ' + r.hold + ' months, that\'s roughly ' + fmt(r.profitPerMonth) + '/mo of hold time.';
+      desc = 'Deal score ' + ds.score + '/100. Net profit of ' + fmt(r.netProfit) + ' on ' + fmt(r.cashInvested)
+        + ' cash (' + pct(r.roi) + ' ROI). Roughly ' + fmt(r.profitPerMonth) + '/mo over a ' + r.hold + '-month hold.';
     } else if (r.netProfit >= 10000 && r.roi >= 12) {
       cls = 'moderate';
       title = 'Workable Deal';
-      desc = 'Profit of ' + fmt(r.netProfit) + ' with ' + pct(r.annualizedRoi) + ' annualized return. '
-        + 'Worth running if your rehab timeline and ARV comp hold up.';
+      desc = 'Score ' + ds.score + '/100. Profit of ' + fmt(r.netProfit) + ' with ' + pct(r.annualizedRoi)
+        + ' annualized. Worth running if rehab timeline and ARV comps hold.';
     } else if (r.netProfit >= 0) {
       cls = 'moderate';
       title = 'Thin Margin';
-      desc = 'You\'re positive at ' + fmt(r.netProfit) + ', but one rehab overrun or ARV miss eats it. '
-        + '70% rule max offer is ' + fmt(r.maxOffer70) + ' (you\'re ' + (r.offerGap > 0 ? 'over by ' + fmt(r.offerGap) : 'under') + ').';
+      desc = 'Score ' + ds.score + '/100. Positive at ' + fmt(r.netProfit) + ', but one overrun or ARV miss eats it. '
+        + '70% rule max is ' + fmt(r.maxOffer70) + ' (' + (r.offerGap > 0 ? fmt(r.offerGap) + ' over' : 'you are under') + ').';
     } else {
       cls = 'poor';
-      title = 'Numbers Don\'t Work';
-      desc = 'Projected loss of ' + fmt(Math.abs(r.netProfit)) + '. '
-        + 'Cut purchase price, trim rehab, or underwrite a higher ARV before you chase this one.';
+      title = 'Numbers Do Not Work';
+      desc = 'Score ' + ds.score + '/100. Projected loss of ' + fmt(Math.abs(r.netProfit)) + '. '
+        + 'Cut price, trim rehab, or raise ARV before you chase this one.';
     }
 
     banner.className = 'verdict-banner ' + cls;
-    banner.innerHTML =
-      '<div class="verdict-text"><h5>' + title + '</h5><p>' + desc + '</p></div>';
+    banner.innerHTML = '<div class="verdict-text"><h5>' + title + '</h5><p>' + desc + '</p></div>';
   }
 
   function updateBreakdown(r) {
@@ -225,8 +455,8 @@
     if (!grid) return;
 
     grid.innerHTML = FLIP_SCENARIOS.map(function (scenario) {
-      const r = scenario.key === 'base' ? base : calculateFrom(applyOverrides(base.v, scenario.overrides));
-      const delta = r.netProfit - base.netProfit;
+      const res = scenario.key === 'base' ? base : calculateFrom(applyOverrides(base.v, scenario.overrides));
+      const delta = res.netProfit - base.netProfit;
       const isBase = scenario.key === 'base';
       let deltaClass = 'flat';
       let deltaText = 'baseline';
@@ -237,61 +467,192 @@
       }
       return '<div class="sensitivity-card' + (isBase ? ' base' : '') + '">' +
         '<div class="scenario-label">' + scenario.label + '</div>' +
-        '<div class="scenario-value" style="color:' + (r.netProfit >= 0 ? '#059669' : '#dc2626') + '">' +
-        fmt(r.netProfit) + '</div>' +
+        '<div class="scenario-value" style="color:' + (res.netProfit >= 0 ? '#059669' : '#dc2626') + '">' +
+        fmt(res.netProfit) + '</div>' +
         '<div class="scenario-delta ' + deltaClass + '">' + deltaText + '</div></div>';
     }).join('');
   }
 
-  function updateChart(r) {
+  function buildFloatingWaterfall(r) {
+    let running = r.arv;
+    const labels = [];
+    const bases = [];
+    const heights = [];
+    const colors = [];
+
+    r.waterfall.forEach(function (row, i) {
+      if (row.type === 'start') {
+        labels.push(row.label);
+        bases.push(0);
+        heights.push(row.value);
+        colors.push('#3b82f6');
+        running = row.value;
+        return;
+      }
+      if (row.type === 'step') {
+        const abs = Math.abs(row.value);
+        running += row.value;
+        labels.push(row.label);
+        bases.push(Math.max(0, running));
+        heights.push(abs);
+        colors.push('#e11d48');
+        return;
+      }
+      if (row.type === 'end') {
+        labels.push(row.label);
+        bases.push(0);
+        heights.push(Math.max(0, row.value));
+        colors.push(row.value >= 0 ? '#059669' : '#dc2626');
+      }
+    });
+
+    return { labels, bases, heights, colors };
+  }
+
+  function updateWaterfallChart(r) {
     const canvas = $('#flipWaterfallChart');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    const costLabels = [];
-    const costValues = [];
-    r.waterfall.forEach(function (row) {
-      if (row.type === 'cost') {
-        costLabels.push(row.label);
-        costValues.push(row.value);
-      }
-    });
-    costLabels.push('Net profit');
-    costValues.push(Math.max(0, r.netProfit));
+    const wf = buildFloatingWaterfall(r);
+    const data = {
+      labels: wf.labels,
+      datasets: [
+        { label: 'Base', data: wf.bases, backgroundColor: 'transparent', borderWidth: 0, barPercentage: 0.7 },
+        {
+          label: 'Amount',
+          data: wf.heights,
+          backgroundColor: wf.colors,
+          borderRadius: 6,
+          barPercentage: 0.7,
+        },
+      ],
+    };
 
     const opts = {
       responsive: true,
       maintainAspectRatio: true,
-      aspectRatio: window.innerWidth < 600 ? 1.1 : 1.8,
+      aspectRatio: window.innerWidth < 600 ? 1 : 1.6,
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: function (ctx) { return fmt(ctx.parsed.y); },
+            label: function (ctx) {
+              if (ctx.datasetIndex === 0) return null;
+              return fmt(ctx.parsed.y);
+            },
           },
         },
       },
       scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 40, font: { size: 10 } } },
         y: {
+          stacked: true,
           ticks: { callback: function (v) { return '$' + (v / 1000).toFixed(0) + 'k'; } },
           grid: { color: 'rgba(0,0,0,0.05)' },
         },
-        x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 25, font: { size: 10 } } },
       },
     };
 
-    const colors = costValues.map(function (_, i) {
-      return i === costValues.length - 1 ? '#059669' : '#e11d48';
-    });
-
-    if (chart) {
-      chart.data = { labels: costLabels, datasets: [{ data: costValues, backgroundColor: colors, borderRadius: 6 }] };
-      chart.update('active');
+    if (waterfallChart) {
+      waterfallChart.data = data;
+      waterfallChart.options = opts;
+      waterfallChart.update('active');
     } else {
-      chart = new Chart(canvas, {
-        type: 'bar',
-        data: { labels: costLabels, datasets: [{ data: costValues, backgroundColor: colors, borderRadius: 6 }] },
-        options: opts,
-      });
+      waterfallChart = new Chart(canvas, { type: 'bar', data: data, options: opts });
+    }
+  }
+
+  function updateCapitalChart(r) {
+    const canvas = $('#flipCapitalChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const labels = r.capitalStack.map(function (x) { return x.label; });
+    const values = r.capitalStack.map(function (x) { return x.value; });
+    const palette = ['#be123c', '#f43f5e', '#fb7185', '#fda4af', '#fecdd3'];
+
+    const data = {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: palette.slice(0, values.length),
+        borderWidth: 0,
+      }],
+    };
+
+    const opts = {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1.1,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+        tooltip: {
+          callbacks: {
+            label: function (ctx) {
+              const total = r.cashInvested;
+              const val = ctx.parsed;
+              const share = total > 0 ? ((val / total) * 100).toFixed(0) : 0;
+              return fmt(val) + ' (' + share + '%)';
+            },
+          },
+        },
+      },
+    };
+
+    if (capitalChart) {
+      capitalChart.data = data;
+      capitalChart.update('active');
+    } else {
+      capitalChart = new Chart(canvas, { type: 'doughnut', data: data, options: opts });
+    }
+  }
+
+  function updateBurnChart(r) {
+    const canvas = $('#flipBurnChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const labels = r.monthlyBurn.map(function (m) { return 'Mo ' + m.month; });
+    const carry = r.monthlyBurn.map(function (m) { return m.carry; });
+    const interest = r.monthlyBurn.map(function (m) { return m.interest; });
+
+    const data = {
+      labels: labels,
+      datasets: [
+        { label: 'Carry (tax, ins, utils)', data: carry, backgroundColor: '#fda4af', borderRadius: 4 },
+        { label: 'Loan interest', data: interest, backgroundColor: '#be123c', borderRadius: 4 },
+      ],
+    };
+
+    const opts = {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: window.innerWidth < 600 ? 1.4 : 2.4,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+        tooltip: {
+          callbacks: {
+            footer: function (items) {
+              const sum = items.reduce(function (s, i) { return s + i.parsed.y; }, 0);
+              return 'Total: ' + fmt(sum);
+            },
+          },
+        },
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: {
+          stacked: true,
+          ticks: { callback: function (v) { return '$' + v; } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+        },
+      },
+    };
+
+    if (burnChart) {
+      burnChart.data = data;
+      burnChart.options = opts;
+      burnChart.update('active');
+    } else {
+      burnChart = new Chart(canvas, { type: 'bar', data: data, options: opts });
     }
   }
 
@@ -318,10 +679,15 @@
       }
     }
 
+    updateDealScore(r);
+    updateOptimizer(r);
     updateVerdict(r);
+    updateBenchmarks(r);
     updateBreakdown(r);
     updateSensitivity(r);
-    updateChart(r);
+    updateWaterfallChart(r);
+    updateCapitalChart(r);
+    updateBurnChart(r);
   }
 
   function bindInput(key, cfg) {
@@ -352,19 +718,130 @@
     return sync;
   }
 
-  function resetDefaults() {
-    for (const [key, cfg] of Object.entries(inputs)) {
-      if (syncFns[key]) syncFns[key](cfg.default, true);
+  function setPresetChipActive(containerSel, attr, value) {
+    const container = $(containerSel);
+    if (!container) return;
+    container.querySelectorAll('.preset-chip').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute(attr) === value);
+    });
+  }
+
+  function applyMarketPreset(key) {
+    const preset = MARKET_PRESETS[key];
+    if (!preset) return;
+    activeMarket = key;
+    setPresetChipActive('#flipMarketPresets', 'data-market', key);
+    Object.keys(preset).forEach(function (k) {
+      if (syncFns[k]) syncFns[k](preset[k], true);
+    });
+    render();
+  }
+
+  function applyRehabPreset(key) {
+    const preset = REHAB_PRESETS[key];
+    if (!preset) return;
+    activeRehab = key;
+    setPresetChipActive('#flipRehabPresets', 'data-rehab', key);
+    Object.keys(preset).forEach(function (k) {
+      if (syncFns[k]) syncFns[k](preset[k], true);
+    });
+    render();
+  }
+
+  function applyOptimizedOffer() {
+    const r = calculate();
+    const maxOffer = solveMaxPurchaseForProfit(targetProfit, r.v);
+    if (syncFns.purchasePrice) syncFns.purchasePrice(maxOffer, false);
+    showToast('Purchase price set to ' + fmt(maxOffer));
+  }
+
+  function safeReplaceState(url) {
+    try {
+      history.replaceState(null, '', url);
+    } catch (e) { /* file:// */ }
+  }
+
+  function buildShareUrl() {
+    const v = getValues();
+    const params = new URLSearchParams();
+    Object.entries(FLIP_URL_KEYS).forEach(function (entry) {
+      const key = entry[0];
+      const short = entry[1];
+      if (key === 'targetProfit') {
+        params.set(short, targetProfit);
+        return;
+      }
+      if (inputs[key]) params.set(short, v[key]);
+    });
+    const financeRehab = $('#flipFinanceRehab');
+    if (financeRehab) params.set('ffr', financeRehab.checked ? '1' : '0');
+    const base = window.location.pathname;
+    const clean = params.toString();
+    return base + (clean ? '?' + clean : '') + '#fix-flip-calculator';
+  }
+
+  function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const loaded = {};
+    Object.entries(FLIP_URL_KEYS).forEach(function (entry) {
+      const key = entry[0];
+      const short = entry[1];
+      if (!params.has(short)) return;
+      if (key === 'targetProfit') {
+        targetProfit = parseNum(params.get(short), targetProfit);
+        return;
+      }
+      if (inputs[key]) loaded[key] = parseNum(params.get(short), inputs[key].default);
+    });
+    Object.keys(loaded).forEach(function (k) {
+      if (syncFns[k]) syncFns[k](loaded[k], true);
+    });
+    const ffr = params.get('ffr');
+    const cb = $('#flipFinanceRehab');
+    if (cb && ffr !== null) cb.checked = ffr === '1';
+    const slider = $('#flipTargetProfitSlider');
+    if (slider) slider.value = targetProfit;
+  }
+
+  function showToast(msg) {
+    const toast = $('#flipShareToast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 2500);
+  }
+
+  function shareScenario() {
+    let shareUrl;
+    try {
+      shareUrl = new URL(buildShareUrl(), window.location.href).href;
+    } catch (e) {
+      shareUrl = buildShareUrl();
     }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl).then(function () {
+        showToast('Share link copied');
+      }).catch(function () {
+        showToast('Copy: ' + shareUrl);
+      });
+    } else {
+      showToast('Copy: ' + shareUrl);
+    }
+    safeReplaceState(buildShareUrl());
+  }
+
+  function resetDefaults() {
+    applyMarketPreset('marion');
+    applyRehabPreset('standard');
+    targetProfit = 25000;
+    const slider = $('#flipTargetProfitSlider');
+    if (slider) slider.value = targetProfit;
     const cb = $('#flipFinanceRehab');
     if (cb) cb.checked = true;
+    safeReplaceState(window.location.pathname + '#fix-flip-calculator');
     render();
-    const toast = $('#flipShareToast');
-    if (toast) {
-      toast.textContent = 'Reset to Marion County flip defaults';
-      toast.classList.add('show');
-      setTimeout(function () { toast.classList.remove('show'); }, 2500);
-    }
+    showToast('Reset to Marion County flip defaults');
   }
 
   function init() {
@@ -372,10 +849,43 @@
       const sync = bindInput(key, cfg);
       if (sync) sync(cfg.default, true);
     }
+
     const cb = $('#flipFinanceRehab');
     if (cb) cb.addEventListener('change', render);
+
+    const targetSlider = $('#flipTargetProfitSlider');
+    if (targetSlider) {
+      targetSlider.value = targetProfit;
+      targetSlider.addEventListener('input', function () {
+        targetProfit = parseNum(targetSlider.value, 25000);
+        render();
+      });
+    }
+
+    calcRoot.querySelectorAll('#flipMarketPresets .preset-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyMarketPreset(btn.getAttribute('data-market'));
+      });
+    });
+
+    calcRoot.querySelectorAll('#flipRehabPresets .preset-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyRehabPreset(btn.getAttribute('data-rehab'));
+      });
+    });
+
     const resetBtn = $('#flipResetScenario');
+    const shareBtn = $('#flipShareScenario');
+    const applyBtn = $('#flipApplyOptimizedOffer');
     if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
+    if (shareBtn) shareBtn.addEventListener('click', shareScenario);
+    if (applyBtn) applyBtn.addEventListener('click', applyOptimizedOffer);
+
+    loadFromUrl();
+    if (window.location.search && window.location.hash !== '#fix-flip-calculator') {
+      safeReplaceState(window.location.href.split('#')[0] + '#fix-flip-calculator');
+    }
+
     render();
   }
 

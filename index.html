@@ -8,7 +8,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=7">
+    <link rel="stylesheet" href="styles.css?v=9">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
     
@@ -124,8 +124,10 @@
             .hero { min-height: 85vh; padding-top: 80px; }
             .hero h1 { font-size: 2.4rem; letter-spacing: -1px; }
             .highlight { font-size: 1.1rem; letter-spacing: 2px; }
-            .hero p, .hero-lead, .hero-sub { font-size: 1.05rem; padding: 0 8px; }
-            .hero-sub { font-size: 0.95rem !important; }
+            .hero p, .hero-lead, .hero-sub, .hero-extra { font-size: 1.05rem; padding: 0 8px; }
+            .hero-sub, .hero-extra { font-size: 0.95rem !important; }
+            .hero-cta-row { flex-direction: column; }
+            .hero-cta-row .cta-button { width: 100%; max-width: 280px; }
             .cta-button { font-size: 1rem; padding: 14px 28px; }
             .nav-container { height: 64px; position: relative; }
             .nav-toggle { display: flex; }
@@ -180,30 +182,37 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <h1>Sean Aguinaga</h1>
-            <span class="highlight">Product &amp; Systems</span>
-            <p class="hero-lead">I build real estate products where what the customer sees online and what your team knows on a call are supposed to be the same picture. When they're not, that's usually the work I care about.</p>
-            <p class="hero-sub">Product manager, 15+ years, mostly marketplaces and transaction-heavy businesses. These days at Auction.com on registration, personalization, and giving nationwide teams better context on the customer journey.</p>
-            <a href="#buy-hold-calculator" class="cta-button">Try the Calculators</a>
+            <span class="highlight">Product &amp; Systems in Real Estate Tech</span>
+            <p class="hero-lead">I build real estate products where what the customer sees online and what your team knows on a call are supposed to be the same picture. When they're not, that's usually the work I care about. Auctions, registration, post-sale workflows, SFDC context: the messy middle where a customer already told us something and the system still acts like it's meeting them for the first time.</p>
+            <p class="hero-sub">Product manager, 15+ years, mostly marketplaces and transaction-heavy businesses. I've shipped across bidding, buyer onboarding, internal ops tools, and the handoffs between them. These days at Auction.com I'm leading work on registration and personalization (so we know who someone is before we treat them like a stranger) and journey context for nationwide teams (so the person on the call isn't starting from zero).</p>
+            <p class="hero-extra">I think in systems, not slide decks. What does the customer experience? What data do we actually have? What does the team see in SFDC? Where do those stories diverge? That's where the product work usually lives. Scroll down for two investor calculators I built for fun: buy &amp; hold and fix &amp; flip, with Marion County defaults and the kind of underwriting math I'd want before chasing a deal.</p>
+            <div class="hero-cta-row">
+                <a href="#buy-hold-calculator" class="cta-button">Buy &amp; Hold Calculator</a>
+                <a href="#fix-flip-calculator" class="cta-button cta-secondary">Fix &amp; Flip Analyzer</a>
+            </div>
         </div>
     </section>
 
     <!-- About -->
     <section id="about" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
-        <div class="intro-block" style="max-width: 820px; margin: 0 auto;">
+        <div class="intro-block intro-wide">
             <h2>About Me</h2>
-            <p>I'm Sean Aguinaga. I've spent most of my career on the messy side of real estate tech: marketplaces, bidding, registration, post-sale workflows, and the internal tools that are supposed to make all of that coherent.</p>
-            <p>I think in systems. Not architecture diagrams for their own sake, but the full loop: what the customer experiences, what data we actually have, what the team in SFDC sees, and where those stories diverge. That's usually where the product work is.</p>
-            <p>I'm confident in what I know and quick to say when I'm still filling in gaps. I'd rather get the problem framed right than ship something that sounds good in a deck.</p>
+            <p>I'm Sean Aguinaga. I've spent most of my career on the messy side of real estate tech: marketplaces, bidding, registration, post-sale workflows, and the internal tools that are supposed to make all of that coherent. The interesting problems are rarely on a single screen. They're in the gaps between what a customer did, what we stored, and what a teammate can see when they pick up the phone.</p>
+            <p>I think in systems. Not architecture diagrams for their own sake, but the full loop: what the customer experiences, what data we actually have, what the team in SFDC sees, and where those stories diverge. That's usually where the product work is. If the PDP says one thing and the case history says another, someone is going to waste time reconciling it. I'd rather fix that upstream.</p>
+            <p>Background-wise, it's been a long run in marketplace and transaction product: buyer funnels, seller tools, ops dashboards, integrations that were supposed to be temporary and weren't. I've worked with engineers, design, sales, legal, and the folks on the ground who actually talk to customers. I know enough to push back when a spec doesn't match reality, and I'm quick to say when I'm still filling in gaps.</p>
+            <p>On the investor side, I underwrite deals the way a lot of people in this space do: spreadsheets, rules of thumb, and a healthy respect for what can go wrong on rehab timeline or ARV. The calculators on this page are vibe-coded experiments, but the math is real. Marion County defaults because that's what I know; drag the sliders for your market.</p>
+            <p>I'm confident in what I know and open to being wrong. I'd rather get the problem framed right than ship something that sounds good in a deck.</p>
         </div>
     </section>
 
     <!-- Mission -->
     <section id="mission" style="padding: 100px 20px; text-align: center;">
-        <div class="intro-block" style="max-width: 820px; margin: 0 auto;">
+        <div class="intro-block intro-wide">
             <h2>My Mission</h2>
-            <p>Real estate is still harder than it needs to be. Not because people aren't trying, but because the journey is long, the data is fragmented, and customers end up re-explaining themselves at every step.</p>
-            <p>I want products that give customers a clear path forward: sign up once, get treated like we remember them, and see next steps that match their situation. And I want internal teams to have enough context to help without putting the customer on hold while someone digs through five systems.</p>
-            <p>If we get those two things closer together, the experience gets faster for customers and less chaotic for the people doing the work. That's the mission, basically.</p>
+            <p>Real estate is still harder than it needs to be. Not because people aren't trying, but because the journey is long, the data is fragmented, and customers end up re-explaining themselves at every step. You register, you bid, you win, then you're in a different workflow with different people who may or may not know what already happened.</p>
+            <p>I want products that give customers a clear path forward: sign up once, get treated like we remember them, and see next steps that match their situation. Investor, occupant, first-time buyer, repeat bidder: the product should respond to who you are, not force everyone through the same generic path.</p>
+            <p>And I want internal teams to have enough context to help without putting the customer on hold while someone digs through five systems. Nationwide coverage makes that harder, not easier. The fix isn't another dashboard nobody opens. It's context in the moment: where they are in the journey, what's still open, what happened last.</p>
+            <p>If we get those two things closer together, the experience gets faster for customers and less chaotic for the people doing the work. Less duplicate data entry, fewer "can you explain your situation again" calls, more time spent on the actual problem. That's the mission, basically.</p>
         </div>
     </section>
 
@@ -495,9 +504,29 @@
     <div class="calc-header">
       <span class="calc-badge flip-badge">Vibe Tool 02</span>
       <h3>Fix &amp; Flip Deal Analyzer</h3>
-      <p>Underwrite a Marion County style flip in real time. ARV, rehab with contingency, hard money, hold costs, exit math, 70% rule, and stress scenarios. Adjust every slider until the deal tells the truth.</p>
+      <p>Underwrite a flip like you mean it. Deal score, offer optimizer, rehab presets, hard money math, 70% rule, capital stack, monthly burn, and stress scenarios. Defaults are Marion County; drag until the numbers tell the truth.</p>
+      <div class="flip-preset-bar">
+        <div class="preset-group">
+          <span class="preset-label">Market</span>
+          <div class="preset-chips" id="flipMarketPresets">
+            <button type="button" class="preset-chip active" data-market="marion">Marion County, IN</button>
+            <button type="button" class="preset-chip" data-market="midwest">Midwest Suburb</button>
+            <button type="button" class="preset-chip" data-market="sunbelt">Sunbelt Flip</button>
+          </div>
+        </div>
+        <div class="preset-group">
+          <span class="preset-label">Rehab Level</span>
+          <div class="preset-chips" id="flipRehabPresets">
+            <button type="button" class="preset-chip" data-rehab="cosmetic">Cosmetic</button>
+            <button type="button" class="preset-chip active" data-rehab="standard">Standard</button>
+            <button type="button" class="preset-chip" data-rehab="heavy">Heavy Gut</button>
+            <button type="button" class="preset-chip" data-rehab="structural">Full Rebuild</button>
+          </div>
+        </div>
+      </div>
       <div class="calc-toolbar">
-        <button type="button" class="calc-btn primary" id="flipResetScenario">Reset Defaults</button>
+        <button type="button" class="calc-btn primary" id="flipShareScenario">Copy Share Link</button>
+        <button type="button" class="calc-btn ghost" id="flipResetScenario">Reset Defaults</button>
         <span class="calc-toast" id="flipShareToast" aria-live="polite"></span>
       </div>
     </div>
@@ -613,6 +642,32 @@
         </div>
       </div>
       <div class="calc-panel results-panel flip-results">
+        <div class="flip-score-row">
+          <div class="flip-deal-score" id="flipDealScorePanel">
+            <div class="score-ring-wrap">
+              <svg class="score-ring" viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="score-ring-bg" cx="60" cy="60" r="52"></circle>
+                <circle class="score-ring-fill" id="flipScoreRing" cx="60" cy="60" r="52"></circle>
+              </svg>
+              <div class="score-ring-center">
+                <span class="score-number" id="flipDealScore">0</span>
+                <span class="score-label">Deal Score</span>
+              </div>
+            </div>
+            <div class="score-breakdown" id="flipScoreBreakdown"></div>
+          </div>
+          <div class="flip-offer-optimizer">
+            <h5>Offer Optimizer</h5>
+            <p class="chart-desc">Slide to a target net profit. We'll back into the max purchase price that still hits it.</p>
+            <label>Target Net Profit <span class="value-display" id="flipTargetProfitDisplay"></span></label>
+            <input type="range" id="flipTargetProfitSlider" min="5000" max="80000" step="1000">
+            <div class="optimizer-result">
+              <span class="optimizer-label">Max purchase to hit target</span>
+              <span class="optimizer-value" id="flipOptimizedOffer">-</span>
+            </div>
+            <button type="button" class="calc-btn ghost flip-apply-offer" id="flipApplyOptimizedOffer">Apply as Purchase Price</button>
+          </div>
+        </div>
         <div id="flipVerdictBanner" class="verdict-banner moderate"></div>
         <div class="metrics-grid">
           <div class="metric-card accent">
@@ -657,9 +712,26 @@
           </div>
         </div>
         <div class="chart-wrap">
-          <h5>Profit Waterfall</h5>
-          <p class="chart-desc">Where the money goes from purchase through sale.</p>
-          <canvas id="flipWaterfallChart" height="120"></canvas>
+          <h5>Flip Benchmarks</h5>
+          <p class="chart-desc">Investor rules of thumb: 70% rule, profit floors, margin targets, and spread checks.</p>
+          <div class="benchmark-grid" id="flipBenchmarkGrid"></div>
+        </div>
+        <div class="flip-chart-duo">
+          <div class="chart-wrap">
+            <h5>Profit Waterfall</h5>
+            <p class="chart-desc">ARV down through every cost bucket to net profit.</p>
+            <canvas id="flipWaterfallChart" height="120"></canvas>
+          </div>
+          <div class="chart-wrap">
+            <h5>Capital Stack</h5>
+            <p class="chart-desc">Where your cash actually goes before you see a dime back.</p>
+            <canvas id="flipCapitalChart" height="120"></canvas>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <h5>Monthly Burn During Hold</h5>
+          <p class="chart-desc">Carry costs plus loan interest stacked month by month.</p>
+          <canvas id="flipBurnChart" height="100"></canvas>
         </div>
         <div class="chart-wrap">
           <h5>Stress Test</h5>
@@ -698,7 +770,7 @@
     </footer>
 
     <script src="calculator.js?v=11"></script>
-    <script src="flip-calculator.js?v=1"></script>
+    <script src="flip-calculator.js?v=3"></script>
     <script>
       (function () {
         var toggle = document.getElementById('navToggle');
