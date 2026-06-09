@@ -7,7 +7,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=5">
+    <link rel="stylesheet" href="styles.css?v=6">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
     
@@ -465,6 +465,11 @@
           </div>
         </div>
         <div class="chart-wrap">
+          <h5>Compare Rental ROI</h5>
+          <p class="chart-desc">Lender and marketplace benchmarks — DSCR, 1% rule, 50% rule, IRR, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
+          <div class="benchmark-grid" id="benchmarkGrid"></div>
+        </div>
+        <div class="chart-wrap">
           <h5>What-If Sensitivity</h5>
           <p class="chart-desc">How monthly cash flow shifts if one variable moves against you.</p>
           <div class="sensitivity-grid" id="sensitivityGrid"></div>
@@ -500,7 +505,7 @@
         <p>(c) 2026 Sean Aguinaga | IT Innovator in Real Estate Tech</p>
     </footer>
 
-    <script src="calculator.js?v=8"></script>
+    <script src="calculator.js?v=9"></script>
     <script>
       (function () {
         var toggle = document.getElementById('navToggle');

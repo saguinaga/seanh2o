@@ -151,6 +151,21 @@
     const totalReturn = equity - downAmount + totalCashFlow;
     const roi = cashInvested > 0 ? (totalReturn / cashInvested) * 100 : 0;
 
+    const loanAfterYear1 = remainingBalance(loanAmount, v.interestRate, v.loanTerm, 12);
+    const principalPaydownY1 = Math.max(0, loanAmount - loanAfterYear1);
+    const price = v.purchasePrice;
+    const grm = grossRent > 0 ? price / grossRent : 0;
+    const grossYield = price > 0 ? (grossRent / price) * 100 : 0;
+    const opexRatio = grossRent > 0 ? (totalExpenses / grossRent) * 100 : 0;
+    const onePctRule = price > 0 ? (v.monthlyRent / price) * 100 : 0;
+    const breakEvenOccupancy = grossRent > 0 ? ((totalExpenses + annualDebtService) / grossRent) * 100 : 0;
+    const ltv = price > 0 && !cash ? (loanAmount / price) * 100 : 0;
+    const dscr = !cash && annualDebtService > 0 ? noi / annualDebtService : (cash ? null : 0);
+    const rentPer100k = price > 0 ? v.monthlyRent / (price / 100000) : 0;
+    const monthlyTotalOutflow = (totalExpenses + annualDebtService) / 12;
+    const equityMultiple = cashInvested > 0 ? (equity + totalCashFlow) / cashInvested : 0;
+    const irrPct = computeIrr(cashInvested, v.holdingYears, annualCashFlow, equity);
+
     const projections = [];
     for (let yr = 0; yr <= v.holdingYears; yr++) {
       const propValue = v.purchasePrice * Math.pow(1 + v.appreciation / 100, yr);
@@ -172,7 +187,30 @@
       annualDebtService, annualCashFlow, monthlyCashFlow,
       capRate, cashOnCash, futureValue, loanRemaining, equity,
       totalCashFlow, totalReturn, roi, projections,
+      principalPaydownY1, grm, grossYield, opexRatio, onePctRule,
+      breakEvenOccupancy, ltv, dscr, rentPer100k, monthlyTotalOutflow,
+      equityMultiple, irrPct,
     };
+  }
+
+  function computeIrr(invested, years, annualCashFlow, exitEquity) {
+    if (invested <= 0 || years <= 0) return 0;
+    const flows = [-invested];
+    for (let y = 1; y < years; y++) flows.push(annualCashFlow);
+    flows.push(annualCashFlow + exitEquity);
+
+    let low = -0.99;
+    let high = 5;
+    for (let i = 0; i < 80; i++) {
+      const mid = (low + high) / 2;
+      let npv = 0;
+      for (let t = 0; t < flows.length; t++) {
+        npv += flows[t] / Math.pow(1 + mid, t);
+      }
+      if (npv > 0) low = mid;
+      else high = mid;
+    }
+    return ((low + high) / 2) * 100;
   }
 
   function calculate(overrides) {
@@ -244,7 +282,79 @@
       '<tr><th>HOA Fees</th><td class="expense">-' + fmt(r.hoaAnnual) + '</td></tr>' +
       '<tr><th>Net Operating Income</th><td>' + fmt(r.noi) + '</td></tr>' +
       '<tr><th>Mortgage Payment (annual)</th><td class="expense">' + (r.cash ? 'None (cash purchase)' : '-' + fmt(r.annualDebtService)) + '</td></tr>' +
-      '<tr><th>Annual Cash Flow</th><td class="' + (r.annualCashFlow >= 0 ? 'income' : 'expense') + '">' + fmt(r.annualCashFlow) + '</td></tr>';
+      '<tr><th>Annual Cash Flow</th><td class="' + (r.annualCashFlow >= 0 ? 'income' : 'expense') + '">' + fmt(r.annualCashFlow) + '</td></tr>' +
+      '<tr><th colspan="2" class="breakdown-section">Investor Ratios</th></tr>' +
+      '<tr><th>Gross Rent Multiplier (GRM)</th><td>' + (r.grm > 0 ? r.grm.toFixed(1) + 'x' : '0.0x') + '</td></tr>' +
+      '<tr><th>Gross Yield</th><td>' + pct(r.grossYield) + '</td></tr>' +
+      '<tr><th>Operating Expense Ratio</th><td>' + pct(r.opexRatio) + ' <span class="breakdown-hint">(50% rule: ~50%)</span></td></tr>' +
+      '<tr><th>1% Rule (rent / price)</th><td class="' + (r.onePctRule >= 1 ? 'income' : 'expense') + '">' + pct(r.onePctRule, 2) + '</td></tr>' +
+      '<tr><th>Break-Even Occupancy</th><td>' + pct(r.breakEvenOccupancy) + '</td></tr>' +
+      '<tr><th>DSCR (NOI / debt service)</th><td>' + (r.cash ? 'N/A (cash)' : (r.dscr > 0 ? r.dscr.toFixed(2) + 'x' : '0.00x')) + '</td></tr>' +
+      '<tr><th>Loan-to-Value (LTV)</th><td>' + (r.cash ? '0% (cash)' : pct(r.ltv)) + '</td></tr>' +
+      '<tr><th>Year 1 Principal Paydown</th><td class="income">' + fmt(r.principalPaydownY1) + '</td></tr>' +
+      '<tr><th>IRR (hold + exit)</th><td>' + pct(r.irrPct) + '</td></tr>' +
+      '<tr><th>Equity Multiple</th><td>' + (r.equityMultiple > 0 ? r.equityMultiple.toFixed(2) + 'x' : '0.00x') + '</td></tr>';
+  }
+
+  function benchmarkStatus(kind, value, r) {
+    if (kind === 'dscr') {
+      if (r.cash) return { cls: 'neutral', note: 'Cash purchase — no debt service' };
+      if (value >= 1.25) return { cls: 'pass', note: 'Strong — many DSCR lenders prefer 1.25+' };
+      if (value >= 1.0) return { cls: 'warn', note: 'Meets 1.0 minimum — borderline for DSCR loans' };
+      return { cls: 'fail', note: 'Below 1.0 — may not qualify for DSCR financing' };
+    }
+    if (kind === 'onePct') {
+      if (value >= 1) return { cls: 'pass', note: 'Passes 1% rule — strong rent vs price' };
+      if (value >= 0.8) return { cls: 'warn', note: 'Close to 1% rule — verify market rents' };
+      return { cls: 'fail', note: 'Below 1% rule — rent may be thin for price' };
+    }
+    if (kind === 'opex') {
+      if (value <= 50) return { cls: 'pass', note: 'At or below 50% rule estimate' };
+      if (value <= 60) return { cls: 'warn', note: 'Above 50% rule — watch expense load' };
+      return { cls: 'fail', note: 'High expense ratio — tight margins' };
+    }
+    if (kind === 'breakEven') {
+      if (value <= 85) return { cls: 'pass', note: 'Comfortable cushion above break-even' };
+      if (value <= 100) return { cls: 'warn', note: 'Near break-even — little vacancy room' };
+      return { cls: 'fail', note: 'Above 100% — loses money at full occupancy' };
+    }
+    if (kind === 'irr') {
+      if (value >= 12) return { cls: 'pass', note: 'Strong annualized return (BiggerPockets target range)' };
+      if (value >= 8) return { cls: 'warn', note: 'Moderate return — typical buy-and-hold range' };
+      return { cls: 'fail', note: 'Below common 8% investor hurdle' };
+    }
+    return { cls: 'neutral', note: '' };
+  }
+
+  function benchmarkCard(label, valueHtml, kind, value, r) {
+    const st = benchmarkStatus(kind, value, r);
+    return '<div class="benchmark-card ' + st.cls + '">' +
+      '<div class="benchmark-label">' + label + '</div>' +
+      '<div class="benchmark-value">' + valueHtml + '</div>' +
+      '<div class="benchmark-note">' + st.note + '</div></div>';
+  }
+
+  function updateBenchmarks(r) {
+    const grid = $('#benchmarkGrid');
+    if (!grid) return;
+
+    const dscrVal = r.cash ? 'N/A' : (r.dscr > 0 ? r.dscr.toFixed(2) + 'x' : '0.00x');
+    const cards = [
+      benchmarkCard('DSCR', dscrVal, 'dscr', r.dscr || 0, r),
+      benchmarkCard('1% Rule', pct(r.onePctRule, 2), 'onePct', r.onePctRule, r),
+      benchmarkCard('50% Rule (OpEx)', pct(r.opexRatio), 'opex', r.opexRatio, r),
+      benchmarkCard('Break-Even Occupancy', pct(r.breakEvenOccupancy), 'breakEven', r.breakEvenOccupancy, r),
+      benchmarkCard('Gross Rent Multiplier', (r.grm > 0 ? r.grm.toFixed(1) : '0.0') + 'x', 'neutral', 0, r),
+      benchmarkCard('Gross Yield', pct(r.grossYield), 'neutral', 0, r),
+      benchmarkCard('IRR (hold + sale)', pct(r.irrPct), 'irr', r.irrPct, r),
+      benchmarkCard('Equity Multiple', (r.equityMultiple > 0 ? r.equityMultiple.toFixed(2) : '0.00') + 'x', 'neutral', 0, r),
+      benchmarkCard('Rent / $100k Price', fmt(r.rentPer100k), 'neutral', 0, r),
+      benchmarkCard('LTV', r.cash ? '0%' : pct(r.ltv), 'neutral', 0, r),
+      benchmarkCard('Year 1 Principal Paydown', fmt(r.principalPaydownY1), 'neutral', 0, r),
+      benchmarkCard('Monthly Outflow', fmt(r.monthlyTotalOutflow), 'neutral', 0, r),
+    ];
+
+    grid.innerHTML = cards.join('');
   }
 
   function updateSensitivity(base) {
@@ -445,6 +555,7 @@
     updateFinancingUI(r.cash);
     updateVerdict(r);
     updateBreakdown(r);
+    updateBenchmarks(r);
     updateSensitivity(r);
     updateChart(r);
 

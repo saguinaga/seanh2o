@@ -508,6 +508,66 @@
   border-color: #93c5fd;
 }
 
+/* ── Investor benchmark cards ─────────────────────────────────── */
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.benchmark-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  border-left: 4px solid #94a3b8;
+}
+
+.benchmark-card.pass { border-left-color: #059669; background: #f0fdf4; }
+.benchmark-card.warn { border-left-color: #d97706; background: #fffbeb; }
+.benchmark-card.fail { border-left-color: #dc2626; background: #fef2f2; }
+.benchmark-card.neutral { border-left-color: #3b82f6; }
+
+.benchmark-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.benchmark-value {
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.benchmark-note {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.breakdown-table .breakdown-section {
+  background: #f1f5f9;
+  color: #1e3a8a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 14px !important;
+}
+
+.breakdown-hint {
+  font-size: 0.8em;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
 .metric-value.pulse {
   animation: valuePulse 0.35s ease;
 }
