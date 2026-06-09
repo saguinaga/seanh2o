@@ -58,7 +58,7 @@
   ];
 
   let chart = null;
-  let animFrame = null;
+  const animFrames = {};
   const metricAnim = {};
   const syncFns = {};
   let savedDownPayment = inputs.downPayment.default;
@@ -160,15 +160,34 @@
     return calculateFrom(applyOverrides(getValues(), overrides));
   }
 
-  function animateMetric(id, targetNum, formatter, cls) {
-    const el = $(id);
-    if (!el) return;
-
+  function applyMetricCardClass(el, cls) {
     const card = el.closest('.metric-card');
     if (card && cls) {
       card.classList.remove('positive', 'negative', 'neutral', 'accent');
       card.classList.add(cls);
     }
+  }
+
+  function setMetricValue(id, targetNum, formatter, cls) {
+    const el = $(id);
+    if (!el) return;
+
+    applyMetricCardClass(el, cls);
+
+    if (!Number.isFinite(targetNum)) {
+      el.textContent = '-';
+      return;
+    }
+
+    metricAnim[id] = targetNum;
+    el.textContent = formatter(targetNum);
+  }
+
+  function animateMetric(id, targetNum, formatter, cls) {
+    const el = $(id);
+    if (!el) return;
+
+    applyMetricCardClass(el, cls);
 
     if (!Number.isFinite(targetNum)) {
       el.textContent = '-';
@@ -179,7 +198,13 @@
     const start = Number.isFinite(prev) ? prev : targetNum;
     metricAnim[id] = targetNum;
 
-    if (animFrame) cancelAnimationFrame(animFrame);
+    if (animFrames[id]) cancelAnimationFrame(animFrames[id]);
+
+    // Always paint the final value immediately so metrics never stay stuck on "-"
+    el.textContent = formatter(targetNum);
+
+    if (Math.abs(start - targetNum) < 0.01) return;
+
     const duration = 280;
     const t0 = performance.now();
 
@@ -189,15 +214,17 @@
       const current = start + (targetNum - start) * eased;
       el.textContent = Number.isFinite(current) ? formatter(current) : '-';
       if (t < 1) {
-        animFrame = requestAnimationFrame(tick);
+        animFrames[id] = requestAnimationFrame(tick);
       } else {
+        el.textContent = formatter(targetNum);
+        delete animFrames[id];
         el.classList.remove('pulse');
         void el.offsetWidth;
         el.classList.add('pulse');
       }
     }
 
-    animFrame = requestAnimationFrame(tick);
+    animFrames[id] = requestAnimationFrame(tick);
   }
 
   function setMetricText(id, value, cls) {
@@ -465,7 +492,8 @@
   function bindInput(key, cfg) {
     const input = $(cfg.el);
     const slider = $(cfg.slider);
-    const display = $(cfg.el + 'Display');
+    const displayId = cfg.el.slice(1) + 'Display';
+    const display = $('#' + displayId);
     if (!input || !slider) return;
 
     const formatDisplay = (val) => {
@@ -520,7 +548,7 @@
     for (const [key, cfg] of Object.entries(inputs)) {
       const sync = bindInput(key, cfg);
       const startVal = urlValues[key] ?? cfg.default;
-      sync(startVal, true);
+      if (sync) sync(startVal, true);
     }
 
     setCashPurchase(!!urlValues.cashPurchase, true);
