@@ -568,6 +568,71 @@
   font-weight: 500;
 }
 
+.metric-sub.positive-text { color: #059669; font-weight: 600; }
+.metric-sub.negative-text { color: #dc2626; font-weight: 600; }
+
+/* ── Fix & Flip theme ─────────────────────────────────────────── */
+.calc-section.flip-section {
+  background: linear-gradient(160deg, #1a0f14 0%, #2d1520 35%, #1e293b 100%);
+}
+
+.calc-section.flip-section .calc-header h3,
+.calc-section.flip-section .calc-panel h4 {
+  color: #fce7f3;
+}
+
+.calc-section.flip-section .calc-header p {
+  color: #cbd5e1;
+}
+
+.calc-section.flip-section .calc-badge.flip-badge {
+  background: linear-gradient(135deg, #be123c, #f43f5e);
+}
+
+.calc-section.flip-section .calc-panel {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.calc-section.flip-section .chart-wrap h5 {
+  color: #fce7f3;
+}
+
+.calc-section.flip-section .chart-desc {
+  color: #94a3b8;
+}
+
+.intro-block {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.intro-block p {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: #444;
+  margin-bottom: 1.1rem;
+}
+
+.intro-block p:last-child {
+  margin-bottom: 0;
+}
+
+.hero-lead {
+  font-size: 1.35rem;
+  max-width: 760px;
+  margin: 0 auto 1rem;
+  line-height: 1.65;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+  opacity: 0.92;
+}
+
 .metric-value.pulse {
   animation: valuePulse 0.35s ease;
 }
@@ -592,6 +657,7 @@ body {
 #mission,
 #current-work,
 #projects,
+#fix-flip-calculator,
 #contact {
   scroll-margin-top: 72px;
 }
