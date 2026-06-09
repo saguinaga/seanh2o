@@ -1,1 +1,519 @@
-PLACEHOLDER
+@import url('files/main_style.css');
+
+/* ── Buy & Hold Calculator ─────────────────────────────────── */
+.calc-section {
+  padding: 80px 24px;
+  background: linear-gradient(160deg, #f0f4f8 0%, #e8eef5 50%, #f5f0eb 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.calc-section::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(30, 58, 138, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.calc-section::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -60px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.calc-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.calc-header h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.5rem;
+  color: #0e4361;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.calc-header p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  line-height: 1.7;
+}
+
+.calc-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calc-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 32px rgba(14, 67, 97, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.calc-panel h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  color: #1b597c;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.cash-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  user-select: none;
+}
+
+.cash-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #1e3a8a;
+  cursor: pointer;
+}
+
+.cash-toggle-hint {
+  font-weight: 500;
+  color: #64748b;
+}
+
+.financing-fields.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.input-group label .value-display {
+  font-size: 0.95rem;
+  color: #1e3a8a;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.input-group input[type="range"] {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #e2e8f0;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.input-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.input-group input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.input-group input[type="number"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #1a202c;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input[type="number"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 500px) {
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Results ─────────────────────────────────────────────────── */
+.results-panel {
+  grid-column: 1 / -1;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.metric-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #e8edf2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: metricFadeIn 0.5s ease both;
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(14, 67, 97, 0.1);
+}
+
+.metric-card.positive .metric-value { color: #059669; }
+.metric-card.negative .metric-value { color: #dc2626; }
+.metric-card.neutral .metric-value { color: #1e3a8a; }
+.metric-card.accent .metric-value { color: #d97706; }
+
+.metric-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.metric-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.metric-sub {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+@keyframes metricFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chart-wrap {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e8edf2;
+  margin-bottom: 24px;
+}
+
+.chart-wrap h5 {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.breakdown-table th,
+.breakdown-table td {
+  padding: 10px 14px;
+  text-align: right;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.breakdown-table th {
+  text-align: left;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.breakdown-table td {
+  font-variant-numeric: tabular-nums;
+  color: #1a202c;
+}
+
+.breakdown-table tr:last-child td {
+  font-weight: 700;
+  color: #1e3a8a;
+  border-bottom: none;
+}
+
+.breakdown-table .income { color: #059669; }
+.breakdown-table .expense { color: #dc2626; }
+
+.verdict-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  animation: metricFadeIn 0.6s ease both;
+}
+
+.verdict-banner.good {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #a7f3d0;
+}
+
+.verdict-banner.moderate {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 1px solid #fde68a;
+}
+
+.verdict-banner.poor {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1px solid #fecaca;
+}
+
+.verdict-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.verdict-text h5 {
+  font-size: 1.1rem;
+  color: #1a202c;
+  margin-bottom: 4px;
+}
+
+.verdict-text p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.nav-pill {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.nav-pill a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.nav-pill a:hover {
+  text-decoration: underline;
+}
+
+/* ── Toolbar & actions ─────────────────────────────────────── */
+.calc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.calc-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s;
+}
+
+.calc-btn:hover {
+  transform: translateY(-1px);
+}
+
+.calc-btn.primary {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.25);
+}
+
+.calc-btn.primary:hover {
+  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.35);
+}
+
+.calc-btn.ghost {
+  background: #fff;
+  color: #1e3a8a;
+  border: 1.5px solid #cbd5e1;
+}
+
+.calc-btn.ghost:hover {
+  background: #f8fafc;
+}
+
+.calc-toast {
+  font-size: 0.85rem;
+  color: #059669;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.calc-toast.show {
+  opacity: 1;
+}
+
+.chart-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: -8px 0 16px;
+}
+
+/* ── Sensitivity cards ───────────────────────────────────────── */
+.sensitivity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.sensitivity-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.sensitivity-card:hover {
+  transform: translateY(-2px);
+  border-color: #93c5fd;
+}
+
+.sensitivity-card .scenario-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.sensitivity-card .scenario-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sensitivity-card .scenario-delta {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.sensitivity-card .scenario-delta.up { color: #059669; }
+.sensitivity-card .scenario-delta.down { color: #dc2626; }
+.sensitivity-card .scenario-delta.flat { color: #6b7280; }
+
+.sensitivity-card.base {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-color: #93c5fd;
+}
+
+.metric-value.pulse {
+  animation: valuePulse 0.35s ease;
+}
+
+@keyframes valuePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); color: #3b82f6; }
+  100% { transform: scale(1); }
+}
