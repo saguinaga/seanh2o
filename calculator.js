@@ -258,7 +258,7 @@
       if (!isBase) {
         if (delta > 5) { deltaClass = 'up'; deltaText = '+' + fmt(delta) + '/mo vs base'; }
         else if (delta < -5) { deltaClass = 'down'; deltaText = fmt(delta) + '/mo vs base'; }
-        else { deltaText = '≈ unchanged'; }
+        else { deltaText = '~ unchanged'; }
       }
       const valueClass = r.monthlyCashFlow >= 0 ? 'up' : 'down';
       return `
@@ -408,7 +408,7 @@
     const url = buildShareUrl();
     try {
       await navigator.clipboard.writeText(url);
-      showToast('Link copied — share this scenario!');
+      showToast('Link copied - share this scenario!');
     } catch {
       showToast('Copy this URL from the address bar');
       window.prompt('Copy this link:', url);
