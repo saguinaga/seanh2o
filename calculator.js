@@ -1337,6 +1337,15 @@
     // Property lookup helper (Zillow/address → basic price + county tax records)
     setupPropertyLookup();
 
+    // Toggle for the property lookup fields to keep main UI clean
+    const toggleLookup = $('#toggleLookupBtn');
+    const lookupFields = $('#propertyLookupFields');
+    if (toggleLookup && lookupFields) {
+      toggleLookup.addEventListener('click', () => {
+        lookupFields.style.display = lookupFields.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+
     // Named scenarios
     const saveBtn = $('#saveScenario');
     const loadBtn = $('#loadScenario');

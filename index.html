@@ -8,7 +8,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=10">
+    <link rel="stylesheet" href="styles.css?v=11">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
@@ -349,16 +349,19 @@
         <div class="calc-panel">
           <h4>Property &amp; Financing</h4>
 
-          <!-- Property lookup helper for more realistic inputs -->
-          <div class="property-lookup" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px; margin-bottom:12px;">
-            <label style="font-size:0.75rem; font-weight:600; color:#334155;">Address or Zillow/Redfin/Homes.com URL (optional)</label>
-            <div style="display:flex; gap:6px; margin-top:4px;">
-              <input type="text" id="propertyLookupInput" placeholder="123 Main St, Indianapolis or paste listing URL" style="flex:1; font-size:0.85rem; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px;">
-              <button type="button" id="loadPropertyBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:4px 8px;">Load basics</button>
-            </div>
-            <button type="button" id="openTaxRecordsBtn" class="calc-btn ghost" style="margin-top:6px; font-size:0.7rem; padding:3px 8px;">Open county tax records (for accurate taxes)</button>
-            <div style="font-size:0.65rem; color:#64748b; margin-top:4px;">
-              We'll try to grab the listed price. For real property taxes, jump to the public county assessor site.
+          <!-- Property lookup helper for more realistic inputs (click to expand) -->
+          <div class="property-lookup" style="margin-bottom:8px;">
+            <button type="button" id="toggleLookupBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:3px 8px;">Load from Zillow/Redfin/Homes.com for realistic tax & insurance</button>
+            <div id="propertyLookupFields" style="display:none; margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px;">
+              <label style="font-size:0.75rem; font-weight:600; color:#334155;">Address or listing URL</label>
+              <div style="display:flex; gap:6px; margin-top:4px;">
+                <input type="text" id="propertyLookupInput" placeholder="123 Main St or paste URL" style="flex:1; font-size:0.85rem; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px;">
+                <button type="button" id="loadPropertyBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:4px 8px;">Load</button>
+              </div>
+              <button type="button" id="openTaxRecordsBtn" class="calc-btn ghost" style="margin-top:6px; font-size:0.7rem; padding:3px 8px;">Open county tax records</button>
+              <div style="font-size:0.65rem; color:#64748b; margin-top:4px;">
+                Loads price if found. Use county site for exact taxes.
+              </div>
             </div>
           </div>
 
@@ -874,7 +877,7 @@
     </footer>
 
     <script src="calculator.js?v=16"></script>
-    <script src="flip-calculator.js?v=3"></script>
+    <script src="flip-calculator.js?v=5"></script>
     <script>
       (function () {
         var toggle = document.getElementById('navToggle');
