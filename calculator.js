@@ -597,10 +597,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return base + '?' + params.toString() + calcHash();
   }
 
-  function sanitizeUrlParams() {
+function sanitizeUrlParams() {
     const params = new URLSearchParams(window.location.search);
     let dirty = false;
-
     for (const short of Object.values(URL_KEYS)) {
       if (!params.has(short)) continue;
       const raw = params.get(short);
@@ -609,14 +608,11 @@ document.addEventListener('DOMContentLoaded', () => {
         dirty = true;
       }
     }
-
     if (params.has('cash') && params.get('cash') !== '0' && params.get('cash') !== '1') {
       params.delete('cash');
       dirty = true;
     }
-
     if (!dirty) return;
-
     const clean = params.toString();
     const base = window.location.href.split('#')[0].split('?')[0];
     const hash = window.location.hash || calcHash();
@@ -625,53 +621,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadFromUrl() {
     const urlParams = new URLSearchParams(window.location.hash.slice(1));
-    const urlValues = Object.fromEntries(urlParams.entries());
-    return urlValues;
+    return Object.fromEntries(urlParams.entries());
 }
-
-const inputs = {
-    purchasePrice: {
-        key: 'purchase-price',
-        default: 500000
-    },
-    annualRent: {
-        key: 'annual-rent',
-        default: 30000
-    },
-    vacancyRate: {
-        key: 'vacancy-rate',
-        default: 10
-    },
-    maintenanceCosts: {
-        key: 'maintenance-costs',
-        default: 2400
-    },
-    propertyTaxes: {
-        key: 'property-taxes',
-        default: 6000
-    },
-    insurance: {
-        key: 'insurance',
-        default: 1200
-    },
-    managementFees: {
-        key: 'management-fees',
-        default: 9600
-    }
-};
+// const inputs = {   ← already declared above
+//inputs = {
+//const inputs = {
+//    purchasePrice: { key: 'purchase-price', default: 500000 },
+//    annualRent: { key: 'annual-rent', default: 30000 },
+//    vacancyRate: { key: 'vacancy-rate', default: 10 },
+//    maintenanceCosts: { key: 'maintenance-costs', default: 2400 },
+//    propertyTaxes: { key: 'property-taxes', default: 6000 },
+//    insurance: { key: 'insurance', default: 1200 },
+//    managementFees: { key: 'management-fees', default: 9600 }
+//};
 
 function bindInput(key, cfg) {
     const input = document.getElementById(cfg.key);
     if (!input) return null;
 
-    // Bind initial value from URL or local storage
-    const startVal = loadFromUrl()[key] !== undefined ? loadFromUrl()[key] : cfg.default;
+    const urlValues = loadFromUrl();
+    const startVal = urlValues[key] !== undefined ? urlValues[key] : cfg.default;
     input.value = startVal;
 
-    // Event listener to keep the input synchronized with its value
-    const sync = (value, init) => {
-        if (!init && value === input.value) return; // Avoid redundant updates
-
+    const sync = (value, init = false) => {
+        if (!init && value === input.value) return;
         input.value = value;
     };
     return sync;
@@ -681,14 +654,11 @@ function init() {
     const urlValues = loadFromUrl();
     for (const [key, cfg] of Object.entries(inputs)) {
         const sync = bindInput(key, cfg);
-        if (sync) sync(urlValues[key], true); // Initialize with URL values
+        if (sync) sync(urlValues[key], true);
     }
 }
 
-// Listen for DOMContentLoaded and load events
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-});
+document.addEventListener('DOMContentLoaded', init);
 
   function updateFinancingUI(cash) {
     const wrap = $('#financingFields');
@@ -1511,3 +1481,7 @@ window.loadSavedScenarioByName = function(name) {
     const v = document.getElementById('comparisonView') || (typeof $ !== 'undefined' ? $('#comparisonView')[0] : null);
     if (v) v.style.display = 'none';
 };
+// === SAFETY FIXES - ADD AT VERY BOTTOM ===
+if (typeof inputs !== 'undefined') {
+    console.warn("inputs already exists - reusing");
+}
