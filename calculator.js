@@ -370,29 +370,29 @@
       '<tr><th>Insurance</th><td class="expense">-' + fmt(r.v.insurance) + '</td></tr>' +
       '<tr><th>Maintenance (' + pct(r.v.maintenance) + ')</th><td class="expense">-' + fmt(r.maintenanceCost) + '</td></tr>' +
       '<tr><th>Property Management (' + pct(r.v.management) + ')</th><td class="expense">-' + fmt(r.managementCost) + '</td></tr>' +
-      '<tr><th>HOA Fees</th><td class="expense">-' + fmt(r.hoaAnnual) + '</td></tr>' +
-      '<tr><th>Net Operating Income</th><td>' + fmt(r.noi) + '</td></tr>' +
+      '<tr><th><abbr title="Homeowners Association">HOA</abbr> Fees</th><td class="expense">-' + fmt(r.hoaAnnual) + '</td></tr>' +
+      '<tr><th>Net Operating Income (<abbr title="Net Operating Income — effective rent minus all operating expenses before any mortgage payments.">NOI</abbr>)</th><td>' + fmt(r.noi) + '</td></tr>' +
       '<tr><th>Mortgage Payment (annual)</th><td class="expense">' + (r.cash ? 'None (cash purchase)' : '-' + fmt(r.annualDebtService)) + '</td></tr>' +
       '<tr><th>Annual Cash Flow</th><td class="' + (r.annualCashFlow >= 0 ? 'income' : 'expense') + '">' + fmt(r.annualCashFlow) + '</td></tr>' +
       '<tr><th colspan="2" class="breakdown-section">Investor Ratios</th></tr>' +
-      '<tr><th>Gross Rent Multiplier (GRM)</th><td>' + (r.grm > 0 ? r.grm.toFixed(1) + 'x' : '0.0x') + '</td></tr>' +
+      '<tr><th>Gross Rent Multiplier (<abbr title="Gross Rent Multiplier — purchase price / annual gross rent. Lower is usually better.">GRM</abbr>)</th><td>' + (r.grm > 0 ? r.grm.toFixed(1) + 'x' : '0.0x') + '</td></tr>' +
       '<tr><th>Gross Yield</th><td>' + pct(r.grossYield) + '</td></tr>' +
       '<tr><th>Operating Expense Ratio</th><td>' + pct(r.opexRatio) + ' <span class="breakdown-hint">(50% rule: ~50%)</span></td></tr>' +
       '<tr><th>1% Rule (rent / price)</th><td class="' + (r.onePctRule >= 1 ? 'income' : 'expense') + '">' + pct(r.onePctRule, 2) + '</td></tr>' +
       '<tr><th>Break-Even Occupancy</th><td>' + pct(r.breakEvenOccupancy) + '</td></tr>' +
-      '<tr><th>DSCR (NOI / debt service)</th><td>' + (r.cash ? 'N/A (cash)' : (r.dscr > 0 ? r.dscr.toFixed(2) + 'x' : '0.00x')) + '</td></tr>' +
-      '<tr><th>Loan-to-Value (LTV)</th><td>' + (r.cash ? '0% (cash)' : pct(r.ltv)) + '</td></tr>' +
+      '<tr><th><abbr title="Debt Service Coverage Ratio — NOI / annual debt service. Lenders often require 1.25x+.">DSCR</abbr> (<abbr title="Net Operating Income">NOI</abbr> / debt service)</th><td>' + (r.cash ? 'N/A (cash)' : (r.dscr > 0 ? r.dscr.toFixed(2) + 'x' : '0.00x')) + '</td></tr>' +
+      '<tr><th>Loan-to-Value (<abbr title="Loan-to-Value — loan balance / property value. Lower LTV = less leverage/risk.">LTV</abbr>)</th><td>' + (r.cash ? '0% (cash)' : pct(r.ltv)) + '</td></tr>' +
       '<tr><th>Year 1 Principal Paydown</th><td class="income">' + fmt(r.principalPaydownY1) + '</td></tr>' +
-      '<tr><th>IRR (hold + exit)</th><td>' + pct(r.irrPct) + '</td></tr>' +
+      '<tr><th><abbr title="Internal Rate of Return — annualized return considering timing of all cash flows and the exit.">IRR</abbr> (hold + exit)</th><td>' + pct(r.irrPct) + '</td></tr>' +
       '<tr><th>Equity Multiple</th><td>' + (r.equityMultiple > 0 ? r.equityMultiple.toFixed(2) + 'x' : '0.00x') + '</td></tr>';
   }
 
   function benchmarkStatus(kind, value, r) {
     if (kind === 'dscr') {
       if (r.cash) return { cls: 'neutral', note: 'Cash purchase — no debt service' };
-      if (value >= 1.25) return { cls: 'pass', note: 'Strong — many DSCR lenders prefer 1.25+' };
-      if (value >= 1.0) return { cls: 'warn', note: 'Meets 1.0 minimum — borderline for DSCR loans' };
-      return { cls: 'fail', note: 'Below 1.0 — may not qualify for DSCR financing' };
+      if (value >= 1.25) return { cls: 'pass', note: 'Strong — many <abbr title="Debt Service Coverage Ratio">DSCR</abbr> lenders prefer 1.25+' };
+      if (value >= 1.0) return { cls: 'warn', note: 'Meets 1.0 minimum — borderline for <abbr title="Debt Service Coverage Ratio">DSCR</abbr> loans' };
+      return { cls: 'fail', note: 'Below 1.0 — may not qualify for <abbr title="Debt Service Coverage Ratio">DSCR</abbr> financing' };
     }
     if (kind === 'onePct') {
       if (value >= 1) return { cls: 'pass', note: 'Passes 1% rule — strong rent vs price' };
@@ -431,16 +431,16 @@
 
     const dscrVal = r.cash ? 'N/A' : (r.dscr > 0 ? r.dscr.toFixed(2) + 'x' : '0.00x');
     const cards = [
-      benchmarkCard('DSCR', dscrVal, 'dscr', r.dscr || 0, r),
+      benchmarkCard('<abbr title="Debt Service Coverage Ratio">DSCR</abbr>', dscrVal, 'dscr', r.dscr || 0, r),
       benchmarkCard('1% Rule', pct(r.onePctRule, 2), 'onePct', r.onePctRule, r),
       benchmarkCard('50% Rule (OpEx)', pct(r.opexRatio), 'opex', r.opexRatio, r),
       benchmarkCard('Break-Even Occupancy', pct(r.breakEvenOccupancy), 'breakEven', r.breakEvenOccupancy, r),
-      benchmarkCard('Gross Rent Multiplier', (r.grm > 0 ? r.grm.toFixed(1) : '0.0') + 'x', 'neutral', 0, r),
+      benchmarkCard('Gross Rent Multiplier (<abbr title="Gross Rent Multiplier">GRM</abbr>)', (r.grm > 0 ? r.grm.toFixed(1) : '0.0') + 'x', 'neutral', 0, r),
       benchmarkCard('Gross Yield', pct(r.grossYield), 'neutral', 0, r),
-      benchmarkCard('IRR (hold + sale)', pct(r.irrPct), 'irr', r.irrPct, r),
+      benchmarkCard('<abbr title="Internal Rate of Return">IRR</abbr> (hold + sale)', pct(r.irrPct), 'irr', r.irrPct, r),
       benchmarkCard('Equity Multiple', (r.equityMultiple > 0 ? r.equityMultiple.toFixed(2) : '0.00') + 'x', 'neutral', 0, r),
       benchmarkCard('Rent / $100k Price', fmt(r.rentPer100k), 'neutral', 0, r),
-      benchmarkCard('LTV', r.cash ? '0%' : pct(r.ltv), 'neutral', 0, r),
+      benchmarkCard('<abbr title="Loan-to-Value">LTV</abbr>', r.cash ? '0%' : pct(r.ltv), 'neutral', 0, r),
       benchmarkCard('Year 1 Principal Paydown', fmt(r.principalPaydownY1), 'neutral', 0, r),
       benchmarkCard('Monthly Outflow', fmt(r.monthlyTotalOutflow), 'neutral', 0, r),
     ];
@@ -848,7 +848,7 @@
       `Down Payment: ${v.downPayment}% (${fmt(r.downAmount)})   |   Interest: ${v.interestRate}%   |   Term: ${v.loanTerm} yr`,
       `Monthly Rent: ${fmt(v.monthlyRent)}   |   Vacancy: ${v.vacancyRate}%   |   Holding: ${v.holdingYears} yr`,
       `Appreciation: ${v.appreciation}%   |   Prop Tax: ${fmt(v.propertyTax)}/yr   |   Ins: ${fmt(v.insurance)}/yr`,
-      `HOA: ${fmt(v.hoa)}/mo   |   Maint: ${v.maintenance}%   |   Mgmt: ${v.management}%`,
+      `<abbr title="Homeowners Association">HOA</abbr>: ${fmt(v.hoa)}/mo   |   Maint: ${v.maintenance}%   |   Mgmt: ${v.management}%`,
     ];
     inputLines.forEach(line => { doc.text(line, 40, y); y += 14; });
 
@@ -1107,8 +1107,8 @@
           <div style="font-weight:700; margin-bottom:6px; color:#1e3a8a;">${s.label}</div>
           <div style="margin:4px 0;"><strong>Monthly CF:</strong> ${fmt(rr.monthlyCashFlow)}</div>
           <div style="margin:4px 0;"><strong>Cash-on-Cash:</strong> ${pct(rr.cashOnCash)}</div>
-          <div style="margin:4px 0;"><strong>Cap Rate:</strong> ${pct(rr.capRate)}</div>
-          <div style="margin:4px 0;"><strong>Total ROI:</strong> ${pct(rr.roi)}</div>
+          <div style="margin:4px 0;"><strong><abbr title="Capitalization Rate">Cap Rate</abbr>:</strong> ${pct(rr.capRate)}</div>
+          <div style="margin:4px 0;"><strong>Total <abbr title="Return on Investment">ROI</abbr>:</strong> ${pct(rr.roi)}</div>
           <div style="margin:4px 0;"><strong>Annual CF:</strong> ${fmt(rr.annualCashFlow)}</div>
         </div>
       `;

@@ -280,7 +280,7 @@
                         <div style="padding: 28px;">
                             <h3 style="margin-bottom: 12px;">Investor Buy & Hold Calculator</h3>
                             <p style="color: #666; line-height: 1.65;">
-                                Model long-term real estate investments with cash flow, IRR, Cash-on-Cash, taxes, and more.
+                                Model long-term real estate investments with cash flow, <abbr title="Internal Rate of Return">IRR</abbr>, <abbr title="Cash-on-Cash Return">Cash-on-Cash</abbr>, taxes, and more.
                             </p>
                             <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #ecfdf5; color: #0f766e; border-radius: 9999px; font-size: 0.9rem;">
                                 Interactive Tool ->
@@ -364,7 +364,7 @@
             <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
             <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
             <span style="font-size:0.65rem; color:#64748b; margin-left:8px; margin-right:2px;">Compare:</span>
-            <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB SFR</button>
+            <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB <abbr title="Single Family Residence">SFR</abbr></button>
             <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
           </div>
 
@@ -427,7 +427,7 @@
           </div>
           <div class="input-row">
             <div class="input-group">
-              <label>HOA (mo) <span class="value-display" id="hoaDisplay"></span></label>
+              <label><abbr title="Homeowners Association">HOA</abbr> (mo) <span class="value-display" id="hoaDisplay"></span></label>
               <input type="range" id="hoaSlider" min="0" max="1000" step="25">
               <input type="number" id="hoa" min="0" max="1000" step="25">
             </div>
@@ -467,11 +467,11 @@
               <span class="im-value" id="inlineMonthlyCF" data-sign="true">-</span>
             </div>
             <div class="inline-metric">
-              <span class="im-label">Annual NOI</span>
+              <span class="im-label">Annual <abbr title="Net Operating Income — gross rent after vacancy minus operating expenses (taxes, insurance, maintenance, management, HOA), before debt service">NOI</abbr></span>
               <span class="im-value" id="inlineNOI">-</span>
             </div>
             <div class="inline-metric">
-              <span class="im-label">Cash-on-Cash</span>
+              <span class="im-label"><abbr title="Cash-on-Cash Return — annual cash flow divided by the cash you actually invested (down payment + closing costs, etc.)">Cash-on-Cash</abbr></span>
               <span class="im-value" id="inlineCoC" data-sign="true">-</span>
             </div>
           </div>
@@ -485,17 +485,17 @@
             <div class="metric-sub">After all expenses</div>
           </div>
           <div class="metric-card neutral">
-            <div class="metric-label">Cap Rate</div>
+            <div class="metric-label"><abbr title="Capitalization Rate — annual Net Operating Income divided by the purchase price. Measures the property's yield independent of financing.">Cap Rate</abbr></div>
             <div class="metric-value" id="capRate">-</div>
-            <div class="metric-sub">NOI / Purchase Price</div>
+            <div class="metric-sub"><abbr title="Net Operating Income">NOI</abbr> / Purchase Price</div>
           </div>
           <div class="metric-card neutral">
-            <div class="metric-label">Cash-on-Cash</div>
+            <div class="metric-label"><abbr title="Cash-on-Cash Return — annual cash flow divided by the actual cash invested (down payment)">Cash-on-Cash</abbr></div>
             <div class="metric-value" id="cashOnCash">-</div>
             <div class="metric-sub" id="cashOnCashSub">Annual return on down payment</div>
           </div>
           <div class="metric-card accent">
-            <div class="metric-label">Total ROI</div>
+            <div class="metric-label"><abbr title="Return on Investment — total profit (cumulative cash flow + equity buildup from appreciation and principal paydown) divided by cash invested, over the full holding period">Total ROI</abbr></div>
             <div class="metric-value" id="totalROI">-</div>
             <div class="metric-sub">Cash flow + equity gain</div>
           </div>
@@ -542,7 +542,7 @@
         </div>
         <div class="chart-wrap">
           <h5>Compare Rental ROI</h5>
-          <p class="chart-desc">Lender and marketplace benchmarks — DSCR, 1% rule, 50% rule, IRR, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
+          <p class="chart-desc">Lender and marketplace benchmarks — <abbr title="Debt Service Coverage Ratio — NOI divided by annual mortgage payment. Lenders often want 1.25x or higher.">DSCR</abbr>, 1% rule, 50% rule, <abbr title="Internal Rate of Return — the annualized return accounting for the timing of all cash flows and the final sale.">IRR</abbr>, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
           <div class="benchmark-grid" id="benchmarkGrid"></div>
         </div>
         <div class="chart-wrap">
@@ -687,7 +687,7 @@
             <input type="number" id="flipUtilitiesMo" min="0" max="600" step="25">
           </div>
           <div class="input-group">
-            <label>HOA (mo) <span class="value-display" id="flipHoaMoDisplay"></span></label>
+            <label><abbr title="Homeowners Association">HOA</abbr> (mo) <span class="value-display" id="flipHoaMoDisplay"></span></label>
             <input type="range" id="flipHoaMoSlider" min="0" max="400" step="25">
             <input type="number" id="flipHoaMo" min="0" max="400" step="25">
           </div>
@@ -750,12 +750,12 @@
             <div class="metric-sub">Down, closing, carry, interest</div>
           </div>
           <div class="metric-card positive">
-            <div class="metric-label">ROI on Cash</div>
+            <div class="metric-label"><abbr title="Return on Investment on the cash invested in the flip (purchase + rehab + holding costs)">ROI on Cash</abbr></div>
             <div class="metric-value" id="flipRoi">-</div>
             <div class="metric-sub">Return on invested capital</div>
           </div>
           <div class="metric-card accent">
-            <div class="metric-label">Annualized ROI</div>
+            <div class="metric-label"><abbr title="Annualized Return on Investment accounting for the time the capital was tied up">Annualized ROI</abbr></div>
             <div class="metric-value" id="flipAnnualizedRoi">-</div>
             <div class="metric-sub">Scaled to 12-month hold</div>
           </div>

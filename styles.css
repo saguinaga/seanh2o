@@ -823,6 +823,13 @@
   font-style: italic;
 }
 
+/* Tooltips for acronyms */
+abbr {
+  border-bottom: 1px dotted #64748b;
+  cursor: help;
+  text-decoration: none;
+}
+
 
 
 .hoosier-one-liner {
