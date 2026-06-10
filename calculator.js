@@ -100,6 +100,7 @@
       appreciation: 3,
       holdingYears: 10,
       cashPurchase: false,
+      county: 'marion',
     },
     'indy-turnkey': {
       name: 'Indy Turnkey 3/2',
@@ -117,6 +118,7 @@
       appreciation: 3.5,
       holdingYears: 8,
       cashPurchase: false,
+      county: 'marion',
     },
     'lafayette': {
       name: 'Lafayette / College Town',
@@ -134,6 +136,7 @@
       appreciation: 3.2,
       holdingYears: 7,
       cashPurchase: false,
+      county: 'tippecanoe',
     },
     // Secondary "for comparison" markets (kept smaller)
     'hb-sfr': {
@@ -996,9 +999,65 @@
       }
     }
 
+    // Remember county for tax lookup helper
+    window.currentCounty = p.county || 'marion';
+
     // Final render + toast
     render();
     showToast(p.name + ' loaded');
+  }
+
+  // Simple property lookup helper (client-side only, no scraping)
+  function setupPropertyLookup() {
+    const input = $('#propertyLookupInput');
+    const loadBtn = $('#loadPropertyBtn');
+    const taxBtn = $('#openTaxRecordsBtn');
+
+    if (!input || !loadBtn || !taxBtn) return;
+
+    // County search URLs (public assessor / property search sites)
+    const countyUrls = {
+      marion: 'https://www.indy.gov/activity/property-search',
+      tippecanoe: 'https://beacon.schneidercorp.com/?site=TippecanoeIN',
+      default: 'https://www.indy.gov/activity/property-search'
+    };
+
+    loadBtn.addEventListener('click', () => {
+      const val = (input.value || '').trim();
+      if (!val) {
+        showToast('Paste an address or listing URL first');
+        return;
+      }
+
+      // Try to extract a price from the text/URL (very basic)
+      // Zillow/Redfin sometimes show price in the text or path
+      const priceMatch = val.match(/\$?\s?([\d,]{4,})\s?([kK]|000)?/);
+      if (priceMatch) {
+        let price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+        if (priceMatch[2] && /k/i.test(priceMatch[2])) price *= 1000;
+        if (price > 10000 && syncFns.purchasePrice) {
+          syncFns.purchasePrice(price, false);
+          showToast('Price loaded from link/text');
+        }
+      } else {
+        showToast('No price found in the text — copy the price from the listing and paste it above');
+      }
+
+      // Optional: if it looks like a Zillow URL, we could try to note it
+      if (/zillow|redfin|homes\.com/i.test(val)) {
+        showToast('Listing detected — price pulled if present. Use county button for taxes.');
+      }
+    });
+
+    taxBtn.addEventListener('click', () => {
+      const county = window.currentCounty || 'marion';
+      const url = countyUrls[county] || countyUrls.default;
+      window.open(url, '_blank');
+      showToast('Opened county property search — enter the address there to find exact tax history');
+    });
+
+    // Default county
+    window.currentCounty = 'marion';
   }
 
   // ===== Named Scenario Save / Load (localStorage) =====
@@ -1200,6 +1259,9 @@
     if (compareBtn) {
       compareBtn.addEventListener('click', showComparison);
     }
+
+    // Property lookup helper (Zillow/address → basic price + county tax records)
+    setupPropertyLookup();
 
     // Named scenarios
     const saveBtn = $('#saveScenario');
