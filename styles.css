@@ -80,7 +80,8 @@
 
 /* Buy & Hold specific sidebar layout on desktop - wider sidebar for full screens */
 #buy-hold-calculator .calc-grid {
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: auto 480px;
+  gap: 20px; /* tighter gap between inputs and sidebar */
 }
 
 #buy-hold-calculator .input-panels {
@@ -88,10 +89,13 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-width: 680px; /* constrain input width so main area doesn't have excessive empty space on full screens */
 }
 
 #buy-hold-calculator .results-panel {
   align-self: start;
+  /* sidebar content can have slightly less padding for more room on right */
+  padding: 14px 16px;
 }
 
 /* Fix & Flip: flexible multi-column on wide screens to use full width, avoid horizontal scroll */
@@ -106,10 +110,10 @@
   .calc-grid {
     max-width: 1800px;
     padding: 0 48px;
-    gap: 32px;
   }
   #buy-hold-calculator .calc-grid {
-    grid-template-columns: 1fr 460px;
+    grid-template-columns: auto 500px;
+    gap: 24px;
   }
   #fix-flip-calculator .calc-grid {
     gap: 28px;
