@@ -623,42 +623,8 @@ function loadFromUrl() {
     const urlParams = new URLSearchParams(window.location.hash.slice(1));
     return Object.fromEntries(urlParams.entries());
 }
-// const inputs = {   ← already declared above
-//inputs = {
-//const inputs = {
-//    purchasePrice: { key: 'purchase-price', default: 500000 },
-//    annualRent: { key: 'annual-rent', default: 30000 },
-//    vacancyRate: { key: 'vacancy-rate', default: 10 },
-//    maintenanceCosts: { key: 'maintenance-costs', default: 2400 },
-//    propertyTaxes: { key: 'property-taxes', default: 6000 },
-//    insurance: { key: 'insurance', default: 1200 },
-//    managementFees: { key: 'management-fees', default: 9600 }
-//};
 
-function bindInput(key, cfg) {
-    const input = document.getElementById(cfg.key);
-    if (!input) return null;
 
-    const urlValues = loadFromUrl();
-    const startVal = urlValues[key] !== undefined ? urlValues[key] : cfg.default;
-    input.value = startVal;
-
-    const sync = (value, init = false) => {
-        if (!init && value === input.value) return;
-        input.value = value;
-    };
-    return sync;
-}
-
-function init() {
-    const urlValues = loadFromUrl();
-    for (const [key, cfg] of Object.entries(inputs)) {
-        const sync = bindInput(key, cfg);
-        if (sync) sync(urlValues[key], true);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', init);
 
   function updateFinancingUI(cash) {
     const wrap = $('#financingFields');
@@ -1227,16 +1193,7 @@ document.addEventListener('DOMContentLoaded', init);
     }
   }
 
-  function showComparison() {
-    const view = $('#comparisonView');
-    const selector = $('#comparisonSelector');
-    const grid = $('#comparisonGrid');
-    if (!view || !selector || !grid) return;
 
-    if (view.style.display === 'block') {
-      view.style.display = 'none';
-      return;
-    }
 
     const allSaved = getSavedScenarios();
     const savedNames = Object.keys(allSaved).sort();
