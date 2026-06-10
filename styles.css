@@ -712,6 +712,58 @@
   font-size: 0.8rem;
 }
 
+/* Inline dynamics — metrics placed right next to the sliders so users feel the cause-and-effect immediately */
+.inline-dynamics {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: rgba(30, 58, 138, 0.04);
+  border: 1px solid rgba(30, 58, 138, 0.12);
+  border-radius: 10px;
+}
+.inline-dynamics-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.inline-metrics-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.inline-metric {
+  flex: 1;
+  min-width: 110px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+}
+.inline-metric .im-label {
+  display: block;
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+.inline-metric .im-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0e4361;
+  font-variant-numeric: tabular-nums;
+}
+.inline-metric .im-value.positive { color: #059669; }
+.inline-metric .im-value.negative { color: #dc2626; }
+.inline-note {
+  margin-top: 6px;
+  font-size: 0.68rem;
+  color: #475569;
+  font-style: italic;
+}
+
 /* Light theme presets for Buy & Hold (blue calculator) */
 #buyholdPresets .preset-chip {
   padding: 6px 12px;

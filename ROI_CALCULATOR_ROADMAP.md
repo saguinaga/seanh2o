@@ -2,8 +2,9 @@
 
 ## Current Status (June 2026 — updated)
 - Live on site with solid core functionality and Chart.js visuals
-- Good for demo / personal branding
-- Near-term wins implemented in this session (cash UX, exports, OC/HB presets, disclaimers, named save/load)
+- Strong Indiana (Marion County / Indy area) focus with realistic local presets
+- Key outcome metrics now appear inline with the sliders themselves so users immediately feel the cause-and-effect as they drag
+- Near-term wins implemented (cash UX, exports, Indiana-first presets, disclaimers, named save/load)
 
 ## Near-Term Wins (Completed this session)
 - [x] Fix cash purchase UX (disable loan fields when selected + strong visual treatment, 100% equity indicator, label updates)
@@ -34,10 +35,12 @@
 4. Commit to `seanh2o` repo with clear message
 5. Update this roadmap + test on http://localhost or the live domain
 
-## Notes from latest session
-- All changes made directly in `seanh2o/` (index.html, calculator.js, styles.css)
-- Local python http.server can be used on rig: `cd seanh2o && python -m http.server 8787`
-- Multiple cloudflared / Open WebUI available on the rig for any heavy local LLM-assisted coding if desired in future turns
-- jsPDF is pulled from CDN for zero-dependency PDF export
+## Notes from latest session (Indiana + inline dynamics focus)
+- Shifted primary presets to Indiana markets: Marion County (default value play), Indy Turnkey 3/2, Lafayette/College Town. Coastal CA presets kept but de-emphasized under "Compare".
+- Added prominent "Live impact of rent & expenses" block directly under the Income & Expenses sliders showing Monthly Cash Flow, Annual NOI, and Cash-on-Cash updating in real time.
+- Added tiny "Loan amount / Monthly P&I" readouts right next to the purchase price + financing controls.
+- This makes the dynamics visceral — drag rent or maintenance and the cash flow number right there in the form reacts instantly.
+- Updated scenario name example to "Indy Duplex Deal".
+- All changes in `seanh2o/` + pushed. Refresh local server (`python -m http.server 8787` in the folder) or wait for GitHub Pages.
 
-Next priorities: side-by-side comparison or interactive table?
+Next priorities: side-by-side scenario comparison or interactive yearly projections table?

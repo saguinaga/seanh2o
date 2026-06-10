@@ -326,7 +326,7 @@
     <div class="calc-header">
       <span class="calc-badge">Free Tool</span>
       <h3>Buy &amp; Hold Calculator</h3>
-      <p>Model rental property investments in real time. Defaults reflect a solid Marion County, IN investor rental (~$175k 3-bed). Adjust sliders to match your deal.</p>
+      <p>Model rental property investments in real time. Defaults are based on real Marion County, IN investor deals (value-add / turnkey 3-beds in the Indianapolis area). Indiana presets first — coastal examples are only for comparison. Drag anything and watch the cash flow and returns update live right next to the inputs.</p>
       <div class="calc-toolbar">
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
@@ -336,7 +336,7 @@
       </div>
 
       <div class="saved-scenarios" style="margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. HB Target Deal)" style="flex:1; min-width:220px; max-width:320px; padding:7px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)" style="flex:1; min-width:220px; max-width:320px; padding:7px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
         <button type="button" class="calc-btn ghost" id="saveScenario" style="padding:6px 12px; font-size:0.8rem;">Save</button>
         <select id="savedScenarioSelect" style="min-width:180px; padding:6px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;"></select>
         <button type="button" class="calc-btn ghost" id="loadScenario" style="padding:6px 12px; font-size:0.8rem;">Load</button>
@@ -356,11 +356,14 @@
           <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
         </label>
 
-        <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px;">
-          <span style="font-size:0.7rem; color:#64748b; align-self:center; margin-right:4px;">OC Presets:</span>
-          <button type="button" class="preset-chip" data-preset="hb-sfr">Huntington Beach SFR</button>
-          <button type="button" class="preset-chip" data-preset="oc-condo">OC Condo / Townhome</button>
-          <button type="button" class="preset-chip" data-preset="hb-cash">HB All-Cash Target</button>
+        <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+          <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Indiana Presets:</span>
+          <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
+          <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
+          <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
+          <span style="font-size:0.65rem; color:#64748b; margin-left:8px; margin-right:2px;">Compare:</span>
+          <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB SFR</button>
+          <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
         </div>
 
         <div id="financingFields" class="financing-fields">
@@ -381,6 +384,12 @@
             <input type="range" id="loanTermSlider" min="10" max="30" step="1">
             <input type="number" id="loanTerm" min="10" max="30" step="1">
           </div>
+        </div>
+
+        <!-- Tiny financing outcome right with the price + loan sliders -->
+        <div class="inline-finance-impact" style="margin: 6px 0 2px; font-size:0.74rem; display:flex; gap:14px; color:#334155;">
+          <div><strong>Loan amount:</strong> <span id="inlineLoanAmount">-</span></div>
+          <div><strong>Monthly P&amp;I:</strong> <span id="inlineMortgage">-</span></div>
         </div>
       </div>
       <div class="calc-panel">
@@ -425,6 +434,26 @@
             <input type="range" id="managementSlider" min="0" max="15" step="0.5">
             <input type="number" id="management" min="0" max="15" step="0.5">
           </div>
+        </div>
+
+        <!-- Inline live metrics right with the income/expense sliders to show real-time dynamics -->
+        <div class="inline-dynamics">
+          <div class="inline-dynamics-label">Live impact of rent &amp; expenses</div>
+          <div class="inline-metrics-row">
+            <div class="inline-metric">
+              <span class="im-label">Monthly Cash Flow</span>
+              <span class="im-value" id="inlineMonthlyCF" data-sign="true">-</span>
+            </div>
+            <div class="inline-metric">
+              <span class="im-label">Annual NOI</span>
+              <span class="im-value" id="inlineNOI">-</span>
+            </div>
+            <div class="inline-metric">
+              <span class="im-label">Cash-on-Cash</span>
+              <span class="im-value" id="inlineCoC" data-sign="true">-</span>
+            </div>
+          </div>
+          <div class="inline-note">Drag the sliders above — watch these numbers move in real time.</div>
         </div>
       </div>
       <div class="calc-panel">

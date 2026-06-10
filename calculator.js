@@ -79,8 +79,61 @@
   ];
 
   const BUYHOLD_PRESETS = {
+    // Indiana-focused presets (primary emphasis)
+    'marion-default': {
+      name: 'Marion County (Default)',
+      purchasePrice: 175000,
+      downPayment: 25,
+      interestRate: 6.75,
+      loanTerm: 30,
+      monthlyRent: 1495,
+      vacancyRate: 6,
+      propertyTax: 2250,
+      insurance: 1075,
+      hoa: 0,
+      maintenance: 2.5,
+      management: 9,
+      appreciation: 3,
+      holdingYears: 10,
+      cashPurchase: false,
+    },
+    'indy-turnkey': {
+      name: 'Indy Turnkey 3/2',
+      purchasePrice: 265000,
+      downPayment: 20,
+      interestRate: 6.9,
+      loanTerm: 30,
+      monthlyRent: 1850,
+      vacancyRate: 5,
+      propertyTax: 3200,
+      insurance: 1350,
+      hoa: 0,
+      maintenance: 2.0,
+      management: 8,
+      appreciation: 3.5,
+      holdingYears: 8,
+      cashPurchase: false,
+    },
+    'lafayette': {
+      name: 'Lafayette / College Town',
+      purchasePrice: 215000,
+      downPayment: 22,
+      interestRate: 6.6,
+      loanTerm: 30,
+      monthlyRent: 1625,
+      vacancyRate: 7,
+      propertyTax: 2400,
+      insurance: 1150,
+      hoa: 120,
+      maintenance: 2.2,
+      management: 8.5,
+      appreciation: 3.2,
+      holdingYears: 7,
+      cashPurchase: false,
+    },
+    // Secondary "for comparison" markets (kept smaller)
     'hb-sfr': {
-      name: 'Huntington Beach SFR',
+      name: 'Huntington Beach SFR (compare)',
       purchasePrice: 980000,
       downPayment: 25,
       interestRate: 6.9,
@@ -97,7 +150,7 @@
       cashPurchase: false,
     },
     'oc-condo': {
-      name: 'OC Condo / Townhome',
+      name: 'OC Condo (compare)',
       purchasePrice: 625000,
       downPayment: 20,
       interestRate: 6.75,
@@ -112,23 +165,6 @@
       appreciation: 3.8,
       holdingYears: 7,
       cashPurchase: false,
-    },
-    'hb-cash': {
-      name: 'HB All-Cash Target',
-      purchasePrice: 1050000,
-      downPayment: 100,
-      interestRate: 6.9,
-      loanTerm: 30,
-      monthlyRent: 4550,
-      vacancyRate: 4.5,
-      propertyTax: 10500,
-      insurance: 2500,
-      hoa: 0,
-      maintenance: 2.0,
-      management: 7.5,
-      appreciation: 4.0,
-      holdingYears: 10,
-      cashPurchase: true,
     },
   };
 
@@ -646,6 +682,26 @@
     setMetricValue('#capRate', pct(r.capRate), 'neutral');
     setMetricValue('#cashOnCash', pct(r.cashOnCash), r.cashOnCash >= 6 ? 'positive' : r.cashOnCash >= 0 ? 'neutral' : 'negative');
     setMetricValue('#totalROI', pct(r.roi), 'accent');
+
+    // === Inline metrics placed directly with the sliders (show the dynamics live) ===
+    const inlineCF = $('#inlineMonthlyCF');
+    if (inlineCF) {
+      inlineCF.textContent = fmt(r.monthlyCashFlow);
+      inlineCF.className = 'im-value ' + (r.monthlyCashFlow >= 0 ? 'positive' : 'negative');
+    }
+    const inlineNOI = $('#inlineNOI');
+    if (inlineNOI) inlineNOI.textContent = fmt(r.noi);
+    const inlineCoC = $('#inlineCoC');
+    if (inlineCoC) {
+      inlineCoC.textContent = pct(r.cashOnCash);
+      inlineCoC.className = 'im-value ' + (r.cashOnCash >= 6 ? 'positive' : r.cashOnCash >= 0 ? 'neutral' : 'negative');
+    }
+
+    // Financing impact inlines (next to purchase price + loan controls)
+    const inlineLoan = $('#inlineLoanAmount');
+    if (inlineLoan) inlineLoan.textContent = r.cash ? 'None (cash)' : fmt(r.loanAmount);
+    const inlinePI = $('#inlineMortgage');
+    if (inlinePI) inlinePI.textContent = r.cash ? '—' : fmt(r.mortgage);
 
     updateFinancingUI(r.cash);
     updateVerdict(r);
