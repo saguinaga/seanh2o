@@ -76,28 +76,7 @@
   z-index: 1;
 }
 
-/* Stack inputs on left, results on right so key metrics (Monthly Cash Flow etc.) are visible at top while adjusting sliders */
-.calc-panel:not(.results-panel) {
-  grid-column: 1;
-}
-
-.results-panel {
-  grid-column: 2;
-  grid-row: 1 / span 3; /* span the three input panels so top metrics align with top of inputs */
-}
-
-@media (max-width: 900px) {
-  .calc-grid {
-    grid-template-columns: 1fr;
-  }
-  .calc-panel:not(.results-panel) {
-    grid-column: 1;
-  }
-  .results-panel {
-    grid-column: 1;
-    grid-row: auto;
-  }
-}
+/* Reverted to hybrid layout for better flow and single-fold feel. Results below or integrated, with sticky metrics for visibility. */
 
 .calc-panel {
   background: rgba(255, 255, 255, 0.85);
