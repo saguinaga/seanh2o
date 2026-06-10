@@ -67,16 +67,12 @@
 }
 
 .calc-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  display: block;
   max-width: 1100px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
 }
-
-/* Reverted to hybrid layout for better flow and single-fold feel. Results below or integrated, with sticky metrics for visibility. */
 
 .calc-panel {
   background: rgba(255, 255, 255, 0.85);
@@ -247,7 +243,7 @@
 
 /* ── Results ─────────────────────────────────────────────────── */
 .results-panel {
-  grid-column: 1 / -1;
+  /* results now flow naturally after the input panels in the block layout */
 }
 
 .metrics-grid {
