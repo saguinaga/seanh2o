@@ -1,6 +1,6 @@
 // calculator.js
 
-import { loadScenario, saveScenario, deleteScenario } from './model';
+//import { loadScenario, saveScenario, deleteScenario } from './model';
 
 function initializeCalculator() {
     const scenarioId = window.location.hash.slice(1); // Assuming hash is "#buy-hold-calculator/scenario-2"
