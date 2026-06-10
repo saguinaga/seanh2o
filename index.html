@@ -8,7 +8,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=9">
+    <link rel="stylesheet" href="styles.css?v=10">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
@@ -345,99 +345,120 @@
       </div>
     </div>
     <div class="calc-grid">
-      <div class="calc-panel">
-        <h4>Property &amp; Financing</h4>
-        <div class="input-group">
-          <label>Purchase Price <span class="value-display" id="purchasePriceDisplay"></span></label>
-          <input type="range" id="purchasePriceSlider" min="50000" max="2000000" step="5000">
-          <input type="number" id="purchasePrice" min="50000" max="2000000" step="5000">
-        </div>
-        <label class="cash-toggle">
-          <input type="checkbox" id="cashPurchase">
-          <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
-        </label>
+      <div class="input-panels">
+        <div class="calc-panel">
+          <h4>Property &amp; Financing</h4>
+          <div class="input-group">
+            <label>Purchase Price <span class="value-display" id="purchasePriceDisplay"></span></label>
+            <input type="range" id="purchasePriceSlider" min="50000" max="2000000" step="5000">
+            <input type="number" id="purchasePrice" min="50000" max="2000000" step="5000">
+          </div>
+          <label class="cash-toggle">
+            <input type="checkbox" id="cashPurchase">
+            <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
+          </label>
 
-        <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-          <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
-          <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
-          <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
-          <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
-          <span style="font-size:0.65rem; color:#64748b; margin-left:8px; margin-right:2px;">Compare:</span>
-          <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB SFR</button>
-          <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
-        </div>
+          <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+            <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
+            <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
+            <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
+            <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
+            <span style="font-size:0.65rem; color:#64748b; margin-left:8px; margin-right:2px;">Compare:</span>
+            <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB SFR</button>
+            <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
+          </div>
 
-        <div id="financingFields" class="financing-fields">
+          <div id="financingFields" class="financing-fields">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Down Payment <span class="value-display" id="downPaymentDisplay"></span></label>
+                <input type="range" id="downPaymentSlider" min="0" max="50" step="1">
+                <input type="number" id="downPayment" min="0" max="50" step="1">
+              </div>
+              <div class="input-group">
+                <label>Interest Rate <span class="value-display" id="interestRateDisplay"></span></label>
+                <input type="range" id="interestRateSlider" min="2" max="12" step="0.125">
+                <input type="number" id="interestRate" min="2" max="12" step="0.125">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
+              <input type="range" id="loanTermSlider" min="10" max="30" step="1">
+              <input type="number" id="loanTerm" min="10" max="30" step="1">
+            </div>
+          </div>
+
+          <!-- Tiny financing outcome right with the price + loan sliders -->
+          <div class="inline-finance-impact" style="margin: 6px 0 2px; font-size:0.74rem; display:flex; gap:14px; color:#334155;">
+            <div><strong>Loan amount:</strong> <span id="inlineLoanAmount">-</span></div>
+            <div><strong>Monthly P&amp;I:</strong> <span id="inlineMortgage">-</span></div>
+          </div>
+        </div>
+        <div class="calc-panel">
+          <h4>Income &amp; Expenses</h4>
+          <div class="input-group">
+            <label>Monthly Rent <span class="value-display" id="monthlyRentDisplay"></span></label>
+            <input type="range" id="monthlyRentSlider" min="500" max="10000" step="50">
+            <input type="number" id="monthlyRent" min="500" max="10000" step="50">
+          </div>
           <div class="input-row">
             <div class="input-group">
-              <label>Down Payment <span class="value-display" id="downPaymentDisplay"></span></label>
-              <input type="range" id="downPaymentSlider" min="0" max="50" step="1">
-              <input type="number" id="downPayment" min="0" max="50" step="1">
+              <label>Vacancy Rate <span class="value-display" id="vacancyRateDisplay"></span></label>
+              <input type="range" id="vacancyRateSlider" min="0" max="20" step="1">
+              <input type="number" id="vacancyRate" min="0" max="20" step="1">
             </div>
             <div class="input-group">
-              <label>Interest Rate <span class="value-display" id="interestRateDisplay"></span></label>
-              <input type="range" id="interestRateSlider" min="2" max="12" step="0.125">
-              <input type="number" id="interestRate" min="2" max="12" step="0.125">
+              <label>Maintenance <span class="value-display" id="maintenanceDisplay"></span></label>
+              <input type="range" id="maintenanceSlider" min="0" max="15" step="0.5">
+              <input type="number" id="maintenance" min="0" max="15" step="0.5">
             </div>
           </div>
-          <div class="input-group">
-            <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
-            <input type="range" id="loanTermSlider" min="10" max="30" step="1">
-            <input type="number" id="loanTerm" min="10" max="30" step="1">
+          <div class="input-row">
+            <div class="input-group">
+              <label>Property Tax (yr) <span class="value-display" id="propertyTaxDisplay"></span></label>
+              <input type="range" id="propertyTaxSlider" min="0" max="20000" step="100">
+              <input type="number" id="propertyTax" min="0" max="20000" step="100">
+            </div>
+            <div class="input-group">
+              <label>Insurance (yr) <span class="value-display" id="insuranceDisplay"></span></label>
+              <input type="range" id="insuranceSlider" min="0" max="5000" step="50">
+              <input type="number" id="insurance" min="0" max="5000" step="50">
+            </div>
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>HOA (mo) <span class="value-display" id="hoaDisplay"></span></label>
+              <input type="range" id="hoaSlider" min="0" max="1000" step="25">
+              <input type="number" id="hoa" min="0" max="1000" step="25">
+            </div>
+            <div class="input-group">
+              <label>Management Fee <span class="value-display" id="managementDisplay"></span></label>
+              <input type="range" id="managementSlider" min="0" max="15" step="0.5">
+              <input type="number" id="management" min="0" max="15" step="0.5">
+            </div>
           </div>
         </div>
-
-        <!-- Tiny financing outcome right with the price + loan sliders -->
-        <div class="inline-finance-impact" style="margin: 6px 0 2px; font-size:0.74rem; display:flex; gap:14px; color:#334155;">
-          <div><strong>Loan amount:</strong> <span id="inlineLoanAmount">-</span></div>
-          <div><strong>Monthly P&amp;I:</strong> <span id="inlineMortgage">-</span></div>
+        <div class="calc-panel">
+          <h4>Long-Term Projection</h4>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Annual Appreciation <span class="value-display" id="appreciationDisplay"></span></label>
+              <input type="range" id="appreciationSlider" min="0" max="10" step="0.25">
+              <input type="number" id="appreciation" min="0" max="10" step="0.25">
+            </div>
+            <div class="input-group">
+              <label>Holding Period <span class="value-display" id="holdingYearsDisplay"></span></label>
+              <input type="range" id="holdingYearsSlider" min="1" max="30" step="1">
+              <input type="number" id="holdingYears" min="1" max="30" step="1">
+            </div>
+          </div>
         </div>
       </div>
-      <div class="calc-panel">
-        <h4>Income &amp; Expenses</h4>
-        <div class="input-group">
-          <label>Monthly Rent <span class="value-display" id="monthlyRentDisplay"></span></label>
-          <input type="range" id="monthlyRentSlider" min="500" max="10000" step="50">
-          <input type="number" id="monthlyRent" min="500" max="10000" step="50">
-        </div>
-        <div class="input-row">
-          <div class="input-group">
-            <label>Vacancy Rate <span class="value-display" id="vacancyRateDisplay"></span></label>
-            <input type="range" id="vacancyRateSlider" min="0" max="20" step="1">
-            <input type="number" id="vacancyRate" min="0" max="20" step="1">
-          </div>
-          <div class="input-group">
-            <label>Maintenance <span class="value-display" id="maintenanceDisplay"></span></label>
-            <input type="range" id="maintenanceSlider" min="0" max="15" step="0.5">
-            <input type="number" id="maintenance" min="0" max="15" step="0.5">
-          </div>
-        </div>
-        <div class="input-row">
-          <div class="input-group">
-            <label>Property Tax (yr) <span class="value-display" id="propertyTaxDisplay"></span></label>
-            <input type="range" id="propertyTaxSlider" min="0" max="20000" step="100">
-            <input type="number" id="propertyTax" min="0" max="20000" step="100">
-          </div>
-          <div class="input-group">
-            <label>Insurance (yr) <span class="value-display" id="insuranceDisplay"></span></label>
-            <input type="range" id="insuranceSlider" min="0" max="5000" step="50">
-            <input type="number" id="insurance" min="0" max="5000" step="50">
-          </div>
-        </div>
-        <div class="input-row">
-          <div class="input-group">
-            <label>HOA (mo) <span class="value-display" id="hoaDisplay"></span></label>
-            <input type="range" id="hoaSlider" min="0" max="1000" step="25">
-            <input type="number" id="hoa" min="0" max="1000" step="25">
-          </div>
-          <div class="input-group">
-            <label>Management Fee <span class="value-display" id="managementDisplay"></span></label>
-            <input type="range" id="managementSlider" min="0" max="15" step="0.5">
-            <input type="number" id="management" min="0" max="15" step="0.5">
-          </div>
-        </div>
 
-        <!-- Inline live metrics right with the income/expense sliders to show real-time dynamics -->
+      <div class="calc-panel results-panel">
+        <div id="verdictBanner" class="verdict-banner moderate"></div>
+
+        <!-- Live impact moved here for desktop sidebar visibility (real-time while adjusting inputs on left) -->
         <div class="inline-dynamics">
           <div class="inline-dynamics-label">Live impact of rent &amp; expenses</div>
           <div class="inline-metrics-row">
@@ -454,26 +475,9 @@
               <span class="im-value" id="inlineCoC" data-sign="true">-</span>
             </div>
           </div>
-          <div class="inline-note">Drag the sliders above — watch these numbers move in real time.</div>
+          <div class="inline-note">Drag the rent &amp; expenses sliders on the left — watch these numbers move in real time.</div>
         </div>
-      </div>
-      <div class="calc-panel">
-        <h4>Long-Term Projection</h4>
-        <div class="input-row">
-          <div class="input-group">
-            <label>Annual Appreciation <span class="value-display" id="appreciationDisplay"></span></label>
-            <input type="range" id="appreciationSlider" min="0" max="10" step="0.25">
-            <input type="number" id="appreciation" min="0" max="10" step="0.25">
-          </div>
-          <div class="input-group">
-            <label>Holding Period <span class="value-display" id="holdingYearsDisplay"></span></label>
-            <input type="range" id="holdingYearsSlider" min="1" max="30" step="1">
-            <input type="number" id="holdingYears" min="1" max="30" step="1">
-          </div>
-        </div>
-      </div>
-      <div class="calc-panel results-panel">
-        <div id="verdictBanner" class="verdict-banner moderate"></div>
+
         <div class="metrics-grid">
           <div class="metric-card positive">
             <div class="metric-label">Monthly Cash Flow</div>
