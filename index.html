@@ -550,6 +550,15 @@
 
     <!-- Full width analysis sections (these detailed sections like What-If Sensitivity are now full width below the two-column sidebar area for better readability on full-size screens; no longer crammed in the narrow sidebar) -->
     <div class="analysis-sections" style="margin-top: 16px;">
+      <!-- Moved detailed analysis sections to full width below the two-column (inputs + key metrics sidebar) for better readability on full-size screens. Sidebar is now only for live/important numbers. -->
+      <div class="chart-wrap">
+        <h5>Annual Income &amp; Expense Breakdown</h5>
+        <div class="table-scroll">
+          <table class="breakdown-table">
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="chart-wrap">
         <h5>Wealth Projection Over Time</h5>
         <canvas id="wealthChart" height="120"></canvas>
@@ -569,14 +578,6 @@
         <h5>What-If Sensitivity</h5>
         <p class="chart-desc">How monthly cash flow shifts if one variable moves against you.</p>
         <div class="sensitivity-grid" id="sensitivityGrid"></div>
-      </div>
-      <div class="chart-wrap">
-        <h5>Annual Income &amp; Expense Breakdown</h5>
-        <div class="table-scroll">
-          <table class="breakdown-table">
-            <tbody id="breakdownBody"></tbody>
-          </table>
-        </div>
       </div>
     </div>
 
@@ -632,8 +633,9 @@
       </div>
     </div>
     <div class="calc-grid">
-      <div class="calc-panel">
-        <h4>Acquisition &amp; ARV</h4>
+      <div class="input-panels">
+        <div class="calc-panel">
+          <h4>Acquisition &amp; ARV</h4>
         <div class="input-group">
           <label>Purchase Price <span class="value-display" id="flipPurchasePriceDisplay"></span></label>
           <input type="range" id="flipPurchasePriceSlider" min="40000" max="800000" step="5000">
@@ -741,6 +743,7 @@
           <input type="range" id="flipSeventyRulePctSlider" min="60" max="80" step="1">
           <input type="number" id="flipSeventyRulePct" min="60" max="80" step="1">
         </div>
+      </div>
       </div>
       <div class="calc-panel results-panel flip-results">
         <div class="flip-score-row">
