@@ -764,6 +764,93 @@
   font-style: italic;
 }
 
+/* Hoosier Spirit toggle - light, optional fun layer */
+.hoosier-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.hoosier-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #334155;
+  user-select: none;
+}
+
+.hoosier-switch input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.hoosier-slider {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  background: #cbd5e1;
+  border-radius: 999px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.hoosier-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.hoosier-switch input:checked + .hoosier-slider {
+  background: #1e3a8a;
+}
+
+.hoosier-switch input:checked + .hoosier-slider::after {
+  transform: translateX(16px);
+}
+
+.hoosier-label {
+  font-weight: 600;
+}
+
+.silly-preset {
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border: 1px solid #94a3b8;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.silly-preset:hover {
+  background: #e0e7ff;
+  border-color: #64748b;
+}
+
+.hoosier-one-liner {
+  font-size: 0.75rem;
+  color: #475569;
+  font-style: italic;
+  min-height: 1.1em;
+  margin-bottom: 8px;
+  transition: opacity 0.2s;
+}
+
 /* Light theme presets for Buy & Hold (blue calculator) */
 #buyholdPresets .preset-chip {
   padding: 6px 12px;

@@ -168,6 +168,108 @@
     },
   };
 
+  // Hoosier Spirit - light optional layer (core math is never changed)
+  const HOOSIER_ONE_LINERS = [
+    "Steady returns, Hoosier style.",
+    "Numbers holding up like good Indiana farmland.",
+    "Cash flow as reliable as the State Fair.",
+    "Equity building steady, Midwest pace.",
+    "This one's got that classic Hoosier grit.",
+    "Returns looking strong, like a Purdue defense."
+  ];
+
+  function getRandomHoosierLine() {
+    return HOOSIER_ONE_LINERS[Math.floor(Math.random() * HOOSIER_ONE_LINERS.length)];
+  }
+
+  function applyHoosierLuck(r) {
+    // Small random "luck" applied only to displayed values (never the real calc)
+    const luck = (Math.random() * 3.3 - 0.8); // -0.8% to +2.5%
+
+    // Update the inline "Live impact" metrics with luck applied
+    const inlineCF = $('#inlineMonthlyCF');
+    if (inlineCF) {
+      const luckyCF = r.monthlyCashFlow * (1 + luck / 100);
+      inlineCF.textContent = fmt(luckyCF);
+      inlineCF.className = 'im-value ' + (luckyCF >= 0 ? 'positive' : 'negative');
+    }
+
+    const inlineCoC = $('#inlineCoC');
+    if (inlineCoC) {
+      const luckyCoC = r.cashOnCash + luck;
+      inlineCoC.textContent = pct(luckyCoC);
+      inlineCoC.className = 'im-value ' + (luckyCoC >= 6 ? 'positive' : luckyCoC >= 0 ? 'neutral' : 'negative');
+    }
+
+    // Optional light label swaps on the inline section only (keeps main metrics clean)
+    const dynamicsLabel = document.querySelector('.inline-dynamics-label');
+    if (dynamicsLabel) {
+      dynamicsLabel.textContent = 'Live Hoosier impact of rent & expenses';
+    }
+  }
+
+  let lastHoosierLine = '';
+
+  function showHoosierOneLiner() {
+    const el = $('#hoosierOneLiner');
+    if (!el) return;
+    // Only pick a new line occasionally to avoid flicker
+    if (!lastHoosierLine || Math.random() < 0.35) {
+      lastHoosierLine = getRandomHoosierLine();
+    }
+    el.textContent = lastHoosierLine;
+    el.style.opacity = '1';
+  }
+
+  function hideHoosierOneLiner() {
+    const el = $('#hoosierOneLiner');
+    if (el) {
+      el.style.opacity = '0';
+      // clear after fade so it doesn't linger
+      setTimeout(() => { if (el) el.textContent = ''; }, 180);
+    }
+    // restore inline dynamics label
+    const dynamicsLabel = document.querySelector('.inline-dynamics-label');
+    if (dynamicsLabel) {
+      dynamicsLabel.textContent = 'Live impact of rent & expenses';
+    }
+    lastHoosierLine = '';
+  }
+
+  function loadOldBarnPreset() {
+    // Fun Indiana-flavored preset (still realistic numbers)
+    const barnValues = {
+      purchasePrice: 195000,
+      downPayment: 30,
+      interestRate: 6.5,
+      loanTerm: 30,
+      monthlyRent: 1550,
+      vacancyRate: 5.5,
+      propertyTax: 2100,
+      insurance: 1100,
+      hoa: 0,
+      maintenance: 2.3,
+      management: 8,
+      appreciation: 3.4,
+      holdingYears: 9,
+    };
+
+    setCashPurchase(false, true);
+
+    for (const [k, val] of Object.entries(barnValues)) {
+      if (syncFns[k]) syncFns[k](val, true);
+    }
+
+    // Enable the spirit mode
+    const toggle = $('#hoosierModeToggle');
+    if (toggle) {
+      toggle.checked = true;
+    }
+
+    render();
+    showToast('The Old Barn by the Speedway loaded');
+  }
+
   savedDownPayment = inputs.downPayment.default;
 
   function monthlyMortgage(principal, annualRate, years) {
@@ -703,6 +805,19 @@
     const inlinePI = $('#inlineMortgage');
     if (inlinePI) inlinePI.textContent = r.cash ? '—' : fmt(r.mortgage);
 
+    // --- Hoosier Spirit mode (light optional layer, core math untouched) ---
+    const hoosierToggle = $('#hoosierModeToggle');
+    const isHoosier = !!(hoosierToggle && hoosierToggle.checked);
+
+    if (isHoosier) {
+      calcRoot.setAttribute('data-hoosier-active', 'true');
+      applyHoosierLuck(r);
+      showHoosierOneLiner();
+    } else {
+      calcRoot.removeAttribute('data-hoosier-active');
+      hideHoosierOneLiner();
+    }
+
     updateFinancingUI(r.cash);
     updateVerdict(r);
     updateBreakdown(r);
@@ -1096,6 +1211,16 @@
           loadBuyholdPreset(btn.dataset.preset);
         }
       });
+    }
+
+    // Hoosier Spirit toggle & silly preset (light fun layer)
+    const hoosierToggle = $('#hoosierModeToggle');
+    const oldBarnBtn = $('#oldBarnPreset');
+    if (hoosierToggle) {
+      hoosierToggle.addEventListener('change', () => render());
+    }
+    if (oldBarnBtn) {
+      oldBarnBtn.addEventListener('click', loadOldBarnPreset);
     }
 
     // Named scenarios
