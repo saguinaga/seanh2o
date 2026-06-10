@@ -67,11 +67,18 @@
 }
 
 .calc-grid {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   max-width: 1100px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
+}
+
+/* Ensure results panel flows after inputs in visual order */
+.results-panel {
+  order: 4; /* after the three input panels */
 }
 
 .calc-panel {
@@ -243,7 +250,7 @@
 
 /* ── Results ─────────────────────────────────────────────────── */
 .results-panel {
-  /* results now flow naturally after the input panels in the block layout */
+  /* flows after the input panels */
 }
 
 .metrics-grid {
