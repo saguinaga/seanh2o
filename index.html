@@ -540,39 +540,42 @@
           </div>
         </div>
 
-        <div class="chart-wrap">
-          <h5>Wealth Projection Over Time</h5>
-          <canvas id="wealthChart" height="120"></canvas>
-          <div class="chart-legend">
-            <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
-            <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
-            <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
-            <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
-          </div>
-        </div>
-        <div class="chart-wrap">
-          <h5>Compare Rental ROI</h5>
-          <p class="chart-desc">Lender and marketplace benchmarks — <abbr title="Debt Service Coverage Ratio — NOI divided by annual mortgage payment. Lenders often want 1.25x or higher.">DSCR</abbr>, 1% rule, 50% rule, <abbr title="Internal Rate of Return — the annualized return accounting for the timing of all cash flows and the final sale.">IRR</abbr>, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
-          <div class="benchmark-grid" id="benchmarkGrid"></div>
-        </div>
-        <div class="chart-wrap">
-          <h5>What-If Sensitivity</h5>
-          <p class="chart-desc">How monthly cash flow shifts if one variable moves against you.</p>
-          <div class="sensitivity-grid" id="sensitivityGrid"></div>
-        </div>
-        <div class="chart-wrap">
-          <h5>Annual Income &amp; Expense Breakdown</h5>
-          <div class="table-scroll">
-            <table class="breakdown-table">
-              <tbody id="breakdownBody"></tbody>
-            </table>
-          </div>
-        </div>
-
           <div class="disclaimer-box">
             <strong>⚠️ Educational model only — not financial, tax, or legal advice.</strong>
             Real estate involves material risk of loss of principal. Factors include (but are not limited to) negative cash flow, capex surprises, extended vacancy, interest rate / financing risk, natural disasters, tenant issues, regulatory changes, and local price corrections. All projections are simplified models and exclude closing costs, selling costs, income taxes, and many other real-world frictions. OC/HB examples are for illustration only. Do your own thorough due diligence. Consult a licensed real estate attorney, CPA, financial advisor, home inspector, and mortgage professional before investing.
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full width analysis sections (these detailed sections like What-If Sensitivity are now full width below the two-column sidebar area for better readability on full-size screens; no longer crammed in the narrow sidebar) -->
+    <div class="analysis-sections" style="margin-top: 16px;">
+      <div class="chart-wrap">
+        <h5>Wealth Projection Over Time</h5>
+        <canvas id="wealthChart" height="120"></canvas>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
+          <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <h5>Compare Rental ROI</h5>
+        <p class="chart-desc">Lender and marketplace benchmarks — DSCR, 1% rule, 50% rule, IRR, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
+        <div class="benchmark-grid" id="benchmarkGrid"></div>
+      </div>
+      <div class="chart-wrap">
+        <h5>What-If Sensitivity</h5>
+        <p class="chart-desc">How monthly cash flow shifts if one variable moves against you.</p>
+        <div class="sensitivity-grid" id="sensitivityGrid"></div>
+      </div>
+      <div class="chart-wrap">
+        <h5>Annual Income &amp; Expense Breakdown</h5>
+        <div class="table-scroll">
+          <table class="breakdown-table">
+            <tbody id="breakdownBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
