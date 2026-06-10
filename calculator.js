@@ -170,12 +170,12 @@
 
   // Hoosier Spirit - light optional layer (core math is never changed)
   const HOOSIER_ONE_LINERS = [
-    "Steady returns, Hoosier style.",
-    "Numbers holding up like good Indiana farmland.",
+    "Steady returns, Indiana style.",
+    "Numbers holding up like good Midwest farmland.",
     "Cash flow as reliable as the State Fair.",
-    "Equity building steady, Midwest pace.",
-    "This one's got that classic Hoosier grit.",
-    "Returns looking strong, like a Purdue defense."
+    "Equity building steady, classic pace.",
+    "This one's got that solid regional grit.",
+    "Returns looking strong."
   ];
 
   function getRandomHoosierLine() {
