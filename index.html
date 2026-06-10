@@ -415,15 +415,20 @@
           </div>
           <div class="input-row">
             <div class="input-group">
-              <label>Property Tax (yr) <span class="value-display" id="propertyTaxDisplay"></span></label>
-              <input type="range" id="propertyTaxSlider" min="0" max="20000" step="100">
-              <input type="number" id="propertyTax" min="0" max="20000" step="100">
+              <label>Property Tax Rate <span class="value-display" id="propertyTaxRateDisplay"></span></label>
+              <input type="range" id="propertyTaxRateSlider" min="0" max="3" step="0.05">
+              <input type="number" id="propertyTaxRate" min="0" max="3" step="0.05">
+              <div class="computed-note">→ <span id="propertyTaxDisplay">$0</span>/yr (auto from rate × price)</div>
             </div>
             <div class="input-group">
-              <label>Insurance (yr) <span class="value-display" id="insuranceDisplay"></span></label>
-              <input type="range" id="insuranceSlider" min="0" max="5000" step="50">
-              <input type="number" id="insurance" min="0" max="5000" step="50">
+              <label>Insurance Rate <span class="value-display" id="insuranceRateDisplay"></span></label>
+              <input type="range" id="insuranceRateSlider" min="0" max="2" step="0.05">
+              <input type="number" id="insuranceRate" min="0" max="2" step="0.05">
+              <div class="computed-note">→ <span id="insuranceDisplay">$0</span>/yr (auto from rate × price)</div>
             </div>
+          </div>
+          <div style="font-size:0.65rem; color:#64748b; margin: -4px 0 8px;">
+            Rates are % of purchase price. Typical central Indiana: 0.8–1.1% tax, 0.5–0.8% insurance. Changes auto-update the annual amounts.
           </div>
           <div class="input-row">
             <div class="input-group">
@@ -838,7 +843,7 @@
         <p>(c) 2026 Sean Aguinaga | Product in Real Estate Tech</p>
     </footer>
 
-    <script src="calculator.js?v=13"></script>
+    <script src="calculator.js?v=14"></script>
     <script src="flip-calculator.js?v=3"></script>
     <script>
       (function () {

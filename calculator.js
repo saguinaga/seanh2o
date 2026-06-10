@@ -56,8 +56,12 @@
     loanTerm: { el: '#loanTerm', slider: '#loanTermSlider', display: '#loanTermDisplay', min: 10, max: 30, step: 1, default: 30, suffix: ' yr' },
     monthlyRent: { el: '#monthlyRent', slider: '#monthlyRentSlider', display: '#monthlyRentDisplay', min: 500, max: 10000, step: 50, default: 1495 },
     vacancyRate: { el: '#vacancyRate', slider: '#vacancyRateSlider', display: '#vacancyRateDisplay', min: 0, max: 20, step: 1, default: 6, suffix: '%' },
-    propertyTax: { el: '#propertyTax', slider: '#propertyTaxSlider', display: '#propertyTaxDisplay', min: 0, max: 20000, step: 100, default: 2250 },
-    insurance: { el: '#insurance', slider: '#insuranceSlider', display: '#insuranceDisplay', min: 0, max: 5000, step: 50, default: 1075 },
+    // Property tax and insurance are now derived from realistic % rates × purchase price
+    // The dollar values below are computed (not direct UI inputs anymore)
+    propertyTax: { display: '#propertyTaxDisplay' }, // computed only
+    insurance: { display: '#insuranceDisplay' },     // computed only
+    propertyTaxRate: { el: '#propertyTaxRate', slider: '#propertyTaxRateSlider', display: '#propertyTaxRateDisplay', min: 0, max: 3, step: 0.05, default: 1.0, suffix: '%', decimals: 2 },
+    insuranceRate: { el: '#insuranceRate', slider: '#insuranceRateSlider', display: '#insuranceRateDisplay', min: 0, max: 2, step: 0.05, default: 0.7, suffix: '%', decimals: 2 },
     hoa: { el: '#hoa', slider: '#hoaSlider', display: '#hoaDisplay', min: 0, max: 1000, step: 25, default: 0 },
     maintenance: { el: '#maintenance', slider: '#maintenanceSlider', display: '#maintenanceDisplay', min: 0, max: 15, step: 0.5, default: 2.5, suffix: '%' },
     management: { el: '#management', slider: '#managementSlider', display: '#managementDisplay', min: 0, max: 15, step: 0.5, default: 9, suffix: '%' },
@@ -72,8 +76,8 @@
     { label: 'Vacancy +5 pts', overrides: { vacancyRate: (v) => Math.min(20, v.vacancyRate + 5) } },
     { label: 'Price 5% lower', overrides: { purchasePrice: (v) => v.purchasePrice * 0.95 } },
     { label: 'Expenses +15%', overrides: {
-      propertyTax: (v) => v.propertyTax * 1.15,
-      insurance: (v) => v.insurance * 1.15,
+      propertyTaxRate: (v) => v.propertyTaxRate * 1.15,
+      insuranceRate: (v) => v.insuranceRate * 1.15,
       maintenance: (v) => Math.min(15, v.maintenance * 1.15),
     }},
   ];
@@ -88,8 +92,8 @@
       loanTerm: 30,
       monthlyRent: 1495,
       vacancyRate: 6,
-      propertyTax: 2250,
-      insurance: 1075,
+      propertyTaxRate: 1.0,
+      insuranceRate: 0.7,
       hoa: 0,
       maintenance: 2.5,
       management: 9,
@@ -105,8 +109,8 @@
       loanTerm: 30,
       monthlyRent: 1850,
       vacancyRate: 5,
-      propertyTax: 3200,
-      insurance: 1350,
+      propertyTaxRate: 0.95,
+      insuranceRate: 0.65,
       hoa: 0,
       maintenance: 2.0,
       management: 8,
@@ -122,8 +126,8 @@
       loanTerm: 30,
       monthlyRent: 1625,
       vacancyRate: 7,
-      propertyTax: 2400,
-      insurance: 1150,
+      propertyTaxRate: 0.85,
+      insuranceRate: 0.6,
       hoa: 120,
       maintenance: 2.2,
       management: 8.5,
@@ -140,8 +144,8 @@
       loanTerm: 30,
       monthlyRent: 4250,
       vacancyRate: 5,
-      propertyTax: 9800,
-      insurance: 2350,
+      propertyTaxRate: 1.0,
+      insuranceRate: 0.24,
       hoa: 0,
       maintenance: 2.2,
       management: 8,
@@ -157,8 +161,8 @@
       loanTerm: 30,
       monthlyRent: 2950,
       vacancyRate: 6,
-      propertyTax: 6200,
-      insurance: 1650,
+      propertyTaxRate: 0.99,
+      insuranceRate: 0.26,
       hoa: 420,
       maintenance: 1.8,
       management: 9,
@@ -200,6 +204,16 @@
       v[key] = parseNum(raw, cfg.default);
     }
     v.cashPurchase = isCashPurchase();
+
+    // Derive realistic annual property tax and insurance from rates + price
+    // This makes the numbers scale properly with home value and location
+    if (v.propertyTaxRate != null) {
+      v.propertyTax = v.purchasePrice * (v.propertyTaxRate / 100);
+    }
+    if (v.insuranceRate != null) {
+      v.insurance = v.purchasePrice * (v.insuranceRate / 100);
+    }
+
     return v;
   }
 
@@ -703,6 +717,12 @@
     const inlinePI = $('#inlineMortgage');
     if (inlinePI) inlinePI.textContent = r.cash ? '—' : fmt(r.mortgage);
 
+    // Update computed annual property tax and insurance displays (from rates)
+    const ptDisplay = $('#propertyTaxDisplay');
+    if (ptDisplay) ptDisplay.textContent = fmt(r.v.propertyTax);
+    const insDisplay = $('#insuranceDisplay');
+    if (insDisplay) insDisplay.textContent = fmt(r.v.insurance);
+
     updateFinancingUI(r.cash);
     updateVerdict(r);
     updateBreakdown(r);
@@ -915,7 +935,17 @@
     const input = $(cfg.el);
     const slider = $(cfg.slider);
     const display = cfg.display ? $(cfg.display) : null;
-    if (!input || !slider) return null;
+
+    // Computed fields (propertyTax, insurance) have no direct UI controls anymore
+    if (!input || !slider) {
+      // Still register a no-op sync so we can call syncFns later if needed
+      if (display) {
+        syncFns[key] = function (val) {
+          display.textContent = fmt(val);
+        };
+      }
+      return null;
+    }
 
     const formatDisplay = function (val) {
       if (cfg.suffix === '%') return pct(val, cfg.decimals || 1);
@@ -1127,6 +1157,20 @@
     }
 
     setCashPurchase(!!urlValues.cashPurchase, true);
+
+    // Backfill realistic rates from any loaded dollar values (for old share links)
+    // or set from current price + loaded/ default dollars
+    const priceEl = $('#purchasePrice');
+    const currentPrice = priceEl ? parseNum(priceEl.value, inputs.purchasePrice.default) : inputs.purchasePrice.default;
+
+    if (urlValues.propertyTax != null && currentPrice > 0 && !urlValues.propertyTaxRate) {
+      const rate = (urlValues.propertyTax / currentPrice) * 100;
+      if (syncFns.propertyTaxRate) syncFns.propertyTaxRate(rate, true);
+    }
+    if (urlValues.insurance != null && currentPrice > 0 && !urlValues.insuranceRate) {
+      const rate = (urlValues.insurance / currentPrice) * 100;
+      if (syncFns.insuranceRate) syncFns.insuranceRate(rate, true);
+    }
 
     const cashCb = $('#cashPurchase');
     const shareBtn = $('#shareScenario');
