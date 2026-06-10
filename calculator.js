@@ -78,6 +78,60 @@
     }},
   ];
 
+  const BUYHOLD_PRESETS = {
+    'hb-sfr': {
+      name: 'Huntington Beach SFR',
+      purchasePrice: 980000,
+      downPayment: 25,
+      interestRate: 6.9,
+      loanTerm: 30,
+      monthlyRent: 4250,
+      vacancyRate: 5,
+      propertyTax: 9800,
+      insurance: 2350,
+      hoa: 0,
+      maintenance: 2.2,
+      management: 8,
+      appreciation: 4.2,
+      holdingYears: 8,
+      cashPurchase: false,
+    },
+    'oc-condo': {
+      name: 'OC Condo / Townhome',
+      purchasePrice: 625000,
+      downPayment: 20,
+      interestRate: 6.75,
+      loanTerm: 30,
+      monthlyRent: 2950,
+      vacancyRate: 6,
+      propertyTax: 6200,
+      insurance: 1650,
+      hoa: 420,
+      maintenance: 1.8,
+      management: 9,
+      appreciation: 3.8,
+      holdingYears: 7,
+      cashPurchase: false,
+    },
+    'hb-cash': {
+      name: 'HB All-Cash Target',
+      purchasePrice: 1050000,
+      downPayment: 100,
+      interestRate: 6.9,
+      loanTerm: 30,
+      monthlyRent: 4550,
+      vacancyRate: 4.5,
+      propertyTax: 10500,
+      insurance: 2500,
+      hoa: 0,
+      maintenance: 2.0,
+      management: 7.5,
+      appreciation: 4.0,
+      holdingYears: 10,
+      cashPurchase: true,
+    },
+  };
+
   savedDownPayment = inputs.downPayment.default;
 
   function monthlyMortgage(principal, annualRate, years) {
@@ -484,6 +538,42 @@
     if (wrap) wrap.classList.toggle('is-disabled', cash);
     calcRoot.classList.toggle('cash-purchase', cash);
 
+    const dpInput = $('#downPayment');
+    const dpSlider = $('#downPaymentSlider');
+    const dpDisplay = $('#downPaymentDisplay');
+    const dpGroup = dpInput ? dpInput.closest('.input-group') : null;
+
+    if (cash) {
+      // Force visual 100% equity for cash
+      if (dpInput) dpInput.value = 100;
+      if (dpSlider) dpSlider.value = 100;
+      if (dpDisplay) dpDisplay.textContent = '100%';
+      if (dpGroup) {
+        const label = dpGroup.querySelector('label');
+        if (label) label.innerHTML = 'Down Payment <span class="cash-indicator">100% CASH</span> <span class="value-display" id="downPaymentDisplay">100%</span>';
+      }
+      // De-emphasize loan fields more
+      const irGroup = $('#interestRate') ? $('#interestRate').closest('.input-group') : null;
+      const ltGroup = $('#loanTerm') ? $('#loanTerm').closest('.input-group') : null;
+      if (irGroup) irGroup.style.opacity = '0.35';
+      if (ltGroup) ltGroup.style.opacity = '0.35';
+    } else {
+      // Restore normal down payment label
+      if (dpGroup) {
+        const label = dpGroup.querySelector('label');
+        if (label) label.innerHTML = 'Down Payment <span class="value-display" id="downPaymentDisplay"></span>';
+      }
+      const irGroup = $('#interestRate') ? $('#interestRate').closest('.input-group') : null;
+      const ltGroup = $('#loanTerm') ? $('#loanTerm').closest('.input-group') : null;
+      if (irGroup) irGroup.style.opacity = '';
+      if (ltGroup) ltGroup.style.opacity = '';
+      // re-sync display from actual value
+      const curDp = dpInput ? parseNum(dpInput.value, inputs.downPayment.default) : inputs.downPayment.default;
+      if (dpDisplay && syncFns.downPayment) {
+        // will be refreshed by sync in render flow
+      }
+    }
+
     for (const key of FINANCING_KEYS) {
       const cfg = inputs[key];
       const input = $(cfg.el);
@@ -493,10 +583,10 @@
     }
 
     const mortgageSub = $('#mortgageSub');
-    if (mortgageSub) mortgageSub.textContent = cash ? 'Paid in cash - no loan' : 'Principal & interest';
+    if (mortgageSub) mortgageSub.textContent = cash ? 'Paid in cash — no loan' : 'Principal & interest';
 
     const cocSub = $('#cashOnCashSub');
-    if (cocSub) cocSub.textContent = cash ? 'Annual return on purchase price' : 'Annual return on down payment';
+    if (cocSub) cocSub.textContent = cash ? 'Annual return on full purchase price (all-equity)' : 'Annual return on down payment';
 
     const loanLegend = $('#loanBalanceLegend');
     if (loanLegend) loanLegend.style.display = cash ? 'none' : '';
@@ -515,7 +605,11 @@
     updateFinancingUI(cash);
 
     if (!cash && syncFns.downPayment) {
+      // restore previous % the user had set
       syncFns.downPayment(savedDownPayment, true);
+    } else if (cash && syncFns.downPayment) {
+      // lock visual to 100%
+      syncFns.downPayment(100, true);
     }
 
     if (!skipRender) render();
@@ -563,6 +657,204 @@
     if (updateHistory !== false) updateUrlQuiet();
   }
 
+  // ===== EXPORT: CSV + PDF =====
+  function getExportBaseName() {
+    const d = new Date();
+    const stamp = d.toISOString().slice(0,10);
+    return `roi-seanaguinaga-${stamp}`;
+  }
+
+  function collectExportData() {
+    const r = calculate();
+    const v = r.v;
+    return {
+      date: new Date().toISOString(),
+      purchasePrice: v.purchasePrice,
+      cashPurchase: v.cashPurchase,
+      downPaymentPct: v.downPayment,
+      interestRate: v.interestRate,
+      loanTerm: v.loanTerm,
+      monthlyRent: v.monthlyRent,
+      vacancyRate: v.vacancyRate,
+      propertyTax: v.propertyTax,
+      insurance: v.insurance,
+      hoa: v.hoa,
+      maintenancePct: v.maintenance,
+      managementPct: v.management,
+      appreciation: v.appreciation,
+      holdingYears: v.holdingYears,
+      // computed
+      downAmount: r.downAmount,
+      loanAmount: r.loanAmount,
+      annualCashFlow: r.annualCashFlow,
+      monthlyCashFlow: r.monthlyCashFlow,
+      capRate: r.capRate,
+      cashOnCash: r.cashOnCash,
+      roi: r.roi,
+      totalROI: r.roi,
+      equity: r.equity,
+      futureValue: r.futureValue,
+      totalWealth: r.equity + r.totalCashFlow,
+      irrPct: r.irrPct,
+      dscr: r.dscr,
+      ltv: r.ltv,
+      grm: r.grm,
+    };
+  }
+
+  function exportCSV() {
+    const data = collectExportData();
+    const rows = [
+      ['Metric', 'Value'],
+      ['Export Date', data.date],
+      ['Purchase Price', data.purchasePrice],
+      ['Cash Purchase', data.cashPurchase ? 'Yes' : 'No'],
+      ['Down Payment %', data.downPaymentPct],
+      ['Interest Rate %', data.interestRate],
+      ['Loan Term (yr)', data.loanTerm],
+      ['Monthly Rent', data.monthlyRent],
+      ['Vacancy Rate %', data.vacancyRate],
+      ['Property Tax (annual)', data.propertyTax],
+      ['Insurance (annual)', data.insurance],
+      ['HOA (monthly)', data.hoa],
+      ['Maintenance %', data.maintenancePct],
+      ['Management %', data.managementPct],
+      ['Appreciation %', data.appreciation],
+      ['Holding Period (yr)', data.holdingYears],
+      ['--- COMPUTED ---', ''],
+      ['Down Payment Amount', data.downAmount],
+      ['Loan Amount', data.loanAmount],
+      ['Annual Cash Flow', data.annualCashFlow],
+      ['Monthly Cash Flow', data.monthlyCashFlow],
+      ['Cap Rate %', data.capRate],
+      ['Cash-on-Cash %', data.cashOnCash],
+      ['Total ROI %', data.roi],
+      ['Future Property Value', data.futureValue],
+      ['Equity at Exit', data.equity],
+      ['Total Wealth (equity + CF)', data.totalWealth],
+      ['IRR % (approx)', data.irrPct],
+      ['DSCR', data.dscr != null ? data.dscr.toFixed(2) : 'N/A'],
+      ['LTV %', data.ltv],
+      ['GRM', data.grm.toFixed(1)],
+    ];
+
+    const csv = rows.map(row => row.map(cell => {
+      const s = String(cell ?? '');
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(',')).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = getExportBaseName() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('CSV exported');
+  }
+
+  function exportPDF() {
+    const { jsPDF } = (window.jspdf || {});
+    if (!jsPDF) {
+      showToast('PDF library not loaded — try refreshing');
+      return;
+    }
+    const r = calculate();
+    const v = r.v;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+    const pageW = doc.internal.pageSize.getWidth();
+    let y = 48;
+
+    // Header
+    doc.setFontSize(18);
+    doc.setTextColor(30, 58, 138);
+    doc.text('Buy & Hold ROI Calculator — Sean Aguinaga', 40, y);
+    y += 18;
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Generated ' + new Date().toLocaleString() + '  |  seanaguinaga.com', 40, y);
+    y += 24;
+
+    // Inputs section
+    doc.setFontSize(13);
+    doc.setTextColor(14, 67, 97);
+    doc.text('Inputs', 40, y);
+    y += 16;
+
+    doc.setFontSize(10);
+    doc.setTextColor(30);
+    const inputLines = [
+      `Purchase Price: ${fmt(v.purchasePrice)}   |   Cash Purchase: ${v.cashPurchase ? 'YES (100% equity)' : 'NO'}`,
+      `Down Payment: ${v.downPayment}% (${fmt(r.downAmount)})   |   Interest: ${v.interestRate}%   |   Term: ${v.loanTerm} yr`,
+      `Monthly Rent: ${fmt(v.monthlyRent)}   |   Vacancy: ${v.vacancyRate}%   |   Holding: ${v.holdingYears} yr`,
+      `Appreciation: ${v.appreciation}%   |   Prop Tax: ${fmt(v.propertyTax)}/yr   |   Ins: ${fmt(v.insurance)}/yr`,
+      `HOA: ${fmt(v.hoa)}/mo   |   Maint: ${v.maintenance}%   |   Mgmt: ${v.management}%`,
+    ];
+    inputLines.forEach(line => { doc.text(line, 40, y); y += 14; });
+
+    y += 8;
+    doc.setDrawColor(226, 232, 240);
+    doc.line(40, y, pageW - 40, y);
+    y += 18;
+
+    // Key Results
+    doc.setFontSize(13);
+    doc.setTextColor(14, 67, 97);
+    doc.text('Key Results', 40, y);
+    y += 16;
+
+    doc.setFontSize(10);
+    doc.setTextColor(30);
+    const results = [
+      ['Monthly Cash Flow', fmt(r.monthlyCashFlow)],
+      ['Annual Cash Flow', fmt(r.annualCashFlow)],
+      ['Cap Rate', pct(r.capRate)],
+      ['Cash-on-Cash Return', pct(r.cashOnCash)],
+      ['Total ROI (cash + equity)', pct(r.roi)],
+      ['Future Equity', fmt(r.equity)],
+      ['Total Wealth Created', fmt(r.equity + r.totalCashFlow)],
+      ['IRR (approx)', pct(r.irrPct)],
+      ['DSCR', r.cash ? 'N/A (cash)' : (r.dscr ? r.dscr.toFixed(2) + 'x' : '—')],
+    ];
+    results.forEach(([label, val]) => {
+      doc.text(label + ':', 50, y);
+      doc.text(val, 220, y);
+      y += 14;
+    });
+
+    y += 6;
+    doc.line(40, y, pageW - 40, y);
+    y += 16;
+
+    // Verdict / notes
+    doc.setFontSize(11);
+    doc.text('Summary / Verdict', 40, y);
+    y += 14;
+    doc.setFontSize(9);
+    const verdictText = $('#verdictBanner') ? $('#verdictBanner').textContent.trim() : 'See live site for full analysis.';
+    const split = doc.splitTextToSize(verdictText, pageW - 90);
+    doc.text(split, 50, y);
+    y += split.length * 12 + 8;
+
+    // Disclaimer
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    const disc = 'This is an educational model only. Real estate involves significant risk including loss of capital, unexpected expenses, market downturns, vacancy, and financing risk. Past performance or modeled results do not guarantee future outcomes. Consult qualified professionals (CPA, attorney, lender, inspector) before making investment decisions. Numbers are approximate and sensitive to assumptions.';
+    const dlines = doc.splitTextToSize(disc, pageW - 80);
+    doc.text(dlines, 40, y);
+
+    // Footer
+    doc.setFontSize(8);
+    doc.text('seanaguinaga.com | Built for analysis & demo purposes', 40, doc.internal.pageSize.getHeight() - 30);
+
+    doc.save(getExportBaseName() + '.pdf');
+    showToast('PDF report downloaded');
+  }
+
   function bindInput(key, cfg) {
     const input = $(cfg.el);
     const slider = $(cfg.slider);
@@ -603,6 +895,105 @@
     showToast('Reset to defaults');
   }
 
+  function loadBuyholdPreset(key) {
+    const p = BUYHOLD_PRESETS[key];
+    if (!p) return;
+
+    // Apply cash first so financing UI updates correctly
+    setCashPurchase(!!p.cashPurchase, true);
+
+    // Apply each value (this will trigger renders but we batch)
+    for (const [k, val] of Object.entries(p)) {
+      if (k === 'name' || k === 'cashPurchase') continue;
+      if (syncFns[k]) {
+        syncFns[k](val, true); // skipRender inside sync
+      }
+    }
+
+    // Final render + toast
+    render();
+    showToast(p.name + ' loaded');
+  }
+
+  // ===== Named Scenario Save / Load (localStorage) =====
+  const SCENARIO_STORAGE_KEY = 'roi_buyhold_scenarios_v1';
+
+  function getSavedScenarios() {
+    try {
+      return JSON.parse(localStorage.getItem(SCENARIO_STORAGE_KEY) || '{}');
+    } catch (e) { return {}; }
+  }
+
+  function refreshSavedSelect() {
+    const sel = $('#savedScenarioSelect');
+    if (!sel) return;
+    const all = getSavedScenarios();
+    const names = Object.keys(all).sort();
+    sel.innerHTML = '<option value="">— Saved scenarios —</option>';
+    names.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n;
+      opt.textContent = n;
+      sel.appendChild(opt);
+    });
+  }
+
+  function saveCurrentScenario() {
+    const nameInput = $('#scenarioName');
+    const name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+      showToast('Enter a name (e.g. "HB Target Deal")');
+      return;
+    }
+    const data = getValues(); // full current inputs + cashPurchase
+    const all = getSavedScenarios();
+    all[name] = { ...data, savedAt: Date.now() };
+    localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(all));
+    refreshSavedSelect();
+    showToast('Saved "' + name + '"');
+  }
+
+  function loadSavedScenario() {
+    const sel = $('#savedScenarioSelect');
+    const name = sel ? sel.value : '';
+    if (!name) {
+      showToast('Choose a saved scenario first');
+      return;
+    }
+    const all = getSavedScenarios();
+    const saved = all[name];
+    if (!saved) return;
+
+    if (saved.cashPurchase !== undefined) {
+      setCashPurchase(!!saved.cashPurchase, true);
+    }
+    for (const [k, val] of Object.entries(saved)) {
+      if (k === 'cashPurchase' || k === 'savedAt' || !inputs[k]) continue;
+      if (syncFns[k]) syncFns[k](val, true);
+    }
+    const nameInput = $('#scenarioName');
+    if (nameInput) nameInput.value = name;
+    render();
+    showToast('Loaded "' + name + '"');
+  }
+
+  function deleteSavedScenario() {
+    const sel = $('#savedScenarioSelect');
+    const name = sel ? sel.value : '';
+    if (!name) {
+      showToast('Select a scenario to delete');
+      return;
+    }
+    if (!confirm('Delete saved scenario "' + name + '"?')) return;
+    const all = getSavedScenarios();
+    delete all[name];
+    localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(all));
+    refreshSavedSelect();
+    const nameInput = $('#scenarioName');
+    if (nameInput && nameInput.value.trim() === name) nameInput.value = '';
+    showToast('Deleted "' + name + '"');
+  }
+
   function shareScenario() {
     const url = buildShareUrl();
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -631,9 +1022,35 @@
     const cashCb = $('#cashPurchase');
     const shareBtn = $('#shareScenario');
     const resetBtn = $('#resetScenario');
+    const csvBtn = $('#exportCSV');
+    const pdfBtn = $('#exportPDF');
+
     if (cashCb) cashCb.addEventListener('change', function (e) { setCashPurchase(e.target.checked); });
     if (shareBtn) shareBtn.addEventListener('click', shareScenario);
     if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
+    if (csvBtn) csvBtn.addEventListener('click', exportCSV);
+    if (pdfBtn) pdfBtn.addEventListener('click', exportPDF);
+
+    // OC / HB presets
+    const presetBar = $('#buyholdPresets');
+    if (presetBar) {
+      presetBar.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-preset]');
+        if (btn && btn.dataset.preset) {
+          loadBuyholdPreset(btn.dataset.preset);
+        }
+      });
+    }
+
+    // Named scenarios
+    const saveBtn = $('#saveScenario');
+    const loadBtn = $('#loadScenario');
+    const delBtn = $('#deleteScenario');
+    if (saveBtn) saveBtn.addEventListener('click', saveCurrentScenario);
+    if (loadBtn) loadBtn.addEventListener('click', loadSavedScenario);
+    if (delBtn) delBtn.addEventListener('click', deleteSavedScenario);
+
+    refreshSavedSelect();
 
     if (Object.keys(urlValues).length && window.location.hash !== calcHash()) {
       safeReplaceState(window.location.href.split('#')[0] + calcHash());

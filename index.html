@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="files/main_style.css">
     <link rel="stylesheet" href="styles.css?v=9">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
     
     <style>
@@ -329,7 +330,17 @@
       <div class="calc-toolbar">
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
+        <button type="button" class="calc-btn ghost" id="exportCSV" title="Download current inputs + results as CSV">Export CSV</button>
+        <button type="button" class="calc-btn ghost" id="exportPDF" title="Download professional PDF report">Export PDF</button>
         <span class="calc-toast" id="shareToast" aria-live="polite"></span>
+      </div>
+
+      <div class="saved-scenarios" style="margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. HB Target Deal)" style="flex:1; min-width:220px; max-width:320px; padding:7px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+        <button type="button" class="calc-btn ghost" id="saveScenario" style="padding:6px 12px; font-size:0.8rem;">Save</button>
+        <select id="savedScenarioSelect" style="min-width:180px; padding:6px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;"></select>
+        <button type="button" class="calc-btn ghost" id="loadScenario" style="padding:6px 12px; font-size:0.8rem;">Load</button>
+        <button type="button" class="calc-btn ghost" id="deleteScenario" style="padding:6px 10px; font-size:0.75rem; color:#b91c1c;">Delete</button>
       </div>
     </div>
     <div class="calc-grid">
@@ -344,6 +355,14 @@
           <input type="checkbox" id="cashPurchase">
           <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
         </label>
+
+        <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px;">
+          <span style="font-size:0.7rem; color:#64748b; align-self:center; margin-right:4px;">OC Presets:</span>
+          <button type="button" class="preset-chip" data-preset="hb-sfr">Huntington Beach SFR</button>
+          <button type="button" class="preset-chip" data-preset="oc-condo">OC Condo / Townhome</button>
+          <button type="button" class="preset-chip" data-preset="hb-cash">HB All-Cash Target</button>
+        </div>
+
         <div id="financingFields" class="financing-fields">
           <div class="input-row">
             <div class="input-group">
@@ -493,6 +512,12 @@
             <table class="breakdown-table">
               <tbody id="breakdownBody"></tbody>
             </table>
+          </div>
+        </div>
+
+          <div class="disclaimer-box">
+            <strong>⚠️ Educational model only — not financial, tax, or legal advice.</strong>
+            Real estate involves material risk of loss of principal. Factors include (but are not limited to) negative cash flow, capex surprises, extended vacancy, interest rate / financing risk, natural disasters, tenant issues, regulatory changes, and local price corrections. All projections are simplified models and exclude closing costs, selling costs, income taxes, and many other real-world frictions. OC/HB examples are for illustration only. Do your own thorough due diligence. Consult a licensed real estate attorney, CPA, financial advisor, home inspector, and mortgage professional before investing.
           </div>
         </div>
       </div>
