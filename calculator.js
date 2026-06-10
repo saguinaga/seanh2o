@@ -1497,3 +1497,17 @@ window.loadSavedScenarioByName = function(name) {
   document.addEventListener('DOMContentLoaded', boot);
   window.addEventListener('load', boot);
 })();
+
+// TEMP FIX - ADD AT THE VERY END OF calculator.js
+window.loadSavedScenarioByName = function(name) {
+    console.log("✅ Loading scenario:", name);
+    const sel = document.getElementById('savedScenarioSelect') || (typeof $ !== 'undefined' ? $('#savedScenarioSelect')[0] : null);
+    if (sel) sel.value = name;
+    
+    if (typeof loadSavedScenario === 'function') {
+        loadSavedScenario();
+    }
+    
+    const v = document.getElementById('comparisonView') || (typeof $ !== 'undefined' ? $('#comparisonView')[0] : null);
+    if (v) v.style.display = 'none';
+};
