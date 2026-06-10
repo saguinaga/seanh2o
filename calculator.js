@@ -1273,11 +1273,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // Add this right before your function as a debug helper
 console.log("Reached loadSavedScenarioByName definition");
 
+// === FIXED VERSION - put this at the BOTTOM of calculator.js ===
 window.loadSavedScenarioByName = function(name) {
-    const sel = $('#savedScenarioSelect');
+    console.log("Loading scenario:", name); // for debugging
+    const sel = document.getElementById('savedScenarioSelect') || $('#savedScenarioSelect')[0];
     if (sel) sel.value = name;
-    loadSavedScenario();
-    const v = $('#comparisonView');
+    
+    if (typeof loadSavedScenario === 'function') {
+        loadSavedScenario();
+    }
+    
+    const v = document.getElementById('comparisonView') || $('#comparisonView')[0];
     if (v) v.style.display = 'none';
 };
     // Build selector UI
