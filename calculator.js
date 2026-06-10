@@ -1,3 +1,51 @@
+// calculator.js
+
+import { loadScenario, saveScenario, deleteScenario } from './model';
+
+function initializeCalculator() {
+    const scenarioId = window.location.hash.slice(1); // Assuming hash is "#buy-hold-calculator/scenario-2"
+    
+    if (scenarioId) {
+        const scenarioData = loadScenario(scenarioId);
+        console.log("Loaded Scenario:", scenarioData);
+        
+        // Initialize calculator with loaded data
+        initializeUI(scenarioData);
+    } else {
+        console.log("Initializing default or base scenario");
+        const initialScenario = {
+            purchasePrice: 500000,
+            annualRent: 30000,
+            vacancyRate: 10,
+            maintenanceCosts: 2400,
+            propertyTaxes: 6000,
+            insurance: 1200,
+            managementFees: 9600
+        };
+        
+        // Initialize calculator with default data
+        initializeUI(initialScenario);
+    }
+}
+
+function initializeUI(scenarioData) {
+    console.log("Initializing UI with scenario data:", scenarioData);
+
+    // Your UI initialization logic here
+    
+    // Example of setting initial values in the UI
+    document.getElementById('purchase-price').value = scenarioData.purchasePrice;
+    document.getElementById('annual-rent').value = scenarioData.annualRent;
+    document.getElementById('vacancy-rate').value = scenarioData.vacancyRate;
+    
+    // Additional initialization code...
+}
+
+// Listen for DOMContentLoaded and load events
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initializeCalculator, 0);
+});
+
 (function () {
   'use strict';
 
