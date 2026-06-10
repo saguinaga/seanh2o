@@ -1214,7 +1214,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const allSaved = getSavedScenarios();
     const savedNames = Object.keys(allSaved).sort();
+// Add this right before your function as a debug helper
+console.log("Reached loadSavedScenarioByName definition");
 
+window.loadSavedScenarioByName = function(name) {
+    const sel = $('#savedScenarioSelect');
+    if (sel) sel.value = name;
+    loadSavedScenario();
+    const v = $('#comparisonView');
+    if (v) v.style.display = 'none';
+};
     // Build selector UI
     let selHtml = `<strong>Current</strong> (always shown)`;
     if (savedNames.length > 0) {
