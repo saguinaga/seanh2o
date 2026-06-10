@@ -47,27 +47,14 @@ Next priorities: side-by-side scenario comparison or interactive yearly projecti
 
 ---
 
-## Remote Collaboration Test (via webui.seanaguinaga.com)
+## Compare Tool (started)
 
-**Silly small idea to test the "away from desk" workflow:**
+Added initial side-by-side scenario comparison:
+- "Compare Scenarios" button in the toolbar.
+- Automatically generates three views: Base (current), Optimistic (+rent, lower costs, higher appreciation), Conservative (worse assumptions).
+- Key metrics shown in clean 3-column cards for quick visual comparison.
+- Built directly on the existing calculation overrides so the core engine stays untouched.
 
-**"Hoosier Luck Factor" / Silly Mode**
+Next steps (as requested): Allow selecting from saved named scenarios, let user tweak the variations, and make it easy to narrow down to 2-3 specific options and view them side by side.
 
-A lightweight, toggleable fun mode that leans hard into the Indiana theme without touching the serious math.
-
-Core elements:
-- New checkbox or prominent button near the presets: "Embrace the Hoosier Spirit" (or "Silly Mode 🌽").
-- When enabled:
-  - Applies a small random "Indiana Luck Factor" (e.g. -0.8% to +2.5%) that affects displayed Cash-on-Cash or Total ROI. It re-rolls every time the calculator updates.
-  - Playful label swaps on 2-3 key metrics (example: "Monthly Cash Flow" → "Monthly Corn Money", "Cash-on-Cash" → "Cash-on-Corn").
-  - Adds a tiny rotating silly verdict/joke line + emoji in the results area (Indiana State Fair, Indy 500, corn, basketball, etc.).
-  - One new ridiculous preset button: "The Old Barn by the Speedway" or "Corn Maze Flip".
-- Easy to turn off completely. The real numbers are still accurate underneath.
-
-This is deliberately tiny (mostly cosmetic + one small random element in the calculate flow) so we can test the full remote loop quickly:
-1. You go to webui.seanaguinaga.com (on your phone or away).
-2. Paste a prompt (I'll give you one) and chat with your local models to brainstorm exact jokes, how the random factor should work, UI placement, etc.
-3. Bring the best ideas/summary back here.
-4. I implement the real code changes on the rig, test, commit, and push.
-
-Perfect low-stakes test of using the exposed Open WebUI for creative work when you're not at the desk.
+(The temporary "Hoosier Spirit" fun-layer experiment from the remote workflow test has been fully removed.)

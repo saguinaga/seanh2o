@@ -168,108 +168,6 @@
     },
   };
 
-  // Hoosier Spirit - light optional layer (core math is never changed)
-  const HOOSIER_ONE_LINERS = [
-    "Steady returns, Indiana style.",
-    "Numbers holding up like good Midwest farmland.",
-    "Cash flow as reliable as the State Fair.",
-    "Equity building steady, classic pace.",
-    "This one's got that solid regional grit.",
-    "Returns looking strong."
-  ];
-
-  function getRandomHoosierLine() {
-    return HOOSIER_ONE_LINERS[Math.floor(Math.random() * HOOSIER_ONE_LINERS.length)];
-  }
-
-  function applyHoosierLuck(r) {
-    // Small random "luck" applied only to displayed values (never the real calc)
-    const luck = (Math.random() * 3.3 - 0.8); // -0.8% to +2.5%
-
-    // Update the inline "Live impact" metrics with luck applied
-    const inlineCF = $('#inlineMonthlyCF');
-    if (inlineCF) {
-      const luckyCF = r.monthlyCashFlow * (1 + luck / 100);
-      inlineCF.textContent = fmt(luckyCF);
-      inlineCF.className = 'im-value ' + (luckyCF >= 0 ? 'positive' : 'negative');
-    }
-
-    const inlineCoC = $('#inlineCoC');
-    if (inlineCoC) {
-      const luckyCoC = r.cashOnCash + luck;
-      inlineCoC.textContent = pct(luckyCoC);
-      inlineCoC.className = 'im-value ' + (luckyCoC >= 6 ? 'positive' : luckyCoC >= 0 ? 'neutral' : 'negative');
-    }
-
-    // Optional light label swaps on the inline section only (keeps main metrics clean)
-    const dynamicsLabel = document.querySelector('.inline-dynamics-label');
-    if (dynamicsLabel) {
-      dynamicsLabel.textContent = 'Live Hoosier impact of rent & expenses';
-    }
-  }
-
-  let lastHoosierLine = '';
-
-  function showHoosierOneLiner() {
-    const el = $('#hoosierOneLiner');
-    if (!el) return;
-    // Only pick a new line occasionally to avoid flicker
-    if (!lastHoosierLine || Math.random() < 0.35) {
-      lastHoosierLine = getRandomHoosierLine();
-    }
-    el.textContent = lastHoosierLine;
-    el.style.opacity = '1';
-  }
-
-  function hideHoosierOneLiner() {
-    const el = $('#hoosierOneLiner');
-    if (el) {
-      el.style.opacity = '0';
-      // clear after fade so it doesn't linger
-      setTimeout(() => { if (el) el.textContent = ''; }, 180);
-    }
-    // restore inline dynamics label
-    const dynamicsLabel = document.querySelector('.inline-dynamics-label');
-    if (dynamicsLabel) {
-      dynamicsLabel.textContent = 'Live impact of rent & expenses';
-    }
-    lastHoosierLine = '';
-  }
-
-  function loadOldBarnPreset() {
-    // Fun Indiana-flavored preset (still realistic numbers)
-    const barnValues = {
-      purchasePrice: 195000,
-      downPayment: 30,
-      interestRate: 6.5,
-      loanTerm: 30,
-      monthlyRent: 1550,
-      vacancyRate: 5.5,
-      propertyTax: 2100,
-      insurance: 1100,
-      hoa: 0,
-      maintenance: 2.3,
-      management: 8,
-      appreciation: 3.4,
-      holdingYears: 9,
-    };
-
-    setCashPurchase(false, true);
-
-    for (const [k, val] of Object.entries(barnValues)) {
-      if (syncFns[k]) syncFns[k](val, true);
-    }
-
-    // Enable the spirit mode
-    const toggle = $('#hoosierModeToggle');
-    if (toggle) {
-      toggle.checked = true;
-    }
-
-    render();
-    showToast('The Old Barn by the Speedway loaded');
-  }
-
   savedDownPayment = inputs.downPayment.default;
 
   function monthlyMortgage(principal, annualRate, years) {
@@ -805,19 +703,6 @@
     const inlinePI = $('#inlineMortgage');
     if (inlinePI) inlinePI.textContent = r.cash ? '—' : fmt(r.mortgage);
 
-    // --- Hoosier Spirit mode (light optional layer, core math untouched) ---
-    const hoosierToggle = $('#hoosierModeToggle');
-    const isHoosier = !!(hoosierToggle && hoosierToggle.checked);
-
-    if (isHoosier) {
-      calcRoot.setAttribute('data-hoosier-active', 'true');
-      applyHoosierLuck(r);
-      showHoosierOneLiner();
-    } else {
-      calcRoot.removeAttribute('data-hoosier-active');
-      hideHoosierOneLiner();
-    }
-
     updateFinancingUI(r.cash);
     updateVerdict(r);
     updateBreakdown(r);
@@ -1179,6 +1064,59 @@
     }
   }
 
+  function showComparison() {
+    const view = $('#comparisonView');
+    const grid = $('#comparisonGrid');
+    if (!view || !grid) return;
+
+    if (view.style.display === 'block') {
+      view.style.display = 'none';
+      return;
+    }
+
+    const base = calculate();
+
+    // Optimistic variation
+    const opt = calculate({
+      monthlyRent: (v) => v.monthlyRent * 1.15,
+      vacancyRate: (v) => Math.max(2, v.vacancyRate - 2),
+      maintenance: (v) => Math.max(1, v.maintenance - 0.5),
+      management: (v) => Math.max(5, v.management - 1),
+      appreciation: (v) => Math.min(8, v.appreciation + 1.5),
+    });
+
+    // Conservative variation
+    const cons = calculate({
+      monthlyRent: (v) => v.monthlyRent * 0.85,
+      vacancyRate: (v) => Math.min(15, v.vacancyRate + 3),
+      maintenance: (v) => Math.min(5, v.maintenance + 0.7),
+      management: (v) => Math.min(12, v.management + 1.5),
+      appreciation: (v) => Math.max(1, v.appreciation - 1),
+    });
+
+    const scenarios = [
+      { label: 'Base (Current)', r: base },
+      { label: 'Optimistic', r: opt },
+      { label: 'Conservative', r: cons },
+    ];
+
+    grid.innerHTML = scenarios.map(s => {
+      const rr = s.r;
+      return `
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:10px; font-size:0.8rem;">
+          <div style="font-weight:700; margin-bottom:6px; color:#1e3a8a;">${s.label}</div>
+          <div style="margin:4px 0;"><strong>Monthly CF:</strong> ${fmt(rr.monthlyCashFlow)}</div>
+          <div style="margin:4px 0;"><strong>Cash-on-Cash:</strong> ${pct(rr.cashOnCash)}</div>
+          <div style="margin:4px 0;"><strong>Cap Rate:</strong> ${pct(rr.capRate)}</div>
+          <div style="margin:4px 0;"><strong>Total ROI:</strong> ${pct(rr.roi)}</div>
+          <div style="margin:4px 0;"><strong>Annual CF:</strong> ${fmt(rr.annualCashFlow)}</div>
+        </div>
+      `;
+    }).join('');
+
+    view.style.display = 'block';
+  }
+
   function init() {
     const urlValues = loadFromUrl();
 
@@ -1202,7 +1140,7 @@
     if (csvBtn) csvBtn.addEventListener('click', exportCSV);
     if (pdfBtn) pdfBtn.addEventListener('click', exportPDF);
 
-    // OC / HB presets
+    // Presets
     const presetBar = $('#buyholdPresets');
     if (presetBar) {
       presetBar.addEventListener('click', function (e) {
@@ -1213,14 +1151,10 @@
       });
     }
 
-    // Hoosier Spirit toggle & silly preset (light fun layer)
-    const hoosierToggle = $('#hoosierModeToggle');
-    const oldBarnBtn = $('#oldBarnPreset');
-    if (hoosierToggle) {
-      hoosierToggle.addEventListener('change', () => render());
-    }
-    if (oldBarnBtn) {
-      oldBarnBtn.addEventListener('click', loadOldBarnPreset);
+    // Compare button - side by side Base / Optimistic / Conservative
+    const compareBtn = $('#compareBtn');
+    if (compareBtn) {
+      compareBtn.addEventListener('click', showComparison);
     }
 
     // Named scenarios

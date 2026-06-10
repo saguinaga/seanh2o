@@ -330,6 +330,7 @@
       <div class="calc-toolbar">
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
+        <button type="button" class="calc-btn ghost" id="compareBtn">Compare Scenarios</button>
         <button type="button" class="calc-btn ghost" id="exportCSV" title="Download current inputs + results as CSV">Export CSV</button>
         <button type="button" class="calc-btn ghost" id="exportPDF" title="Download professional PDF report">Export PDF</button>
         <span class="calc-toast" id="shareToast" aria-live="polite"></span>
@@ -357,7 +358,7 @@
         </label>
 
         <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-          <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Indiana Presets:</span>
+          <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
           <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
           <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
           <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
@@ -365,17 +366,6 @@
           <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB SFR</button>
           <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
         </div>
-
-        <!-- Hoosier Spirit toggle - light fun layer, does not affect core math -->
-        <div class="hoosier-toggle-row">
-          <label class="hoosier-switch" title="A light-hearted nod to Indiana (Hoosier = nickname for people from Indiana). Adds playful label swaps and a tiny random 'luck' bonus for fun — real math stays exactly the same.">
-            <input type="checkbox" id="hoosierModeToggle">
-            <span class="hoosier-slider"></span>
-            <span class="hoosier-label">Embrace the Hoosier Spirit</span>
-          </label>
-          <button type="button" class="silly-preset" id="oldBarnPreset" title="Fun Indiana-themed example: an old barn near the Indianapolis Motor Speedway. Loads plausible numbers and turns on the playful mode.">The Old Barn by the Speedway</button>
-        </div>
-        <div id="hoosierOneLiner" class="hoosier-one-liner" aria-live="polite"></div>
 
         <div id="financingFields" class="financing-fields">
           <div class="input-row">
@@ -526,6 +516,16 @@
             <div class="metric-sub">Year 1 net income</div>
           </div>
         </div>
+
+        <!-- Side-by-side comparison view -->
+        <div id="comparisonView" style="display: none; margin: 16px 0;">
+          <h5 style="margin-bottom: 8px; font-size: 0.95rem;">Side-by-Side Comparison</h5>
+          <div id="comparisonGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+          <div style="margin-top: 6px; font-size: 0.7rem; color: #64748b;">
+            Base = your current inputs. Optimistic = improved assumptions. Conservative = more cautious assumptions.
+          </div>
+        </div>
+
         <div class="chart-wrap">
           <h5>Wealth Projection Over Time</h5>
           <canvas id="wealthChart" height="120"></canvas>
