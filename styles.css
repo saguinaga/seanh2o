@@ -100,7 +100,7 @@
 
 /* Fix & Flip desktop: inputs left (stacked via .input-panels), results right (sidebar for score/optimizer/metrics) for balanced full-screen use. Wider right column. */
 #fix-flip-calculator .calc-grid {
-  grid-template-columns: 1fr 480px;
+  grid-template-columns: auto 480px;
   max-width: 1600px;
   gap: 24px;
 }
@@ -114,8 +114,30 @@
 }
 
 #fix-flip-calculator .results-panel {
-  grid-column: 2;
   align-self: start;
+  /* Make the flip results content (score, optimizer, metrics, net profit) look cohesive in the sidebar */
+  padding: 12px 14px;
+}
+
+#fix-flip-calculator .flip-score-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+#fix-flip-calculator .flip-deal-score {
+  flex: 1;
+  min-width: 140px;
+}
+
+#fix-flip-calculator .flip-offer-optimizer {
+  flex: 1;
+  min-width: 160px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #fecdd3;
 }
 
 /* Large / ultra-wide: even more generous for both */
@@ -129,7 +151,7 @@
     grid-template-columns: 1fr 500px;
   }
   #fix-flip-calculator .calc-grid {
-    grid-template-columns: 1fr 520px;
+    grid-template-columns: auto 520px;
     gap: 28px;
   }
 }
