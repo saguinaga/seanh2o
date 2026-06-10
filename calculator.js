@@ -1155,15 +1155,89 @@
 
   function showComparison() {
     const view = $('#comparisonView');
+    const selector = $('#comparisonSelector');
     const grid = $('#comparisonGrid');
-    if (!view || !grid) return;
+    if (!view || !selector || !grid) return;
 
     if (view.style.display === 'block') {
       view.style.display = 'none';
       return;
     }
 
-    const base = calculate();
+    const allSaved = getSavedScenarios();
+    const savedNames = Object.keys(allSaved).sort();
+
+    // Build selector UI
+    let selHtml = `<strong>Current</strong> (always shown)`;
+    if (savedNames.length > 0) {
+      selHtml += ` &nbsp;Select up to 2: `;
+      savedNames.forEach(n => {
+        selHtml += `<label style="margin-left:4px;"><input type="checkbox" class="compare-cb" data-name="${n}"> ${n}</label>`;
+      });
+    } else {
+      selHtml += ` <em style="color:#64748b;">(No saved scenarios — save some first)</em>`;
+    }
+    selector.innerHTML = selHtml;
+
+    const cbs = selector.querySelectorAll('.compare-cb');
+    cbs.forEach(cb => cb.addEventListener('change', () => {
+      const checked = selector.querySelectorAll('.compare-cb:checked');
+      if (checked.length > 2) {
+        cb.checked = false;
+        showToast('Max 3 scenarios (Current + 2 saved)');
+      }
+      renderCompCards(grid, allSaved);
+    }));
+
+    renderCompCards(grid, allSaved);
+    view.style.display = 'block';
+
+    const close = $('#closeComparisonBtn');
+    if (close) close.onclick = () => view.style.display = 'none';
+  }
+
+  function renderCompCards(grid, allSaved) {
+    if (!grid) return;
+    const selector = $('#comparisonSelector');
+    const checked = selector ? Array.from(selector.querySelectorAll('.compare-cb:checked')).map(c => c.dataset.name).slice(0,2) : [];
+
+    const items = [
+      {name: 'Current', data: getValues()},
+      ...checked.map(n => ({name: n, data: allSaved[n]})).filter(i => i.data)
+    ];
+
+    grid.innerHTML = items.map(it => {
+      const v = {...it.data};
+      if (v.propertyTaxRate && v.purchasePrice) v.propertyTax = v.purchasePrice * (v.propertyTaxRate / 100);
+      if (v.insuranceRate && v.purchasePrice) v.insurance = v.purchasePrice * (v.insuranceRate / 100);
+      v.cashPurchase = !!v.cashPurchase;
+      const r = calculateFrom(v);
+
+      return `
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:10px; font-size:0.82rem;">
+          <div style="font-weight:700; color:#1e3a8a; margin-bottom:6px; display:flex; justify-content:space-between;">
+            <span>${it.name}</span>
+            ${it.name !== 'Current' ? `<button style="font-size:0.65rem; padding:2px 5px;" onclick="loadSavedScenarioByName('${it.name}'); document.getElementById('comparisonView').style.display='none';">Load</button>` : ''}
+          </div>
+          <div><strong>Monthly CF:</strong> ${fmt(r.monthlyCashFlow)}</div>
+          <div><strong>Cash-on-Cash:</strong> ${pct(r.cashOnCash)}</div>
+          <div><strong>Cap Rate:</strong> ${pct(r.capRate)}</div>
+          <div><strong>Total ROI:</strong> ${pct(r.roi)}</div>
+          <div style="font-size:0.75rem; color:#64748b;"><strong>IRR:</strong> ${pct(r.irrPct)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.loadSavedScenarioByName = function(name) {
+    const sel = $('#savedScenarioSelect');
+    if (sel) sel.value = name;
+    loadSavedScenario();
+    const v = $('#comparisonView');
+    if (v) v.style.display = 'none';
+  };
+
+  // Old auto-compare body removed - now uses saved scenarios for true side-by-side as requested.
 
     // Optimistic variation
     const opt = calculate({

@@ -540,15 +540,6 @@
           </div>
         </div>
 
-        <!-- Side-by-side comparison view -->
-        <div id="comparisonView" style="display: none; margin: 16px 0;">
-          <h5 style="margin-bottom: 8px; font-size: 0.95rem;">Side-by-Side Comparison</h5>
-          <div id="comparisonGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
-          <div style="margin-top: 6px; font-size: 0.7rem; color: #64748b;">
-            Base = your current inputs. Optimistic = improved assumptions. Conservative = more cautious assumptions.
-          </div>
-        </div>
-
         <div class="chart-wrap">
           <h5>Wealth Projection Over Time</h5>
           <canvas id="wealthChart" height="120"></canvas>
@@ -585,6 +576,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Dedicated side-by-side comparison area (full width for clarity on desktop) -->
+    <div id="comparisonView" style="display: none; margin-top: 24px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h5 style="margin: 0; font-size: 1rem;">Side-by-Side Scenario Comparison</h5>
+        <button type="button" id="closeComparisonBtn" class="calc-btn ghost" style="font-size: 0.75rem; padding: 4px 10px;">Close</button>
+      </div>
+
+      <div id="comparisonSelector" style="margin-bottom: 12px; font-size: 0.85rem;">
+        <!-- JS populated checkboxes for Current + saved scenarios (max 3 total) -->
+      </div>
+
+      <div id="comparisonGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;"></div>
+
+      <div style="margin-top: 10px; font-size: 0.7rem; color: #64748b;">
+        Select up to 3 scenarios (Current is always available). Click a saved scenario name to load it into the main calculator.
+      </div>
+    </div>
+
   </section>
 
   <!-- FIX & FLIP CALCULATOR -->
@@ -857,7 +867,7 @@
         <p>(c) 2026 Sean Aguinaga | Product in Real Estate Tech</p>
     </footer>
 
-    <script src="calculator.js?v=15"></script>
+    <script src="calculator.js?v=16"></script>
     <script src="flip-calculator.js?v=3"></script>
     <script>
       (function () {
