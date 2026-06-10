@@ -1225,47 +1225,7 @@ console.log("Reached loadSavedScenarioByName definition");
     if (v) v.style.display = 'none';
   };
 
-  // Old auto-compare body removed - now uses saved scenarios for true side-by-side as requested.
 
-    // Optimistic variation
-    const opt = calculate({
-      monthlyRent: (v) => v.monthlyRent * 1.15,
-      vacancyRate: (v) => Math.max(2, v.vacancyRate - 2),
-      maintenance: (v) => Math.max(1, v.maintenance - 0.5),
-      management: (v) => Math.max(5, v.management - 1),
-      appreciation: (v) => Math.min(8, v.appreciation + 1.5),
-    });
-
-    // Conservative variation
-    const cons = calculate({
-      monthlyRent: (v) => v.monthlyRent * 0.85,
-      vacancyRate: (v) => Math.min(15, v.vacancyRate + 3),
-      maintenance: (v) => Math.min(5, v.maintenance + 0.7),
-      management: (v) => Math.min(12, v.management + 1.5),
-      appreciation: (v) => Math.max(1, v.appreciation - 1),
-    });
-
-    const scenarios = [
-      { label: 'Base (Current)', r: base },
-      { label: 'Optimistic', r: opt },
-      { label: 'Conservative', r: cons },
-    ];
-
-    grid.innerHTML = scenarios.map(s => {
-      const rr = s.r;
-      return `
-        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:10px; font-size:0.8rem;">
-          <div style="font-weight:700; margin-bottom:6px; color:#1e3a8a;">${s.label}</div>
-          <div style="margin:4px 0;"><strong>Monthly CF:</strong> ${fmt(rr.monthlyCashFlow)}</div>
-          <div style="margin:4px 0;"><strong>Cash-on-Cash:</strong> ${pct(rr.cashOnCash)}</div>
-          <div style="margin:4px 0;"><strong><abbr title="Capitalization Rate">Cap Rate</abbr>:</strong> ${pct(rr.capRate)}</div>
-          <div style="margin:4px 0;"><strong>Total <abbr title="Return on Investment">ROI</abbr>:</strong> ${pct(rr.roi)}</div>
-          <div style="margin:4px 0;"><strong>Annual CF:</strong> ${fmt(rr.annualCashFlow)}</div>
-        </div>
-      `;
-    }).join('');
-
-    view.style.display = 'block';
   }
 
   function init() {
