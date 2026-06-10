@@ -623,16 +623,72 @@ document.addEventListener('DOMContentLoaded', () => {
     safeReplaceState(base + (clean ? '?' + clean : '') + hash);
   }
 
-  function loadFromUrl() {
-    sanitizeUrlParams();
-    const params = new URLSearchParams(window.location.search);
-    const loaded = {};
-    for (const [key, short] of Object.entries(URL_KEYS)) {
-      if (params.has(short)) loaded[key] = parseNum(params.get(short), inputs[key].default);
+function loadFromUrl() {
+    const urlParams = new URLSearchParams(window.location.hash.slice(1));
+    const urlValues = Object.fromEntries(urlParams.entries());
+    return urlValues;
+}
+
+const inputs = {
+    purchasePrice: {
+        key: 'purchase-price',
+        default: 500000
+    },
+    annualRent: {
+        key: 'annual-rent',
+        default: 30000
+    },
+    vacancyRate: {
+        key: 'vacancy-rate',
+        default: 10
+    },
+    maintenanceCosts: {
+        key: 'maintenance-costs',
+        default: 2400
+    },
+    propertyTaxes: {
+        key: 'property-taxes',
+        default: 6000
+    },
+    insurance: {
+        key: 'insurance',
+        default: 1200
+    },
+    managementFees: {
+        key: 'management-fees',
+        default: 9600
     }
-    if (params.has('cash')) loaded.cashPurchase = params.get('cash') === '1';
-    return loaded;
-  }
+};
+
+function bindInput(key, cfg) {
+    const input = document.getElementById(cfg.key);
+    if (!input) return null;
+
+    // Bind initial value from URL or local storage
+    const startVal = loadFromUrl()[key] !== undefined ? loadFromUrl()[key] : cfg.default;
+    input.value = startVal;
+
+    // Event listener to keep the input synchronized with its value
+    const sync = (value, init) => {
+        if (!init && value === input.value) return; // Avoid redundant updates
+
+        input.value = value;
+    };
+    return sync;
+}
+
+function init() {
+    const urlValues = loadFromUrl();
+    for (const [key, cfg] of Object.entries(inputs)) {
+        const sync = bindInput(key, cfg);
+        if (sync) sync(urlValues[key], true); // Initialize with URL values
+    }
+}
+
+// Listen for DOMContentLoaded and load events
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
 
   function updateFinancingUI(cash) {
     const wrap = $('#financingFields');
