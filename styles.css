@@ -299,6 +299,33 @@
   box-shadow: 0 4px 12px rgba(14, 67, 97, 0.08);
 }
 
+/* Super prominent Monthly Cash Flow - the one you want to watch live */
+.metrics-grid .metric-card:first-child {
+  grid-column: span 2;
+  padding: 16px 18px;
+  background: linear-gradient(145deg, #f0f9ff, #fff);
+  border: 2px solid #1e40af;
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.15);
+}
+
+.metrics-grid .metric-card:first-child .metric-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #0e4361;
+  line-height: 1;
+}
+
+.metrics-grid .metric-card:first-child .metric-label {
+  font-size: 0.7rem;
+  color: #1e40af;
+  font-weight: 700;
+}
+
+.metrics-grid .metric-card:first-child .metric-sub {
+  font-size: 0.65rem;
+  color: #475569;
+}
+
 .metric-card.positive .metric-value { color: #059669; }
 .metric-card.negative .metric-value { color: #dc2626; }
 .metric-card.neutral .metric-value { color: #1e3a8a; }
