@@ -473,7 +473,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
   function wirePresets() {
     const container = $('buyholdPresets');
     if (!container) return;
-    container.querySelectorAll('.preset-chip').forEach(chip => {
+    container.querySelectorAll('.preset-chip').forEach(ch => {
       chip.addEventListener('click', () => {
         const key = chip.dataset.preset;
         applyPreset(key);
