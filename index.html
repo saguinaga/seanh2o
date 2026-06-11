@@ -8,7 +8,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=11">
+    <link rel="stylesheet" href="styles.css?v=13">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
@@ -195,89 +195,125 @@
     </section>
 
     <!-- About -->
-    <section id="about" class="section-block alt">
-        <div class="section-inner center">
-            <h2 class="section-heading">About Me</h2>
-            <p class="section-copy">I'm Sean Aguinaga. I've spent most of my career on the messy side of real estate tech: marketplaces, bidding, registration, post-sale workflows, and the internal tools that are supposed to make all of that coherent. The interesting problems are rarely on a single screen. They're in the gaps between what a customer did, what we stored, and what a teammate can see when they pick up the phone.</p>
-            <p class="section-copy">I think in systems. Not architecture diagrams for their own sake, but the full loop: what the customer experiences, what data we actually have, what the team in SFDC sees, and where those stories diverge. That's usually where the product work is. If the PDP says one thing and the case history says another, someone is going to waste time reconciling it. I'd rather fix that upstream.</p>
-            <p class="section-copy">Background-wise, it's been a long run in marketplace and transaction product: buyer funnels, seller tools, ops dashboards, integrations that were supposed to be temporary and weren't. I've worked with engineers, design, sales, legal, and the folks on the ground who actually talk to customers. I know enough to push back when a spec doesn't match reality, and I'm quick to say when I'm still filling in gaps.</p>
-            <p class="section-copy">On the investor side, I underwrite deals the way a lot of people in this space do: spreadsheets, rules of thumb, and a healthy respect for what can go wrong on rehab timeline or ARV. The calculators on this page are vibe-coded experiments, but the math is real. Marion County defaults because that's what I know; drag the sliders for your market.</p>
-            <p class="section-copy">I'm confident in what I know and open to being wrong. I'd rather get the problem framed right than ship something that sounds good in a deck.</p>
+    <section id="about" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
+        <div class="intro-block intro-wide">
+            <h2>About Me</h2>
+            <p>I'm Sean Aguinaga. I've spent most of my career on the messy side of real estate tech: marketplaces, bidding, registration, post-sale workflows, and the internal tools that are supposed to make all of that coherent. The interesting problems are rarely on a single screen. They're in the gaps between what a customer did, what we stored, and what a teammate can see when they pick up the phone.</p>
+            <p>I think in systems. Not architecture diagrams for their own sake, but the full loop: what the customer experiences, what data we actually have, what the team in SFDC sees, and where those stories diverge. That's usually where the product work is. If the PDP says one thing and the case history says another, someone is going to waste time reconciling it. I'd rather fix that upstream.</p>
+            <p>Background-wise, it's been a long run in marketplace and transaction product: buyer funnels, seller tools, ops dashboards, integrations that were supposed to be temporary and weren't. I've worked with engineers, design, sales, legal, and the folks on the ground who actually talk to customers. I know enough to push back when a spec doesn't match reality, and I'm quick to say when I'm still filling in gaps.</p>
+            <p>On the investor side, I underwrite deals the way a lot of people in this space do: spreadsheets, rules of thumb, and a healthy respect for what can go wrong on rehab timeline or ARV. The calculators on this page are vibe-coded experiments, but the math is real. Marion County defaults because that's what I know; drag the sliders for your market.</p>
+            <p>I'm confident in what I know and open to being wrong. I'd rather get the problem framed right than ship something that sounds good in a deck.</p>
         </div>
     </section>
 
     <!-- Mission -->
-    <section id="mission" class="section-block">
-        <div class="section-inner center">
-            <h2 class="section-heading">My Mission</h2>
-            <p class="section-copy">Real estate is still harder than it needs to be. Not because people aren't trying, but because the journey is long, the data is fragmented, and customers end up re-explaining themselves at every step. You register, you bid, you win, then you're in a different workflow with different people who may or may not know what already happened.</p>
-            <p class="section-copy">I want products that give customers a clear path forward: sign up once, get treated like we remember them, and see next steps that match their situation. Investor, occupant, first-time buyer, repeat bidder: the product should respond to who you are, not force everyone through the same generic path.</p>
-            <p class="section-copy">And I want internal teams to have enough context to help without putting the customer on hold while someone digs through five systems. Nationwide coverage makes that harder, not easier. The fix isn't another dashboard nobody opens. It's context in the moment: where they are in the journey, what's still open, what happened last.</p>
-            <p class="section-copy">If we get those two things closer together, the experience gets faster for customers and less chaotic for the people doing the work. Less duplicate data entry, fewer repeat-explanation calls, more time spent on the actual problem. That's the mission, basically.</p>
+    <section id="mission" style="padding: 100px 20px; text-align: center;">
+        <div class="intro-block intro-wide">
+            <h2>My Mission</h2>
+            <p>Real estate is still harder than it needs to be. Not because people aren't trying, but because the journey is long, the data is fragmented, and customers end up re-explaining themselves at every step. You register, you bid, you win, then you're in a different workflow with different people who may or may not know what already happened.</p>
+            <p>I want products that give customers a clear path forward: sign up once, get treated like we remember them, and see next steps that match their situation. Investor, occupant, first-time buyer, repeat bidder: the product should respond to who you are, not force everyone through the same generic path.</p>
+            <p>And I want internal teams to have enough context to help without putting the customer on hold while someone digs through five systems. Nationwide coverage makes that harder, not easier. The fix isn't another dashboard nobody opens. It's context in the moment: where they are in the journey, what's still open, what happened last.</p>
+            <p>If we get those two things closer together, the experience gets faster for customers and less chaotic for the people doing the work. Less duplicate data entry, fewer repeat-explanation calls, more time spent on the actual problem. That's the mission, basically.</p>
         </div>
     </section>
 
-    <!-- Current Initiatives -->
-    <section id="current-work" class="section-block">
-        <div class="section-inner center">
-            <h2 class="section-heading">Current Focus</h2>
-            <p class="section-copy">At Auction.com I'm leading product work on two problems I think are upstream of almost everything else: account creation that actually sets up personalization, and better journey context for teams working with customers nationwide.</p>
-            <div class="section-grid">
-                <div class="section-card">
-                    <div class="section-card-badge primary">01</div>
-                    <h3 class="section-card-title">Registration &amp; Personalization</h3>
-                    <p class="section-card-copy">Most customers still hit generic flows before we know much about them. I'm working on registration and account setup so we capture the right profile signals early and the product can respond from there.</p>
-                    <p class="section-card-copy">That means fewer dead ends in sign-up, preferences that persist, and a real baseline for relevance before someone has to call in and explain who they are again.</p>
+        <!-- Current Initiatives -->
+    <section id="current-work" style="padding: 100px 20px; background: #ffffff;">
+        <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 2.4rem; margin-bottom: 20px;">Current Focus</h2>
+            <p style="font-size: 1.3rem; max-width: 720px; margin: 0 auto 60px; color: #555; line-height: 1.65;">
+                At Auction.com I'm leading product work on two problems I think are upstream of almost everything else:
+                account creation that actually sets up personalization, and better journey context for teams working with customers nationwide.
+            </p>
+
+            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; text-align: left;">
+                
+                <!-- Initiative 1 -->
+                <div style="background: #f8fafc; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <div style="background: #1e3a8a; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 20px;">01</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 16px;">Registration &amp; Personalization</h3>
+                    <p style="line-height: 1.7; color: #444; margin-bottom: 14px;">
+                        Most customers still hit generic flows before we know much about them. I'm working on registration and account setup so we capture the right profile signals early and the product can respond from there.
+                    </p>
+                    <p style="line-height: 1.7; color: #555;">
+                        That means fewer dead ends in sign-up, preferences that persist, and a real baseline for relevance before someone has to call in and explain who they are again.
+                    </p>
                 </div>
-                <div class="section-card">
-                    <div class="section-card-badge secondary">02</div>
-                    <h3 class="section-card-title">Journey Context for Teams</h3>
-                    <p class="section-card-copy">Our teams are spread across the country. Customers move through a long journey. When someone picks up the phone or opens a case, the person on the other end should already know where they are, what's still open, and what happened last.</p>
-                    <p class="section-card-copy">I'm focused on surfacing that in a way that's useful in the moment. Not another dashboard. Context you can act on, whether you're in SFDC, email, or on a call with a customer who's been waiting on an answer.</p>
+
+                <!-- Initiative 2 -->
+                <div style="background: #f8fafc; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <div style="background: #f59e0b; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 20px;">02</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 16px;">Journey Context for Teams</h3>
+                    <p style="line-height: 1.7; color: #444; margin-bottom: 14px;">
+                        Our teams are spread across the country. Customers move through a long journey. When someone picks up the phone or opens a case, the person on the other end should already know where they are, what's still open, and what happened last.
+                    </p>
+                    <p style="line-height: 1.7; color: #555;">
+                        I'm focused on surfacing that in a way that's useful in the moment. Not another dashboard. Context you can act on, whether you're in SFDC, email, or on a call with a customer who's been waiting on an answer.
+                    </p>
                 </div>
             </div>
-            <p class="section-copy">The product and the human conversation ought to tell the same story. That's the thread I'm pulling on right now.</p>
+
+            <p style="margin-top: 60px; font-size: 1.1rem; color: #666; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.65;">
+                The product and the human conversation ought to tell the same story. That's the thread I'm pulling on right now.
+            </p>
         </div>
     </section>
 
-    <!-- Vibe Coding Overview -->
-    <section id="projects" class="section-block alt">
-        <div class="section-inner">
-            <div class="section-header">
-                <h2 class="section-heading">Vibe Coding</h2>
-                <p class="section-copy">Personal experiments, tools, and creative projects I build for fun.</p>
+     <!-- Vibe Coding Overview -->
+    <section id="projects" style="padding: 100px 20px; background: #f8fafc;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.6rem; margin-bottom: 16px;">Vibe Coding</h2>
+                <p style="font-size: 1.25rem; max-width: 680px; margin: 0 auto; color: #555;">
+                    Personal experiments, tools, and creative projects I build for fun.
+                </p>
             </div>
-            <div class="section-grid">
+
+            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
 
                 <!-- Buy & Hold Calculator Card -->
-                <a href="#buy-hold-calculator" class="button-link">
-                    <div class="section-card">
-                        <div class="section-card-media blue">Buy &amp; Hold</div>
-                        <div class="section-card-body">
-                            <h3 class="section-card-title">Investor Buy & Hold Calculator</h3>
-                            <p class="section-card-copy">Model long-term real estate investments with cash flow, <abbr title="Internal Rate of Return">IRR</abbr>, <abbr title="Cash-on-Cash Return">Cash-on-Cash</abbr>, taxes, and more.</p>
-                            <span class="section-chip primary">Interactive Tool →</span>
+                <a href="#buy-hold-calculator" style="text-decoration: none; color: inherit;">
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s; height: 100%;">
+                        <div style="height: 200px; background: linear-gradient(135deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: 700;">
+                            Buy & Hold
+                        </div>
+                        <div style="padding: 28px;">
+                            <h3 style="margin-bottom: 12px;">Investor Buy & Hold Calculator</h3>
+                            <p style="color: #666; line-height: 1.65;">
+                                Model long-term real estate investments with cash flow, <abbr title="Internal Rate of Return">IRR</abbr>, <abbr title="Cash-on-Cash Return">Cash-on-Cash</abbr>, taxes, and more.
+                            </p>
+                            <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #ecfdf5; color: #0f766e; border-radius: 9999px; font-size: 0.9rem;">
+                                Interactive Tool ->
+                            </span>
                         </div>
                     </div>
                 </a>
 
                 <!-- Fix & Flip Calculator Card -->
-                <a href="#fix-flip-calculator" class="button-link">
-                    <div class="section-card">
-                        <div class="section-card-media red">Fix &amp; Flip</div>
-                        <div class="section-card-body">
-                            <h3 class="section-card-title">Fix &amp; Flip Deal Analyzer</h3>
-                            <p class="section-card-copy">Underwrite ARV, rehab, hold time, hard money, and exit costs. 70% rule, profit waterfall, stress tests.</p>
-                            <span class="section-chip secondary">Interactive Tool →</span>
+                <a href="#fix-flip-calculator" style="text-decoration: none; color: inherit;">
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s; height: 100%;">
+                        <div style="height: 200px; background: linear-gradient(135deg, #be123c, #f43f5e); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: 700;">
+                            Fix &amp; Flip
+                        </div>
+                        <div style="padding: 28px;">
+                            <h3 style="margin-bottom: 12px;">Fix &amp; Flip Deal Analyzer</h3>
+                            <p style="color: #666; line-height: 1.65;">
+                                Underwrite ARV, rehab, hold time, hard money, and exit costs. 70% rule, profit waterfall, stress tests.
+                            </p>
+                            <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #fff1f2; color: #be123c; border-radius: 9999px; font-size: 0.9rem;">
+                                Interactive Tool -&gt;
+                            </span>
                         </div>
                     </div>
                 </a>
 
-                <div class="section-card">
-                    <div class="section-card-media coming-soon">Coming Soon</div>
-                    <div class="section-card-body">
-                        <h3 class="section-card-title">Future Vibes</h3>
-                        <p class="section-card-copy">More tools and creative coding sessions.</p>
+                <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
+                    <div style="height: 200px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.3rem; font-weight: 600;">
+                        Coming Soon
+                    </div>
+                    <div style="padding: 28px;">
+                        <h3 style="margin-bottom: 12px;">Future Vibes</h3>
+                        <p style="color: #666;">More tools and creative coding sessions.</p>
                     </div>
                 </div>
 
@@ -295,7 +331,17 @@
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
         <button type="button" class="calc-btn ghost" id="compareBtn">Compare Scenarios</button>
+        <button type="button" class="calc-btn ghost" id="exportCSV" title="Download current inputs + results as CSV">Export CSV</button>
+        <button type="button" class="calc-btn ghost" id="exportPDF" title="Download professional PDF report">Export PDF</button>
         <span class="calc-toast" id="shareToast" aria-live="polite"></span>
+      </div>
+
+      <div class="saved-scenarios" style="margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)" style="flex:1; min-width:220px; max-width:320px; padding:7px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+        <button type="button" class="calc-btn ghost" id="saveScenario" style="padding:6px 12px; font-size:0.8rem;">Save</button>
+        <select id="savedScenarioSelect" style="min-width:180px; padding:6px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;"></select>
+        <button type="button" class="calc-btn ghost" id="loadScenario" style="padding:6px 12px; font-size:0.8rem;">Load</button>
+        <button type="button" class="calc-btn ghost" id="deleteScenario" style="padding:6px 10px; font-size:0.75rem; color:#b91c1c;">Delete</button>
       </div>
     </div>
     <div class="calc-grid">
@@ -304,16 +350,16 @@
           <h4>Property &amp; Financing</h4>
 
           <!-- Property lookup helper for more realistic inputs (click to expand) -->
-          <div class="property-lookup">
-            <button type="button" id="toggleLookupBtn" class="calc-btn ghost property-lookup-toggle">Load from Zillow/Redfin/Homes.com for realistic tax & insurance</button>
-            <div id="propertyLookupFields" class="property-lookup-fields">
-              <label>Address or listing URL</label>
-              <div class="property-lookup-row">
-                <input type="text" id="propertyLookupInput" class="property-lookup-input" placeholder="123 Main St or paste URL">
-                <button type="button" id="loadPropertyBtn" class="calc-btn ghost">Load</button>
+          <div class="property-lookup" style="margin-bottom:8px;">
+            <button type="button" id="toggleLookupBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:3px 8px;">Load from Zillow/Redfin/Homes.com for realistic tax & insurance</button>
+            <div id="propertyLookupFields" style="display:none; margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px;">
+              <label style="font-size:0.75rem; font-weight:600; color:#334155;">Address or listing URL</label>
+              <div style="display:flex; gap:6px; margin-top:4px;">
+                <input type="text" id="propertyLookupInput" placeholder="123 Main St or paste URL" style="flex:1; font-size:0.85rem; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px;">
+                <button type="button" id="loadPropertyBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:4px 8px;">Load</button>
               </div>
-              <button type="button" id="openTaxRecordsBtn" class="calc-btn ghost property-lookup-secondary">Open county tax records</button>
-              <div class="property-lookup-note">
+              <button type="button" id="openTaxRecordsBtn" class="calc-btn ghost" style="margin-top:6px; font-size:0.7rem; padding:3px 8px;">Open county tax records</button>
+              <div style="font-size:0.65rem; color:#64748b; margin-top:4px;">
                 Loads price if found. Use county site for exact taxes.
               </div>
             </div>
@@ -329,14 +375,14 @@
             <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
           </label>
 
-          <div class="preset-chips" id="buyholdPresets">
-            <span class="preset-label">Presets:</span>
+          <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+            <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
             <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
             <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
             <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
-            <span class="comparison-label">Compare:</span>
-            <button type="button" class="preset-chip small" data-preset="hb-sfr">HB <abbr title="Single Family Residence">SFR</abbr></button>
-            <button type="button" class="preset-chip small" data-preset="oc-condo">OC Condo</button>
+            <span style="font-size:0.65rem; color:#64748b; margin-left:8px; margin-right:2px;">Compare:</span>
+            <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB <abbr title="Single Family Residence">SFR</abbr></button>
+            <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
           </div>
 
           <div id="financingFields" class="financing-fields">
@@ -360,7 +406,7 @@
           </div>
 
           <!-- Tiny financing outcome right with the price + loan sliders -->
-          <div class="inline-finance-impact">
+          <div class="inline-finance-impact" style="margin: 6px 0 2px; font-size:0.74rem; display:flex; gap:14px; color:#334155;">
             <div><strong>Loan amount:</strong> <span id="inlineLoanAmount">-</span></div>
             <div><strong>Monthly P&amp;I:</strong> <span id="inlineMortgage">-</span></div>
           </div>
@@ -398,7 +444,7 @@
               <div class="computed-note">→ <span id="insuranceDisplay">$0</span>/yr (auto from rate × price)</div>
             </div>
           </div>
-          <div class="field-note small">
+          <div style="font-size:0.65rem; color:#64748b; margin: -4px 0 8px;">
             Rates are % of purchase price. Typical central Indiana: 0.8–1.1% tax, 0.5–0.8% insurance. Changes auto-update the annual amounts.
           </div>
           <div class="input-row">
@@ -506,7 +552,7 @@
     </div>
 
     <!-- Full width analysis sections (these detailed sections like What-If Sensitivity are now full width below the two-column sidebar area for better readability on full-size screens; no longer crammed in the narrow sidebar) -->
-    <div class="analysis-sections">
+    <div class="analysis-sections" style="margin-top: 16px;">
       <!-- Moved detailed analysis sections to full width below the two-column (inputs + key metrics sidebar) for better readability on full-size screens. Sidebar is now only for live/important numbers. -->
       <div class="chart-wrap">
         <h5>Annual Income &amp; Expense Breakdown</h5>
@@ -520,10 +566,10 @@
         <h5>Wealth Projection Over Time</h5>
         <canvas id="wealthChart" height="120"></canvas>
         <div class="chart-legend">
-          <span class="legend-item"><span class="legend-dot property-value"></span> Property Value</span>
-          <span class="legend-item"><span class="legend-dot equity"></span> Equity</span>
-          <span class="legend-item"><span class="legend-dot cash-flow"></span> Cumulative Cash Flow</span>
-          <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot loan-balance"></span> Loan Balance</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
+          <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
         </div>
       </div>
       <div class="chart-wrap">
@@ -539,19 +585,19 @@
     </div>
 
     <!-- Dedicated side-by-side comparison area (full width for clarity on desktop) -->
-    <div id="comparisonView" class="comparison-view">
-      <div class="comparison-header">
-        <h5>Side-by-Side Scenario Comparison</h5>
-        <button type="button" id="closeComparisonBtn" class="calc-btn ghost">Close</button>
+    <div id="comparisonView" style="display: none; margin-top: 24px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h5 style="margin: 0; font-size: 1rem;">Side-by-Side Scenario Comparison</h5>
+        <button type="button" id="closeComparisonBtn" class="calc-btn ghost" style="font-size: 0.75rem; padding: 4px 10px;">Close</button>
       </div>
 
-      <div id="comparisonSelector" class="comparison-selector">
+      <div id="comparisonSelector" style="margin-bottom: 12px; font-size: 0.85rem;">
         <!-- JS populated checkboxes for Current + saved scenarios (max 3 total) -->
       </div>
 
-      <div id="comparisonGrid" class="comparison-grid"></div>
+      <div id="comparisonGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;"></div>
 
-      <div class="comparison-note">
+      <div style="margin-top: 10px; font-size: 0.7rem; color: #64748b;">
         Select up to 3 scenarios (Current is always available). Click a saved scenario name to load it into the main calculator.
       </div>
     </div>
@@ -812,20 +858,21 @@
   </section>
 
     <!-- Working Contact Form -->
-    <section id="contact" class="section-block alt">
-        <div class="section-inner section-narrow center">
-            <h2 class="section-heading">Contact Me</h2>
-            <p class="section-copy">Interested in collaborating or learning more about my work? Reach out!</p>
-            <form action="https://formspree.io/f/xgvzqlaa" method="POST" class="section-contact-form">
-                <input type="text" name="name" placeholder="Your Name" required>
-                <input type="email" name="email" placeholder="Your Email" required>
-                <textarea name="message" placeholder="Your Message" rows="6" required></textarea>
-                <button type="submit">Send Message</button>
+    <section id="contact" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h2>Contact Me</h2>
+            <p>Interested in collaborating or learning more about my work? Reach out!</p>
+            
+            <form action="https://formspree.io/f/xgvzqlaa" method="POST" style="margin-top: 30px;">
+                <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;">
+                <input type="email" name="email" placeholder="Your Email" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;">
+                <textarea name="message" placeholder="Your Message" rows="6" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;"></textarea>
+                <button type="submit" style="padding:14px 40px; background:#1e3a8a; color:white; border:none; border-radius:50px; font-size:1.1rem; cursor:pointer;">Send Message</button>
             </form>
         </div>
     </section>
 
-    <footer class="site-footer">
+    <footer style="text-align:center; padding:40px; background:#1e3a8a; color:white;">
         <p>(c) 2026 Sean Aguinaga | Product in Real Estate Tech</p>
     </footer>
 
