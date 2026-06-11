@@ -8,7 +8,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles.css?v=16">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
@@ -186,7 +186,7 @@
             <span class="highlight">Product &amp; Systems in Real Estate Tech</span>
             <p class="hero-lead">I build real estate products where what the customer sees online and what your team knows on a call are supposed to be the same picture. When they're not, that's usually the work I care about. Auctions, registration, post-sale workflows, SFDC context: the messy middle where a customer already told us something and the system still acts like it's meeting them for the first time.</p>
             <p class="hero-sub">Product manager, 15+ years, mostly marketplaces and transaction-heavy businesses. I've shipped across bidding, buyer onboarding, internal ops tools, and the handoffs between them. These days at Auction.com I'm leading work on registration and personalization (so we know who someone is before we treat them like a stranger) and journey context for nationwide teams (so the person on the call isn't starting from zero).</p>
-            <p class="hero-extra">I think in systems, not slide decks. What does the customer experience? What data do we actually have? What does the team see in SFDC? Where do those stories diverge? That's where the product work usually lives. Scroll down for two investor calculators I built for fun: buy &amp; hold and fix &amp; flip, with Marion County defaults and the kind of underwriting math I'd want before chasing a deal.</p>
+            <p class="hero-extra">I think in systems, not slide decks. What does the customer experience? What data we actually have? What does the team see in SFDC? Where do those stories diverge? That's where the product work usually lives. Scroll down for two investor calculators I built for fun: buy &amp; hold and fix &amp; flip, with Marion County defaults and the kind of underwriting math I'd want before chasing a deal.</p>
             <div class="hero-cta-row">
                 <a href="#buy-hold-calculator" class="cta-button">Buy &amp; Hold Calculator</a>
                 <a href="#fix-flip-calculator" class="cta-button cta-secondary">Fix &amp; Flip Analyzer</a>
@@ -336,12 +336,12 @@
         <span class="calc-toast" id="shareToast" aria-live="polite"></span>
       </div>
 
-      <div class="saved-scenarios" style="margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)" style="flex:1; min-width:220px; max-width:320px; padding:7px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
-        <button type="button" class="calc-btn ghost" id="saveScenario" style="padding:6px 12px; font-size:0.8rem;">Save</button>
-        <select id="savedScenarioSelect" style="min-width:180px; padding:6px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;"></select>
-        <button type="button" class="calc-btn ghost" id="loadScenario" style="padding:6px 12px; font-size:0.8rem;">Load</button>
-        <button type="button" class="calc-btn ghost" id="deleteScenario" style="padding:6px 10px; font-size:0.75rem; color:#b91c1c;">Delete</button>
+      <div class="saved-scenarios">
+        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)">
+        <button type="button" class="calc-btn ghost" id="saveScenario">Save</button>
+        <select id="savedScenarioSelect"></select>
+        <button type="button" class="calc-btn ghost" id="loadScenario">Load</button>
+        <button type="button" class="calc-btn ghost" id="deleteScenario">Delete</button>
       </div>
     </div>
     <div class="calc-grid">
@@ -354,7 +354,7 @@
             <button type="button" id="toggleLookupBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:3px 8px;">Load from Zillow/Redfin/Homes.com for realistic tax & insurance</button>
             <div id="propertyLookupFields" style="display:none; margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px;">
               <label style="font-size:0.75rem; font-weight:600; color:#334155;">Address or listing URL</label>
-              <div style="display:flex; gap:6px; margin-top:4px;">
+              <div class="lookup-row" style="display:flex; gap:6px; margin-top:4px;">
                 <input type="text" id="propertyLookupInput" placeholder="123 Main St or paste URL" style="flex:1; font-size:0.85rem; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px;">
                 <button type="button" id="loadPropertyBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:4px 8px;">Load</button>
               </div>
@@ -562,16 +562,9 @@
           </table>
         </div>
       </div>
-      <div class="chart-wrap">
-        <h5>Wealth Projection Over Time</h5>
-        <canvas id="wealthChart" height="120"></canvas>
-        <div class="chart-legend">
-          <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
-          <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
-        </div>
-      </div>
+
+      <!-- Wealth Projection Over Time chart removed for now (was producing insane canvas sizes like 34k+ px height due to Chart.js responsive + container sizing interactions). Rebuild from scratch later if needed. -->
+
       <div class="chart-wrap">
         <h5>Compare Rental ROI</h5>
         <p class="chart-desc">Lender and marketplace benchmarks — DSCR, 1% rule, 50% rule, IRR, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
@@ -595,7 +588,7 @@
         <!-- JS populated checkboxes for Current + saved scenarios (max 3 total) -->
       </div>
 
-      <div id="comparisonGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;"></div>
+      <div id="comparisonGrid"></div>
 
       <div style="margin-top: 10px; font-size: 0.7rem; color: #64748b;">
         Select up to 3 scenarios (Current is always available). Click a saved scenario name to load it into the main calculator.
@@ -877,7 +870,7 @@
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->
-    <script type="module" src="calculator.js"></script>
+    <script type="module" src="calculator.js?v=19"></script>
     <script src="flip-calculator.js?v=5"></script>
     <script>
       (function () {
