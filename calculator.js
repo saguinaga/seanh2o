@@ -80,7 +80,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (p >= n || r === 0) return 0;
     const factor = Math.pow(1 + r, n);
     return principal * (factor - Math.pow(1 + r, p)) / (factor - 1);
-  };
+  }
 
   // ============ STATE ============
   let calcScheduled = false;
@@ -473,7 +473,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
   function wirePresets() {
     const container = $('buyholdPresets');
     if (!container) return;
-    container.querySelectorAll('.preset-chip').forEach(ch => {
+    container.querySelectorAll('.preset-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const key = chip.dataset.preset;
         applyPreset(key);
