@@ -1,1 +1,899 @@
-[Full current local seanh2o/index.html content with v=21 for calculator.js and v=18 for styles.css, chart removed with comment, all else identical to previous successful full push]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sean Aguinaga - Product in Real Estate Tech</title>
+    <meta name="description" content="Sean Aguinaga builds real estate product and systems at Auction.com. Investor calculators, product leadership, 15+ years in marketplace tech.">
+    
+    <!-- Birdseye Theme Assets (already in your repo) -->
+    <link rel="stylesheet" href="files/main_style.css">
+    <link rel="stylesheet" href="styles.css?v=18">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
+    
+    <style>
+        /* Hero Upgrade - Bigger & More Impactful */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('uploads/1/2/1/3/121344668/background-images/background-images/941973592.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            z-index: 2;
+        }
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -2px;
+        }
+        .highlight {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f59e0b;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .hero p {
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: #f59e0b;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .cta-button:hover {
+            background: #d97706;
+            transform: translateY(-3px);
+        }
+
+        /* Professional Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+        .nav-links a {
+            margin-left: 30px;
+            text-decoration: none;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 44px;
+            height: 44px;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        .nav-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #1e3a8a;
+            border-radius: 2px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .nav-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .nav-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+        .nav-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+        @media (max-width: 768px) {
+            .hero { min-height: 85vh; padding-top: 80px; }
+            .hero h1 { font-size: 2.4rem; letter-spacing: -1px; }
+            .highlight { font-size: 1.1rem; letter-spacing: 2px; }
+            .hero p, .hero-lead, .hero-sub, .hero-extra { font-size: 1.05rem; padding: 0 8px; }
+            .hero-sub, .hero-extra { font-size: 0.95rem !important; }
+            .hero-cta-row { flex-direction: column; }
+            .hero-cta-row .cta-button { width: 100%; max-width: 280px; }
+            .cta-button { font-size: 1rem; padding: 14px 28px; }
+            .nav-container { height: 64px; position: relative; }
+            .nav-toggle { display: flex; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                padding: 8px 0 12px;
+                border-top: 1px solid #e2e8f0;
+            }
+            .nav-links.open { display: flex; }
+            .nav-links a {
+                margin: 0;
+                padding: 14px 24px;
+                font-size: 1rem;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            .nav-links a:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+
+     <!-- Updated Professional Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <strong>Sean Aguinaga</strong>
+            </div>
+            <button type="button" class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="navMenu">
+                <a href="#about">About</a>
+                <a href="#mission">Mission</a>
+                <a href="#current-work">Current Work</a>
+                <a href="#projects">Projects</a>
+                <a href="#buy-hold-calculator">Buy &amp; Hold</a>
+                <a href="#fix-flip-calculator">Fix &amp; Flip</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section - Bigger & More Impactful -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Sean Aguinaga</h1>
+            <span class="highlight">Product &amp; Systems in Real Estate Tech</span>
+            <p class="hero-lead">I build real estate products where what the customer sees online and what your team knows on a call are supposed to be the same picture. When they're not, that's usually the work I care about. Auctions, registration, post-sale workflows, SFDC context: the messy middle where a customer already told us something and the system still acts like it's meeting them for the first time.</p>
+            <p class="hero-sub">Product manager, 15+ years, mostly marketplaces and transaction-heavy businesses. I've shipped across bidding, buyer onboarding, internal ops tools, and the handoffs between them. These days at Auction.com I'm leading work on registration and personalization (so we know who someone is before we treat them like a stranger) and journey context for nationwide teams (so the person on the call isn't starting from zero).</p>
+            <p class="hero-extra">I think in systems, not slide decks. What does the customer experience? What data we actually have? What does the team see in SFDC? Where do those stories diverge? That's where the product work usually lives. Scroll down for two investor calculators I built for fun: buy &amp; hold and fix &amp; flip, with Marion County defaults and the kind of underwriting math I'd want before chasing a deal.</p>
+            <div class="hero-cta-row">
+                <a href="#buy-hold-calculator" class="cta-button">Buy &amp; Hold Calculator</a>
+                <a href="#fix-flip-calculator" class="cta-button cta-secondary">Fix &amp; Flip Analyzer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
+        <div class="intro-block intro-wide">
+            <h2>About Me</h2>
+            <p>I'm Sean Aguinaga. I've spent most of my career on the messy side of real estate tech: marketplaces, bidding, registration, post-sale workflows, and the internal tools that are supposed to make all of that coherent. The interesting problems are rarely on a single screen. They're in the gaps between what a customer did, what we stored, and what a teammate can see when they pick up the phone.</p>
+            <p>I think in systems. Not architecture diagrams for their own sake, but the full loop: what the customer experiences, what data we actually have, what the team in SFDC sees, and where those stories diverge. That's usually where the product work is. If the PDP says one thing and the case history says another, someone is going to waste time reconciling it. I'd rather fix that upstream.</p>
+            <p>Background-wise, it's been a long run in marketplace and transaction product: buyer funnels, seller tools, ops dashboards, integrations that were supposed to be temporary and weren't. I've worked with engineers, design, sales, legal, and the folks on the ground who actually talk to customers. I know enough to push back when a spec doesn't match reality, and I'm quick to say when I'm still filling in gaps.</p>
+            <p>On the investor side, I underwrite deals the way a lot of people in this space do: spreadsheets, rules of thumb, and a healthy respect for what can go wrong on rehab timeline or ARV. The calculators on this page are vibe-coded experiments, but the math is real. Marion County defaults because that's what I know; drag the sliders for your market.</p>
+            <p>I'm confident in what I know and open to being wrong. I'd rather get the problem framed right than ship something that sounds good in a deck.</p>
+        </div>
+    </section>
+
+    <!-- Mission -->
+    <section id="mission" style="padding: 100px 20px; text-align: center;">
+        <div class="intro-block intro-wide">
+            <h2>My Mission</h2>
+            <p>Real estate is still harder than it needs to be. Not because people aren't trying, but because the journey is long, the data is fragmented, and customers end up re-explaining themselves at every step. You register, you bid, you win, then you're in a different workflow with different people who may or may not know what already happened.</p>
+            <p>I want products that give customers a clear path forward: sign up once, get treated like we remember them, and see next steps that match their situation. Investor, occupant, first-time buyer, repeat bidder: the product should respond to who you are, not force everyone through the same generic path.</p>
+            <p>And I want internal teams to have enough context to help without putting the customer on hold while someone digs through five systems. Nationwide coverage makes that harder, not easier. The fix isn't another dashboard nobody opens. It's context in the moment: where they are in the journey, what's still open, what happened last.</p>
+            <p>If we get those two things closer together, the experience gets faster for customers and less chaotic for the people doing the work. Less duplicate data entry, fewer repeat-explanation calls, more time spent on the actual problem. That's the mission, basically.</p>
+        </div>
+    </section>
+
+        <!-- Current Initiatives -->
+    <section id="current-work" style="padding: 100px 20px; background: #ffffff;">
+        <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 2.4rem; margin-bottom: 20px;">Current Focus</h2>
+            <p style="font-size: 1.3rem; max-width: 720px; margin: 0 auto 60px; color: #555; line-height: 1.65;">
+                At Auction.com I'm leading product work on two problems I think are upstream of almost everything else:
+                account creation that actually sets up personalization, and better journey context for teams working with customers nationwide.
+            </p>
+
+            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; text-align: left;">
+                
+                <!-- Initiative 1 -->
+                <div style="background: #f8fafc; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <div style="background: #1e3a8a; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 20px;">01</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 16px;">Registration &amp; Personalization</h3>
+                    <p style="line-height: 1.7; color: #444; margin-bottom: 14px;">
+                        Most customers still hit generic flows before we know much about them. I'm working on registration and account setup so we capture the right profile signals early and the product can respond from there.
+                    </p>
+                    <p style="line-height: 1.7; color: #555;">
+                        That means fewer dead ends in sign-up, preferences that persist, and a real baseline for relevance before someone has to call in and explain who they are again.
+                    </p>
+                </div>
+
+                <!-- Initiative 2 -->
+                <div style="background: #f8fafc; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <div style="background: #f59e0b; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 20px;">02</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 16px;">Journey Context for Teams</h3>
+                    <p style="line-height: 1.7; color: #444; margin-bottom: 14px;">
+                        Our teams are spread across the country. Customers move through a long journey. When someone picks up the phone or opens a case, the person on the other end should already know where they are, what's still open, and what happened last.
+                    </p>
+                    <p style="line-height: 1.7; color: #555;">
+                        I'm focused on surfacing that in a way that's useful in the moment. Not another dashboard. Context you can act on, whether you're in SFDC, email, or on a call with a customer who's been waiting on an answer.
+                    </p>
+                </div>
+            </div>
+
+            <p style="margin-top: 60px; font-size: 1.1rem; color: #666; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.65;">
+                The product and the human conversation ought to tell the same story. That's the thread I'm pulling on right now.
+            </p>
+        </div>
+    </section>
+
+     <!-- Vibe Coding Overview -->
+    <section id="projects" style="padding: 100px 20px; background: #f8fafc;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.6rem; margin-bottom: 16px;">Vibe Coding</h2>
+                <p style="font-size: 1.25rem; max-width: 680px; margin: 0 auto; color: #555;">
+                    Personal experiments, tools, and creative projects I build for fun.
+                </p>
+            </div>
+
+            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
+
+                <!-- Buy & Hold Calculator Card -->
+                <a href="#buy-hold-calculator" style="text-decoration: none; color: inherit;">
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s; height: 100%;">
+                        <div style="height: 200px; background: linear-gradient(135deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: 700;">
+                            Buy & Hold
+                        </div>
+                        <div style="padding: 28px;">
+                            <h3 style="margin-bottom: 12px;">Investor Buy & Hold Calculator</h3>
+                            <p style="color: #666; line-height: 1.65;">
+                                Model long-term real estate investments with cash flow, <abbr title="Internal Rate of Return">IRR</abbr>, <abbr title="Cash-on-Cash Return">Cash-on-Cash</abbr>, taxes, and more.
+                            </p>
+                            <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #ecfdf5; color: #0f766e; border-radius: 9999px; font-size: 0.9rem;">
+                                Interactive Tool ->
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Fix & Flip Calculator Card -->
+                <a href="#fix-flip-calculator" style="text-decoration: none; color: inherit;">
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s; height: 100%;">
+                        <div style="height: 200px; background: linear-gradient(135deg, #be123c, #f43f5e); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: 700;">
+                            Fix &amp; Flip
+                        </div>
+                        <div style="padding: 28px;">
+                            <h3 style="margin-bottom: 12px;">Fix &amp; Flip Deal Analyzer</h3>
+                            <p style="color: #666; line-height: 1.65;">
+                                Underwrite ARV, rehab, hold time, hard money, and exit costs. 70% rule, profit waterfall, stress tests.
+                            </p>
+                            <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #fff1f2; color: #be123c; border-radius: 9999px; font-size: 0.9rem;">
+                                Interactive Tool -&gt;
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
+                    <div style="height: 200px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.3rem; font-weight: 600;">
+                        Coming Soon
+                    </div>
+                    <div style="padding: 28px;">
+                        <h3 style="margin-bottom: 12px;">Future Vibes</h3>
+                        <p style="color: #666;">More tools and creative coding sessions.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- BUY & HOLD CALCULATOR -->
+  <section id="buy-hold-calculator" class="calc-section">
+    <div class="calc-header">
+      <span class="calc-badge">Free Tool</span>
+      <h3>Buy &amp; Hold Calculator</h3>
+      <p>Model rental property investments in real time. Defaults are based on real Marion County, IN investor deals (value-add / turnkey 3-beds in the Indianapolis area). Indiana presets first — coastal examples are only for comparison. Drag anything and watch the cash flow and returns update live right next to the inputs.</p>
+      <div class="calc-toolbar">
+        <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
+        <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
+        <button type="button" class="calc-btn ghost" id="compareBtn">Compare Scenarios</button>
+        <button type="button" class="calc-btn ghost" id="exportCSV" title="Download current inputs + results as CSV">Export CSV</button>
+        <button type="button" class="calc-btn ghost" id="exportPDF" title="Download professional PDF report">Export PDF</button>
+        <span class="calc-toast" id="shareToast" aria-live="polite"></span>
+      </div>
+
+      <div class="saved-scenarios">
+        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)">
+        <button type="button" class="calc-btn ghost" id="saveScenario">Save</button>
+        <select id="savedScenarioSelect"></select>
+        <button type="button" class="calc-btn ghost" id="loadScenario">Load</button>
+        <button type="button" class="calc-btn ghost" id="deleteScenario">Delete</button>
+      </div>
+    </div>
+    <div class="calc-grid">
+      <div class="input-panels">
+        <div class="calc-panel">
+          <h4>Property &amp; Financing</h4>
+
+          <!-- Property lookup helper for more realistic inputs (click to expand) -->
+          <div class="property-lookup" style="margin-bottom:8px;">
+            <button type="button" id="toggleLookupBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:3px 8px;">Load from Zillow/Redfin/Homes.com for realistic tax & insurance</button>
+            <div id="propertyLookupFields" style="display:none; margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px;">
+              <label style="font-size:0.75rem; font-weight:600; color:#334155;">Address or listing URL</label>
+              <div class="lookup-row" style="display:flex; gap:6px; margin-top:4px;">
+                <input type="text" id="propertyLookupInput" placeholder="123 Main St or paste URL" style="flex:1; font-size:0.85rem; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px;">
+                <button type="button" id="loadPropertyBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:4px 8px;">Load</button>
+              </div>
+              <button type="button" id="openTaxRecordsBtn" class="calc-btn ghost" style="margin-top:6px; font-size:0.7rem; padding:3px 8px;">Open county tax records</button>
+              <div style="font-size:0.65rem; color:#64748b; margin-top:4px;">
+                Loads price if found. Use county site for exact taxes.
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Purchase Price <span class="value-display" id="purchasePriceDisplay"></span></label>
+            <input type="range" id="purchasePriceSlider" min="50000" max="2000000" step="5000">
+            <input type="number" id="purchasePrice" min="50000" max="2000000" step="5000">
+          </div>
+          <label class="cash-toggle">
+            <input type="checkbox" id="cashPurchase">
+            <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
+          </label>
+
+          <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+            <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
+            <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
+            <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
+            <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
+            <span style="font-size:0.65rem; color:#64748b; margin-left:8px; margin-right:2px;">Compare:</span>
+            <button type="button" class="preset-chip" data-preset="hb-sfr" style="font-size:0.68rem; padding:4px 9px;">HB <abbr title="Single Family Residence">SFR</abbr></button>
+            <button type="button" class="preset-chip" data-preset="oc-condo" style="font-size:0.68rem; padding:4px 9px;">OC Condo</button>
+          </div>
+
+          <div id="financingFields" class="financing-fields">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Down Payment <span class="value-display" id="downPaymentDisplay"></span></label>
+                <input type="range" id="downPaymentSlider" min="0" max="50" step="1">
+                <input type="number" id="downPayment" min="0" max="50" step="1">
+              </div>
+              <div class="input-group">
+                <label>Interest Rate <span class="value-display" id="interestRateDisplay"></span></label>
+                <input type="range" id="interestRateSlider" min="2" max="12" step="0.125">
+                <input type="number" id="interestRate" min="2" max="12" step="0.125">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
+              <input type="range" id="loanTermSlider" min="10" max="30" step="1">
+              <input type="number" id="loanTerm" min="10" max="30" step="1">
+            </div>
+          </div>
+
+          <!-- Tiny financing outcome right with the price + loan sliders -->
+          <div class="inline-finance-impact" style="margin: 6px 0 2px; font-size:0.74rem; display:flex; gap:14px; color:#334155;">
+            <div><strong>Loan amount:</strong> <span id="inlineLoanAmount">-</span></div>
+            <div><strong>Monthly P&amp;I:</strong> <span id="inlineMortgage">-</span></div>
+          </div>
+        </div>
+        <div class="calc-panel">
+          <h4>Income &amp; Expenses</h4>
+          <div class="input-group">
+            <label>Monthly Rent <span class="value-display" id="monthlyRentDisplay"></span></label>
+            <input type="range" id="monthlyRentSlider" min="500" max="10000" step="50">
+            <input type="number" id="monthlyRent" min="500" max="10000" step="50">
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Vacancy Rate <span class="value-display" id="vacancyRateDisplay"></span></label>
+              <input type="range" id="vacancyRateSlider" min="0" max="20" step="1">
+              <input type="number" id="vacancyRate" min="0" max="20" step="1">
+            </div>
+            <div class="input-group">
+              <label>Maintenance <span class="value-display" id="maintenanceDisplay"></span></label>
+              <input type="range" id="maintenanceSlider" min="0" max="15" step="0.5">
+              <input type="number" id="maintenance" min="0" max="15" step="0.5">
+            </div>
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Property Tax Rate <span class="value-display" id="propertyTaxRateDisplay"></span></label>
+              <input type="range" id="propertyTaxRateSlider" min="0" max="3" step="0.05">
+              <input type="number" id="propertyTaxRate" min="0" max="3" step="0.05">
+              <div class="computed-note">→ <span id="propertyTaxDisplay">$0</span>/yr (auto from rate × price)</div>
+            </div>
+            <div class="input-group">
+              <label>Insurance Rate <span class="value-display" id="insuranceRateDisplay"></span></label>
+              <input type="range" id="insuranceRateSlider" min="0" max="2" step="0.05">
+              <input type="number" id="insuranceRate" min="0" max="2" step="0.05">
+              <div class="computed-note">→ <span id="insuranceDisplay">$0</span>/yr (auto from rate × price)</div>
+            </div>
+          </div>
+          <div style="font-size:0.65rem; color:#64748b; margin: -4px 0 8px;">
+            Rates are % of purchase price. Typical central Indiana: 0.8–1.1% tax, 0.5–0.8% insurance. Changes auto-update the annual amounts.
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label><abbr title="Homeowners Association">HOA</abbr> (mo) <span class="value-display" id="hoaDisplay"></span></label>
+              <input type="range" id="hoaSlider" min="0" max="1000" step="25">
+              <input type="number" id="hoa" min="0" max="1000" step="25">
+            </div>
+            <div class="input-group">
+              <label>Management Fee <span class="value-display" id="managementDisplay"></span></label>
+              <input type="range" id="managementSlider" min="0" max="15" step="0.5">
+              <input type="number" id="management" min="0" max="15" step="0.5">
+            </div>
+          </div>
+        </div>
+        <div class="calc-panel">
+          <h4>Long-Term Projection</h4>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Annual Appreciation <span class="value-display" id="appreciationDisplay"></span></label>
+              <input type="range" id="appreciationSlider" min="0" max="10" step="0.25">
+              <input type="number" id="appreciation" min="0" max="10" step="0.25">
+            </div>
+            <div class="input-group">
+              <label>Holding Period <span class="value-display" id="holdingYearsDisplay"></span></label>
+              <input type="range" id="holdingYearsSlider" min="1" max="30" step="1">
+              <input type="number" id="holdingYears" min="1" max="30" step="1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-panel results-panel">
+        <div id="verdictBanner" class="verdict-banner moderate"></div>
+
+        <!-- Live impact moved here for desktop sidebar visibility (real-time while adjusting inputs on left) -->
+        <div class="inline-dynamics">
+          <div class="inline-dynamics-label">Live impact of rent &amp; expenses</div>
+          <div class="inline-metrics-row">
+            <div class="inline-metric">
+              <span class="im-label">Monthly Cash Flow</span>
+              <span class="im-value" id="inlineMonthlyCF" data-sign="true">-</span>
+            </div>
+            <div class="inline-metric">
+              <span class="im-label">Annual <abbr title="Net Operating Income — gross rent after vacancy minus operating expenses (taxes, insurance, maintenance, management, HOA), before debt service">NOI</abbr></span>
+              <span class="im-value" id="inlineNOI">-</span>
+            </div>
+            <div class="inline-metric">
+              <span class="im-label"><abbr title="Cash-on-Cash Return — annual cash flow divided by the cash you actually invested (down payment + closing costs, etc.)">Cash-on-Cash</abbr></span>
+              <span class="im-value" id="inlineCoC" data-sign="true">-</span>
+            </div>
+          </div>
+          <div class="inline-note">Drag the rent &amp; expenses sliders on the left — watch these numbers move in real time.</div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card positive">
+            <div class="metric-label">Monthly Cash Flow</div>
+            <div class="metric-value" id="monthlyCashFlow">-</div>
+            <div class="metric-sub">After all expenses</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label"><abbr title="Capitalization Rate — annual Net Operating Income divided by the purchase price. Measures the property's yield independent of financing.">Cap Rate</abbr></div>
+            <div class="metric-value" id="capRate">-</div>
+            <div class="metric-sub"><abbr title="Net Operating Income">NOI</abbr> / Purchase Price</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label"><abbr title="Cash-on-Cash Return — annual cash flow divided by the actual cash invested (down payment)">Cash-on-Cash</abbr></div>
+            <div class="metric-value" id="cashOnCash">-</div>
+            <div class="metric-sub" id="cashOnCashSub">Annual return on down payment</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label"><abbr title="Return on Investment — total profit (cumulative cash flow + equity buildup from appreciation and principal paydown) divided by cash invested, over the full holding period">Total ROI</abbr></div>
+            <div class="metric-value" id="totalROI">-</div>
+            <div class="metric-sub">Cash flow + equity gain</div>
+          </div>
+          <div class="metric-card positive">
+            <div class="metric-label">Future Equity</div>
+            <div class="metric-value" id="futureEquity">-</div>
+            <div class="metric-sub">Value minus loan balance</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label">Total Wealth</div>
+            <div class="metric-value" id="totalWealth">-</div>
+            <div class="metric-sub">Equity + cumulative cash flow</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Mortgage Payment</div>
+            <div class="metric-value" id="mortgagePayment">-</div>
+            <div class="metric-sub" id="mortgageSub">Principal &amp; interest</div>
+          </div>
+          <div class="metric-card positive">
+            <div class="metric-label">Annual Cash Flow</div>
+            <div class="metric-value" id="annualCashFlow">-</div>
+            <div class="metric-sub">Year 1 net income</div>
+          </div>
+        </div>
+
+          <div class="disclaimer-box">
+            <strong>⚠️ Educational model only — not financial, tax, or legal advice.</strong>
+            Real estate involves material risk of loss of principal. Factors include (but are not limited to) negative cash flow, capex surprises, extended vacancy, interest rate / financing risk, natural disasters, tenant issues, regulatory changes, and local price corrections. All projections are simplified models and exclude closing costs, selling costs, income taxes, and many other real-world frictions. OC/HB examples are for illustration only. Do your own thorough due diligence. Consult a licensed real estate attorney, CPA, financial advisor, home inspector, and mortgage professional before investing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full width analysis sections (these detailed sections like What-If Sensitivity are now full width below the two-column sidebar area for better readability on full-size screens; no longer crammed in the narrow sidebar) -->
+    <div class="analysis-sections" style="margin-top: 16px;">
+      <!-- Moved detailed analysis sections to full width below the two-column (inputs + key metrics sidebar) for better readability on full-size screens. Sidebar is now only for live/important numbers. -->
+      <div class="chart-wrap">
+        <h5>Annual Income &amp; Expense Breakdown</h5>
+        <div class="table-scroll">
+          <table class="breakdown-table">
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Wealth Projection Over Time chart removed for now (was producing insane canvas sizes like 34k+ px height due to Chart.js responsive + container sizing interactions). Rebuild from scratch later if needed. -->
+
+      <div class="chart-wrap">
+        <h5>Compare Rental ROI</h5>
+        <p class="chart-desc">Lender and marketplace benchmarks — DSCR, 1% rule, 50% rule, IRR, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
+        <div class="benchmark-grid" id="benchmarkGrid"></div>
+      </div>
+      <div class="chart-wrap">
+        <h5>What-If Sensitivity</h5>
+        <p class="chart-desc">How monthly cash flow shifts if one variable moves against you.</p>
+        <div class="sensitivity-grid" id="sensitivityGrid"></div>
+      </div>
+    </div>
+
+    <!-- Dedicated side-by-side comparison area (full width for clarity on desktop) -->
+    <div id="comparisonView" style="display: none; margin-top: 24px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h5 style="margin: 0; font-size: 1rem;">Side-by-Side Scenario Comparison</h5>
+        <button type="button" id="closeComparisonBtn" class="calc-btn ghost" style="font-size: 0.75rem; padding: 4px 10px;">Close</button>
+      </div>
+
+      <div id="comparisonSelector" style="margin-bottom: 12px; font-size: 0.85rem;">
+        <!-- JS populated checkboxes for Current + saved scenarios (max 3 total) -->
+      </div>
+
+      <div id="comparisonGrid"></div>
+
+      <div style="margin-top: 10px; font-size: 0.7rem; color: #64748b;">
+        Select up to 3 scenarios (Current is always available). Click a saved scenario name to load it into the main calculator.
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FIX & FLIP CALCULATOR -->
+  <section id="fix-flip-calculator" class="calc-section flip-section">
+    <div class="calc-header">
+      <span class="calc-badge flip-badge">Vibe Tool 02</span>
+      <h3>Fix &amp; Flip Deal Analyzer</h3>
+      <p>Underwrite a flip like you mean it. Deal score, offer optimizer, rehab presets, hard money math, 70% rule, capital stack, monthly burn, and stress scenarios. Defaults are Marion County; drag until the numbers tell the truth.</p>
+      <div class="flip-preset-bar">
+        <div class="preset-group">
+          <span class="preset-label">Market</span>
+          <div class="preset-chips" id="flipMarketPresets">
+            <button type="button" class="preset-chip active" data-market="marion">Marion County, IN</button>
+            <button type="button" class="preset-chip" data-market="midwest">Midwest Suburb</button>
+            <button type="button" class="preset-chip" data-market="sunbelt">Sunbelt Flip</button>
+          </div>
+        </div>
+        <div class="preset-group">
+          <span class="preset-label">Rehab Level</span>
+          <div class="preset-chips" id="flipRehabPresets">
+            <button type="button" class="preset-chip" data-rehab="cosmetic">Cosmetic</button>
+            <button type="button" class="preset-chip active" data-rehab="standard">Standard</button>
+            <button type="button" class="preset-chip" data-rehab="heavy">Heavy Gut</button>
+            <button type="button" class="preset-chip" data-rehab="structural">Full Rebuild</button>
+          </div>
+        </div>
+      </div>
+      <div class="calc-toolbar">
+        <button type="button" class="calc-btn primary" id="flipShareScenario">Copy Share Link</button>
+        <button type="button" class="calc-btn ghost" id="flipResetScenario">Reset Defaults</button>
+        <span class="calc-toast" id="flipShareToast" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="calc-grid">
+      <div class="input-panels">
+        <div class="calc-panel">
+          <h4>Acquisition &amp; ARV</h4>
+        <div class="input-group">
+          <label>Purchase Price <span class="value-display" id="flipPurchasePriceDisplay"></span></label>
+          <input type="range" id="flipPurchasePriceSlider" min="40000" max="800000" step="5000">
+          <input type="number" id="flipPurchasePrice" min="40000" max="800000" step="5000">
+        </div>
+        <div class="input-group">
+          <label>After Repair Value (ARV) <span class="value-display" id="flipArvDisplay"></span></label>
+          <input type="range" id="flipArvSlider" min="60000" max="1200000" step="5000">
+          <input type="number" id="flipArv" min="60000" max="1200000" step="5000">
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Rehab Budget <span class="value-display" id="flipRehabBudgetDisplay"></span></label>
+            <input type="range" id="flipRehabBudgetSlider" min="5000" max="250000" step="1000">
+            <input type="number" id="flipRehabBudget" min="5000" max="250000" step="1000">
+          </div>
+          <div class="input-group">
+            <label>Contingency <span class="value-display" id="flipRehabContingencyDisplay"></span></label>
+            <input type="range" id="flipRehabContingencySlider" min="0" max="30" step="1">
+            <input type="number" id="flipRehabContingency" min="0" max="30" step="1">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Holding Period <span class="value-display" id="flipHoldMonthsDisplay"></span></label>
+          <input type="range" id="flipHoldMonthsSlider" min="1" max="18" step="1">
+          <input type="number" id="flipHoldMonths" min="1" max="18" step="1">
+        </div>
+      </div>
+      <div class="calc-panel">
+        <h4>Financing</h4>
+        <label class="cash-toggle">
+          <input type="checkbox" id="flipFinanceRehab" checked>
+          <span class="cash-toggle-text">Finance rehab <span class="cash-toggle-hint">(draws on credit line)</span></span>
+        </label>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Down Payment <span class="value-display" id="flipPurchaseDownDisplay"></span></label>
+            <input type="range" id="flipPurchaseDownSlider" min="0" max="50" step="1">
+            <input type="number" id="flipPurchaseDown" min="0" max="50" step="1">
+          </div>
+          <div class="input-group">
+            <label>Purchase Rate <span class="value-display" id="flipPurchaseRateDisplay"></span></label>
+            <input type="range" id="flipPurchaseRateSlider" min="4" max="18" step="0.125">
+            <input type="number" id="flipPurchaseRate" min="4" max="18" step="0.125">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Points <span class="value-display" id="flipPurchasePointsDisplay"></span></label>
+            <input type="range" id="flipPurchasePointsSlider" min="0" max="5" step="0.25">
+            <input type="number" id="flipPurchasePoints" min="0" max="5" step="0.25">
+          </div>
+          <div class="input-group">
+            <label>Rehab Rate <span class="value-display" id="flipRehabRateDisplay"></span></label>
+            <input type="range" id="flipRehabRateSlider" min="4" max="18" step="0.125">
+            <input type="number" id="flipRehabRate" min="4" max="18" step="0.125">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Buy Closing Costs <span class="value-display" id="flipBuyClosingDisplay"></span></label>
+          <input type="range" id="flipBuyClosingSlider" min="0" max="15000" step="100">
+          <input type="number" id="flipBuyClosing" min="0" max="15000" step="100">
+        </div>
+      </div>
+      <div class="calc-panel">
+        <h4>Holding &amp; Exit</h4>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Property Tax (mo) <span class="value-display" id="flipPropertyTaxMoDisplay"></span></label>
+            <input type="range" id="flipPropertyTaxMoSlider" min="0" max="800" step="25">
+            <input type="number" id="flipPropertyTaxMo" min="0" max="800" step="25">
+          </div>
+          <div class="input-group">
+            <label>Insurance (mo) <span class="value-display" id="flipInsuranceMoDisplay"></span></label>
+            <input type="range" id="flipInsuranceMoSlider" min="0" max="400" step="25">
+            <input type="number" id="flipInsuranceMo" min="0" max="400" step="25">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Utilities (mo) <span class="value-display" id="flipUtilitiesMoDisplay"></span></label>
+            <input type="range" id="flipUtilitiesMoSlider" min="0" max="600" step="25">
+            <input type="number" id="flipUtilitiesMo" min="0" max="600" step="25">
+          </div>
+          <div class="input-group">
+            <label><abbr title="Homeowners Association">HOA</abbr> (mo) <span class="value-display" id="flipHoaMoDisplay"></span></label>
+            <input type="range" id="flipHoaMoSlider" min="0" max="400" step="25">
+            <input type="number" id="flipHoaMo" min="0" max="400" step="25">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Listing Agent <span class="value-display" id="flipSellingAgentPctDisplay"></span></label>
+            <input type="range" id="flipSellingAgentPctSlider" min="0" max="8" step="0.25">
+            <input type="number" id="flipSellingAgentPct" min="0" max="8" step="0.25">
+          </div>
+          <div class="input-group">
+            <label>Seller Closing <span class="value-display" id="flipSellerClosingPctDisplay"></span></label>
+            <input type="range" id="flipSellerClosingPctSlider" min="0" max="5" step="0.25">
+            <input type="number" id="flipSellerClosingPct" min="0" max="5" step="0.25">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>70% Rule Target <span class="value-display" id="flipSeventyRulePctDisplay"></span></label>
+          <input type="range" id="flipSeventyRulePctSlider" min="60" max="80" step="1">
+          <input type="number" id="flipSeventyRulePct" min="60" max="80" step="1">
+        </div>
+      </div>
+      </div>
+      <div class="calc-panel results-panel flip-results">
+        <div class="flip-score-row">
+          <div class="flip-deal-score" id="flipDealScorePanel">
+            <div class="score-ring-wrap">
+              <svg class="score-ring" viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="score-ring-bg" cx="60" cy="60" r="52"></circle>
+                <circle class="score-ring-fill" id="flipScoreRing" cx="60" cy="60" r="52"></circle>
+              </svg>
+              <div class="score-ring-center">
+                <span class="score-number" id="flipDealScore">0</span>
+                <span class="score-label">Deal Score</span>
+              </div>
+            </div>
+            <div class="score-breakdown" id="flipScoreBreakdown"></div>
+          </div>
+          <div class="flip-offer-optimizer">
+            <h5>Offer Optimizer</h5>
+            <p class="chart-desc">Slide to a target net profit. We'll back into the max purchase price that still hits it.</p>
+            <label>Target Net Profit <span class="value-display" id="flipTargetProfitDisplay"></span></label>
+            <input type="range" id="flipTargetProfitSlider" min="5000" max="80000" step="1000">
+            <div class="optimizer-result">
+              <span class="optimizer-label">Max purchase to hit target</span>
+              <span class="optimizer-value" id="flipOptimizedOffer">-</span>
+            </div>
+            <button type="button" class="calc-btn ghost flip-apply-offer" id="flipApplyOptimizedOffer">Apply as Purchase Price</button>
+          </div>
+        </div>
+        <div id="flipVerdictBanner" class="verdict-banner moderate"></div>
+        <div class="metrics-grid">
+          <div class="metric-card accent">
+            <div class="metric-label">Net Profit</div>
+            <div class="metric-value" id="flipNetProfit">-</div>
+            <div class="metric-sub">After all costs &amp; sale</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Cash Needed</div>
+            <div class="metric-value" id="flipCashNeeded">-</div>
+            <div class="metric-sub">Down, closing, carry, interest</div>
+          </div>
+          <div class="metric-card positive">
+            <div class="metric-label"><abbr title="Return on Investment on the cash invested in the flip (purchase + rehab + holding costs)">ROI on Cash</abbr></div>
+            <div class="metric-value" id="flipRoi">-</div>
+            <div class="metric-sub">Return on invested capital</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label"><abbr title="Annualized Return on Investment accounting for the time the capital was tied up">Annualized ROI</abbr></div>
+            <div class="metric-value" id="flipAnnualizedRoi">-</div>
+            <div class="metric-sub">Scaled to 12-month hold</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">70% Rule Max Offer</div>
+            <div class="metric-value" id="flipMaxOffer">-</div>
+            <div class="metric-sub" id="flipOfferGapNote">vs your purchase price</div>
+          </div>
+          <div class="metric-card positive">
+            <div class="metric-label">Profit / Month</div>
+            <div class="metric-value" id="flipProfitPerMonth">-</div>
+            <div class="metric-sub">Net spread over hold time</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Profit Margin</div>
+            <div class="metric-value" id="flipProfitMargin">-</div>
+            <div class="metric-sub">Net profit / ARV</div>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Total Project Cost</div>
+            <div class="metric-value" id="flipTotalProjectCost">-</div>
+            <div class="metric-sub">All-in before profit</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <h5>Flip Benchmarks</h5>
+          <p class="chart-desc">Investor rules of thumb: 70% rule, profit floors, margin targets, and spread checks.</p>
+          <div class="benchmark-grid" id="flipBenchmarkGrid"></div>
+        </div>
+        <div class="flip-chart-duo">
+          <div class="chart-wrap">
+            <h5>Profit Waterfall</h5>
+            <p class="chart-desc">ARV down through every cost bucket to net profit.</p>
+            <canvas id="flipWaterfallChart" height="120"></canvas>
+          </div>
+          <div class="chart-wrap">
+            <h5>Capital Stack</h5>
+            <p class="chart-desc">Where your cash actually goes before you see a dime back.</p>
+            <canvas id="flipCapitalChart" height="120"></canvas>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <h5>Monthly Burn During Hold</h5>
+          <p class="chart-desc">Carry costs plus loan interest stacked month by month.</p>
+          <canvas id="flipBurnChart" height="100"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <h5>Stress Test</h5>
+          <p class="chart-desc">What happens if rehab runs long, ARV slips, or rates move against you.</p>
+          <div class="sensitivity-grid" id="flipSensitivityGrid"></div>
+        </div>
+        <div class="chart-wrap">
+          <h5>Deal Breakdown</h5>
+          <div class="table-scroll">
+            <table class="breakdown-table">
+              <tbody id="flipBreakdownBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Working Contact Form -->
+    <section id="contact" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h2>Contact Me</h2>
+            <p>Interested in collaborating or learning more about my work? Reach out!</p>
+            
+            <form action="https://formspree.io/f/xgvzqlaa" method="POST" style="margin-top: 30px;">
+                <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;">
+                <input type="email" name="email" placeholder="Your Email" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;">
+                <textarea name="message" placeholder="Your Message" rows="6" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;"></textarea>
+                <button type="submit" style="padding:14px 40px; background:#1e3a8a; color:white; border:none; border-radius:50px; font-size:1.1rem; cursor:pointer;">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer style="text-align:center; padding:40px; background:#1e3a8a; color:white;">
+        <p>(c) 2026 Sean Aguinaga | Product in Real Estate Tech</p>
+    </footer>
+
+    <!--  <script src="calculator.js?v=16"></script> -->
+    <script type="module" src="calculator.js?v=21"></script>
+    <script src="flip-calculator.js?v=5"></script>
+    <script>
+      (function () {
+        var toggle = document.getElementById('navToggle');
+        var menu = document.getElementById('navMenu');
+        if (!toggle || !menu) return;
+        function closeMenu() {
+          menu.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Open menu');
+        }
+        toggle.addEventListener('click', function () {
+          var open = menu.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        });
+        menu.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', closeMenu);
+        });
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) closeMenu();
+        });
+      })();
+    </script>
+</body>
+</html>
