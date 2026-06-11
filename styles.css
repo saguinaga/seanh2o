@@ -30,13 +30,398 @@ section {
   text-align: center;
 }
 
+.section-block {
+  padding: 100px 20px;
+}
+
+.section-block.alt {
+  background: #f9f9f9;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-inner.center {
+  text-align: center;
+}
+
+.section-heading {
+  font-size: 2.4rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.05;
+}
+
+.section-copy {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: #444;
+  max-width: 760px;
+  margin: 0 auto 1.4rem;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.section-card-media {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.section-card-media.blue {
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+}
+
+.section-card-media.red {
+  background: linear-gradient(135deg, #be123c, #f43f5e);
+}
+
+.section-card-media.coming-soon {
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.section-card-body {
+  padding: 0;
+}
+
+.button-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.button-link:hover .section-card {
+  transform: translateY(-3px);
+}
+
+.section-narrow {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.09);
+}
+
+.section-card-title {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.section-card-copy {
+  line-height: 1.7;
+  color: #444;
+  margin: 0;
+}
+
+.section-card-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+
+.section-card-badge.primary {
+  background: #1e3a8a;
+}
+
+.section-card-badge.secondary {
+  background: #f59e0b;
+}
+
+.section-chip {
+  display: inline-flex;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.section-chip.primary {
+  background: #ecfdf5;
+  color: #0f766e;
+}
+
+.section-chip.secondary {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.saved-scenarios {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.saved-scenarios input,
+.saved-scenarios select {
+  flex: 1;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  box-sizing: border-box;
+  min-width: 160px;
+}
+
+.saved-scenarios .calc-btn {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+}
+
+.saved-scenarios .calc-btn.delete {
+  color: #b91c1c;
+}
+
+.property-lookup {
+  margin-bottom: 8px;
+}
+
+.property-lookup-toggle {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  min-width: 240px;
+}
+
+.property-lookup-fields {
+  display: none;
+  margin-top: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.property-lookup label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.property-lookup-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.property-lookup-input {
+  flex: 1;
+  font-size: 0.95rem;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  min-width: 160px;
+  box-sizing: border-box;
+}
+
+.property-lookup button {
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  min-width: 72px;
+}
+
+.property-lookup-secondary {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+}
+
+.property-lookup-note {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.preset-chips {
+  margin: 4px 0 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset-chips .preset-label {
+  font-size: 0.78rem;
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.preset-chips .comparison-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-left: 8px;
+  margin-right: 2px;
+}
+
+.preset-chip {
+  font-size: 0.85rem;
+  padding: 8px 14px;
+}
+
+.preset-chip.small {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+}
+
+.inline-finance-impact {
+  margin: 6px 0 2px;
+  font-size: 0.85rem;
+  display: flex;
+  gap: 14px;
+  color: #334155;
+  flex-wrap: wrap;
+}
+
+.field-note.small {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: -4px 0 8px;
+  line-height: 1.4;
+}
+
+.analysis-sections {
+  margin-top: 16px;
+}
+
+.chart-legend .legend-dot.property-value { background: #3b82f6; }
+.chart-legend .legend-dot.equity { background: #059669; }
+.chart-legend .legend-dot.cash-flow { background: #d97706; }
+.chart-legend .legend-dot.loan-balance { background: #dc2626; }
+
+.comparison-view {
+  display: none;
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.comparison-header h5 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.comparison-header .calc-btn {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+.comparison-selector {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.comparison-note {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.section-contact-form {
+  margin-top: 30px;
+  display: grid;
+  gap: 14px;
+}
+
+.section-contact-form input,
+.section-contact-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.section-contact-form button {
+  width: fit-content;
+  min-width: 200px;
+  justify-self: center;
+  padding: 14px 36px;
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 40px 20px;
+  background: #1e3a8a;
+  color: white;
+}
+
 #about,
 #mission,
 #current-work,
 #projects,
-#contact,
-.calc-section {
-  padding: 80px 20px;
+#contact {
+  text-align: center;
 }
 
 #about,
@@ -183,6 +568,31 @@ section {
     width: 100%;
     max-width: 100%;
   }
+  .saved-scenarios {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .saved-scenarios input,
+  .saved-scenarios select,
+  .saved-scenarios .calc-btn {
+    width: 100%;
+    max-width: none;
+  }
+  .property-lookup-row {
+    flex-direction: column;
+  }
+  .property-lookup-row .property-lookup-input,
+  .property-lookup-row .calc-btn {
+    width: 100%;
+  }
+  .comparison-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .comparison-header .calc-btn {
+    width: 100%;
+    max-width: none;
+  }
   #contact button {
     width: 100%;
     justify-self: stretch;
@@ -262,10 +672,10 @@ section {
 .calc-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(360px, 480px);
-  gap: 28px;
-  max-width: 1600px;
+  gap: 24px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 24px;
   position: relative;
   z-index: 1;
   box-sizing: border-box;
@@ -276,6 +686,7 @@ section {
 #fix-flip-calculator .calc-grid {
   grid-template-columns: minmax(0, 1fr) minmax(360px, 480px);
   gap: 20px;
+  max-width: 1200px;
 }
 
 #buy-hold-calculator .input-panels {
