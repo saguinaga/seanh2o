@@ -80,7 +80,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (p >= n || r === 0) return 0;
     const factor = Math.pow(1 + r, n);
     return principal * (factor - Math.pow(1 + r, p)) / (factor - 1);
-  }
+  };
 
   // ============ STATE ============
   let calcScheduled = false;
@@ -658,7 +658,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     function refreshSelect() {
       if (!select) return;
-      select.innerHTML = '<option value="">\u2014 Saved scenarios \u2014</option>';
+      select.innerHTML = '<option value="">— Saved scenarios —</option>';
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
         if (k && k.startsWith('bh-scenario-')) {
@@ -679,7 +679,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         refreshSelect();
         nameInput.value = '';
         const t = $('shareToast');
-        if (t) { t.textContent = 'Saved \u201C' + nm + '\u201D'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1600); }
+        if (t) { t.textContent = 'Saved “' + nm + '”'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1600); }
       });
     }
 
