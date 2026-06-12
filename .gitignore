@@ -1,3 +1,41 @@
-# Generated / temporary artifacts from earlier automation
+# Dependencies (for local dev server)
+node_modules/
+
+# Historical debug / MCP / push artifacts and temp dumps
+# (all the _push*, _mcp*, _chunk*, _*.json, _*.txt, etc. from previous sessions)
 _*
-index.html - Shortcut.lnk
+
+# Heavy previous test environment (jsdom etc.)
+_test/
+
+# Windows junk
+*.lnk
+
+# OS generated
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment files (future proofing)
+.env
+.env.local
+.env.*.local
+
+# If a build step is ever added
+dist/
+build/
+out/
+.cache/
