@@ -1889,3 +1889,29 @@ body {
   width: auto;
   max-width: none;
 }
+
+/* Phase 1 UI (guidance + HYSA compare integration) — minimal additions so the new
+   toolbar button and "What matters most?" bar + highlights are visible and interactive.
+   Tailwind utilities handle most layout; these provide the active/selected states. */
+#buy-hold-calculator .guidance-bar {
+  margin-top: 6px;
+}
+#buy-hold-calculator .priority-btn {
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+#buy-hold-calculator .priority-btn:hover {
+  border-color: #1e3a8a;
+}
+#buy-hold-calculator .priority-btn.active {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+#buy-hold-calculator .metric-card.highlight {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
