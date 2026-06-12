@@ -103,6 +103,8 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     inputs: { ...DEFAULTS }
   };
 
+  let comparisonScenarios = [];
+
   function getEffectiveInputs(scenario) {
     const eff = { ...scenario.inputs };
     const cfg = scenario.config;
@@ -132,6 +134,69 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     }
 
     return eff;
+  }
+
+  function computeKeyMetrics(inputs) {
+    // Pure helper (duplicates only the math from fullCalc for comparison cards; keeps core untouched)
+    const price = inputs.purchasePrice || DEFAULTS.purchasePrice;
+    const downPct = inputs.downPayment || DEFAULTS.downPayment;
+    const rate = inputs.interestRate || DEFAULTS.interestRate;
+    const term = inputs.loanTerm || DEFAULTS.loanTerm;
+    const rent = inputs.monthlyRent || DEFAULTS.monthlyRent;
+    const vac = inputs.vacancyRate || DEFAULTS.vacancyRate;
+    const maintPct = inputs.maintenance || DEFAULTS.maintenance;
+    const taxR = inputs.propertyTaxRate || DEFAULTS.propertyTaxRate;
+    const insR = inputs.insuranceRate || DEFAULTS.insuranceRate;
+    const hoaMo = inputs.hoa || DEFAULTS.hoa;
+    const mgmtPct = inputs.management || DEFAULTS.management;
+    const apprec = inputs.appreciation || DEFAULTS.appreciation;
+    const holdY = inputs.holdingYears || DEFAULTS.holdingYears;
+    const cash = inputs.cashPurchase || false;
+
+    const downAmt = cash ? price : price * (downPct / 100);
+    const loan = Math.max(0, price - downAmt);
+    const pmt = monthlyPI(loan, rate, term);
+    const debtAnnual = pmt * 12;
+
+    const gross = rent * 12;
+    const vacLoss = gross * (vac / 100);
+    const effGross = gross - vacLoss;
+
+    const taxA = price * (taxR / 100);
+    const insA = price * (insR / 100);
+    const maintA = gross * (maintPct / 100);
+    const mgmtA = gross * (mgmtPct / 100);
+    const hoaA = hoaMo * 12;
+    const opex = taxA + insA + maintA + mgmtA + hoaA;
+
+    const noi = effGross - opex;
+    const cfAnnual = noi - debtAnnual;
+    const cfMonthly = cfAnnual / 12;
+
+    const capRate = price > 0 ? (noi / price) * 100 : 0;
+    const coc = downAmt > 0 ? (cfAnnual / downAmt) * 100 : 0;
+
+    const futureVal = price * Math.pow(1 + apprec / 100, holdY);
+    const remBal = remainingBalance(loan, rate, term, holdY);
+    const futureEquity = Math.max(0, futureVal - remBal);
+    const cumCF = cfAnnual * holdY;
+    const initEquity = downAmt;
+    const equityGain = futureEquity - initEquity;
+    const totalProfit = cumCF + equityGain;
+    const totalROI = initEquity > 0 ? (totalProfit / initEquity) * 100 : 0;
+    const totalWealth = futureEquity + cumCF;
+
+    return {
+      monthlyCF: cfMonthly,
+      annualCF: cfAnnual,
+      capRate,
+      coc,
+      totalROI,
+      futureEquity,
+      totalWealth,
+      mortgage: pmt,
+      noi
+    };
   }
 
   function applyConfigToDOM() {
@@ -723,6 +788,119 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     return true;
   }
 
+  function renderComparison() {
+    const grid = $('comparisonGrid');
+    const view = $('comparisonView');
+    if (!grid || !view || comparisonScenarios.length === 0) return;
+
+    grid.innerHTML = '';
+    grid.className = 'grid grid-cols-1 md:grid-cols-3 gap-3';
+
+    comparisonScenarios.forEach((sc, idx) => {
+      const eff = getEffectiveInputs(sc);
+      const m = computeKeyMetrics(eff);
+
+      const col = document.createElement('div');
+      col.className = 'bg-white border border-[#e2e8f0] rounded-xl p-3 text-sm shadow-sm flex flex-col';
+
+      const isHighIntent = sc.name.includes('High Intent') || idx === 0;
+      const isActive = activeScenario.id === sc.id;
+
+      col.innerHTML = `
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-1">
+            <span class="scenario-name font-semibold text-xs cursor-pointer" data-idx="${idx}">${sc.name}</span>
+            ${isHighIntent ? '<span class="text-[8px] px-1 py-0.5 bg-[#1e3a8a] text-white rounded">High Intent</span>' : ''}
+            ${isActive ? '<span class="text-[8px] px-1 py-0.5 bg-green-600 text-white rounded">Active</span>' : ''}
+          </div>
+          <div class="flex gap-0.5">
+            <button class="load-btn calc-btn ghost !px-1 !py-0.5 !text-sm" data-idx="${idx}">Load</button>
+            <button class="remove-btn calc-btn ghost !px-1 !py-0.5 !text-sm text-red-600" data-idx="${idx}">×</button>
+          </div>
+        </div>
+
+        <div class="inline-dynamics p-2 mb-2 text-sm">
+          <div class="inline-dynamics-label text-xs">Key impacts</div>
+          <div class="inline-metrics-row gap-2">
+            <div class="inline-metric p-1">
+              <span class="im-label text-xs">Monthly CF</span>
+              <span class="im-value text-sm tabular-nums">${fmtMoney(m.monthlyCF)}</span>
+            </div>
+            <div class="inline-metric p-1">
+              <span class="im-label text-xs">NOI</span>
+              <span class="im-value text-sm tabular-nums">${fmtMoney(m.noi)}</span>
+            </div>
+            <div class="inline-metric p-1">
+              <span class="im-label text-xs">CoC</span>
+              <span class="im-value text-sm">${fmtPct(m.coc, 1)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics-grid !gap-0.5 !mb-0.5 text-sm" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="metric-card positive p-1">
+            <div class="metric-label text-xs">Monthly CF</div>
+            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.monthlyCF)}</div>
+          </div>
+          <div class="metric-card neutral p-1">
+            <div class="metric-label text-xs">Cap Rate</div>
+            <div class="metric-value text-sm">${fmtPct(m.capRate, 1)}</div>
+          </div>
+          <div class="metric-card neutral p-1">
+            <div class="metric-label text-xs">Cash-on-Cash</div>
+            <div class="metric-value text-sm">${fmtPct(m.coc, 1)}</div>
+          </div>
+          <div class="metric-card accent p-1">
+            <div class="metric-label text-xs">Total ROI</div>
+            <div class="metric-value text-sm">${fmtPct(m.totalROI, 0)}</div>
+          </div>
+          <div class="metric-card positive p-1">
+            <div class="metric-label text-xs">Future Equity</div>
+            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.futureEquity)}</div>
+          </div>
+          <div class="metric-card neutral p-1">
+            <div class="metric-label text-xs">Total Wealth</div>
+            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.totalWealth)}</div>
+          </div>
+          <div class="metric-card neutral p-1">
+            <div class="metric-label text-xs">Mortgage</div>
+            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.mortgage)}</div>
+          </div>
+          <div class="metric-card positive p-1">
+            <div class="metric-label text-xs">Annual CF</div>
+            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.annualCF)}</div>
+          </div>
+        </div>
+      `;
+
+      // Editable name
+      const nameEl = col.querySelector('.scenario-name');
+      nameEl.addEventListener('click', () => {
+        const newName = prompt('Edit scenario name:', sc.name);
+        if (newName && newName.trim()) {
+          sc.name = newName.trim();
+          renderComparison();
+        }
+      });
+
+      // Load
+      col.querySelector('.load-btn').addEventListener('click', () => {
+        activeScenario = JSON.parse(JSON.stringify(sc));
+        applyConfigToDOM();
+        fullCalc();
+        renderComparison(); // refresh to update active badges
+      });
+
+      // Remove
+      col.querySelector('.remove-btn').addEventListener('click', () => {
+        comparisonScenarios.splice(idx, 1);
+        renderComparison();
+      });
+
+      grid.appendChild(col);
+    });
+  }
+
   function wireCompare() {
     const btn = $('compareBtn');
     const view = $('comparisonView');
@@ -731,22 +909,19 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (!btn || !view || !grid) return;
 
     btn.addEventListener('click', () => {
-      // Generate 3 variants from current
-      const base = collectCurrentInputs();
-      const opt = { ...base, monthlyRent: base.monthlyRent * 1.12, vacancyRate: Math.max(3, base.vacancyRate - 2), maintenance: base.maintenance - 1 };
-      const cons = { ...base, monthlyRent: base.monthlyRent * 0.9, vacancyRate: base.vacancyRate + 3, interestRate: base.interestRate + 1.25 };
+      const baseScenario = JSON.parse(JSON.stringify(activeScenario));
+      baseScenario.name = 'Current (High Intent)';
 
-      grid.innerHTML = '';
-      [ {label:'Current', data:base}, {label:'Optimistic', data:opt}, {label:'Conservative', data:cons} ].forEach(item => {
-        const card = document.createElement('div');
-        card.style.cssText = 'background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:0.8rem';
-        // quick mini calc for display
-        const cf = (item.data.monthlyRent * 12 * (1-item.data.vacancyRate/100) - (item.data.monthlyRent*12*0.07 + item.data.monthlyRent*12*0.08 + item.data.purchasePrice*item.data.propertyTaxRate/100 + item.data.purchasePrice*item.data.insuranceRate/100)) /12 ;
-        card.innerHTML = `<strong>${item.label}</strong><br>
-          Rent: $${Math.round(item.data.monthlyRent)} &nbsp; CF/mo est: <strong>${fmtMoney(cf)}</strong><br>
-          <span style="font-size:0.7rem;color:#64748b">Click a saved scenario name in the toolbar to load full values.</span>`;
-        grid.appendChild(card);
-      });
+      const optInputs = { ...baseScenario.inputs, monthlyRent: baseScenario.inputs.monthlyRent * 1.12, vacancyRate: Math.max(3, baseScenario.inputs.vacancyRate - 2), maintenance: Math.max(1, baseScenario.inputs.maintenance - 1) };
+      const opt = { id: 'opt-' + Date.now(), name: 'Optimistic', config: { ...baseScenario.config }, inputs: optInputs };
+
+      const consInputs = { ...baseScenario.inputs, monthlyRent: baseScenario.inputs.monthlyRent * 0.9, vacancyRate: baseScenario.inputs.vacancyRate + 3, interestRate: baseScenario.inputs.interestRate + 1.25 };
+      const cons = { id: 'cons-' + Date.now(), name: 'Conservative', config: { ...baseScenario.config }, inputs: consInputs };
+
+      comparisonScenarios = [baseScenario, opt, cons];
+
+      renderComparison();
+
       view.style.display = 'block';
       view.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
