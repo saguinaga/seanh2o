@@ -1889,3 +1889,23 @@ body {
   width: auto;
   max-width: none;
 }
+
+/* Guidance bar for light presentational questions (Phase 1) */
+.guidance-bar {
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.priority-btn.active {
+  background: #1e3a8a;
+  color: white;
+  border-color: #1e3a8a;
+}
+
+.metrics-grid .metric-card.highlight,
+.comparison-card .metric-card.highlight {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  transform: scale(1.02);
+  transition: all 0.2s;
+}

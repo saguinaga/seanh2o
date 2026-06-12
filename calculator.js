@@ -105,6 +105,91 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
   let comparisonScenarios = [];
 
+  let currentPriorities = new Set();
+
+  const priorityMap = {
+    cashflow: ['monthlyCashFlow', 'annualCashFlow'],
+    risk: ['capRate', 'cashOnCash', 'totalROI'],
+    management: ['totalWealth'], // example; low management might de-emphasize complex ones
+    horizon: ['futureEquity', 'totalROI']
+  };
+
+  function applyGuidance() {
+    // clear main
+    document.querySelectorAll('#buy-hold-calculator .metrics-grid .metric-card').forEach(el => el.classList.remove('highlight'));
+
+    // clear comparison
+    document.querySelectorAll('#comparisonView .metric-card').forEach(el => el.classList.remove('highlight'));
+
+    currentPriorities.forEach(p => {
+      const ids = priorityMap[p] || [];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          const card = el.closest('.metric-card');
+          if (card) card.classList.add('highlight');
+        }
+      });
+
+      // for comparison cards, match by label text (since no IDs)
+      document.querySelectorAll('#comparisonView .metric-card').forEach(card => {
+        const label = card.querySelector('.metric-label')?.textContent.toLowerCase() || '';
+        let shouldHighlight = false;
+        if (p === 'cashflow' && (label.includes('cash flow') || label.includes('cf'))) shouldHighlight = true;
+        if (p === 'risk' && (label.includes('cap') || label.includes('coc') || label.includes('roi'))) shouldHighlight = true;
+        if (p === 'management' && label.includes('wealth')) shouldHighlight = true;
+        if (p === 'horizon' && (label.includes('equity') || label.includes('roi'))) shouldHighlight = true;
+        if (shouldHighlight) card.classList.add('highlight');
+      });
+    });
+
+    // basic reordering for main metrics (aggressive but simple: move high priority to top)
+    const mainGrid = document.querySelector('#buy-hold-calculator .metrics-grid');
+    if (mainGrid && currentPriorities.size > 0) {
+      const cards = Array.from(mainGrid.children);
+      cards.sort((a, b) => {
+        const la = a.querySelector('.metric-label')?.textContent.toLowerCase() || '';
+        const lb = b.querySelector('.metric-label')?.textContent.toLowerCase() || '';
+        let sa = 0, sb = 0;
+        if (currentPriorities.has('cashflow') && (la.includes('cash flow') || la.includes('cf'))) sa += 10;
+        if (currentPriorities.has('risk') && (la.includes('cap') || la.includes('coc') || la.includes('roi'))) sa += 5;
+        if (currentPriorities.has('horizon') && (la.includes('equity') || la.includes('roi'))) sa += 5;
+        if (currentPriorities.has('management') && la.includes('wealth')) sa += 3;
+        // same for b
+        if (currentPriorities.has('cashflow') && (lb.includes('cash flow') || lb.includes('cf'))) sb += 10;
+        if (currentPriorities.has('risk') && (lb.includes('cap') || lb.includes('coc') || lb.includes('roi'))) sb += 5;
+        if (currentPriorities.has('horizon') && (lb.includes('equity') || lb.includes('roi'))) sb += 5;
+        if (currentPriorities.has('management') && lb.includes('wealth')) sb += 3;
+        return sb - sa;
+      });
+      cards.forEach(c => mainGrid.appendChild(c));
+    }
+
+    // re-render comparison to reflect highlights (since dynamic)
+    if (comparisonScenarios.length > 0) {
+      // re-apply by calling render again? but to avoid loop, just re-apply classes post render in the loop, but for now call renderComparison which will rebuild without highlights, then we apply in the clear above? Wait, since we clear before, and this is after, but to keep, we'll call a post render highlight.
+      // simple: after sort, if comparison, re-render and the clear will have happened? For now, the highlight in comparison is done in the clear loop, but since render not called, the highlights from previous will stay until next render.
+      // To make it work, we'll re-render comparison after guidance changes.
+      renderComparison();
+    }
+  }
+
+  function setupGuidance() {
+    document.querySelectorAll('.priority-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = btn.dataset.priority;
+        if (currentPriorities.has(p)) {
+          currentPriorities.delete(p);
+          btn.classList.remove('active');
+        } else {
+          currentPriorities.add(p);
+          btn.classList.add('active');
+        }
+        applyGuidance();
+      });
+    });
+  }
+
   function getEffectiveInputs(scenario) {
     const eff = { ...scenario.inputs };
     const cfg = scenario.config;
@@ -873,6 +958,20 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         </div>
       `;
 
+      // apply current highlights to this col's metric cards (for when render is triggered by guidance changes)
+      currentPriorities.forEach(p => {
+        const labelsToMatch = priorityMap[p] || [];
+        col.querySelectorAll('.metric-card').forEach(card => {
+          const label = card.querySelector('.metric-label')?.textContent.toLowerCase() || '';
+          let match = false;
+          if (p === 'cashflow' && (label.includes('cash flow') || label.includes('cf'))) match = true;
+          if (p === 'risk' && (label.includes('cap') || label.includes('coc') || label.includes('roi'))) match = true;
+          if (p === 'management' && label.includes('wealth')) match = true;
+          if (p === 'horizon' && (label.includes('equity') || label.includes('roi'))) match = true;
+          if (match) card.classList.add('highlight');
+        });
+      });
+
       // Editable name
       const nameEl = col.querySelector('.scenario-name');
       nameEl.addEventListener('click', () => {
@@ -1115,6 +1214,9 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     // Bind new Existing fields (safe additive)
     bindPair('currentEquity', 'currentEquitySlider', 'currentEquityDisplay');
     bindPair('currentLoanBalance', 'currentLoanBalanceSlider', 'currentLoanBalanceDisplay');
+
+    // Light guidance (presentational highlights/reorder)
+    setupGuidance();
 
     // 6. Initial full population + visuals
     // Make sure Marion default chip looks active

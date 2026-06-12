@@ -371,6 +371,18 @@
         <button type="button" class="calc-btn ghost" id="loadScenario">Load</button>
         <button type="button" class="calc-btn ghost" id="deleteScenario">Delete</button>
       </div>
+
+      <!-- Light guidance questions (Phase 1) - presentational only for now.
+           Toggles highlight and can reorder metrics in main results and comparison cards.
+           Questions: cash flow priority, risk tolerance, management effort (as discussed).
+           No changes to calculations. -->
+      <div class="guidance-bar mt-2 text-sm flex items-center gap-2 flex-wrap">
+        <span class="font-medium text-[#334155]">What matters most?</span>
+        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="cashflow">Cash Flow Priority</button>
+        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="risk">Low Risk / Downside</button>
+        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="management">Low Management Effort</button>
+        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="horizon">Long Time Horizon</button>
+      </div>
     </div>
 
     <!-- Analysis Configuration Modal (Phase 1 start - placeholder structure using scoped Tailwind for immediate good responsive behavior on all viewports).
