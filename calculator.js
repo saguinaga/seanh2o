@@ -801,7 +801,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       const m = computeKeyMetrics(eff);
 
       const col = document.createElement('div');
-      col.className = 'bg-white border border-[#e2e8f0] rounded-xl p-3 text-sm shadow-sm flex flex-col';
+      col.className = 'bg-white border border-[#e2e8f0] rounded-xl p-4 text-base shadow-sm flex flex-col';
 
       const isHighIntent = sc.name.includes('High Intent') || idx === 0;
       const isActive = activeScenario.id === sc.id;
@@ -809,13 +809,13 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       col.innerHTML = `
         <div class="flex items-center justify-between mb-1">
           <div class="flex items-center gap-1">
-            <span class="scenario-name font-semibold text-xs cursor-pointer" data-idx="${idx}">${sc.name}</span>
-            ${isHighIntent ? '<span class="text-[8px] px-1 py-0.5 bg-[#1e3a8a] text-white rounded">High Intent</span>' : ''}
-            ${isActive ? '<span class="text-[8px] px-1 py-0.5 bg-green-600 text-white rounded">Active</span>' : ''}
+            <span class="scenario-name font-semibold text-sm cursor-pointer" data-idx="${idx}">${sc.name}</span>
+            ${isHighIntent ? '<span class="text-xs px-1 py-0.5 bg-[#1e3a8a] text-white rounded">High Intent</span>' : ''}
+            ${isActive ? '<span class="text-xs px-1 py-0.5 bg-green-600 text-white rounded">Active</span>' : ''}
           </div>
           <div class="flex gap-0.5">
-            <button class="load-btn calc-btn ghost !px-1 !py-0.5 !text-sm" data-idx="${idx}">Load</button>
-            <button class="remove-btn calc-btn ghost !px-1 !py-0.5 !text-sm text-red-600" data-idx="${idx}">×</button>
+            <button class="load-btn calc-btn ghost !px-2 !py-1 !text-sm" data-idx="${idx}">Load</button>
+            <button class="remove-btn calc-btn ghost !px-2 !py-1 !text-sm text-red-600" data-idx="${idx}">×</button>
           </div>
         </div>
 
@@ -824,51 +824,51 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
           <div class="inline-metrics-row gap-2">
             <div class="inline-metric p-1">
               <span class="im-label text-xs">Monthly CF</span>
-              <span class="im-value text-sm tabular-nums">${fmtMoney(m.monthlyCF)}</span>
+              <span class="im-value text-base tabular-nums">${fmtMoney(m.monthlyCF)}</span>
             </div>
             <div class="inline-metric p-1">
               <span class="im-label text-xs">NOI</span>
-              <span class="im-value text-sm tabular-nums">${fmtMoney(m.noi)}</span>
+              <span class="im-value text-base tabular-nums">${fmtMoney(m.noi)}</span>
             </div>
             <div class="inline-metric p-1">
               <span class="im-label text-xs">CoC</span>
-              <span class="im-value text-sm">${fmtPct(m.coc, 1)}</span>
+              <span class="im-value text-base">${fmtPct(m.coc, 1)}</span>
             </div>
           </div>
         </div>
 
-        <div class="metrics-grid !gap-0.5 !mb-0.5 text-sm" style="grid-template-columns: repeat(2, 1fr);">
-          <div class="metric-card positive p-1">
+        <div class="metrics-grid !gap-1 !mb-1 text-sm" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="metric-card positive p-2">
             <div class="metric-label text-xs">Monthly CF</div>
-            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.monthlyCF)}</div>
+            <div class="metric-value text-base tabular-nums">${fmtMoney(m.monthlyCF)}</div>
           </div>
-          <div class="metric-card neutral p-1">
+          <div class="metric-card neutral p-2">
             <div class="metric-label text-xs">Cap Rate</div>
-            <div class="metric-value text-sm">${fmtPct(m.capRate, 1)}</div>
+            <div class="metric-value text-base">${fmtPct(m.capRate, 1)}</div>
           </div>
-          <div class="metric-card neutral p-1">
+          <div class="metric-card neutral p-2">
             <div class="metric-label text-xs">Cash-on-Cash</div>
-            <div class="metric-value text-sm">${fmtPct(m.coc, 1)}</div>
+            <div class="metric-value text-base">${fmtPct(m.coc, 1)}</div>
           </div>
-          <div class="metric-card accent p-1">
+          <div class="metric-card accent p-2">
             <div class="metric-label text-xs">Total ROI</div>
-            <div class="metric-value text-sm">${fmtPct(m.totalROI, 0)}</div>
+            <div class="metric-value text-base">${fmtPct(m.totalROI, 0)}</div>
           </div>
-          <div class="metric-card positive p-1">
+          <div class="metric-card positive p-2">
             <div class="metric-label text-xs">Future Equity</div>
-            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.futureEquity)}</div>
+            <div class="metric-value text-base tabular-nums">${fmtMoney(m.futureEquity)}</div>
           </div>
-          <div class="metric-card neutral p-1">
+          <div class="metric-card neutral p-2">
             <div class="metric-label text-xs">Total Wealth</div>
-            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.totalWealth)}</div>
+            <div class="metric-value text-base tabular-nums">${fmtMoney(m.totalWealth)}</div>
           </div>
-          <div class="metric-card neutral p-1">
+          <div class="metric-card neutral p-2">
             <div class="metric-label text-xs">Mortgage</div>
-            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.mortgage)}</div>
+            <div class="metric-value text-base tabular-nums">${fmtMoney(m.mortgage)}</div>
           </div>
-          <div class="metric-card positive p-1">
+          <div class="metric-card positive p-2">
             <div class="metric-label text-xs">Annual CF</div>
-            <div class="metric-value text-sm tabular-nums">${fmtMoney(m.annualCF)}</div>
+            <div class="metric-value text-base tabular-nums">${fmtMoney(m.annualCF)}</div>
           </div>
         </div>
       `;
