@@ -89,6 +89,13 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
   // Existing mode: down/loan hidden, current fields used (focus future CF).
   // Viewports protected via previous fixes + Tailwind on modal.
 
+  const SCENARIO_DEFAULT_CONFIG = {
+    propertyCategory: 'single-family',
+    rentalStrategy: 'long-term',
+    analysisType: 'new-purchase',
+    isIndianaFocus: true
+  };
+
   let activeScenario = {
     id: 'current',
     name: 'Current',
