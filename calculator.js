@@ -82,17 +82,12 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     return principal * (factor - Math.pow(1 + r, p)) / (factor - 1);
   }
 
-  // ============ PHASE 0 STEP 1 (tiny foundation - additive only) ============
-  // Goal: Introduce Scenario model + adapter WITHOUT touching fullCalc(),
-  //       scheduleCalc(), bindings, rendering, saved scenarios, or any
-  //       existing logic. This is the first minimal, reviewable change.
-  //
-  // Revert: git checkout main  (or git reset --hard)
-  // All changes stay on branch phase0-professional-calculator-upgrade.
-  //
-  // See CLAUDE.md for full plan and user's exact specs.
-  // This step only defines the shape and a no-op adapter that returns
-  // inputs unchanged (Long-Term/New Purchase baseline for now).
+  // ============ SCENARIO MODEL + CONFIG (Phase 1 - more aggressive but safe) ============
+  // Extends the inert skeleton. Active scenario holds config + inputs.
+  // getEffectiveInputs applies overrides (per user specs) but NEVER modifies fullCalc or core.
+  // Config changes update DOM values + scheduleCalc (existing live system).
+  // Existing mode: down/loan hidden, current fields used (focus future CF).
+  // Viewports protected via previous fixes + Tailwind on modal.
 
   const SCENARIO_DEFAULT_CONFIG = {
     propertyCategory: 'single-family',
@@ -101,20 +96,158 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     isIndianaFocus: true
   };
 
+  let activeScenario = {
+    id: 'current',
+    name: 'Current',
+    config: { ...SCENARIO_DEFAULT_CONFIG },
+    inputs: { ...DEFAULTS }
+  };
+
   function getEffectiveInputs(scenario) {
-    // Phase 0: return inputs as-is.
-    // Later steps will apply overrides here based on config
-    // (e.g. Short-Term vacancy/maintenance, Existing mode fields,
-    // Indiana Focus rate bias, etc.) and still feed the untouched fullCalc().
-    if (!scenario || !scenario.inputs) return {};
-    return { ...scenario.inputs };
+    const eff = { ...scenario.inputs };
+    const cfg = scenario.config;
+
+    // Strategy overrides (input adjustments only, user can still slider-override)
+    if (cfg.rentalStrategy === 'short-term') {
+      eff.vacancyRate = Math.max(eff.vacancyRate, 12);
+      eff.maintenance = Math.max(eff.maintenance, 8);
+      eff.insuranceRate = Math.max(eff.insuranceRate, 0.65);
+      // rent significantly higher - caller sets via apply
+    } else if (cfg.rentalStrategy === 'padsplit') {
+      eff.vacancyRate = Math.max(eff.vacancyRate, 10);
+      eff.maintenance = Math.max(eff.maintenance, 9);
+      // higher effective income - handled in apply
+    }
+
+    // Analysis Type: Existing focuses future cash flows from current position
+    if (cfg.analysisType === 'existing-investment') {
+      eff.downPayment = 0;
+      // loan/interest will use current fields below
+    }
+
+    // Indiana Focus bias (rates only, as specified)
+    if (cfg.isIndianaFocus) {
+      eff.propertyTaxRate = 0.92;
+      eff.insuranceRate = 0.58;
+    }
+
+    return eff;
   }
 
-  // Future tiny steps will add:
-  // - scenarios array + activeScenarioId
-  // - functions to create/clone/load scenarios with config
-  // - wire the modal to update activeScenario.config and re-calc via adapter
-  // Nothing below this line is changed in this commit.
+  function applyConfigToDOM() {
+    const cfg = activeScenario.config;
+    const eff = getEffectiveInputs(activeScenario);
+
+    // Update strategy-driven values (examples; full in future)
+    if (cfg.rentalStrategy === 'short-term') {
+      setVal('monthlyRent', Math.round(activeScenario.inputs.monthlyRent * 1.4)); // significantly higher
+      setVal('vacancyRate', eff.vacancyRate);
+      setVal('maintenance', eff.maintenance);
+      setVal('insuranceRate', eff.insuranceRate);
+    } else if (cfg.rentalStrategy === 'padsplit') {
+      setVal('monthlyRent', Math.round(activeScenario.inputs.monthlyRent * 1.6)); // room-by-room higher income
+      setVal('vacancyRate', eff.vacancyRate);
+      setVal('maintenance', eff.maintenance);
+    } else {
+      // long-term: restore baseline-ish
+      setVal('monthlyRent', activeScenario.inputs.monthlyRent);
+      setVal('vacancyRate', activeScenario.inputs.vacancyRate || DEFAULTS.vacancyRate);
+      setVal('maintenance', activeScenario.inputs.maintenance || DEFAULTS.maintenance);
+      setVal('insuranceRate', activeScenario.inputs.insuranceRate || DEFAULTS.insuranceRate);
+    }
+
+    // Existing mode UI + fields
+    const fin = $('financingFields');
+    const exist = $('existingFields');
+    if (cfg.analysisType === 'existing-investment') {
+      if (fin) fin.classList.add('is-disabled'); // reuse existing disabled style
+      if (exist) exist.classList.remove('hidden');
+      // set current fields from inputs (or defaults)
+      setVal('currentEquity', activeScenario.inputs.currentEquity || (activeScenario.inputs.purchasePrice * 0.3));
+      setVal('currentLoanBalance', activeScenario.inputs.currentLoanBalance || (activeScenario.inputs.purchasePrice * 0.5));
+      // down/loan effectively 0 for calc
+      setVal('downPayment', 0);
+    } else {
+      if (fin) fin.classList.remove('is-disabled');
+      if (exist) exist.classList.add('hidden');
+    }
+
+    // Indiana rates already in eff, but ensure display
+    if (cfg.isIndianaFocus) {
+      setVal('propertyTaxRate', eff.propertyTaxRate);
+      setVal('insuranceRate', eff.insuranceRate);
+    }
+
+    refreshAllDisplays();
+    updateCashUI();
+    scheduleCalc();
+  }
+
+  // ============ MODAL WIRING (config button + live apply) ============
+  function setupAnalysisConfigModal() {
+    const btn = $('configureAnalysis');
+    const modal = $('analysisConfigModal');
+    if (!btn || !modal) return;
+
+    const closeBtn = $('closeConfigModal');
+    const resetBtn = $('resetConfigModal');
+    const applyBtn = $('applyConfigModal');
+    const indyToggle = $('indianaFocusToggle');
+
+    function show() { modal.style.display = 'flex'; syncModalFromConfig(); }
+    function hide() { modal.style.display = 'none'; }
+
+    btn.addEventListener('click', show);
+    if (closeBtn) closeBtn.addEventListener('click', hide);
+    if (applyBtn) applyBtn.addEventListener('click', () => { applyConfigToDOM(); hide(); });
+
+    // Toggle buttons
+    modal.querySelectorAll('.config-toggle').forEach(tog => {
+      tog.addEventListener('click', () => {
+        const cfgKey = tog.dataset.config;
+        const val = tog.dataset.value;
+        activeScenario.config[cfgKey] = val;
+        syncModalFromConfig();
+        applyConfigToDOM(); // live
+      });
+    });
+
+    if (indyToggle) {
+      indyToggle.addEventListener('change', () => {
+        activeScenario.config.isIndianaFocus = indyToggle.checked;
+        applyConfigToDOM();
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        activeScenario.config = { ...SCENARIO_DEFAULT_CONFIG };
+        // reset inputs to DEFAULTS too
+        Object.assign(activeScenario.inputs, DEFAULTS);
+        syncModalFromConfig();
+        applyConfigToDOM();
+      });
+    }
+
+    // initial sync
+    function syncModalFromConfig() {
+      const cfg = activeScenario.config;
+      modal.querySelectorAll('.config-toggle').forEach(tog => {
+        const active = tog.dataset.config === 'propertyCategory' ? cfg.propertyCategory === tog.dataset.value :
+                       tog.dataset.config === 'rentalStrategy' ? cfg.rentalStrategy === tog.dataset.value :
+                       cfg.analysisType === tog.dataset.value;
+        tog.classList.toggle('active', active);
+        tog.classList.toggle('border-[#1e3a8a]', active);
+        tog.classList.toggle('bg-[#1e3a8a]', active);
+        tog.classList.toggle('text-white', active);
+        tog.classList.toggle('border-[#cbd5e1]', !active);
+      });
+      if (indyToggle) indyToggle.checked = cfg.isIndianaFocus;
+    }
+
+    // expose for future
+    window.__syncConfigModal = syncModalFromConfig;
+  }
 
   // ============ STATE ============
   let calcScheduled = false;
@@ -801,18 +934,28 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
                                  // Pinned for future granular county/state tax & insurance data work.
     wireAllInputsForCalc();
 
+    // Phase 1: wire config modal (more aggressive but safe)
+    setupAnalysisConfigModal();
+
+    // Bind new Existing fields (safe additive)
+    bindPair('currentEquity', 'currentEquitySlider', 'currentEquityDisplay');
+    bindPair('currentLoanBalance', 'currentLoanBalanceSlider', 'currentLoanBalanceDisplay');
+
     // 6. Initial full population + visuals
     // Make sure Marion default chip looks active
     document.querySelectorAll('#buyholdPresets .preset-chip').forEach(ch => {
       ch.classList.toggle('active', ch.dataset.preset === 'marion-default');
     });
 
+    // seed initial config apply (harmless for Long-Term/New)
+    applyConfigToDOM();
+
     fullCalc();
 
     // 7. One more sync pass for any late displays
     setTimeout(refreshAllDisplays, 40);
 
-    console.log('✅ Indiana home value prop ready. Sliders reactive. All values & charts populate live.');
+    console.log('✅ Indiana home value prop ready. Sliders reactive. All values & charts populate live. Phase 1 config modal wired (local only).');
   }
 
   // Boot

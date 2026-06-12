@@ -357,6 +357,7 @@
       <div class="calc-toolbar">
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
+        <button type="button" class="calc-btn ghost" id="configureAnalysis">Configure Analysis</button>
         <button type="button" class="calc-btn ghost" id="compareBtn">Compare Scenarios</button>
         <button type="button" class="calc-btn ghost" id="exportCSV" title="Download current inputs + results as CSV">Export CSV</button>
         <button type="button" class="calc-btn ghost" id="exportPDF" title="Download professional PDF report">Export PDF</button>
@@ -369,6 +370,61 @@
         <select id="savedScenarioSelect"></select>
         <button type="button" class="calc-btn ghost" id="loadScenario">Load</button>
         <button type="button" class="calc-btn ghost" id="deleteScenario">Delete</button>
+      </div>
+    </div>
+
+    <!-- Analysis Configuration Modal (Phase 1 start - placeholder structure using scoped Tailwind for immediate good responsive behavior on all viewports).
+         Will be hidden by default, shown on #configureAnalysis click. Follows reference: clean sections, button-group toggles.
+         Centered overlay. Auto-apply live in future wiring. Reset button inside.
+         Indiana Focus as prominent switch.
+         This is local phase work only for now. -->
+    <div id="analysisConfigModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="text-xl font-semibold text-[#0e4361]">Analysis Configuration</h4>
+          <button type="button" id="closeConfigModal" class="text-2xl leading-none">&times;</button>
+        </div>
+
+        <!-- Property Category -->
+        <div class="mb-4">
+          <div class="text-sm font-medium text-[#334155] mb-1">Property Category</div>
+          <div class="flex gap-2">
+            <button type="button" class="config-toggle active px-3 py-1.5 text-sm rounded-lg border border-[#1e3a8a] bg-[#1e3a8a] text-white" data-config="propertyCategory" data-value="single-family">Single Family</button>
+            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="propertyCategory" data-value="multi-family-commercial">Multi-Family / Commercial</button>
+          </div>
+        </div>
+
+        <!-- Rental Strategy -->
+        <div class="mb-4">
+          <div class="text-sm font-medium text-[#334155] mb-1">Rental Strategy</div>
+          <div class="flex gap-2 flex-wrap">
+            <button type="button" class="config-toggle active px-3 py-1.5 text-sm rounded-lg border border-[#1e3a8a] bg-[#1e3a8a] text-white" data-config="rentalStrategy" data-value="long-term">Long-Term</button>
+            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="rentalStrategy" data-value="short-term">Short-Term</button>
+            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="rentalStrategy" data-value="padsplit">PadSplit</button>
+          </div>
+        </div>
+
+        <!-- Analysis Type -->
+        <div class="mb-4">
+          <div class="text-sm font-medium text-[#334155] mb-1">Analysis Type</div>
+          <div class="flex gap-2">
+            <button type="button" class="config-toggle active px-3 py-1.5 text-sm rounded-lg border border-[#1e3a8a] bg-[#1e3a8a] text-white" data-config="analysisType" data-value="new-purchase">New Purchase</button>
+            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="analysisType" data-value="existing-investment">Existing Investment</button>
+          </div>
+        </div>
+
+        <!-- Indiana Focus -->
+        <div class="mb-6">
+          <label class="flex items-center gap-2 text-sm font-medium text-[#334155]">
+            <input type="checkbox" id="indianaFocusToggle" class="accent-[#1e3a8a]" checked>
+            <span>Indiana Focus (realistic local tax/insurance defaults)</span>
+          </label>
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button type="button" id="resetConfigModal" class="calc-btn ghost">Reset to Defaults</button>
+          <button type="button" id="applyConfigModal" class="calc-btn primary">Done</button>
+        </div>
       </div>
     </div>
     <div class="calc-grid">
@@ -419,6 +475,22 @@
               <label>Loan Term <span class="value-display" id="loanTermDisplay"></span></label>
               <input type="range" id="loanTermSlider" min="10" max="30" step="1">
               <input type="number" id="loanTerm" min="10" max="30" step="1">
+            </div>
+          </div>
+
+          <!-- Existing Investment fields (shown only when Analysis Type = Existing; hidden for New Purchase) -->
+          <div id="existingFields" class="financing-fields hidden">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Current Equity <span class="value-display" id="currentEquityDisplay"></span></label>
+                <input type="range" id="currentEquitySlider" min="0" max="1000000" step="1000">
+                <input type="number" id="currentEquity" min="0" max="1000000" step="1000">
+              </div>
+              <div class="input-group">
+                <label>Current Loan Balance <span class="value-display" id="currentLoanBalanceDisplay"></span></label>
+                <input type="range" id="currentLoanBalanceSlider" min="0" max="1000000" step="1000">
+                <input type="number" id="currentLoanBalance" min="0" max="1000000" step="1000">
+              </div>
             </div>
           </div>
 
