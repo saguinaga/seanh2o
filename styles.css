@@ -79,9 +79,11 @@
 }
 
 /* Buy & Hold specific sidebar layout on desktop - wider sidebar for full screens */
-#buy-hold-calculator .calc-grid {
-  grid-template-columns: minmax(0, 680px) 480px; /* cap left column to match .input-panels max-width so no giant empty space on wide/full-screen viewports */
-  gap: 20px;
+@media (min-width: 901px) {
+  #buy-hold-calculator .calc-grid {
+    grid-template-columns: minmax(0, 680px) 480px; /* cap left column to match .input-panels max-width so no giant empty space on wide/full-screen viewports */
+    gap: 20px;
+  }
 }
 
 #buy-hold-calculator .input-panels {
@@ -89,7 +91,13 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 680px; /* constrain input width so main area doesn't have excessive empty space on full screens */
+}
+
+/* Desktop only: cap the inputs width to keep results close on wide screens (full-screen fix) */
+@media (min-width: 901px) {
+  #buy-hold-calculator .input-panels {
+    max-width: 680px;
+  }
 }
 
 #buy-hold-calculator .results-panel {
@@ -210,6 +218,17 @@
   #fix-flip-calculator .input-panels,
   #fix-flip-calculator .results-panel {
     grid-column: 1;
+  }
+
+  /* Force clean single-column stack for buy-hold on tablet/mobile; kill sticky metrics that can cause garbage layout on small viewports */
+  #buy-hold-calculator .calc-grid {
+    grid-template-columns: 1fr;
+  }
+  #buy-hold-calculator .metrics-grid {
+    position: static;
+  }
+  #buy-hold-calculator .results-panel {
+    max-width: 100%;
   }
 
   /* Tablet & mobile polish — scannable, beautiful stacks */
