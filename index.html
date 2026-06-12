@@ -8,9 +8,36 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=13">
+    <link rel="stylesheet" href="styles.css?v=21">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Tailwind via CDN (playground) - scoped for calculator section only to help with viewport/responsive work as parallel priority.
+         We will use Tailwind utilities primarily inside #buy-hold-calculator for toolbar, modal, grids, etc.
+         Existing custom .calc-* CSS remains authoritative for core calculator visuals. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Minimal Tailwind config for our calculator viewports. Only affects elements we explicitly class inside the calc.
+      function initTailwindCalc() {
+        if (window.tailwind && tailwind.config) {
+          tailwind.config = {
+            corePlugins: { preflight: false }, // don't reset our existing styles
+            theme: {
+              extend: {
+                screens: {
+                  'xs': '380px',
+                  'tablet': '701px',
+                }
+              }
+            }
+          };
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTailwindCalc);
+      } else {
+        initTailwindCalc();
+      }
+    </script>
     <!-- <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
     
     <style>
@@ -336,12 +363,12 @@
         <span class="calc-toast" id="shareToast" aria-live="polite"></span>
       </div>
 
-      <div class="saved-scenarios" style="margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)" style="flex:1; min-width:220px; max-width:320px; padding:7px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
-        <button type="button" class="calc-btn ghost" id="saveScenario" style="padding:6px 12px; font-size:0.8rem;">Save</button>
-        <select id="savedScenarioSelect" style="min-width:180px; padding:6px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.82rem;"></select>
-        <button type="button" class="calc-btn ghost" id="loadScenario" style="padding:6px 12px; font-size:0.8rem;">Load</button>
-        <button type="button" class="calc-btn ghost" id="deleteScenario" style="padding:6px 10px; font-size:0.75rem; color:#b91c1c;">Delete</button>
+      <div class="saved-scenarios">
+        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)">
+        <button type="button" class="calc-btn ghost" id="saveScenario">Save</button>
+        <select id="savedScenarioSelect"></select>
+        <button type="button" class="calc-btn ghost" id="loadScenario">Load</button>
+        <button type="button" class="calc-btn ghost" id="deleteScenario">Delete</button>
       </div>
     </div>
     <div class="calc-grid">
@@ -349,21 +376,11 @@
         <div class="calc-panel">
           <h4>Property &amp; Financing</h4>
 
-          <!-- Property lookup helper for more realistic inputs (click to expand) -->
-          <div class="property-lookup" style="margin-bottom:8px;">
-            <button type="button" id="toggleLookupBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:3px 8px;">Load from Zillow/Redfin/Homes.com for realistic tax & insurance</button>
-            <div id="propertyLookupFields" style="display:none; margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px;">
-              <label style="font-size:0.75rem; font-weight:600; color:#334155;">Address or listing URL</label>
-              <div style="display:flex; gap:6px; margin-top:4px;">
-                <input type="text" id="propertyLookupInput" placeholder="123 Main St or paste URL" style="flex:1; font-size:0.85rem; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px;">
-                <button type="button" id="loadPropertyBtn" class="calc-btn ghost" style="font-size:0.7rem; padding:4px 8px;">Load</button>
-              </div>
-              <button type="button" id="openTaxRecordsBtn" class="calc-btn ghost" style="margin-top:6px; font-size:0.7rem; padding:3px 8px;">Open county tax records</button>
-              <div style="font-size:0.65rem; color:#64748b; margin-top:4px;">
-                Loads price if found. Use county site for exact taxes.
-              </div>
-            </div>
-          </div>
+          <!-- 
+            Property lookup / Zillow integration removed for Phase 0.
+            Pinned for future work on granular county/state tax & insurance modeling.
+            TODO (future): Re-add when we have real API or data source for accurate local rates.
+          -->
 
           <div class="input-group">
             <label>Purchase Price <span class="value-display" id="purchasePriceDisplay"></span></label>
@@ -562,16 +579,9 @@
           </table>
         </div>
       </div>
-      <div class="chart-wrap">
-        <h5>Wealth Projection Over Time</h5>
-        <canvas id="wealthChart" height="120"></canvas>
-        <div class="chart-legend">
-          <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Property Value</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#059669"></span> Equity</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span> Cumulative Cash Flow</span>
-          <span class="legend-item legend-loan" id="loanBalanceLegend"><span class="legend-dot" style="background:#dc2626"></span> Loan Balance</span>
-        </div>
-      </div>
+
+      <!-- Wealth Projection Over Time chart removed for now (was producing insane canvas sizes like 34k+ px height due to Chart.js responsive + container sizing interactions). Rebuild from scratch later if needed. -->
+
       <div class="chart-wrap">
         <h5>Compare Rental ROI</h5>
         <p class="chart-desc">Lender and marketplace benchmarks — DSCR, 1% rule, 50% rule, IRR, and more (like BiggerPockets, DSCR lenders, and investor marketplaces).</p>
@@ -595,7 +605,7 @@
         <!-- JS populated checkboxes for Current + saved scenarios (max 3 total) -->
       </div>
 
-      <div id="comparisonGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;"></div>
+      <div id="comparisonGrid"></div>
 
       <div style="margin-top: 10px; font-size: 0.7rem; color: #64748b;">
         Select up to 3 scenarios (Current is always available). Click a saved scenario name to load it into the main calculator.
@@ -877,7 +887,7 @@
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->
-    <script type="module" src="calculator.js"></script>
+    <script type="module" src="calculator.js?v=24"></script>
     <script src="flip-calculator.js?v=5"></script>
     <script>
       (function () {
