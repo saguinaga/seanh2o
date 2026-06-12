@@ -82,33 +82,41 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     return principal * (factor - Math.pow(1 + r, p)) / (factor - 1);
   }
 
-  function computeYearlySeries(price, downPct, ratePct, termY, holdY, apprecPct, annualCF, cash) {
-    const series = [];
-    const downAmt0 = cash ? price : price * (downPct / 100);
-    const loan0 = cash ? 0 : price - downAmt0;
-    let cumCF = 0;
-    let value = price;
-    let bal = loan0;
+  // ============ PHASE 0 STEP 1 (tiny foundation - additive only) ============
+  // Goal: Introduce Scenario model + adapter WITHOUT touching fullCalc(),
+  //       scheduleCalc(), bindings, rendering, saved scenarios, or any
+  //       existing logic. This is the first minimal, reviewable change.
+  //
+  // Revert: git checkout main  (or git reset --hard)
+  // All changes stay on branch phase0-professional-calculator-upgrade.
+  //
+  // See CLAUDE.md for full plan and user's exact specs.
+  // This step only defines the shape and a no-op adapter that returns
+  // inputs unchanged (Long-Term/New Purchase baseline for now).
 
-    for (let y = 0; y <= holdY; y++) {
-      const yr = y;
-      const val = price * Math.pow(1 + apprecPct / 100, yr);
-      const remBal = remainingBalance(loan0, ratePct, termY, yr);
-      const eq = Math.max(0, val - remBal);
-      if (y > 0) cumCF += annualCF;
-      series.push({
-        year: yr,
-        value: Math.round(val),
-        equity: Math.round(eq),
-        cumCF: Math.round(cumCF),
-        loan: Math.round(Math.max(0, remBal))
-      });
-    }
-    return series;
+  const SCENARIO_DEFAULT_CONFIG = {
+    propertyCategory: 'single-family',
+    rentalStrategy: 'long-term',
+    analysisType: 'new-purchase',
+    isIndianaFocus: true
+  };
+
+  function getEffectiveInputs(scenario) {
+    // Phase 0: return inputs as-is.
+    // Later steps will apply overrides here based on config
+    // (e.g. Short-Term vacancy/maintenance, Existing mode fields,
+    // Indiana Focus rate bias, etc.) and still feed the untouched fullCalc().
+    if (!scenario || !scenario.inputs) return {};
+    return { ...scenario.inputs };
   }
 
+  // Future tiny steps will add:
+  // - scenarios array + activeScenarioId
+  // - functions to create/clone/load scenarios with config
+  // - wire the modal to update activeScenario.config and re-calc via adapter
+  // Nothing below this line is changed in this commit.
+
   // ============ STATE ============
-  let wealthChart = null;
   let calcScheduled = false;
 
   function scheduleCalc() {
@@ -304,9 +312,6 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     // Sensitivity
     renderSensitivity(price, rent, downPct, rate, term, vac, maintPct, mgmtPct, taxR, insR, hoaMo, cfMonthly);
 
-    // Wealth chart
-    updateWealthChart(price, downPct, rate, term, holdY, apprec, cfAnnual, cash);
-
     // Cash-on-cash sub label
     const cocSub = $('cashOnCashSub');
     if (cocSub) cocSub.textContent = cash ? 'Cash purchase (full equity)' : 'Annual return on down payment';
@@ -421,52 +426,6 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         <div class="scenario-delta ${d > 5 ? 'up' : d < -5 ? 'down' : 'flat'} ">${d >= 0 ? '+' : ''}${fmtMoney(d)} /mo vs base</div>
       `;
       grid.appendChild(card);
-    });
-  }
-
-  function updateWealthChart(price, downPct, ratePct, termY, holdY, apprecPct, annualCF, cash) {
-    const canvas = $('wealthChart');
-    if (!canvas) return;
-
-    const series = computeYearlySeries(price, downPct, ratePct, termY, holdY, apprecPct, annualCF, cash);
-
-    const labels = series.map(s => 'Y' + s.year);
-    const valueData = series.map(s => s.value);
-    const equityData = series.map(s => s.equity);
-    const cumCFData = series.map(s => s.cumCF);
-    const loanData = series.map(s => s.loan);
-
-    if (wealthChart) {
-      wealthChart.data.labels = labels;
-      wealthChart.data.datasets[0].data = valueData;
-      wealthChart.data.datasets[1].data = equityData;
-      wealthChart.data.datasets[2].data = cumCFData;
-      if (wealthChart.data.datasets[3]) wealthChart.data.datasets[3].data = loanData;
-      wealthChart.update();
-      return;
-    }
-
-    wealthChart = new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          { label: 'Property Value', data: valueData, borderColor: '#3b82f6', borderWidth: 2.5, tension: 0.25, fill: false },
-          { label: 'Equity', data: equityData, borderColor: '#059669', borderWidth: 2.5, tension: 0.25, fill: false },
-          { label: 'Cumulative Cash Flow', data: cumCFData, borderColor: '#d97706', borderWidth: 2.5, tension: 0.25, fill: false },
-          { label: 'Loan Balance', data: loanData, borderColor: '#dc2626', borderWidth: 2, borderDash: [4, 2], tension: 0.2, fill: false, hidden: cash }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
-          y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, callback: v => '$' + (v / 1000) + 'k' } }
-        },
-        elements: { point: { radius: 2, hoverRadius: 4 } }
-      }
     });
   }
 
@@ -792,35 +751,8 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     refreshSelect();
   }
 
-  function wirePropertyLookupStub() {
-    const toggle = $('toggleLookupBtn');
-    const panel = $('propertyLookupFields');
-    const loadBtn = $('loadPropertyBtn');
-
-    if (toggle && panel) {
-      toggle.addEventListener('click', () => {
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-      });
-    }
-    if (loadBtn) {
-      loadBtn.addEventListener('click', () => {
-        // Demo realistic Marion County-ish numbers
-        setVal('purchasePrice', 168500);
-        const s = $('purchasePriceSlider'); if (s) s.value = 168500;
-        setVal('monthlyRent', 1485);
-        const rs = $('monthlyRentSlider'); if (rs) rs.value = 1485;
-        setVal('propertyTaxRate', 0.94);
-        setVal('insuranceRate', 0.61);
-        refreshAllDisplays();
-        updateCashUI();
-        fullCalc();
-        const t = $('shareToast');
-        if (t) { t.textContent = 'Demo values loaded (Marion County comp)'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1500); }
-      });
-    }
-    const taxBtn = $('openTaxRecordsBtn');
-    if (taxBtn) taxBtn.addEventListener('click', () => window.open('https://www.marioncounty.in.gov/', '_blank'));
-  }
+  // wirePropertyLookupStub removed in Phase 0 (non-functional stub).
+  // See comment in init() and HTML for future pinning on granular tax data.
 
   function wireAllInputsForCalc() {
     // Extra safety net: any input change triggers calc
@@ -865,7 +797,8 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     wireCompare();
     wireExports();
     wireSavedScenarios();
-    wirePropertyLookupStub();
+    // wirePropertyLookupStub();  // REMOVED in Phase 0 - stub feature (Zillow/Redfin lookup) was non-functional.
+                                 // Pinned for future granular county/state tax & insurance data work.
     wireAllInputsForCalc();
 
     // 6. Initial full population + visuals
