@@ -478,6 +478,22 @@
             </div>
           </div>
 
+          <!-- Existing Investment fields (shown only when Analysis Type = Existing; hidden for New Purchase) -->
+          <div id="existingFields" class="financing-fields hidden">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Current Equity <span class="value-display" id="currentEquityDisplay"></span></label>
+                <input type="range" id="currentEquitySlider" min="0" max="1000000" step="1000">
+                <input type="number" id="currentEquity" min="0" max="1000000" step="1000">
+              </div>
+              <div class="input-group">
+                <label>Current Loan Balance <span class="value-display" id="currentLoanBalanceDisplay"></span></label>
+                <input type="range" id="currentLoanBalanceSlider" min="0" max="1000000" step="1000">
+                <input type="number" id="currentLoanBalance" min="0" max="1000000" step="1000">
+              </div>
+            </div>
+          </div>
+
           <!-- Tiny financing outcome right with the price + loan sliders -->
           <div class="inline-finance-impact" style="margin: 6px 0 2px; font-size:0.74rem; display:flex; gap:14px; color:#334155;">
             <div><strong>Loan amount:</strong> <span id="inlineLoanAmount">-</span></div>
