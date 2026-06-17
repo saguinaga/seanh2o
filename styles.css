@@ -1303,27 +1303,11 @@ abbr {
   margin-bottom: 0;
 }
 
-.hero-lead {
-  font-size: 1.35rem;
-  max-width: 760px;
-  margin: 0 auto 1rem;
-  line-height: 1.65;
-}
-
-.hero-sub {
-  font-size: 1.05rem;
-  max-width: 720px;
-  margin: 0 auto 1rem;
-  line-height: 1.6;
-  opacity: 0.92;
-}
-
+/* Old hero rules disabled in favor of new artistic voxel background + inline styles */
+.hero-lead,
+.hero-sub,
 .hero-extra {
-  font-size: 0.98rem;
-  max-width: 740px;
-  margin: 0 auto 2rem;
-  line-height: 1.65;
-  opacity: 0.88;
+  /* overridden by inline artistic hero styles */
 }
 
 .hero-cta-row {
@@ -1888,6 +1872,25 @@ body {
 #fix-flip-calculator .calc-toolbar .calc-btn {
   width: auto;
   max-width: none;
+}
+
+/* Professional redesign polish */
+#projects {
+  font-feature-settings: "tnum";
+}
+#projects a {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+#projects a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px -15px rgb(0 0 0 / 0.4);
+}
+.hero .hero-content p {
+  max-width: 640px;
+}
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 /* Phase 1 UI (guidance + HYSA compare integration) — minimal additions so the new

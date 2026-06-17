@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sean Aguinaga - Product in Real Estate Tech</title>
-    <meta name="description" content="Sean Aguinaga builds real estate product and systems at Auction.com. Investor calculators, product leadership, 15+ years in marketplace tech.">
+    <title>Sean Aguinaga | Product Leader in Real Estate Tech</title>
+    <meta name="description" content="Sean Aguinaga: Product leader focused on systems that honor the full customer journey. Previously instrumental in evolving Auction.com backend platforms and tools for ground teams. Investor calculators and experiments.">
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
@@ -41,68 +41,118 @@
     <!-- <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
     
     <style>
-        /* Hero Upgrade - Bigger & More Impactful */
+        /* Artistic voxel Game of Life hero - isometric 3D cybernetic background */
         .hero {
-            min-height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                        url('uploads/1/2/1/3/121344668/background-images/background-images/941973592.jpg') center/cover no-repeat;
+            min-height: 92vh;
+            background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), 
+                        url('uploads/assets/game-of-life-bg.jpg') center/cover no-repeat;
             display: flex;
             align-items: center;
             color: white;
-            text-align: center;
+            text-align: left;
             position: relative;
+            box-shadow: inset 0 0 120px rgba(0,0,0,0.6);
         }
         .hero-content {
-            max-width: 900px;
+            max-width: 820px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 28px;
             z-index: 2;
         }
         .hero h1 {
-            font-size: 4.5rem;
-            margin-bottom: 10px;
+            font-size: 3.8rem;
+            margin-bottom: 8px;
             font-weight: 700;
-            letter-spacing: -2px;
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
-        .highlight {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #f59e0b;
+        .hero .tag {
+            display: inline-block;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 20px;
-            display: block;
+            color: #67e8f9;
+            margin-bottom: 18px;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .hero-lead {
+            font-size: 1.35rem;
+            line-height: 1.45;
+            max-width: 680px;
+            margin-bottom: 18px;
+            color: #f1f5f9;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.5);
         }
         .hero p {
-            font-size: 1.4rem;
-            max-width: 700px;
-            margin: 0 auto 30px;
+            font-size: 1.05rem;
+            max-width: 620px;
+            margin-bottom: 28px;
+            color: #e0f2fe;
+            line-height: 1.55;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.4);
         }
         .cta-button {
             display: inline-block;
-            padding: 16px 40px;
+            padding: 14px 32px;
             background: #f59e0b;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 50px;
+            color: #0f172a;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 9999px;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
+            margin-right: 12px;
+            margin-bottom: 8px;
         }
         .cta-button:hover {
-            background: #d97706;
-            transform: translateY(-3px);
+            background: #fbbf24;
+            transform: translateY(-1px);
+        }
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.7);
+        }
+        .cta-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
         }
 
-        /* Professional Nav */
+        /* Voxel / Cybernetic theme accents matching the Game of Life bg */
+        .glass-card {
+            background: rgba(15,23,42,0.6);
+            border: 1px solid rgba(103,232,249,0.2);
+            backdrop-filter: blur(12px);
+            transition: transform .3s ease, border-color .3s;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(103,232,249,0.5);
+        }
+        .holo-accent {
+            background: linear-gradient(90deg, #67e8f9, #c026d3, #67e8f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 100%;
+            animation: holo-shift 4s linear infinite;
+        }
+        @keyframes holo-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* Professional Nav - dark cybernetic to match voxel theme */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(103, 232, 249, 0.15);
         }
         .nav-container {
             max-width: 1200px;
@@ -116,8 +166,17 @@
         .nav-links a {
             margin-left: 30px;
             text-decoration: none;
-            color: #1e3a8a;
+            color: #e0f2fe;
             font-weight: 600;
+            transition: color .2s;
+        }
+        .nav-links a:hover {
+            color: #67e8f9;
+        }
+        .logo strong {
+            color: #f1f5f9;
+            font-size: 1.1rem;
+            letter-spacing: -.5px;
         }
         .nav-toggle {
             display: none;
@@ -166,18 +225,19 @@
                 left: 0;
                 right: 0;
                 flex-direction: column;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                background: rgba(15,23,42,0.98);
+                backdrop-filter: blur(12px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
                 padding: 8px 0 12px;
-                border-top: 1px solid #e2e8f0;
+                border-top: 1px solid rgba(103,232,249,0.15);
             }
             .nav-links.open { display: flex; }
             .nav-links a {
                 margin: 0;
                 padding: 14px 24px;
                 font-size: 1rem;
-                border-bottom: 1px solid #f1f5f9;
+                border-bottom: 1px solid rgba(103,232,249,0.1);
+                color: #e0f2fe;
             }
             .nav-links a:last-child { border-bottom: none; }
         }
@@ -196,164 +256,143 @@
             </button>
             <div class="nav-links" id="navMenu">
                 <a href="#about">About</a>
-                <a href="#mission">Mission</a>
-                <a href="#current-work">Current Work</a>
+                <a href="#philosophy">Approach</a>
+                <a href="#tools">Tools</a>
                 <a href="#projects">Projects</a>
-                <a href="#buy-hold-calculator">Buy &amp; Hold</a>
-                <a href="#fix-flip-calculator">Fix &amp; Flip</a>
                 <a href="#contact">Contact</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section - Bigger & More Impactful -->
+    <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
             <h1>Sean Aguinaga</h1>
-            <span class="highlight">Product &amp; Systems in Real Estate Tech</span>
-            <p class="hero-lead">I build real estate products where what the customer sees online and what your team knows on a call are supposed to be the same picture. When they're not, that's usually the work I care about. Auctions, registration, post-sale workflows, SFDC context: the messy middle where a customer already told us something and the system still acts like it's meeting them for the first time.</p>
-            <p class="hero-sub">Product manager, 15+ years, mostly marketplaces and transaction-heavy businesses. I've shipped across bidding, buyer onboarding, internal ops tools, and the handoffs between them. These days at Auction.com I'm leading work on registration and personalization (so we know who someone is before we treat them like a stranger) and journey context for nationwide teams (so the person on the call isn't starting from zero).</p>
-            <p class="hero-extra">I think in systems, not slide decks. What does the customer experience? What data do we actually have? What does the team see in SFDC? Where do those stories diverge? That's where the product work usually lives. Scroll down for two investor calculators I built for fun: buy &amp; hold and fix &amp; flip, with Marion County defaults and the kind of underwriting math I'd want before chasing a deal.</p>
-            <div class="hero-cta-row">
-                <a href="#buy-hold-calculator" class="cta-button">Buy &amp; Hold Calculator</a>
-                <a href="#fix-flip-calculator" class="cta-button cta-secondary">Fix &amp; Flip Analyzer</a>
+            <span class="tag">Product • Systems • Real Estate Tech</span>
+            
+            <p class="hero-lead">I build the systems and tools that remember every participant’s journey in a transaction — buyers, sellers, internal teams, the people on the ground — and give everyone the context to actually help.</p>
+            
+            <p>Previously at Auction.com, I was instrumental in evolving the backend platforms and workflows that power the experience today. Working shoulder-to-shoulder with teams in the field, I focused on making the messy middle coherent — so no one in the transaction has to repeat themselves and operators have what they need in the moment.</p>
+            
+            <p>For me, the customer is anyone involved in a transaction. Customer journeys aren’t a slide. They’re the thread that should run through every system, every handoff, every conversation. That’s the work I care about.</p>
+
+            <div class="hero-cta-row" style="margin-top: 12px;">
+                <a href="#tools" class="cta-button">See the Tools</a>
+                <a href="#projects" class="cta-button cta-secondary">Explore Projects</a>
             </div>
         </div>
     </section>
 
-    <!-- About -->
-    <section id="about" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
-        <div class="intro-block intro-wide">
-            <h2>About Me</h2>
-            <p>I'm Sean Aguinaga. I've spent most of my career on the messy side of real estate tech: marketplaces, bidding, registration, post-sale workflows, and the internal tools that are supposed to make all of that coherent. The interesting problems are rarely on a single screen. They're in the gaps between what a customer did, what we stored, and what a teammate can see when they pick up the phone.</p>
-            <p>I think in systems. Not architecture diagrams for their own sake, but the full loop: what the customer experiences, what data we actually have, what the team in SFDC sees, and where those stories diverge. That's usually where the product work is. If the PDP says one thing and the case history says another, someone is going to waste time reconciling it. I'd rather fix that upstream.</p>
-            <p>Background-wise, it's been a long run in marketplace and transaction product: buyer funnels, seller tools, ops dashboards, integrations that were supposed to be temporary and weren't. I've worked with engineers, design, sales, legal, and the folks on the ground who actually talk to customers. I know enough to push back when a spec doesn't match reality, and I'm quick to say when I'm still filling in gaps.</p>
-            <p>On the investor side, I underwrite deals the way a lot of people in this space do: spreadsheets, rules of thumb, and a healthy respect for what can go wrong on rehab timeline or ARV. The calculators on this page are vibe-coded experiments, but the math is real. Marion County defaults because that's what I know; drag the sliders for your market.</p>
-            <p>I'm confident in what I know and open to being wrong. I'd rather get the problem framed right than ship something that sounds good in a deck.</p>
-        </div>
-    </section>
-
-    <!-- Mission -->
-    <section id="mission" style="padding: 100px 20px; text-align: center;">
-        <div class="intro-block intro-wide">
-            <h2>My Mission</h2>
-            <p>Real estate is still harder than it needs to be. Not because people aren't trying, but because the journey is long, the data is fragmented, and customers end up re-explaining themselves at every step. You register, you bid, you win, then you're in a different workflow with different people who may or may not know what already happened.</p>
-            <p>I want products that give customers a clear path forward: sign up once, get treated like we remember them, and see next steps that match their situation. Investor, occupant, first-time buyer, repeat bidder: the product should respond to who you are, not force everyone through the same generic path.</p>
-            <p>And I want internal teams to have enough context to help without putting the customer on hold while someone digs through five systems. Nationwide coverage makes that harder, not easier. The fix isn't another dashboard nobody opens. It's context in the moment: where they are in the journey, what's still open, what happened last.</p>
-            <p>If we get those two things closer together, the experience gets faster for customers and less chaotic for the people doing the work. Less duplicate data entry, fewer repeat-explanation calls, more time spent on the actual problem. That's the mission, basically.</p>
-        </div>
-    </section>
-
-        <!-- Current Initiatives -->
-    <section id="current-work" style="padding: 100px 20px; background: #ffffff;">
-        <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
-            <h2 style="font-size: 2.4rem; margin-bottom: 20px;">Current Focus</h2>
-            <p style="font-size: 1.3rem; max-width: 720px; margin: 0 auto 60px; color: #555; line-height: 1.65;">
-                At Auction.com I'm leading product work on two problems I think are upstream of almost everything else:
-                account creation that actually sets up personalization, and better journey context for teams working with customers nationwide.
+    <!-- About + Experience (rewritten for clarity, emotion, and seriousness) -->
+    <section id="about" style="padding: 80px 24px; background: #f8fafc;">
+        <div style="max-width: 860px; margin: 0 auto; text-align: left;">
+            <h2 style="font-size: 2.1rem; margin-bottom: 18px; letter-spacing: -.5px;">About</h2>
+            
+            <p style="font-size: 1.15rem; line-height: 1.65; color: #1e2937; margin-bottom: 22px;">
+                I’m a product leader with 15+ years building marketplace and transaction systems. For me, the customer is anyone involved in a transaction — internal teams and external parties, buyers and sellers, the people on the ground and the customers they serve.
+            </p>
+            
+            <p style="font-size: 1.05rem; line-height: 1.65; color: #334155; margin-bottom: 22px;">
+                At Auction.com I was instrumental in evolving the backend platforms and tools that power the experience. I worked shoulder-to-shoulder with ground teams because I know the product only succeeds when every participant in the chain has what they need.
             </p>
 
-            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; text-align: left;">
-                
-                <!-- Initiative 1 -->
-                <div style="background: #f8fafc; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
-                    <div style="background: #1e3a8a; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 20px;">01</div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 16px;">Registration &amp; Personalization</h3>
-                    <p style="line-height: 1.7; color: #444; margin-bottom: 14px;">
-                        Most customers still hit generic flows before we know much about them. I'm working on registration and account setup so we capture the right profile signals early and the product can respond from there.
-                    </p>
-                    <p style="line-height: 1.7; color: #555;">
-                        That means fewer dead ends in sign-up, preferences that persist, and a real baseline for relevance before someone has to call in and explain who they are again.
-                    </p>
-                </div>
+            <p style="font-size: 1.05rem; line-height: 1.65; color: #334155;">
+                From years across marketplaces (including time at Disney), I’ve learned that no one adheres to a “standard” process. Buyers, sellers, and teams will give you what they have, when they have it, in whatever format makes sense to them. It’s our job to meet them in the middle — and give everyone the context to actually help.
+            </p>
+        </div>
+    </section>
 
-                <!-- Initiative 2 -->
-                <div style="background: #f8fafc; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
-                    <div style="background: #f59e0b; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 20px;">02</div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 16px;">Journey Context for Teams</h3>
-                    <p style="line-height: 1.7; color: #444; margin-bottom: 14px;">
-                        Our teams are spread across the country. Customers move through a long journey. When someone picks up the phone or opens a case, the person on the other end should already know where they are, what's still open, and what happened last.
-                    </p>
-                    <p style="line-height: 1.7; color: #555;">
-                        I'm focused on surfacing that in a way that's useful in the moment. Not another dashboard. Context you can act on, whether you're in SFDC, email, or on a call with a customer who's been waiting on an answer.
-                    </p>
+    <!-- Philosophy / How I Work -->
+    <section id="philosophy" style="padding: 70px 24px; background: white; border-top: 1px solid #e2e8f0;">
+        <div style="max-width: 860px; margin: 0 auto;">
+            <h2 style="font-size: 1.65rem; margin-bottom: 16px;">How I work</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; font-size: 1rem; line-height: 1.6; color: #334155;">
+                <div>
+                    <strong>The customer is everyone in the transaction.</strong><br>
+                    Internal teams, external parties, buyers, sellers, and the people on the ground. Every one of them matters — not just the end user.
+                </div>
+                <div>
+                    <strong>Customization is not optional.</strong><br>
+                    After 15+ years, I know no one conforms to a “standard.” They bring what they have, when they have it, in the format they choose. Good product meets them where they are.
+                </div>
+                <div>
+                    <strong>Context travels with everyone.</strong><br>
+                    Ground teams and participants shouldn’t have to start from zero. Systems should remember the full journey so humans can actually help.
                 </div>
             </div>
-
-            <p style="margin-top: 60px; font-size: 1.1rem; color: #666; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.65;">
-                The product and the human conversation ought to tell the same story. That's the thread I'm pulling on right now.
-            </p>
         </div>
     </section>
 
-     <!-- Vibe Coding Overview -->
-    <section id="projects" style="padding: 100px 20px; background: #f8fafc;">
+    <!-- Projects -->
+    <section id="projects" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
         <div style="max-width: 1100px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 60px;">
-                <h2 style="font-size: 2.6rem; margin-bottom: 16px;">Vibe Coding</h2>
-                <p style="font-size: 1.25rem; max-width: 680px; margin: 0 auto; color: #555;">
-                    Personal experiments, tools, and creative projects I build for fun.
-                </p>
+            <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; margin-bottom: 32px;">
+                <div>
+                    <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Featured tools + creative experiments</p>
+                </div>
+                <a href="#tools" style="color: #f59e0b; font-weight: 600; text-decoration: none;">View all tools →</a>
             </div>
 
-            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
-
-                <!-- Buy & Hold Calculator Card -->
-                <a href="#buy-hold-calculator" style="text-decoration: none; color: inherit;">
-                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s; height: 100%;">
-                        <div style="height: 200px; background: linear-gradient(135deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: 700;">
-                            Buy & Hold
-                        </div>
-                        <div style="padding: 28px;">
-                            <h3 style="margin-bottom: 12px;">Investor Buy & Hold Calculator</h3>
-                            <p style="color: #666; line-height: 1.65;">
-                                Model long-term real estate investments with cash flow, <abbr title="Internal Rate of Return">IRR</abbr>, <abbr title="Cash-on-Cash Return">Cash-on-Cash</abbr>, taxes, and more.
-                            </p>
-                            <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #ecfdf5; color: #0f766e; border-radius: 9999px; font-size: 0.9rem;">
-                                Interactive Tool ->
-                            </span>
-                        </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                
+                <!-- Featured Tool 1 -->
+                <a href="#buy-hold-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;">
+                    <div style="height: 148px; background: linear-gradient(135deg, #0ea5e9, #6366f1); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                        Buy &amp; Hold Calculator
+                    </div>
+                    <div style="padding: 22px 24px;">
+                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Real-time rental underwriting</div>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0;">
+                            Cash flow, CoC, cap rate, total ROI, scenario comparison, HYSA opportunity cost. Built the way I’d actually use it.
+                        </p>
                     </div>
                 </a>
 
-                <!-- Fix & Flip Calculator Card -->
-                <a href="#fix-flip-calculator" style="text-decoration: none; color: inherit;">
-                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07); transition: all 0.3s; height: 100%;">
-                        <div style="height: 200px; background: linear-gradient(135deg, #be123c, #f43f5e); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; font-weight: 700;">
-                            Fix &amp; Flip
-                        </div>
-                        <div style="padding: 28px;">
-                            <h3 style="margin-bottom: 12px;">Fix &amp; Flip Deal Analyzer</h3>
-                            <p style="color: #666; line-height: 1.65;">
-                                Underwrite ARV, rehab, hold time, hard money, and exit costs. 70% rule, profit waterfall, stress tests.
-                            </p>
-                            <span style="margin-top: 20px; display: inline-block; padding: 6px 18px; background: #fff1f2; color: #be123c; border-radius: 9999px; font-size: 0.9rem;">
-                                Interactive Tool -&gt;
-                            </span>
-                        </div>
+                <!-- Featured Tool 2 -->
+                <a href="#fix-flip-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;">
+                    <div style="height: 148px; background: linear-gradient(135deg, #e11d48, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                        Fix &amp; Flip Analyzer
+                    </div>
+                    <div style="padding: 22px 24px;">
+                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Deal stress-testing &amp; modeling</div>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0;">
+                            ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.
+                        </p>
                     </div>
                 </a>
 
-                <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
-                    <div style="height: 200px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.3rem; font-weight: 600;">
-                        Coming Soon
-                    </div>
-                    <div style="padding: 28px;">
-                        <h3 style="margin-bottom: 12px;">Future Vibes</h3>
-                        <p style="color: #666;">More tools and creative coding sessions.</p>
-                    </div>
+                <!-- Vibe / Creative placeholder -->
+                <div class="glass-card" style="border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column;">
+                    <div style="font-weight: 600; color: #67e8f9; margin-bottom: 10px; font-size: 0.95rem;">VIBE CODES &amp; EXPERIMENTS</div>
+                    <h3 style="margin: 0 0 10px; color: #f1f5f9; font-size: 1.15rem;">Creative coding &amp; side explorations</h3>
+                    <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.55; flex: 1;">
+                        Audio experiments, interactive visualizations, and quick tools built to explore ideas. More coming as I continue shipping.
+                    </p>
+                    <div style="margin-top: 12px; font-size: 0.85rem; color: #64748b;">Stay tuned →</div>
                 </div>
 
             </div>
         </div>
+    </section>
+
+    <!-- Tools anchor for calculators -->
+    <div id="tools" style="padding-top: 20px;"></div>
+
+    <!-- Tools -->
+    <section id="tools-section" style="padding: 70px 24px 10px; background: #f8fafc;">
+      <div style="max-width: 1100px; margin: 0 auto 16px;">
+        <h2 style="font-size: 1.9rem; margin-bottom: 8px; letter-spacing: -.5px;">Tools</h2>
+        <p style="color: #475569; max-width: 620px;">Practical modeling tools built for everyone involved in a transaction — buyers, sellers, internal teams, and the people on the ground. The same systems thinking I use for real product work: transparent math, live feedback, and meeting participants where they are.</p>
+      </div>
     </section>
 
     <!-- BUY & HOLD CALCULATOR -->
   <section id="buy-hold-calculator" class="calc-section">
     <div class="calc-header">
-      <span class="calc-badge">Free Tool</span>
+      <span class="calc-badge">Transaction Tool</span>
       <h3>Buy &amp; Hold Calculator</h3>
-      <p>Model rental property investments in real time. Defaults are based on real Marion County, IN investor deals (value-add / turnkey 3-beds in the Indianapolis area). Indiana presets first — coastal examples are only for comparison. Drag anything and watch the cash flow and returns update live right next to the inputs.</p>
+      <p>Model rental property investments in real time. Built for everyone in the transaction — buyers, sellers, operators, and ground teams. Live cash flow, scenario comparison, and opportunity cost analysis. Drag anything and the math updates instantly.</p>
       <div class="calc-toolbar">
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
@@ -702,9 +741,9 @@
   <!-- FIX & FLIP CALCULATOR -->
   <section id="fix-flip-calculator" class="calc-section flip-section">
     <div class="calc-header">
-      <span class="calc-badge flip-badge">Vibe Tool 02</span>
+      <span class="calc-badge flip-badge">Transaction Tool</span>
       <h3>Fix &amp; Flip Deal Analyzer</h3>
-      <p>Underwrite a flip like you mean it. Deal score, offer optimizer, rehab presets, hard money math, 70% rule, capital stack, monthly burn, and stress scenarios. Defaults are Marion County; drag until the numbers tell the truth.</p>
+      <p>Underwrite flips with real numbers. Built for everyone in the transaction — buyers, sellers, operators, and ground teams. ARV, rehab tiers, hard money, profit waterfall, stress testing. The kind of modeling I’d actually run before writing an offer.</p>
       <div class="flip-preset-bar">
         <div class="preset-group">
           <span class="preset-label">Market</span>
@@ -952,23 +991,23 @@
     </div>
   </section>
 
-    <!-- Working Contact Form -->
-    <section id="contact" style="padding: 100px 20px; background: #f9f9f9; text-align: center;">
-        <div style="max-width: 600px; margin: 0 auto;">
-            <h2>Contact Me</h2>
-            <p>Interested in collaborating or learning more about my work? Reach out!</p>
+    <!-- Contact -->
+    <section id="contact" style="padding: 80px 24px; background: #f8fafc; text-align: center;">
+        <div style="max-width: 560px; margin: 0 auto;">
+            <h2 style="margin-bottom: 12px;">Let’s talk</h2>
+            <p style="color:#475569; margin-bottom: 28px;">If you’re building tools that actually respect the customer’s journey — or you just want to compare notes on real estate underwriting — I’d love to hear from you.</p>
             
-            <form action="https://formspree.io/f/xgvzqlaa" method="POST" style="margin-top: 30px;">
-                <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;">
-                <input type="email" name="email" placeholder="Your Email" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;">
-                <textarea name="message" placeholder="Your Message" rows="6" required style="width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:5px;"></textarea>
-                <button type="submit" style="padding:14px 40px; background:#1e3a8a; color:white; border:none; border-radius:50px; font-size:1.1rem; cursor:pointer;">Send Message</button>
+            <form action="https://formspree.io/f/xgvzqlaa" method="POST">
+                <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:13px 16px; margin:8px 0; border:1px solid #cbd5e1; border-radius:8px; font-size:1rem;">
+                <input type="email" name="email" placeholder="Your Email" required style="width:100%; padding:13px 16px; margin:8px 0; border:1px solid #cbd5e1; border-radius:8px; font-size:1rem;">
+                <textarea name="message" placeholder="What are you working on?" rows="5" required style="width:100%; padding:13px 16px; margin:8px 0; border:1px solid #cbd5e1; border-radius:8px; font-size:1rem;"></textarea>
+                <button type="submit" style="margin-top:12px; padding:14px 44px; background:#0f172a; color:white; border:none; border-radius:9999px; font-size:1rem; font-weight:600; cursor:pointer;">Send</button>
             </form>
         </div>
     </section>
 
-    <footer style="text-align:center; padding:40px; background:#1e3a8a; color:white;">
-        <p>(c) 2026 Sean Aguinaga | Product in Real Estate Tech</p>
+    <footer style="text-align:center; padding:48px 20px; background:#0f172a; color:#64748b; font-size:0.9rem;">
+        <p>© 2026 Sean Aguinaga — Systems that remember people.</p>
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->
