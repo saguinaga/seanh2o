@@ -105,91 +105,6 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
   let comparisonScenarios = [];
 
-  let currentPriorities = new Set();
-
-  const priorityMap = {
-    cashflow: ['monthlyCashFlow', 'annualCashFlow'],
-    risk: ['capRate', 'cashOnCash', 'totalROI'],
-    management: ['totalWealth'], // example; low management might de-emphasize complex ones
-    horizon: ['futureEquity', 'totalROI']
-  };
-
-  function applyGuidance() {
-    // clear main
-    document.querySelectorAll('#buy-hold-calculator .metrics-grid .metric-card').forEach(el => el.classList.remove('highlight'));
-
-    // clear comparison
-    document.querySelectorAll('#comparisonView .metric-card').forEach(el => el.classList.remove('highlight'));
-
-    currentPriorities.forEach(p => {
-      const ids = priorityMap[p] || [];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          const card = el.closest('.metric-card');
-          if (card) card.classList.add('highlight');
-        }
-      });
-
-      // for comparison cards, match by label text (since no IDs)
-      document.querySelectorAll('#comparisonView .metric-card').forEach(card => {
-        const label = card.querySelector('.metric-label')?.textContent.toLowerCase() || '';
-        let shouldHighlight = false;
-        if (p === 'cashflow' && (label.includes('cash flow') || label.includes('cf'))) shouldHighlight = true;
-        if (p === 'risk' && (label.includes('cap') || label.includes('coc') || label.includes('roi'))) shouldHighlight = true;
-        if (p === 'management' && label.includes('wealth')) shouldHighlight = true;
-        if (p === 'horizon' && (label.includes('equity') || label.includes('roi'))) shouldHighlight = true;
-        if (shouldHighlight) card.classList.add('highlight');
-      });
-    });
-
-    // basic reordering for main metrics (aggressive but simple: move high priority to top)
-    const mainGrid = document.querySelector('#buy-hold-calculator .metrics-grid');
-    if (mainGrid && currentPriorities.size > 0) {
-      const cards = Array.from(mainGrid.children);
-      cards.sort((a, b) => {
-        const la = a.querySelector('.metric-label')?.textContent.toLowerCase() || '';
-        const lb = b.querySelector('.metric-label')?.textContent.toLowerCase() || '';
-        let sa = 0, sb = 0;
-        if (currentPriorities.has('cashflow') && (la.includes('cash flow') || la.includes('cf'))) sa += 10;
-        if (currentPriorities.has('risk') && (la.includes('cap') || la.includes('coc') || la.includes('roi'))) sa += 5;
-        if (currentPriorities.has('horizon') && (la.includes('equity') || la.includes('roi'))) sa += 5;
-        if (currentPriorities.has('management') && la.includes('wealth')) sa += 3;
-        // same for b
-        if (currentPriorities.has('cashflow') && (lb.includes('cash flow') || lb.includes('cf'))) sb += 10;
-        if (currentPriorities.has('risk') && (lb.includes('cap') || lb.includes('coc') || lb.includes('roi'))) sb += 5;
-        if (currentPriorities.has('horizon') && (lb.includes('equity') || lb.includes('roi'))) sb += 5;
-        if (currentPriorities.has('management') && lb.includes('wealth')) sb += 3;
-        return sb - sa;
-      });
-      cards.forEach(c => mainGrid.appendChild(c));
-    }
-
-    // re-render comparison to reflect highlights (since dynamic)
-    if (comparisonScenarios.length > 0) {
-      // re-apply by calling render again? but to avoid loop, just re-apply classes post render in the loop, but for now call renderComparison which will rebuild without highlights, then we apply in the clear above? Wait, since we clear before, and this is after, but to keep, we'll call a post render highlight.
-      // simple: after sort, if comparison, re-render and the clear will have happened? For now, the highlight in comparison is done in the clear loop, but since render not called, the highlights from previous will stay until next render.
-      // To make it work, we'll re-render comparison after guidance changes.
-      renderComparison();
-    }
-  }
-
-  function setupGuidance() {
-    document.querySelectorAll('.priority-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const p = btn.dataset.priority;
-        if (currentPriorities.has(p)) {
-          currentPriorities.delete(p);
-          btn.classList.remove('active');
-        } else {
-          currentPriorities.add(p);
-          btn.classList.add('active');
-        }
-        applyGuidance();
-      });
-    });
-  }
-
   function getEffectiveInputs(scenario) {
     const eff = { ...scenario.inputs };
     const cfg = scenario.config;
@@ -879,122 +794,155 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (!grid || !view || comparisonScenarios.length === 0) return;
 
     grid.innerHTML = '';
-    grid.className = 'grid grid-cols-1 md:grid-cols-3 gap-3';
+    const hasHYSA = comparisonScenarios.some(s => s._isHYSA);
+    grid.className = hasHYSA
+      ? 'grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3'
+      : 'grid grid-cols-1 md:grid-cols-3 gap-3';
 
     comparisonScenarios.forEach((sc, idx) => {
       const eff = getEffectiveInputs(sc);
       const m = computeKeyMetrics(eff);
 
       const col = document.createElement('div');
-      col.className = 'bg-white border border-[#e2e8f0] rounded-xl p-4 text-base shadow-sm flex flex-col';
+      const isHYSA = !!sc._isHYSA;
 
-      const isHighIntent = sc.name.includes('High Intent') || idx === 0;
-      const isActive = activeScenario.id === sc.id;
-
-      col.innerHTML = `
-        <div class="flex items-center justify-between mb-1">
-          <div class="flex items-center gap-1">
-            <span class="scenario-name font-semibold text-sm cursor-pointer" data-idx="${idx}">${sc.name}</span>
-            ${isHighIntent ? '<span class="text-xs px-1 py-0.5 bg-[#1e3a8a] text-white rounded">High Intent</span>' : ''}
-            ${isActive ? '<span class="text-xs px-1 py-0.5 bg-green-600 text-white rounded">Active</span>' : ''}
-          </div>
-          <div class="flex gap-0.5">
-            <button class="load-btn calc-btn ghost !px-2 !py-1 !text-sm" data-idx="${idx}">Load</button>
+      if (isHYSA) {
+        const d = sc.hysaData || {};
+        col.className = 'bg-white border border-amber-200 rounded-xl p-4 text-base shadow-sm flex flex-col';
+        col.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-1">
+              <span class="scenario-name font-semibold text-sm cursor-default">${sc.name}</span>
+              <span class="text-xs px-1 py-0.5 bg-amber-500 text-white rounded">Benchmark</span>
+            </div>
             <button class="remove-btn calc-btn ghost !px-2 !py-1 !text-sm text-red-600" data-idx="${idx}">×</button>
           </div>
-        </div>
-
-        <div class="inline-dynamics p-2 mb-2 text-sm">
-          <div class="inline-dynamics-label text-xs">Key impacts</div>
-          <div class="inline-metrics-row gap-2">
-            <div class="inline-metric p-1">
-              <span class="im-label text-xs">Monthly CF</span>
-              <span class="im-value text-base tabular-nums">${fmtMoney(m.monthlyCF)}</span>
+          <div class="text-xs text-[#64748b] mb-2">Opportunity cost of full purchase price @ 4% over ${d.holdY || '?'} years (simple)</div>
+          <div class="metrics-grid !gap-1 !mb-1 text-sm" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="metric-card neutral p-2">
+              <div class="metric-label text-xs">Future Value</div>
+              <div class="metric-value text-base tabular-nums">${fmtMoney(d.fv)}</div>
             </div>
-            <div class="inline-metric p-1">
-              <span class="im-label text-xs">NOI</span>
-              <span class="im-value text-base tabular-nums">${fmtMoney(m.noi)}</span>
+            <div class="metric-card accent p-2">
+              <div class="metric-label text-xs">Effective ROI</div>
+              <div class="metric-value text-base">${fmtPct(d.effectiveROI || 0, 1)}</div>
             </div>
-            <div class="inline-metric p-1">
-              <span class="im-label text-xs">CoC</span>
-              <span class="im-value text-base">${fmtPct(m.coc, 1)}</span>
+            <div class="metric-card neutral p-2">
+              <div class="metric-label text-xs">Annualized</div>
+              <div class="metric-value text-base">${(d.annualized || 4).toFixed(1)}%</div>
+            </div>
+            <div class="metric-card ${ (d.delta||0) >= 0 ? 'positive' : 'negative' } p-2">
+              <div class="metric-label text-xs">Delta vs Prop</div>
+              <div class="metric-value text-base tabular-nums">${(d.delta||0) >= 0 ? '+' : ''}${fmtMoney(d.delta)}</div>
             </div>
           </div>
-        </div>
+        `;
+      } else {
+        const isHighIntent = sc.name.includes('High Intent') || idx === 0;
+        const isActive = activeScenario.id === sc.id;
+        col.className = 'bg-white border border-[#e2e8f0] rounded-xl p-4 text-base shadow-sm flex flex-col';
 
-        <div class="metrics-grid !gap-1 !mb-1 text-sm" style="grid-template-columns: repeat(2, 1fr);">
-          <div class="metric-card positive p-2">
-            <div class="metric-label text-xs">Monthly CF</div>
-            <div class="metric-value text-base tabular-nums">${fmtMoney(m.monthlyCF)}</div>
+        col.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-1">
+              <span class="scenario-name font-semibold text-sm cursor-pointer" data-idx="${idx}">${sc.name}</span>
+              ${isHighIntent ? '<span class="text-xs px-1 py-0.5 bg-[#1e3a8a] text-white rounded">High Intent</span>' : ''}
+              ${isActive ? '<span class="text-xs px-1 py-0.5 bg-green-600 text-white rounded">Active</span>' : ''}
+            </div>
+            <div class="flex gap-0.5">
+              <button class="load-btn calc-btn ghost !px-2 !py-1 !text-sm" data-idx="${idx}">Load</button>
+              <button class="remove-btn calc-btn ghost !px-2 !py-1 !text-sm text-red-600" data-idx="${idx}">×</button>
+            </div>
           </div>
-          <div class="metric-card neutral p-2">
-            <div class="metric-label text-xs">Cap Rate</div>
-            <div class="metric-value text-base">${fmtPct(m.capRate, 1)}</div>
-          </div>
-          <div class="metric-card neutral p-2">
-            <div class="metric-label text-xs">Cash-on-Cash</div>
-            <div class="metric-value text-base">${fmtPct(m.coc, 1)}</div>
-          </div>
-          <div class="metric-card accent p-2">
-            <div class="metric-label text-xs">Total ROI</div>
-            <div class="metric-value text-base">${fmtPct(m.totalROI, 0)}</div>
-          </div>
-          <div class="metric-card positive p-2">
-            <div class="metric-label text-xs">Future Equity</div>
-            <div class="metric-value text-base tabular-nums">${fmtMoney(m.futureEquity)}</div>
-          </div>
-          <div class="metric-card neutral p-2">
-            <div class="metric-label text-xs">Total Wealth</div>
-            <div class="metric-value text-base tabular-nums">${fmtMoney(m.totalWealth)}</div>
-          </div>
-          <div class="metric-card neutral p-2">
-            <div class="metric-label text-xs">Mortgage</div>
-            <div class="metric-value text-base tabular-nums">${fmtMoney(m.mortgage)}</div>
-          </div>
-          <div class="metric-card positive p-2">
-            <div class="metric-label text-xs">Annual CF</div>
-            <div class="metric-value text-base tabular-nums">${fmtMoney(m.annualCF)}</div>
-          </div>
-        </div>
-      `;
 
-      // apply current highlights to this col's metric cards (for when render is triggered by guidance changes)
-      currentPriorities.forEach(p => {
-        const labelsToMatch = priorityMap[p] || [];
-        col.querySelectorAll('.metric-card').forEach(card => {
-          const label = card.querySelector('.metric-label')?.textContent.toLowerCase() || '';
-          let match = false;
-          if (p === 'cashflow' && (label.includes('cash flow') || label.includes('cf'))) match = true;
-          if (p === 'risk' && (label.includes('cap') || label.includes('coc') || label.includes('roi'))) match = true;
-          if (p === 'management' && label.includes('wealth')) match = true;
-          if (p === 'horizon' && (label.includes('equity') || label.includes('roi'))) match = true;
-          if (match) card.classList.add('highlight');
-        });
-      });
+          <div class="inline-dynamics p-2 mb-2 text-sm">
+            <div class="inline-dynamics-label text-xs">Key impacts</div>
+            <div class="inline-metrics-row gap-2">
+              <div class="inline-metric p-1">
+                <span class="im-label text-xs">Monthly CF</span>
+                <span class="im-value text-base tabular-nums">${fmtMoney(m.monthlyCF)}</span>
+              </div>
+              <div class="inline-metric p-1">
+                <span class="im-label text-xs">NOI</span>
+                <span class="im-value text-base tabular-nums">${fmtMoney(m.noi)}</span>
+              </div>
+              <div class="inline-metric p-1">
+                <span class="im-label text-xs">CoC</span>
+                <span class="im-value text-base">${fmtPct(m.coc, 1)}</span>
+              </div>
+            </div>
+          </div>
 
-      // Editable name
-      const nameEl = col.querySelector('.scenario-name');
-      nameEl.addEventListener('click', () => {
-        const newName = prompt('Edit scenario name:', sc.name);
-        if (newName && newName.trim()) {
-          sc.name = newName.trim();
+          <div class="metrics-grid !gap-1 !mb-1 text-sm" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="metric-card positive p-2">
+              <div class="metric-label text-xs">Monthly CF</div>
+              <div class="metric-value text-base tabular-nums">${fmtMoney(m.monthlyCF)}</div>
+            </div>
+            <div class="metric-card neutral p-2">
+              <div class="metric-label text-xs">Cap Rate</div>
+              <div class="metric-value text-base">${fmtPct(m.capRate, 1)}</div>
+            </div>
+            <div class="metric-card neutral p-2">
+              <div class="metric-label text-xs">Cash-on-Cash</div>
+              <div class="metric-value text-base">${fmtPct(m.coc, 1)}</div>
+            </div>
+            <div class="metric-card accent p-2">
+              <div class="metric-label text-xs">Total ROI</div>
+              <div class="metric-value text-base">${fmtPct(m.totalROI, 0)}</div>
+            </div>
+            <div class="metric-card positive p-2">
+              <div class="metric-label text-xs">Future Equity</div>
+              <div class="metric-value text-base tabular-nums">${fmtMoney(m.futureEquity)}</div>
+            </div>
+            <div class="metric-card neutral p-2">
+              <div class="metric-label text-xs">Total Wealth</div>
+              <div class="metric-value text-base tabular-nums">${fmtMoney(m.totalWealth)}</div>
+            </div>
+            <div class="metric-card neutral p-2">
+              <div class="metric-label text-xs">Mortgage</div>
+              <div class="metric-value text-base tabular-nums">${fmtMoney(m.mortgage)}</div>
+            </div>
+            <div class="metric-card positive p-2">
+              <div class="metric-label text-xs">Annual CF</div>
+              <div class="metric-value text-base tabular-nums">${fmtMoney(m.annualCF)}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (isHYSA) {
+        const remBtn = col.querySelector('.remove-btn');
+        if (remBtn) remBtn.addEventListener('click', () => {
+          comparisonScenarios.splice(idx, 1);
           renderComparison();
-        }
-      });
+        });
+      } else {
+        // Editable name
+        const nameEl = col.querySelector('.scenario-name');
+        nameEl.addEventListener('click', () => {
+          const newName = prompt('Edit scenario name:', sc.name);
+          if (newName && newName.trim()) {
+            sc.name = newName.trim();
+            renderComparison();
+          }
+        });
 
-      // Load
-      col.querySelector('.load-btn').addEventListener('click', () => {
-        activeScenario = JSON.parse(JSON.stringify(sc));
-        applyConfigToDOM();
-        fullCalc();
-        renderComparison(); // refresh to update active badges
-      });
+        // Load
+        const loadBtn = col.querySelector('.load-btn');
+        if (loadBtn) loadBtn.addEventListener('click', () => {
+          activeScenario = JSON.parse(JSON.stringify(sc));
+          applyConfigToDOM();
+          fullCalc();
+          renderComparison(); // refresh to update active badges
+        });
 
-      // Remove
-      col.querySelector('.remove-btn').addEventListener('click', () => {
-        comparisonScenarios.splice(idx, 1);
-        renderComparison();
-      });
+        // Remove
+        const remBtn = col.querySelector('.remove-btn');
+        if (remBtn) remBtn.addEventListener('click', () => {
+          comparisonScenarios.splice(idx, 1);
+          renderComparison();
+        });
+      }
 
       grid.appendChild(col);
     });
@@ -1026,6 +974,42 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     });
 
     if (close) close.addEventListener('click', () => { view.style.display = 'none'; });
+
+    // Wire HYSA comparison button (ROI vs HYSA @4% opp cost on full price, using holding period)
+    const hysaBtn = $('compareToHYSA');
+    if (hysaBtn) hysaBtn.addEventListener('click', compareToHYSA);
+  }
+
+  function compareToHYSA() {
+    const view = $('comparisonView');
+    if (!view) return;
+
+    const baseEff = getEffectiveInputs(activeScenario);
+    const propM = computeKeyMetrics(baseEff);
+    const price = baseEff.purchasePrice || DEFAULTS.purchasePrice;
+    const holdY = baseEff.holdingYears || DEFAULTS.holdingYears;
+    const rate = 0.04;
+
+    const fv = price * Math.pow(1 + rate, holdY);
+    const totalRet = fv - price;
+    const effROI = price > 0 ? (totalRet / price) * 100 : 0;
+    const delta = fv - propM.totalWealth;
+
+    const hysaSc = {
+      id: 'hysa-' + Date.now(),
+      name: 'HYSA @ 4% (opp. cost)',
+      config: { ...activeScenario.config },
+      inputs: { ...activeScenario.inputs },
+      _isHYSA: true,
+      hysaData: { fv, effectiveROI: effROI, delta, holdY, price, annualized: 4 }
+    };
+
+    comparisonScenarios.push(hysaSc);
+
+    renderComparison();
+
+    view.style.display = 'block';
+    view.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function collectCurrentInputs() {
@@ -1214,9 +1198,6 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     // Bind new Existing fields (safe additive)
     bindPair('currentEquity', 'currentEquitySlider', 'currentEquityDisplay');
     bindPair('currentLoanBalance', 'currentLoanBalanceSlider', 'currentLoanBalanceDisplay');
-
-    // Light guidance (presentational highlights/reorder)
-    setupGuidance();
 
     // 6. Initial full population + visuals
     // Make sure Marion default chip looks active

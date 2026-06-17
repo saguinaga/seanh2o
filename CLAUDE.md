@@ -69,4 +69,20 @@ The 2026 viewport work (on the phase0-professional-calculator-upgrade branch) ma
 - Chart rebuild: Only if user explicitly says to restart from the backup file.
 - Keep things simple and maintainable. The site is intentionally "vibe-coded" but the underwriting math should feel real and defensible.
 
+## Phase Progress (aggressive local work on phase0-professional-calculator-upgrade branch)
+- Richer side-by-side comparison cards: implemented (max 3, auto Base/Opt/Cons with realistic overrides, editable names via click+ prompt, High Intent + Active badges, Load to main editor + fullCalc, × remove, rich cards replicate right-widget structure with inline-dynamics + 8 metric-cards, guidance highlights applied, integrates with Existing/strategy configs via getEffectiveInputs + computeKeyMetrics duplicate for display only).
+- Light guided questions / priorities: implemented (presentational only; "What matters most?" bar with toggles for Cash Flow Priority / Low Risk/Downside / Low Management Effort / Long Time Horizon; applies .highlight + basic reorder to main .metrics-grid and comparison .metric-card by label; re-renders compare as needed; no core math changes).
+- ROI vs HYSA (user priority "i really want to see ROI vs HYSA"): **done locally** (per exact prior discussion/approval: ~4% fixed, time horizon = the calculator's holdingYears, full opportunity cost on the *entire purchase price* (not just equity), simple compounding no fees/tax). 
+  - Toolbar button "Compare to HYSA @ 4%" (already present in HTML).
+  - compareToHYSA() creates/pushes special scenario to comparisonScenarios with _isHYSA + hysaData (fv = price * 1.04**holdY, effectiveROI = total return %, delta = fv - prop.totalWealth from computeKeyMetrics on live effective inputs).
+  - Special benchmark card in renderComparison: Future Value, Effective ROI (total over hold period), Annualized (4%), Delta vs Prop (colorized +\-); "Benchmark" badge; no name-edit, no Load button (only × remove); amber border for distinction.
+  - Grid auto widens to lg:grid-cols-4 when HYSA present (md:3 otherwise) for side-by-side.
+  - Compare cards received readable/human-consumable font bump (text-sm/base labels+values, p-4/p-2, text-xs badges) while adding this.
+  - Fully additive; core fullCalc / bind / setAll / render* untouched. Works alongside guidance, modal config (Existing/strategies), saved scenarios.
+- Next: continue local only. When ready for prod: explicit request -> merge to main, bump ?v=NN in index.html for calc+styles, controlled push via git or MCP, user hard refresh.
+
+## Workflow reminders
+- Always: local dev server first (npm run dev or start-local.ps1 -> http://localhost:3000/#buy-hold-calculator or :3002). Test all breakpoints + click the HYSA button + mix with Compare Scenarios + guidance toggles + Existing mode.
+- Never invent phases. This matches the discussed order (richer compare first, then guidance, then HYSA) and constraints ("don't make anything up", "keep the aggressive local").
+
 This file should be updated whenever major goals, constraints, or workflow change.

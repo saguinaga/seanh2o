@@ -1303,27 +1303,11 @@ abbr {
   margin-bottom: 0;
 }
 
-.hero-lead {
-  font-size: 1.35rem;
-  max-width: 760px;
-  margin: 0 auto 1rem;
-  line-height: 1.65;
-}
-
-.hero-sub {
-  font-size: 1.05rem;
-  max-width: 720px;
-  margin: 0 auto 1rem;
-  line-height: 1.6;
-  opacity: 0.92;
-}
-
+/* Old hero rules disabled in favor of new artistic voxel background + inline styles */
+.hero-lead,
+.hero-sub,
 .hero-extra {
-  font-size: 0.98rem;
-  max-width: 740px;
-  margin: 0 auto 2rem;
-  line-height: 1.65;
-  opacity: 0.88;
+  /* overridden by inline artistic hero styles */
 }
 
 .hero-cta-row {
@@ -1890,22 +1874,47 @@ body {
   max-width: none;
 }
 
-/* Guidance bar for light presentational questions (Phase 1) */
-.guidance-bar {
-  margin-top: 8px;
-  font-size: 0.85rem;
+/* Professional redesign polish */
+#projects {
+  font-feature-settings: "tnum";
+}
+#projects a {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+#projects a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px -15px rgb(0 0 0 / 0.4);
+}
+.hero .hero-content p {
+  max-width: 640px;
+}
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.priority-btn.active {
-  background: #1e3a8a;
-  color: white;
+/* Phase 1 UI (guidance + HYSA compare integration) — minimal additions so the new
+   toolbar button and "What matters most?" bar + highlights are visible and interactive.
+   Tailwind utilities handle most layout; these provide the active/selected states. */
+#buy-hold-calculator .guidance-bar {
+  margin-top: 6px;
+}
+#buy-hold-calculator .priority-btn {
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+#buy-hold-calculator .priority-btn:hover {
   border-color: #1e3a8a;
 }
-
-.metrics-grid .metric-card.highlight,
-.comparison-card .metric-card.highlight {
+#buy-hold-calculator .priority-btn.active {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+#buy-hold-calculator .metric-card.highlight {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  transform: scale(1.02);
-  transition: all 0.2s;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
 }
