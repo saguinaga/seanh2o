@@ -1068,10 +1068,9 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     // PDF (basic)
     const pdfBtn = $('exportPDF');
-    if (pdfBtn) pdfBtn.addEventListener('click', () => {
-      trackEvent('BuyHold - Export PDF');
     if (pdfBtn && window.jspdf) {
       pdfBtn.addEventListener('click', () => {
+        trackEvent('BuyHold - Export PDF');
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.setFontSize(16);
