@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  function trackEvent(name) {
+    if (window.plausible) window.plausible(name);
+  }
+
   if (window.__flipCalcReady) return;
 
   let calcRoot = null;
@@ -864,12 +868,14 @@
 
     calcRoot.querySelectorAll('#flipMarketPresets .preset-chip').forEach(function (btn) {
       btn.addEventListener('click', function () {
+        trackEvent('Flip - Market ' + btn.getAttribute('data-market'));
         applyMarketPreset(btn.getAttribute('data-market'));
       });
     });
 
     calcRoot.querySelectorAll('#flipRehabPresets .preset-chip').forEach(function (btn) {
       btn.addEventListener('click', function () {
+        trackEvent('Flip - Rehab ' + btn.getAttribute('data-rehab'));
         applyRehabPreset(btn.getAttribute('data-rehab'));
       });
     });
@@ -877,9 +883,18 @@
     const resetBtn = $('#flipResetScenario');
     const shareBtn = $('#flipShareScenario');
     const applyBtn = $('#flipApplyOptimizedOffer');
-    if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
-    if (shareBtn) shareBtn.addEventListener('click', shareScenario);
-    if (applyBtn) applyBtn.addEventListener('click', applyOptimizedOffer);
+    if (resetBtn) resetBtn.addEventListener('click', function() {
+      trackEvent('Flip - Reset Defaults');
+      resetDefaults();
+    });
+    if (shareBtn) shareBtn.addEventListener('click', function() {
+      trackEvent('Flip - Share Link');
+      shareScenario();
+    });
+    if (applyBtn) applyBtn.addEventListener('click', function() {
+      trackEvent('Flip - Apply Optimized');
+      applyOptimizedOffer();
+    });
 
     loadFromUrl();
     if (window.location.search && window.location.hash !== '#fix-flip-calculator') {

@@ -11,6 +11,15 @@
     <link rel="stylesheet" href="styles.css?v=26">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init()
+    </script>
+
+    <!-- Microsoft Clarity placeholder - add after signing up (see instructions below) -->
     <!-- Tailwind via CDN (playground) - scoped for calculator section only to help with viewport/responsive work as parallel priority.
          We will use Tailwind utilities primarily inside #buy-hold-calculator for toolbar, modal, grids, etc.
          Existing custom .calc-* CSS remains authoritative for core calculator visuals. -->
@@ -255,11 +264,11 @@
                 <span></span><span></span><span></span>
             </button>
             <div class="nav-links" id="navMenu">
-                <a href="#about">About</a>
-                <a href="#philosophy">Approach</a>
-                <a href="#tools">Tools</a>
-                <a href="#projects">Projects</a>
-                <a href="#contact">Contact</a>
+                <a href="#about" data-plausible-event="Nav - About">About</a>
+                <a href="#philosophy" data-plausible-event="Nav - Approach">Approach</a>
+                <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
+                <a href="#projects" data-plausible-event="Nav - Projects">Projects</a>
+                <a href="#contact" data-plausible-event="Nav - Contact">Contact</a>
             </div>
         </div>
     </nav>
@@ -277,8 +286,8 @@
             <p>For me, the customer is anyone involved in a transaction. Customer journeys aren’t a slide. They’re the thread that should run through every system, every handoff, every conversation. That’s the work I care about.</p>
 
             <div class="hero-cta-row" style="margin-top: 12px;">
-                <a href="#tools" class="cta-button">See the Tools</a>
-                <a href="#projects" class="cta-button cta-secondary">Explore Projects</a>
+                <a href="#tools" class="cta-button" data-plausible-event="CTA - See the Tools">See the Tools</a>
+                <a href="#projects" class="cta-button cta-secondary" data-plausible-event="CTA - Explore Projects">Explore Projects</a>
             </div>
         </div>
     </section>
@@ -337,7 +346,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
                 
                 <!-- Featured Tool 1 -->
-                <a href="#buy-hold-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;">
+                <a href="#buy-hold-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Buy & Hold">
                     <div style="height: 148px; background: linear-gradient(135deg, #0ea5e9, #6366f1); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                         Buy &amp; Hold Calculator
                     </div>
@@ -350,7 +359,7 @@
                 </a>
 
                 <!-- Featured Tool 2 -->
-                <a href="#fix-flip-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;">
+                <a href="#fix-flip-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Fix & Flip">
                     <div style="height: 148px; background: linear-gradient(135deg, #e11d48, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                         Fix &amp; Flip Analyzer
                     </div>

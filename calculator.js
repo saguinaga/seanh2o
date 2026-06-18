@@ -3,6 +3,10 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 (function () {
   'use strict';
 
+  function trackEvent(name) {
+    if (window.plausible) window.plausible(name);
+  }
+
   // ============ INDIANA MARION COUNTY DEFAULT VALUE PROP HOME ============
   // Realistic value-add / strong turnkey 3-bed in Marion County / Indy metro.
   // Attractive but believable: positive cash flow, solid CoC for Midwest, low taxes/ins.
@@ -262,7 +266,10 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     function show() { modal.style.display = 'flex'; syncModalFromConfig(); }
     function hide() { modal.style.display = 'none'; }
 
-    btn.addEventListener('click', show);
+    btn.addEventListener('click', () => {
+      trackEvent('BuyHold - Configure Analysis');
+      show();
+    });
     if (closeBtn) closeBtn.addEventListener('click', hide);
     if (applyBtn) applyBtn.addEventListener('click', () => { applyConfigToDOM(); hide(); });
 
@@ -708,6 +715,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     container.querySelectorAll('.preset-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const key = chip.dataset.preset;
+        trackEvent('BuyHold - Preset ' + key);
         applyPreset(key);
       });
     });
@@ -740,6 +748,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const toast = $('shareToast');
     if (!btn) return;
     btn.addEventListener('click', async () => {
+      trackEvent('BuyHold - Share Link');
       const params = new URLSearchParams();
       const keys = ['purchasePrice', 'downPayment', 'interestRate', 'loanTerm', 'monthlyRent', 'vacancyRate', 'maintenance', 'propertyTaxRate', 'insuranceRate', 'hoa', 'management', 'appreciation', 'holdingYears'];
       keys.forEach(k => {
@@ -956,6 +965,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (!btn || !view || !grid) return;
 
     btn.addEventListener('click', () => {
+      trackEvent('BuyHold - Compare Scenarios');
       const baseScenario = JSON.parse(JSON.stringify(activeScenario));
       baseScenario.name = 'Current (High Intent)';
 
@@ -977,7 +987,10 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     // Wire HYSA comparison button (ROI vs HYSA @4% opp cost on full price, using holding period)
     const hysaBtn = $('compareToHYSA');
-    if (hysaBtn) hysaBtn.addEventListener('click', compareToHYSA);
+    if (hysaBtn) hysaBtn.addEventListener('click', () => {
+      trackEvent('BuyHold - Compare to HYSA');
+      compareToHYSA();
+    });
   }
 
   function compareToHYSA() {
@@ -1035,6 +1048,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     // CSV
     const csvBtn = $('exportCSV');
     if (csvBtn) csvBtn.addEventListener('click', () => {
+      trackEvent('BuyHold - Export CSV');
       const rows = [
         ['Field', 'Value'],
         ['Purchase Price', $('purchasePrice').value],
@@ -1054,6 +1068,8 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     // PDF (basic)
     const pdfBtn = $('exportPDF');
+    if (pdfBtn) pdfBtn.addEventListener('click', () => {
+      trackEvent('BuyHold - Export PDF');
     if (pdfBtn && window.jspdf) {
       pdfBtn.addEventListener('click', () => {
         const { jsPDF } = window.jspdf;
