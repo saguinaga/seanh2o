@@ -92,6 +92,15 @@ body {
 
 .npl-wedge strong { color: #fcd34d; }
 
+.platform-scope {
+  font-size: 0.95rem;
+  color: #b8c9dc;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.platform-scope strong { color: var(--text); }
+
 .language-note {
   font-size: 0.88rem;
   color: #8b9cb8;
@@ -104,6 +113,10 @@ body {
 }
 
 .language-note strong { color: var(--text); }
+
+.segment-broker {
+  border-color: rgba(59, 130, 246, 0.3);
+}
 
 .expansion-path {
   display: flex;

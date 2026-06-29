@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="roadmap.css?v=6">
+  <link rel="stylesheet" href="roadmap.css?v=7">
 </head>
 <body>
   <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
@@ -16,18 +16,25 @@
     <header class="cs-hero">
       <p class="case-label">Product case study · Sean Aguinaga</p>
       <h1>How I'd own CRE Document Intelligence</h1>
-      <p class="npl-wedge">Phase 1 wedge: <strong>special servicing &amp; distressed loans (NPL)</strong> — highest urgency, clearest ROI on document intake.</p>
+      <p class="platform-scope">
+        End-to-end ownership of an <strong>AI document intelligence platform</strong> — extracting structure from
+        appraisals, rent rolls, operating statements, offering memorandums, Phase I ESAs, and loan files, then delivering
+        via browser, Office add-ins, and API. Built for <strong>brokers and lenders</strong> first; expandable across
+        the full CRE transaction stack.
+      </p>
+      <p class="npl-wedge">Phase 1 wedge I'd fund: <strong>NPL &amp; special servicing</strong> — distressed workout packages land daily, ROI is measurable, doc sets are repeatable.</p>
       <div class="expansion-path" aria-label="Platform expansion sequence">
-        <span class="path-step path-active">Distressed / NPL</span>
+        <span class="path-step path-active">Lenders · NPL</span>
         <span class="path-arrow" aria-hidden="true">→</span>
-        <span class="path-step">Agency lending</span>
+        <span class="path-step">Brokers · OM</span>
         <span class="path-arrow" aria-hidden="true">→</span>
-        <span class="path-step">Acquisition / OM</span>
+        <span class="path-step">Appraisal · ESA · API</span>
       </div>
       <p class="cs-lead">
         I'm a product leader with 15+ years building transaction systems in real estate.
-        This page is the work — a product manager roadmap for an AI document intelligence platform,
-        starting where lender pain is acute: <strong>non-performing loan workout packages</strong>.
+        This page is the work — how I'd run the product line from vision and requirements through GTM:
+        prioritize by impact, ship extraction + delivery channels that earn adoption, expand doc types only when
+        accuracy and pull rate justify the investment.
       </p>
       <p class="cs-you">
         <strong>You're not evaluating a prototype.</strong> You're evaluating how I think, prioritize,
@@ -35,14 +42,19 @@
         workflow decisions — not the product itself.
       </p>
       <p class="language-note">
-        <strong>When I'd say NPL:</strong> scoping Phase 1, talking to special servicers and bank workout desks, sizing distressed-loan ROI.
-        <strong>When I wouldn't:</strong> describing the full platform, later phases, or segments still being proven — there I say
-        <em>workout packages</em>, <em>document intelligence</em>, or <em>distressed lending</em>. Same product, different altitude.
+        <strong>Responsible PM discipline:</strong> I use <em>NPL</em> when scoping Phase 1 lender ROI and talking to workout desks — not as the platform headline.
+        Same standard for engineering spend: ship two doc types at 94% before funding the full menu. Language and roadmap investment stay oriented to what earns the next phase.
       </p>
     </header>
 
     <section class="cs-section">
       <h2>The opportunity</h2>
+      <p>
+        <strong>Brokers</strong> re-key offering memorandums and rent rolls into underwriting models.
+        <strong>Lenders</strong> pull loan terms, appraisals, and operating statements into credit memos and LOS systems.
+        Analysts on both sides lose hours on unstructured PDFs — and adoption dies if the product doesn't meet them
+        in Excel, Word, and the systems they already use.
+      </p>
       <p>
         When a CRE loan goes non-performing, the special servicer receives a <strong>workout package</strong>:
         servicer reports, loan documents, T-12s, rent rolls, appraisals (as-is / as-stabilized), borrower
@@ -51,23 +63,22 @@
         status into workout models and credit memos. Portfolio volume makes manual intake unsustainable.
       </p>
       <p>
-        <strong>That's why distressed lending is the wedge.</strong> Lenders and special servicers have the highest urgency, clearest ROI,
-        and the most repeatable document sets. Win here → expand to acquisition (OM), agency lending, and
-        broker workflows. The platform extracts collateral and loan data from unstructured files and delivers
-        it into Excel workout templates, LOS systems, and API pipelines.
+        <strong>That's where I'd lean into NPL.</strong> Lenders and special servicers have the highest urgency, clearest ROI,
+        and the most repeatable document sets for Phase 1. Win here → same extraction engine serves broker OM packages,
+        agency underwriting, appraisals, and environmental reports. One platform; phased investment.
       </p>
     </section>
 
     <section class="cs-section">
       <h2>Product vision</h2>
       <blockquote class="vision-quote">
-        Ingest workout packages from cloud or upload, extract loan and collateral data with
-        human-in-the-loop validation, deliver structured fields into the systems where workouts get decided.
+        Ingest unstructured CRE documents from cloud or upload — workout packages, OMs, rent rolls, T-12s, appraisals —
+        extract with human-in-the-loop validation, deliver structured data via browser, Office add-ins, and API.
       </blockquote>
       <p>
-        I'd own this end-to-end: vision and requirements through engineering partnership, QA reliability,
-        legal alignment on data rights, and go-to-market with sales and customer success. The platform
-        isn't a single UI — it's an extraction engine plus a multi-channel delivery layer.
+        I'd own this end-to-end: vision and requirements through engineering partnership, QA/DevOps reliability,
+        legal alignment on derivative data rights, and GTM with sales and customer success. Not a single UI — an
+        extraction engine plus a multi-channel delivery layer brokers and lenders will actually pull from.
       </p>
     </section>
 
@@ -297,23 +308,23 @@
 
     <section class="cs-section">
       <h2>Customer segments</h2>
-      <p class="section-intro">Land with special servicers and bank workout desks. Expand into agency lending, acquisitions, and broker workflows once the extraction schema is proven.</p>
+      <p class="section-intro">Brokers and lenders are the core market — highest volume, clearest workflows. Phase 1 design partners: bank workout desks and special servicers (NPL). Phase 2: broker OM packages on the same engine.</p>
       <div class="segment-grid">
         <div class="segment-card segment-npl">
-          <h3>Special servicers &amp; asset resolution</h3>
-          <p><strong>Phase 1 wedge.</strong> Workout packages land daily. Servicer reports + collateral docs → structured loan file in hours, not days. Design partners here first.</p>
-        </div>
-        <div class="segment-card">
           <h3>Banks &amp; CMBS lenders</h3>
-          <p>1,000+ lender clients with distressed loan exposure. Box/SharePoint ingest, workout Excel templates, API into LOS. Highest contract value.</p>
+          <p><strong>Primary buyer.</strong> Distressed and performing loan workflows, Box/SharePoint ingest, workout Excel templates, API into LOS. Phase 1 NPL wedge — highest contract value and urgency.</p>
+        </div>
+        <div class="segment-card segment-broker">
+          <h3>Investment brokers</h3>
+          <p><strong>Scale play.</strong> OMs, rent rolls, and marketing packages at high volume. Watched-folder ingest, multi-doc package view, Word/Excel pull. Phase 2 once lender schema is proven.</p>
         </div>
         <div class="segment-card">
-          <h3>Acquisition analysts (PE, REIT)</h3>
-          <p>Phase 2 expansion — distressed asset acquisitions reuse the workout extraction schema. OM + rent roll on top of loan file model.</p>
+          <h3>Special servicers &amp; asset resolution</h3>
+          <p><strong>Phase 1 wedge partners.</strong> Workout packages land daily. Servicer reports + collateral → structured loan file in hours. Where I'd co-develop covenant flag UX and Excel templates.</p>
         </div>
         <div class="segment-card">
-          <h3>Investment brokers &amp; API partners</h3>
-          <p>Phase 2–3 — OM summarization, environmental consultants, white-label API once the core schema is proven.</p>
+          <h3>Environmental, legal &amp; API partners</h3>
+          <p>Phase 2–3 — Phase I ESAs, lease abstraction, white-label API, derivative analytics once core extraction earns trust.</p>
         </div>
       </div>
     </section>
@@ -321,11 +332,11 @@
     <section class="cs-section">
       <h2>Go-to-market</h2>
       <ol class="gtm-list">
-        <li><strong>Design partners (Month 1–3):</strong> 3–5 special servicers / bank NPL desks. Co-develop workout Excel templates and covenant flag UX.</li>
-        <li><strong>Limited launch (Month 4–6):</strong> Workout package intake live. Case studies: hours → minutes per loan, portfolio throughput gains.</li>
-        <li><strong>Sales enablement:</strong> "NPL-native extraction, not generic OCR." Lead with servicer report + collateral — language lenders use.</li>
-        <li><strong>Customer success:</strong> Onboarding playbooks per persona, integration support for Excel/API, office hours.</li>
-        <li><strong>Expansion:</strong> Land with extraction → expand to API, batch, additional doc types per account.</li>
+        <li><strong>Design partners (Month 1–3):</strong> 3–5 bank workout desks and special servicers — NPL package intake, covenant flags, lender Excel templates.</li>
+        <li><strong>Limited launch (Month 4–6):</strong> Lender workflow live. Case studies: hours → minutes per loan. Broker OM pilot with 2–3 firms.</li>
+        <li><strong>Sales enablement:</strong> Lender track: "NPL-native extraction, not generic OCR." Broker track: "OM + rent roll in your model, not in your inbox."</li>
+        <li><strong>Customer success:</strong> Persona playbooks — lender LOS/Excel integration, broker watched-folder setup, API onboarding.</li>
+        <li><strong>Expansion:</strong> Land with lender extraction → broker OM packages → API, batch, appraisal &amp; ESA doc types per account.</li>
       </ol>
     </section>
 
@@ -333,7 +344,7 @@
       <h2>What I bring</h2>
       <ul class="bring-list">
         <li><strong>End-to-end ownership</strong> — I've taken platforms from requirements through field deployment (Auction.com backend evolution, ground-team tooling).</li>
-        <li><strong>CRE + lender workflow fluency</strong> — distressed loan workout packages, servicer reports, covenant analysis — I know where documents break into workout models.</li>
+        <li><strong>CRE document fluency</strong> — OMs, rent rolls, appraisals, workout packages, servicer reports — I know where unstructured files break into broker and lender workflows.</li>
         <li><strong>Technical partnership</strong> — I write requirements engineers and data scientists can build from; I don't hand them slide decks.</li>
         <li><strong>Customer proximity</strong> — I work shoulder-to-shoulder with operators. Discovery isn't a quarterly exercise.</li>
         <li><strong>Ship cadence</strong> — I prototype to learn, then prioritize ruthlessly. The iteration tool below exists because that's how I work.</li>
