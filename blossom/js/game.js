@@ -85,7 +85,10 @@ window.BlossomGame = (function () {
       if (near(x, y, chore)) {
         const res = BlossomDay.doChore(state, chore.id);
         onMessage(res.msg, res.ok ? 'good' : 'warn');
-        if (res.ok) onPersist(state);
+        if (res.ok) {
+          window.BlossomAudio?.playSfx('chore');
+          onPersist(state);
+        } else window.BlossomAudio?.playSfx('warn');
         return;
       }
     }
@@ -96,6 +99,7 @@ window.BlossomGame = (function () {
     const meal = phase.meal;
     if (!meal) {
       onMessage('Kitchen is closed for now. Finish your evening routine!', 'warn');
+      window.BlossomAudio?.playSfx('warn');
       return;
     }
     const foods = BlossomDay.FOODS[meal];
@@ -105,7 +109,10 @@ window.BlossomGame = (function () {
     if (idx < 0 || idx > 2) return;
     const res = BlossomDay.eatMeal(state, foods[idx], meal);
     onMessage(res.msg, res.ok ? 'good' : 'warn');
-    if (res.ok) onPersist(state);
+    if (res.ok) {
+      window.BlossomAudio?.playSfx('eat');
+      onPersist(state);
+    } else window.BlossomAudio?.playSfx('warn');
   }
 
   function showReminder(text) {
@@ -142,6 +149,7 @@ window.BlossomGame = (function () {
 
   function triggerFail() {
     state.alive = false;
+    window.BlossomAudio?.playSfx('dayFail');
     onMessage('Oh no! You didn\'t get 50 stars...', 'bad');
     window.BlossomApp?.showDayModal(BlossomDay.evaluateDay(state));
     BlossomDay.resetAfterFail(state);
@@ -175,7 +183,9 @@ window.BlossomGame = (function () {
     if (jump && player.onGround) {
       player.vy = -7;
       player.onGround = false;
+      window.BlossomAudio?.playSfx('jump');
     }
+    window.BlossomAudio?.maybeStep(Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1);
     player.vy += 0.35;
     player.y += player.vy;
     if (player.y > ROOM.floorY - 20) {

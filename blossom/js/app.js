@@ -128,9 +128,22 @@ window.BlossomApp = (function () {
     });
   }
 
+  function syncSoundUi() {
+    const on = state?.soundOn !== false;
+    const btn = document.getElementById('soundToggle');
+    if (btn) {
+      btn.textContent = on ? '🔊' : '🔇';
+      btn.title = on ? 'Sound on' : 'Sound off';
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    window.BlossomAudio?.setEnabled(on);
+  }
+
   function startGame() {
     showScreen('game');
     document.getElementById('playerName').textContent = state.name;
+    window.BlossomAudio?.unlock();
+    syncSoundUi();
     BlossomGame.init(
       document.getElementById('gameCanvas'),
       state,
@@ -140,6 +153,8 @@ window.BlossomApp = (function () {
       }
     );
     BlossomGame.updateHud();
+    const bubble = document.getElementById('npcBubble');
+    if (bubble) bubble.textContent = 'Cozy day at home — tap 🔊 if you need to mute the music.';
   }
 
   function showToast(msg, type = 'info') {
@@ -163,6 +178,7 @@ window.BlossomApp = (function () {
   function initGameUi() {
     document.getElementById('endDayBtn')?.addEventListener('click', () => {
       const result = BlossomGame.endDay();
+      window.BlossomAudio?.playSfx(result.success ? 'dayWin' : 'dayFail');
       showDayModal(result);
       BlossomGame.updateHud();
     });
@@ -173,9 +189,12 @@ window.BlossomApp = (function () {
     document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') sendChat();
     });
-    document.getElementById('soundToggle')?.addEventListener('click', () => {
+    document.getElementById('soundToggle')?.addEventListener('click', async () => {
+      await window.BlossomAudio?.unlock();
       state.soundOn = !state.soundOn;
-      document.getElementById('soundToggle').textContent = state.soundOn ? '🔊' : '🔇';
+      syncSoundUi();
+      window.BlossomAudio?.playSfx('ui');
+      if (state) BlossomSave.persist(state, BlossomAuth.getUserId());
     });
   }
 
@@ -190,6 +209,7 @@ window.BlossomApp = (function () {
       'You: *practices for the audition*',
     ];
     const reply = replies[Math.floor(Math.random() * replies.length)];
+    window.BlossomAudio?.playSfx('chat');
     showToast(reply, 'info');
     document.getElementById('npcBubble').textContent = reply.split(':')[1]?.trim() || reply;
     input.value = '';
