@@ -446,10 +446,78 @@ body {
 }
 
 @media (max-width: 720px) {
+  .case-study {
+    padding: 60px 16px 64px;
+    padding-top: calc(56px + env(safe-area-inset-top, 0px));
+  }
+
+  .back-link {
+    top: max(10px, env(safe-area-inset-top, 10px));
+    left: 10px;
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+
+  .cs-hero h1 { font-size: 1.65rem; }
+  .cs-lead { font-size: 1rem; }
+
   .phase-grid,
   .prioritize-grid,
   .segment-grid,
   .integration-models { grid-template-columns: 1fr; }
-  .metrics-table { font-size: 0.8rem; }
-  .metrics-table th, .metrics-table td { padding: 10px 8px; }
+
+  .phase-card { padding: 18px 16px; }
+
+  .metrics-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+    padding-bottom: 4px;
+  }
+
+  .metrics-table {
+    font-size: 0.8rem;
+    min-width: 520px;
+  }
+
+  .metrics-table th,
+  .metrics-table td { padding: 10px 8px; }
+
+  .prototype-callout { padding: 20px 16px; }
+
+  .proto-btn {
+    align-self: stretch;
+    width: 100%;
+    text-align: center;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cs-footer {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .contact-btn {
+    width: 100%;
+    text-align: center;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vision-quote {
+    font-size: 1rem;
+    padding-left: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .case-study { padding-left: 14px; padding-right: 14px; }
+  .cs-hero h1 { font-size: 1.45rem; }
+  .cs-section h2 { font-size: 1.2rem; }
 }

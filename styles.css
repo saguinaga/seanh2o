@@ -1503,6 +1503,7 @@ body {
 
 @media (max-width: 768px) {
   #about,
+  #philosophy,
   #mission,
   #current-work,
   #projects,
@@ -1511,6 +1512,22 @@ body {
     padding-bottom: 56px !important;
     padding-left: 16px !important;
     padding-right: 16px !important;
+  }
+
+  #projects h2 {
+    font-size: 1.75rem !important;
+  }
+
+  #projects .glass-card > div:first-child {
+    height: 128px !important;
+    font-size: 1rem !important;
+    padding: 0 12px;
+    text-align: center;
+  }
+
+  #contact button[type="submit"] {
+    width: 100%;
+    min-height: 48px;
   }
 
   .analysis-sections {

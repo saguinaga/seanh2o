@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Sean Aguinaga — NPL Document Intelligence PM Roadmap</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="roadmap.css">
+  <link rel="stylesheet" href="roadmap.css?v=2">
 </head>
 <body>
   <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
@@ -215,17 +215,19 @@
       </div>
 
       <h3 class="integ-subhead">Provider priority</h3>
-      <table class="metrics-table">
-        <thead>
-          <tr><th>Provider</th><th>When</th><th>Rationale</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Google Drive</td><td>Phase 1</td><td>Ubiquitous among analysts and boutique shops; strong picker API</td></tr>
-          <tr><td>Dropbox</td><td>Phase 1</td><td>Common in broker marketing workflows; simple folder shares</td></tr>
-          <tr><td>Box</td><td>Phase 2</td><td>Enterprise CRE, banks, legal — IT-approved, compliance-friendly</td></tr>
-          <tr><td>Microsoft 365</td><td>Phase 2</td><td>SharePoint deal rooms + OneDrive; dominant at large lenders</td></tr>
-        </tbody>
-      </table>
+      <div class="metrics-table-wrap">
+        <table class="metrics-table">
+          <thead>
+            <tr><th>Provider</th><th>When</th><th>Rationale</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Google Drive</td><td>Phase 1</td><td>Ubiquitous among analysts and boutique shops; strong picker API</td></tr>
+            <tr><td>Dropbox</td><td>Phase 1</td><td>Common in broker marketing workflows; simple folder shares</td></tr>
+            <tr><td>Box</td><td>Phase 2</td><td>Enterprise CRE, banks, legal — IT-approved, compliance-friendly</td></tr>
+            <tr><td>Microsoft 365</td><td>Phase 2</td><td>SharePoint deal rooms + OneDrive; dominant at large lenders</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <h3 class="integ-subhead">Requirements I'd own with engineering &amp; legal</h3>
       <ul class="bring-list">
@@ -261,22 +263,24 @@
 
     <section class="cs-section">
       <h2>Success metrics</h2>
-      <table class="metrics-table">
-        <thead>
-          <tr><th>Metric</th><th>North star / target</th><th>Why it matters</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>NPL package intake time</td><td>3 hr → &lt;20 min per loan</td><td>Direct ROI for special servicing teams</td></tr>
-          <tr><td>Loans processed / analyst / week</td><td>3× increase</td><td>Portfolio throughput without headcount</td></tr>
-          <tr><td>Field accuracy (post-review)</td><td>&gt;92% on P0 doc types</td><td>Trust is the product; without it, nothing ships</td></tr>
-          <tr><td>Weekly active extractors</td><td>Growth + retention by persona</td><td>Adoption, not vanity signups</td></tr>
-          <tr><td>Channel pull rate</td><td>Excel + API vs. browser-only</td><td>Proves delivery strategy, not just extraction</td></tr>
-          <tr><td>Cloud ingest share</td><td>&gt;50% of docs via connector by Phase 2</td><td>Proves we met firms in their existing workflow</td></tr>
-          <tr><td>Time file-drop → extract start</td><td>&lt;60s on watched folders</td><td>Automation value vs. manual upload</td></tr>
-          <tr><td>Correction rate</td><td>Declining over time per doc type</td><td>Model + schema improvement loop working</td></tr>
-          <tr><td>Revenue / account expansion</td><td>NRR, upsell to API + batch</td><td>Commercialization proof for the product line</td></tr>
-        </tbody>
-      </table>
+      <div class="metrics-table-wrap">
+        <table class="metrics-table">
+          <thead>
+            <tr><th>Metric</th><th>North star / target</th><th>Why it matters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>NPL package intake time</td><td>3 hr → &lt;20 min per loan</td><td>Direct ROI for special servicing teams</td></tr>
+            <tr><td>Loans processed / analyst / week</td><td>3× increase</td><td>Portfolio throughput without headcount</td></tr>
+            <tr><td>Field accuracy (post-review)</td><td>&gt;92% on P0 doc types</td><td>Trust is the product; without it, nothing ships</td></tr>
+            <tr><td>Weekly active extractors</td><td>Growth + retention by persona</td><td>Adoption, not vanity signups</td></tr>
+            <tr><td>Channel pull rate</td><td>Excel + API vs. browser-only</td><td>Proves delivery strategy, not just extraction</td></tr>
+            <tr><td>Cloud ingest share</td><td>&gt;50% of docs via connector by Phase 2</td><td>Proves we met firms in their existing workflow</td></tr>
+            <tr><td>Time file-drop → extract start</td><td>&lt;60s on watched folders</td><td>Automation value vs. manual upload</td></tr>
+            <tr><td>Correction rate</td><td>Declining over time per doc type</td><td>Model + schema improvement loop working</td></tr>
+            <tr><td>Revenue / account expansion</td><td>NRR, upsell to API + batch</td><td>Commercialization proof for the product line</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="cs-section">

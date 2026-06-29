@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -11,7 +11,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=28">
+    <link rel="stylesheet" href="styles.css?v=29">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -272,16 +272,39 @@
             transform: translateY(-7px) rotate(-45deg);
         }
         @media (max-width: 768px) {
-            .hero { min-height: 85vh; padding-top: 80px; }
+            .hero { min-height: auto; min-height: 85dvh; padding: 88px 0 48px; }
+            .hero-content { padding: 0 16px; }
             .hero h1 { font-size: 2.4rem; letter-spacing: -1px; }
             .highlight { font-size: 1.1rem; letter-spacing: 2px; }
-            .hero p, .hero-lead, .hero-sub, .hero-extra { font-size: 1.05rem; padding: 0 8px; }
+            .hero p, .hero-lead, .hero-sub, .hero-extra { font-size: 1.05rem; padding: 0; }
             .hero-sub, .hero-extra { font-size: 0.95rem !important; }
-            .hero-cta-row { flex-direction: column; }
-            .hero-cta-row .cta-button { width: 100%; max-width: 280px; }
+            .hero-cta-row {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                max-width: 320px;
+                margin: 0 auto;
+            }
+            .hero-cta-row .cta-button {
+                width: 100%;
+                max-width: none;
+                margin-right: 0;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .hero-case-link {
+                text-align: center;
+                font-size: 0.85rem;
+                line-height: 1.5;
+                padding: 0 4px;
+            }
             .cta-button { font-size: 1rem; padding: 14px 28px; }
-            .nav-container { height: 64px; position: relative; }
+            .nav-container { height: 64px; position: relative; padding: 0 12px; }
             .nav-toggle { display: flex; }
+            .nav-toggle span { background: #e0f2fe; }
+            .logo strong { font-size: 0.95rem; }
             .nav-links {
                 display: none;
                 position: absolute;
@@ -311,6 +334,11 @@
                 border-radius: 0 !important;
                 padding: 14px 24px !important;
             }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-lead { font-size: 1rem; }
+            .hero p { font-size: 0.95rem; }
         }
     </style>
 </head>
