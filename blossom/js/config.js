@@ -14,6 +14,11 @@ window.BLOSSOM_CONFIG = {
   dailyBonusStars: 20,
   starsPerMeal: 5,
   starsPerChore: 5,
+  rentDaily: 2,
+  utilitiesDaily: 1,
+  weeklyBill: 8,
+  weeklyBillEvery: 7,
+  careerUnlockLevel: 3,
 };
 
 window.BLOSSOM_CONFIG.cloudEnabled = Boolean(

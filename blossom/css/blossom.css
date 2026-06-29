@@ -564,3 +564,113 @@ a { color: var(--blossom-green-dark); }
   .game-hud { top: 4px; right: 4px; }
   .hud-money, .hud-stars { padding: 6px 10px; font-size: 0.85rem; }
 }
+
+/* Career picker */
+.career-pick {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.career-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 2px 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.career-card:has(input:checked) {
+  border-color: var(--blossom-green-dark);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+}
+
+.career-card input { grid-row: 1 / 3; accent-color: var(--blossom-green-dark); }
+
+.career-emoji { font-size: 1.6rem; grid-row: 1 / 3; }
+
+.career-card strong { font-family: var(--font-display); font-size: 0.95rem; }
+
+.career-card small { color: var(--blossom-muted); font-size: 0.78rem; }
+
+.hud-career {
+  font-size: 0.68rem;
+  color: #a78bfa;
+  text-align: right;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Bonnie + shift modals */
+.modal-card--bonnie {
+  background: linear-gradient(160deg, #fdf4ff 0%, #fff7ed 100%);
+  text-align: center;
+}
+
+.bonnie-portrait {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.shift-backdrop { z-index: 60; }
+
+.shift-card {
+  max-width: 400px;
+  background: linear-gradient(165deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%);
+  color: #f8fafc;
+  text-align: center;
+}
+
+.shift-card h2 {
+  font-family: var(--font-display);
+  color: #fde68a;
+  margin-bottom: 8px;
+}
+
+.shift-timer {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #a5f3fc;
+  margin-bottom: 12px;
+}
+
+.shift-customer {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.shift-progress { font-size: 0.85rem; color: #c4b5fd; margin-bottom: 16px; }
+
+.shift-tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.shift-tool-btn {
+  min-height: 72px;
+  border: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+}
+
+.shift-tool-btn:hover, .shift-tool-btn:active {
+  background: rgba(250, 204, 21, 0.35);
+  transform: scale(1.04);
+}
+
+.shift-close { width: 100%; }

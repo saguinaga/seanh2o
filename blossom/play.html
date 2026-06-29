@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=3">
+  <link rel="stylesheet" href="css/blossom.css?v=4">
 </head>
 <body>
   <!-- Character creation -->
@@ -25,6 +25,14 @@
           <div class="radio-row">
             <label class="radio-pill"><input type="radio" name="lifeStage" value="child" checked> Child</label>
             <label class="radio-pill"><input type="radio" name="lifeStage" value="adult"> Adult</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Dream path</label>
+          <div class="career-pick">
+            <label class="career-card"><input type="radio" name="careerPath" value="salon" checked><span class="career-emoji">💇</span><strong>Salon helper</strong><small>Sweep hair at Bonnie's</small></label>
+            <label class="career-card"><input type="radio" name="careerPath" value="broadway"><span class="career-emoji">🎭</span><strong>Broadway star</strong><small>Harbor park stage</small></label>
+            <label class="career-card"><input type="radio" name="careerPath" value="tiktoker"><span class="career-emoji">📱</span><strong>TikToker</strong><small>Film at home studio</small></label>
           </div>
         </div>
         <div class="form-row">
@@ -73,6 +81,7 @@
         </div>
         <div class="hud-stars" id="hudStars">0/50</div>
         <div class="hud-meta"><span id="hudLocation">Home</span> · <span id="hudLevel">Lv 1</span> · <span id="hudPhase">Morning</span></div>
+        <div class="hud-career" id="hudCareer">💇 Dreamer</div>
       </div>
 
       <p class="day-reminder" id="dayReminder" hidden></p>
@@ -102,6 +111,33 @@
   </div>
 
   <div class="game-toast" id="gameToast" hidden></div>
+
+  <!-- Bonnie job offer -->
+  <div class="modal-backdrop" id="bonnieModal" hidden>
+    <div class="modal-card modal-card--bonnie">
+      <p class="bonnie-portrait" aria-hidden="true">💇‍♀️</p>
+      <h2 id="bonnieModalTitle">Bonnie</h2>
+      <p id="bonnieModalBody"></p>
+      <button type="button" class="btn-blossom btn-primary" id="bonnieAccept">Get hired</button>
+      <button type="button" class="btn-blossom btn-secondary" id="bonnieLater" style="width:100%;margin-top:8px;">Maybe later</button>
+    </div>
+  </div>
+
+  <!-- Work shift mini-game -->
+  <div class="modal-backdrop shift-backdrop" id="shiftModal" hidden>
+    <div class="modal-card shift-card">
+      <h2 id="shiftTitle">Salon shift</h2>
+      <p class="shift-timer" id="shiftTimer">15s</p>
+      <p class="shift-customer" id="shiftCustomer">Customer wants: ✂️ Cut</p>
+      <p class="shift-progress" id="shiftProgress">Score: 0</p>
+      <div class="shift-tools">
+        <button type="button" class="shift-tool-btn" data-shift-tool="wash">🧴 Wash</button>
+        <button type="button" class="shift-tool-btn" data-shift-tool="cut">✂️ Cut</button>
+        <button type="button" class="shift-tool-btn" data-shift-tool="dry">💨 Dry</button>
+      </div>
+      <button type="button" class="btn-blossom btn-secondary shift-close" id="shiftClose">Leave shift</button>
+    </div>
+  </div>
 
   <!-- Day result modal -->
   <div class="modal-backdrop" id="dayModal" hidden>
@@ -143,11 +179,14 @@
   <script src="js/save.js?v=2"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/audio.js?v=1"></script>
-  <script src="js/world.js?v=1"></script>
-  <script src="js/render.js?v=2"></script>
-  <script src="js/day-system.js?v=3"></script>
+  <script src="js/art.js?v=1"></script>
+  <script src="js/career.js?v=1"></script>
+  <script src="js/world.js?v=2"></script>
+  <script src="js/render.js?v=3"></script>
+  <script src="js/day-system.js?v=4"></script>
+  <script src="js/shift.js?v=1"></script>
   <script src="js/controls.js?v=1"></script>
-  <script src="js/game.js?v=5"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/game.js?v=6"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>

@@ -19,6 +19,13 @@ window.BlossomSave = (function () {
       mealsEaten: { breakfast: false, lunch: false, dinner: false },
       choresDone: {},
       todaysChores: [],
+      careerPath: 'salon',
+      hired: false,
+      bonnieOfferSeen: false,
+      jobRank: 0,
+      shiftsAtRank: 0,
+      workedToday: false,
+      playedToday: false,
       avatar: {
         skin: '#f5d0a8',
         hair: '#4a3728',

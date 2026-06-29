@@ -115,6 +115,10 @@ window.BlossomApp = (function () {
       state.avatar.skin = fd.get('skin')?.toString() || '#f5d0a8';
       state.avatar.hair = fd.get('hair')?.toString() || '#4a3728';
       state.avatar.shirtColor = fd.get('shirtColor')?.toString() || '#5eead4';
+      state.careerPath = fd.get('careerPath')?.toString() || 'salon';
+      state.hired = false;
+      state.bonnieOfferSeen = false;
+      state.jobRank = 0;
       if (canvas) {
         try {
           state.avatar.shirtPattern = canvas.toDataURL('image/jpeg', 0.82);
@@ -154,7 +158,23 @@ window.BlossomApp = (function () {
     );
     BlossomGame.updateHud();
     const bubble = document.getElementById('npcBubble');
-    if (bubble) bubble.textContent = 'Leave through the green exit (right) to do outdoor chores!';
+    if (bubble) {
+      const cp = BlossomCareer.path(state);
+      bubble.textContent = state.lifeStage === 'child'
+        ? `${cp.playLabel} at your dream spot · green exit for outdoor chores`
+        : `Level ${BlossomCareer.BONNIE_LEVEL}: Bonnie hires on Main street · ${cp.workLabel} afternoons`;
+    }
+    BlossomGame.checkBonnieOffer?.();
+  }
+
+  function showBonnieModal(offer) {
+    const modal = document.getElementById('bonnieModal');
+    if (!modal) return;
+    document.getElementById('bonnieModalTitle').textContent = offer.title;
+    document.getElementById('bonnieModalBody').textContent = offer.body;
+    const btn = document.getElementById('bonnieAccept');
+    if (btn) btn.textContent = offer.accept;
+    setModalOpen(modal, true);
   }
 
   function showToast(msg, type = 'info') {
@@ -184,6 +204,14 @@ window.BlossomApp = (function () {
     });
     document.getElementById('dayModalClose')?.addEventListener('click', () => {
       setModalOpen(document.getElementById('dayModal'), false);
+    });
+    document.getElementById('bonnieAccept')?.addEventListener('click', () => {
+      BlossomGame.onBonnieAccepted?.();
+      setModalOpen(document.getElementById('bonnieModal'), false);
+      window.BlossomAudio?.playSfx('dayWin');
+    });
+    document.getElementById('bonnieLater')?.addEventListener('click', () => {
+      setModalOpen(document.getElementById('bonnieModal'), false);
     });
     document.getElementById('chatSend')?.addEventListener('click', sendChat);
     document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
@@ -295,5 +323,5 @@ window.BlossomApp = (function () {
     boot();
   });
 
-  return { showDayModal, showToast, boot };
+  return { showDayModal, showBonnieModal, showToast, boot };
 })();

@@ -2,8 +2,8 @@
 window.BlossomDay = (function () {
   const PHASES = [
     { id: 'morning', label: 'Morning', hint: 'Breakfast at home, then head outside for errands!', meal: 'breakfast' },
-    { id: 'afternoon', label: 'Afternoon', hint: 'Lunch at home or the café on Main street.', meal: 'lunch' },
-    { id: 'evening', label: 'Evening', hint: 'Dinner at home — then finish any last chores.', meal: 'dinner' },
+    { id: 'afternoon', label: 'Afternoon', hint: 'Lunch, then work shift or play at your dream job!', meal: 'lunch' },
+    { id: 'evening', label: 'Evening', hint: 'Dinner at home — finish chores & your work shift if you haven\'t.', meal: 'dinner' },
     { id: 'night', label: 'Night', hint: 'Hit 50 stars! Check home, yard, street & park.', meal: null },
   ];
 
@@ -112,11 +112,28 @@ window.BlossomDay = (function () {
   function evaluateDay(state) {
     const cfg = window.BLOSSOM_CONFIG;
     const total = state.stars;
+    const adultCheck = window.BlossomCareer?.adultDayRequirements(state);
+    if (adultCheck && !adultCheck.ok) {
+      return {
+        success: false,
+        title: 'Bills and work caught up with you',
+        body: adultCheck.msg,
+        revive: true,
+      };
+    }
     if (total < cfg.starsPerDay) {
       return {
         success: false,
         title: 'Tough day — but you can bloom again!',
-        body: `You got ${total}/${cfg.starsPerDay} stars. Eat meals, do chores, and try again tomorrow.`,
+        body: `You got ${total}/${cfg.starsPerDay} stars. Eat meals, do chores, work shifts, and try again.`,
+        revive: true,
+      };
+    }
+    if (state.money < 0) {
+      return {
+        success: false,
+        title: 'You\'re broke!',
+        body: BlossomCareer.QUINN.broke,
         revive: true,
       };
     }
@@ -138,6 +155,8 @@ window.BlossomDay = (function () {
 
   function startNewDay(state) {
     state.day += 1;
+    window.BlossomCareer?.resetDailyCareer(state);
+    const bills = window.BlossomCareer?.applyMorningBills(state);
     state.stars = 0;
     state.fatItemsToday = 0;
     state.chubby = state.chubby && state.fatItemsToday === 0 ? state.chubby : state.chubby;
@@ -148,9 +167,11 @@ window.BlossomDay = (function () {
     state.alive = true;
     state.currentLocation = 'house';
     assignDailyChores(state);
+    return bills;
   }
 
   function resetAfterFail(state) {
+    window.BlossomCareer?.resetDailyCareer(state);
     state.stars = 0;
     state.mealsEaten = { breakfast: false, lunch: false, dinner: false };
     state.choresDone = {};
