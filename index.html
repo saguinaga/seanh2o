@@ -11,7 +11,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=35">
+    <link rel="stylesheet" href="styles.css?v=36">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -147,40 +147,6 @@
         }
         .project-expansion span {
             color: #475569;
-        }
-
-        /* Easter egg — Blossom Life (family game with Quinn) */
-        .easter-blossom {
-            position: fixed;
-            bottom: max(14px, env(safe-area-inset-bottom));
-            right: max(14px, env(safe-area-inset-right));
-            z-index: 999;
-            font-size: 1.15rem;
-            text-decoration: none;
-            opacity: 0.2;
-            filter: grayscale(0.4);
-            transition: opacity 0.3s, transform 0.3s, filter 0.3s;
-            line-height: 1;
-            padding: 10px;
-        }
-        .easter-blossom:hover,
-        .easter-blossom:focus-visible {
-            opacity: 1;
-            filter: none;
-            transform: scale(1.25) rotate(-10deg);
-            outline: none;
-        }
-        .easter-blossom-inline {
-            text-decoration: none;
-            opacity: 0.3;
-            transition: opacity 0.2s, transform 0.2s;
-            display: inline-block;
-        }
-        .easter-blossom-inline:hover,
-        .easter-blossom-inline:focus-visible {
-            opacity: 1;
-            transform: scale(1.2);
-            outline: none;
         }
 
         /* Voxel / Cybernetic theme accents matching the Game of Life bg */
@@ -380,6 +346,12 @@
                 <a href="#tools" class="cta-button" data-plausible-event="CTA - See the Tools">See the Tools</a>
                 <a href="#projects" class="cta-button cta-secondary" data-plausible-event="CTA - Explore Projects">Explore Projects</a>
             </div>
+            <p class="hero-whisper">
+                <a href="blossom/" data-plausible-event="Easter Egg - Blossom Hero">
+                    <span class="hero-whisper-icon" aria-hidden="true">🌸</span>
+                    <span><strong>Blossom Life</strong> — cozy life sim, built with Quinn</span>
+                </a>
+            </p>
         </div>
     </section>
 
@@ -429,7 +401,7 @@
             <div class="projects-header">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Calculators I use + one doc experiment</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Calculators, experiments, and one family game</p>
                 </div>
                 <a href="#tools" class="projects-header-link">View all tools →</a>
             </div>
@@ -488,6 +460,15 @@
                 </article>
 
             </div>
+
+            <a href="blossom/" class="blossom-nook" data-plausible-event="Easter Egg - Blossom Nook">
+                <span class="blossom-nook-icon" aria-hidden="true">🌸</span>
+                <span class="blossom-nook-copy">
+                    <strong>Blossom Life</strong>
+                    <span>Grow your life. One star at a time. · family project with Quinn</span>
+                </span>
+                <span class="blossom-nook-cta">Play →</span>
+            </a>
         </div>
     </section>
 
@@ -1121,10 +1102,13 @@
         </div>
     </section>
 
-    <a href="blossom/" class="easter-blossom" aria-label="Blossom Life" title="Grow your life. One star at a time. 🌸" data-plausible-event="Easter Egg - Blossom Life">🌸</a>
+    <a href="blossom/" class="easter-blossom" data-plausible-event="Easter Egg - Blossom Float">
+        <span aria-hidden="true">🌸</span> Blossom Life
+    </a>
 
     <footer style="text-align:center; padding:48px 20px; background:#0f172a; color:#64748b; font-size:0.9rem;">
-        <p>© <span id="copyrightYear"></span> Sean Aguinaga — Systems that remember people. <a href="blossom/" class="easter-blossom-inline" title="Blossom Life — built with Quinn" data-plausible-event="Easter Egg - Blossom Footer">🌸</a></p>
+        <p>© <span id="copyrightYear"></span> Sean Aguinaga — Systems that remember people.</p>
+        <p class="footer-blossom"><a href="blossom/" data-plausible-event="Easter Egg - Blossom Footer">🌸 Blossom Life</a> · built with Quinn</p>
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->

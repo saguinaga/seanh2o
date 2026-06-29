@@ -2158,3 +2158,163 @@ body {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
   transform: translateY(-1px);
 }
+
+/* Blossom Life — visible easter egg / family project links */
+.hero-whisper {
+  margin-top: 20px;
+  max-width: 420px;
+}
+
+.hero-whisper a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.88rem;
+  color: #fce7f3;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(249, 168, 212, 0.45);
+  backdrop-filter: blur(6px);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.hero-whisper a:hover,
+.hero-whisper a:focus-visible {
+  background: rgba(157, 23, 77, 0.35);
+  border-color: #f9a8d4;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.hero-whisper strong {
+  color: #fbcfe8;
+  font-weight: 700;
+}
+
+.hero-whisper-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.blossom-nook {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  background: linear-gradient(135deg, rgba(157, 23, 77, 0.2) 0%, rgba(22, 163, 74, 0.15) 100%);
+  border: 1px solid rgba(249, 168, 212, 0.35);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.blossom-nook:hover,
+.blossom-nook:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(249, 168, 212, 0.6);
+  box-shadow: 0 8px 28px rgba(236, 72, 153, 0.15);
+  outline: none;
+}
+
+.blossom-nook-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.blossom-nook-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.blossom-nook-copy strong {
+  color: #fce7f3;
+  font-size: 1rem;
+}
+
+.blossom-nook-copy span {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.blossom-nook-cta {
+  color: #f9a8d4;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.easter-blossom {
+  position: fixed;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 10001;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #9d174d;
+  background: rgba(255, 247, 237, 0.95);
+  border: 1px solid rgba(249, 168, 212, 0.7);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.easter-blossom:hover,
+.easter-blossom:focus-visible {
+  transform: scale(1.04);
+  box-shadow: 0 6px 28px rgba(236, 72, 153, 0.28);
+  outline: none;
+}
+
+.footer-blossom {
+  margin-top: 10px;
+  font-size: 0.82rem;
+}
+
+.footer-blossom a {
+  color: #f9a8d4;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-blossom a:hover,
+.footer-blossom a:focus-visible {
+  color: #fbcfe8;
+  text-decoration: underline;
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .hero-whisper a {
+    font-size: 0.82rem;
+    padding: 10px 14px;
+  }
+
+  .blossom-nook {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+
+  .blossom-nook-cta {
+    width: 100%;
+    padding-left: 2.4rem;
+  }
+
+  .easter-blossom {
+    font-size: 0.78rem;
+    padding: 9px 13px;
+  }
+}
