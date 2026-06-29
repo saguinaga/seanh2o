@@ -26,6 +26,8 @@ window.BlossomSave = (function () {
       shiftsAtRank: 0,
       workedToday: false,
       playedToday: false,
+      guideDismissed: false,
+      guideWelcomeSeen: false,
       avatar: {
         skin: '#f5d0a8',
         hair: '#4a3728',

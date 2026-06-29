@@ -10,7 +10,10 @@ window.BlossomGame = (function () {
   let nearInteract = null;
   let lastTs = 0;
 
-  const PHASE_MS = 90000;
+  function phaseMs() {
+    const cfg = window.BLOSSOM_CONFIG;
+    return (state?.day || 1) <= 2 ? cfg.phaseMsEarly : cfg.phaseMsNormal;
+  }
   let started = false;
   let phaseInterval = null;
 
@@ -41,9 +44,13 @@ window.BlossomGame = (function () {
       if (phaseInterval) clearInterval(phaseInterval);
       phaseInterval = setInterval(tickPhase, 1000);
     }
-    showReminder(BlossomDay.currentPhase(state).hint);
+    const hint = (state.day || 1) <= 3
+      ? BlossomGuide.phaseHint(state)
+      : BlossomDay.currentPhase(state).hint;
+    showReminder(hint);
     checkBonnieOffer();
     updateHud();
+    window.BlossomApp?.maybeShowWelcome?.(state);
   }
 
   function resize() {
@@ -325,26 +332,23 @@ window.BlossomGame = (function () {
 
   function tickPhase() {
     phaseTimer += 1000;
-    if (phaseTimer >= PHASE_MS) {
+    if (phaseTimer >= phaseMs()) {
       phaseTimer = 0;
       const next = BlossomDay.advancePhase(state);
       if (next) {
-        showReminder(next.hint);
+        const hint = (state.day || 1) <= 3 ? BlossomGuide.phaseHint(state) : next.hint;
+        showReminder(hint);
         onPersist(state);
-      } else if (state.stars < window.BLOSSOM_CONFIG.starsPerDay) {
-        triggerFail();
+      } else {
+        const goal = BlossomGuide.starsGoal(state);
+        showReminder(
+          state.stars >= goal
+            ? `You hit ${goal}⭐! Tap End day when you're ready 🌸`
+            : BlossomGuide.phaseHint(state)
+        );
       }
     }
     updateHud();
-  }
-
-  function triggerFail() {
-    state.alive = false;
-    window.BlossomAudio?.playSfx('dayFail');
-    onMessage('Oh no! You didn\'t get 50 stars...', 'bad');
-    window.BlossomApp?.showDayModal(BlossomDay.evaluateDay(state));
-    BlossomDay.resetAfterFail(state);
-    onPersist(state);
   }
 
   function updateHud() {
@@ -356,10 +360,11 @@ window.BlossomGame = (function () {
     const locEl = document.getElementById('hudLocation');
     const careerEl = document.getElementById('hudCareer');
     if (moneyEl) moneyEl.textContent = `$${state.money}`;
+    const goal = BlossomGuide.starsGoal(state);
     if (starsEl) {
-      starsEl.textContent = `${state.stars}/${window.BLOSSOM_CONFIG.starsPerDay}`;
-      starsEl.classList.toggle('hud-stars--hot', state.stars >= window.BLOSSOM_CONFIG.starsPerDay * 0.75);
-      starsEl.classList.toggle('hud-stars--pulse', state.stars >= window.BLOSSOM_CONFIG.starsPerDay - 5);
+      starsEl.textContent = `${state.stars}/${goal}`;
+      starsEl.classList.toggle('hud-stars--hot', state.stars >= goal * 0.75);
+      starsEl.classList.toggle('hud-stars--pulse', state.stars >= goal - 5);
     }
     if (levelEl) levelEl.textContent = `Lv ${state.level}`;
     if (phaseEl) phaseEl.textContent = BlossomDay.currentPhase(state).label;
@@ -370,11 +375,16 @@ window.BlossomGame = (function () {
     }
     const hint = document.getElementById('travelHint');
     if (hint) {
-      const exits = loc.props.filter((p) => p.kind === 'exit');
-      hint.textContent = exits.length
-        ? 'Green exits travel · E at salon/stage/studio for work'
-        : 'E or tap to interact';
+      if ((state.day || 1) <= 3 && state.stars < goal) {
+        hint.textContent = BlossomGuide.nextStep(state).hint;
+      } else {
+        const exits = loc.props.filter((p) => p.kind === 'exit');
+        hint.textContent = exits.length
+          ? 'Green exits travel · E at salon/stage/studio for work'
+          : 'E or tap to interact';
+      }
     }
+    BlossomGuide.updatePanel(state);
   }
 
   function loop(ts) {
@@ -421,7 +431,10 @@ window.BlossomGame = (function () {
     }
 
     const bubble = document.getElementById('npcBubble');
-    if (bubble && nearInteract) {
+    const goal = BlossomGuide.starsGoal(state);
+    if (bubble && !nearInteract && (state.day || 1) <= 2 && state.stars < goal) {
+      bubble.textContent = `📖 ${BlossomGuide.nextStep(state).hint}`;
+    } else if (bubble && nearInteract) {
       const cp = BlossomCareer.path(state);
       if (nearInteract.kind === 'exit') bubble.textContent = nearInteract.label + ' (walk into it)';
       else if (nearInteract.kind === 'npc' && nearInteract.id === 'bonnie') {

@@ -165,6 +165,25 @@ window.BlossomApp = (function () {
         : `Level ${BlossomCareer.BONNIE_LEVEL}: Bonnie hires on Main street · ${cp.workLabel} afternoons`;
     }
     BlossomGame.checkBonnieOffer?.();
+    maybeShowWelcome(state);
+  }
+
+  function maybeShowWelcome(st) {
+    if (!st || st.guideWelcomeSeen) return;
+    st.guideWelcomeSeen = true;
+    const modal = document.getElementById('welcomeGuideModal');
+    const body = document.getElementById('welcomeGuideBody');
+    if (body) body.textContent = BlossomGuide.welcomeBody(st);
+    setModalOpen(modal, true);
+    BlossomSave.persist(st, BlossomAuth.getUserId());
+  }
+
+  function showStarGuide() {
+    if (state) {
+      state.guideDismissed = false;
+      BlossomGuide.updatePanel(state);
+      BlossomSave.persist(state, BlossomAuth.getUserId());
+    }
   }
 
   function showBonnieModal(offer) {
@@ -235,6 +254,17 @@ window.BlossomApp = (function () {
     });
     document.getElementById('bonnieLater')?.addEventListener('click', () => {
       setModalOpen(document.getElementById('bonnieModal'), false);
+    });
+    document.getElementById('welcomeGuideClose')?.addEventListener('click', () => {
+      setModalOpen(document.getElementById('welcomeGuideModal'), false);
+    });
+    document.getElementById('guideHelpBtn')?.addEventListener('click', () => showStarGuide());
+    document.getElementById('guideDismiss')?.addEventListener('click', () => {
+      if (state) {
+        state.guideDismissed = true;
+        BlossomGuide.updatePanel(state);
+        BlossomSave.persist(state, BlossomAuth.getUserId());
+      }
     });
     document.getElementById('chatSend')?.addEventListener('click', sendChat);
     document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
@@ -346,5 +376,5 @@ window.BlossomApp = (function () {
     boot();
   });
 
-  return { showDayModal, showBonnieModal, showTravelBanner, showToast, boot };
+  return { showDayModal, showBonnieModal, showTravelBanner, showToast, maybeShowWelcome, boot };
 })();

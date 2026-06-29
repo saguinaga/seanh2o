@@ -1,13 +1,14 @@
 /** Time-of-day, meals, chores, star goals, day evaluation */
 window.BlossomDay = (function () {
   const PHASES = [
-    { id: 'morning', label: 'Morning', hint: 'Breakfast at home, then head outside for errands!', meal: 'breakfast' },
+    { id: 'morning', label: 'Morning', hint: 'Step 1: Tap fridge for breakfast (+5⭐), then home chores!', meal: 'breakfast' },
     { id: 'afternoon', label: 'Afternoon', hint: 'Lunch, then work shift or play at your dream job!', meal: 'lunch' },
     { id: 'evening', label: 'Evening', hint: 'Dinner at home — finish chores & your work shift if you haven\'t.', meal: 'dinner' },
-    { id: 'night', label: 'Night', hint: 'Hit 50 stars! Check home, yard, street & park.', meal: null },
+    { id: 'night', label: 'Night', hint: 'Almost there — finish chores & tap End day when ready!', meal: null },
   ];
 
   const OUTDOOR_CHORES = ['trash', 'plants_out', 'mailbox', 'groceries', 'litter', 'ducks', 'playground'];
+  const HOME_CHORES = ['bed', 'dishes', 'homework', 'teeth', 'sweep', 'plants'];
   const CHORES_PER_DAY = 8;
 
   const CHORES = [
@@ -83,14 +84,32 @@ window.BlossomDay = (function () {
   }
 
   function assignDailyChores(state) {
-    const all = CHORES.map((c) => c.id);
     const picked = new Set();
+    const day = state.day || 1;
+
+    if (day <= 1) {
+      shuffle(HOME_CHORES).slice(0, 6).forEach((id) => picked.add(id));
+      state.todaysChores = [...picked];
+      return;
+    }
+    if (day <= 2) {
+      shuffle(HOME_CHORES).forEach((id) => { if (picked.size < 5) picked.add(id); });
+      shuffle(OUTDOOR_CHORES).slice(0, 2).forEach((id) => picked.add(id));
+      state.todaysChores = [...picked];
+      return;
+    }
+
+    const all = CHORES.map((c) => c.id);
     shuffle(OUTDOOR_CHORES).slice(0, 3).forEach((id) => picked.add(id));
     shuffle(all).forEach((id) => {
       if (picked.size >= CHORES_PER_DAY) return;
       picked.add(id);
     });
     state.todaysChores = [...picked];
+  }
+
+  function starsGoal(state) {
+    return window.BlossomGuide?.starsGoal(state) ?? window.BLOSSOM_CONFIG.starsPerDay;
   }
 
   function isChoreToday(state, choreId) {
@@ -121,11 +140,13 @@ window.BlossomDay = (function () {
         revive: true,
       };
     }
-    if (total < cfg.starsPerDay) {
+    const goal = starsGoal(state);
+    if (total < goal) {
+      const tip = window.BlossomGuide?.nextStep(state)?.hint || 'Eat 3 meals and do chores on your 📋 list.';
       return {
         success: false,
         title: 'Tough day — but you can bloom again!',
-        body: `You got ${total}/${cfg.starsPerDay} stars. Eat meals, do chores, work shifts, and try again.`,
+        body: `You got ${total}/${goal} stars today. Try: ${tip}`,
         revive: true,
       };
     }
@@ -194,6 +215,7 @@ window.BlossomDay = (function () {
     assignDailyChores,
     isChoreToday,
     evaluateDay,
+    starsGoal,
     startNewDay,
     resetAfterFail,
   };

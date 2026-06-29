@@ -940,3 +940,116 @@ a { color: var(--blossom-green-dark); }
   animation: float-card 4s ease-in-out infinite;
   box-shadow: 0 0 40px rgba(244, 114, 182, 0.3);
 }
+
+.modal-card--welcome {
+  background: linear-gradient(160deg, #ecfdf5 0%, #fff7ed 50%, #fdf4ff 100%);
+  max-width: 440px;
+}
+
+.welcome-guide-body {
+  white-space: pre-line;
+  text-align: left;
+  line-height: 1.55;
+  font-size: 0.92rem;
+  color: #334155;
+  margin-bottom: 16px;
+}
+
+.create-tip {
+  font-size: 0.82rem;
+  color: #166534;
+  background: rgba(74, 222, 128, 0.15);
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-top: 12px;
+  line-height: 1.45;
+}
+
+.star-guide {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 12;
+  width: min(200px, 42vw);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  border-radius: 14px;
+  padding: 10px 12px;
+  pointer-events: auto;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.star-guide__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.star-guide__title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #86efac;
+}
+
+.star-guide__goal {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fde047;
+}
+
+.star-guide__bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.star-guide__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4ade80, #fde047);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.star-guide__list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.guide-check--done {
+  color: #86efac;
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+.star-guide__tip {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  font-style: italic;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.star-guide__dismiss {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.62rem;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .star-guide { width: min(180px, 48vw); padding: 8px 10px; }
+}

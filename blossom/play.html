@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=5">
+  <link rel="stylesheet" href="css/blossom.css?v=6">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -57,6 +57,7 @@
         </div>
         <button type="submit" class="btn-blossom btn-primary" style="width: 100%;">Start blooming →</button>
       </form>
+      <p class="create-tip">Day 1 goal: <strong>35 stars</strong> — breakfast, 4 chores, lunch &amp; dinner (all at home!)</p>
       <p class="create-guest-note">No account needed — guest play saves on this device.</p>
       <p style="margin-top: 16px; text-align: center;"><a href="index.html">← Back to Blossom Life</a></p>
     </div>
@@ -91,6 +92,17 @@
         <div class="hud-career" id="hudCareer">💇 Dreamer</div>
       </div>
 
+      <aside class="star-guide" id="starGuide" hidden>
+        <div class="star-guide__head">
+          <span class="star-guide__title">📖 Star path</span>
+          <span class="star-guide__goal" id="guideGoal">0/35 ⭐</span>
+        </div>
+        <div class="star-guide__bar"><div class="star-guide__fill" id="guideProgressBar"></div></div>
+        <ul class="star-guide__list" id="guideChecklist"></ul>
+        <p class="star-guide__tip" id="guideTip"></p>
+        <button type="button" class="star-guide__dismiss" id="guideDismiss">Hide guide</button>
+      </aside>
+
       <p class="day-reminder" id="dayReminder" hidden></p>
 
       <div class="game-controls" id="mobileControls">
@@ -111,6 +123,7 @@
         <button type="button" class="chat-send" id="chatSend">Say</button>
       </div>
       <div class="game-toolbar">
+        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="guideHelpBtn" title="How to get stars">📖</button>
         <button type="button" class="toolbar-btn" id="endDayBtn">End day</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="soundToggle" title="Sound on" aria-pressed="true">🔊</button>
       </div>
@@ -118,6 +131,15 @@
   </div>
 
   <div class="game-toast" id="gameToast" hidden></div>
+
+  <!-- First-day welcome -->
+  <div class="modal-backdrop" id="welcomeGuideModal" hidden>
+    <div class="modal-card modal-card--welcome">
+      <h2>How to get your first stars ✨</h2>
+      <p id="welcomeGuideBody" class="welcome-guide-body"></p>
+      <button type="button" class="btn-blossom btn-primary" id="welcomeGuideClose" style="width:100%;">Let's bloom!</button>
+    </div>
+  </div>
 
   <!-- Bonnie job offer -->
   <div class="modal-backdrop" id="bonnieModal" hidden>
@@ -188,8 +210,9 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=4"></script>
-  <script src="js/save.js?v=2"></script>
+  <script src="js/config.js?v=5"></script>
+  <script src="js/save.js?v=3"></script>
+  <script src="js/guide.js?v=1"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/audio.js?v=2"></script>
   <script src="js/fx.js?v=1"></script>
@@ -197,10 +220,10 @@
   <script src="js/career.js?v=1"></script>
   <script src="js/world.js?v=2"></script>
   <script src="js/render.js?v=4"></script>
-  <script src="js/day-system.js?v=4"></script>
+  <script src="js/day-system.js?v=5"></script>
   <script src="js/shift.js?v=2"></script>
   <script src="js/controls.js?v=1"></script>
-  <script src="js/game.js?v=7"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/game.js?v=8"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>
