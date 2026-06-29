@@ -1,5 +1,12 @@
 /** Canvas world — exploration, chores, careers, Bonnie */
 window.BlossomGame = (function () {
+  const FX_STUB = {
+    update() {}, draw() {}, drawAmbient() {}, applyShake() {},
+    screenFlash() {}, screenShake() {}, floatText() {}, burst() {},
+    starBurst() {}, confetti() {}, travelBurst() {},
+  };
+  function fx() { return window.BlossomFx || FX_STUB; }
+
   let canvas, ctx, state, onMessage, onPersist;
   let player = { x: 400, y: 360, vy: 0, onGround: true, facing: 1 };
   let anim = 0;
@@ -161,16 +168,16 @@ window.BlossomGame = (function () {
         const res = BlossomCareer.completeShift(state, result.score, result.pretend);
         onMessage(res.msg, res.ok ? 'good' : 'warn');
         if (result.perfect) {
-          BlossomFx.confetti();
-          BlossomFx.screenFlash('#c084fc', 0.4);
-          BlossomFx.screenShake(10);
+          fx().confetti();
+          fx().screenFlash('#c084fc', 0.4);
+          fx().screenShake(10);
         } else if (res.promoted) {
-          BlossomFx.starBurst(player.x, player.y - 40);
+          fx().starBurst(player.x, player.y - 40);
           window.BlossomAudio?.playSfx('levelUp');
         } else {
-          BlossomFx.burst(player.x, player.y - 30, { color: '#4ade80' });
+          fx().burst(player.x, player.y - 30, { color: '#4ade80' });
         }
-        BlossomFx.floatText(player.x, player.y - 55, `+$${res.pay} +${res.stars}⭐`, '#fde047');
+        fx().floatText(player.x, player.y - 55, `+$${res.pay} +${res.stars}⭐`, '#fde047');
         onPersist(state);
         updateHud();
       },
@@ -230,8 +237,8 @@ window.BlossomGame = (function () {
     state.position = { x: player.x, y: player.y };
     transitionLock = 55;
     window.BlossomAudio?.playSfx('travel');
-    BlossomFx.travelBurst();
-    BlossomFx.screenFlash('#4ade80', 0.3);
+    fx().travelBurst();
+    fx().screenFlash('#4ade80', 0.3);
     window.BlossomApp?.showTravelBanner(next.name);
     updateHud();
     onPersist(state);
@@ -286,8 +293,8 @@ window.BlossomGame = (function () {
     if (res.ok) {
       const cx = prop.x + (prop.w || 40) / 2;
       const cy = prop.y + 10;
-      BlossomFx.starBurst(cx, cy);
-      BlossomFx.floatText(cx, cy - 20, '+5 ⭐', '#fde047');
+      fx().starBurst(cx, cy);
+      fx().floatText(cx, cy - 20, '+5 ⭐', '#fde047');
       window.BlossomAudio?.playSfx('star');
       onPersist(state);
     } else window.BlossomAudio?.playSfx('warn');
@@ -322,8 +329,8 @@ window.BlossomGame = (function () {
     const res = BlossomDay.eatMeal(state, foods[idx], mealKey);
     onMessage(res.msg, res.ok ? 'good' : 'warn');
     if (res.ok) {
-      BlossomFx.starBurst(player.x, player.y - 45);
-      BlossomFx.floatText(player.x, player.y - 60, '+5 ⭐', '#fda4af');
+      fx().starBurst(player.x, player.y - 45);
+      fx().floatText(player.x, player.y - 60, '+5 ⭐', '#fda4af');
       window.BlossomAudio?.playSfx('eat');
       onPersist(state);
     } else window.BlossomAudio?.playSfx('warn');
@@ -338,7 +345,7 @@ window.BlossomGame = (function () {
       void el.offsetWidth;
       el.classList.add('day-reminder--pop');
     }
-    BlossomFx.screenFlash('#bae6fd', 0.15);
+    fx().screenFlash('#bae6fd', 0.15);
   }
 
   function tickPhase() {
@@ -403,7 +410,7 @@ window.BlossomGame = (function () {
     lastTs = ts;
     anim = ts / 1000;
     if (transitionLock > 0) transitionLock -= 1;
-    BlossomFx.update(dt);
+    fx().update(dt);
     update();
     draw();
     requestAnimationFrame(loop);
@@ -479,16 +486,16 @@ window.BlossomGame = (function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.save();
-    BlossomFx.applyShake(ctx);
+    fx().applyShake(ctx);
     BlossomRender.drawScene(
       ctx, loc, loc.props, anim, state.choresDone || {}, nearIdFor(nearInteract), state.todaysChores, state
     );
-    BlossomFx.drawAmbient(ctx, loc.floorY, state.timeOfDay || 'morning');
+    fx().drawAmbient(ctx, loc.floorY, state.timeOfDay || 'morning');
     if (nearInteract) {
       BlossomRender.drawInteractGlow(ctx, nearInteract, anim);
     }
     BlossomRender.drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc, Boolean(nearInteract));
-    BlossomFx.draw(ctx);
+    fx().draw(ctx);
     ctx.restore();
     if (transitionLock > 0) {
       const t = transitionLock / 55;
@@ -527,8 +534,8 @@ window.BlossomGame = (function () {
       BlossomDay.resetAfterFail(state);
     }
     if (state.level > prevLevel) {
-      BlossomFx.confetti();
-      BlossomFx.screenFlash('#f472b6', 0.35);
+      fx().confetti();
+      fx().screenFlash('#f472b6', 0.35);
       window.BlossomAudio?.playSfx('levelUp');
     }
     if (state.level >= BlossomCareer.BONNIE_LEVEL && prevLevel < BlossomCareer.BONNIE_LEVEL) {
