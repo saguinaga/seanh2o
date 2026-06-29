@@ -181,10 +181,29 @@ window.BlossomApp = (function () {
     const el = document.getElementById('gameToast');
     if (!el) return;
     el.textContent = msg;
-    el.className = `game-toast game-toast--${type}`;
+    el.className = `game-toast game-toast--${type} game-toast--show`;
     el.hidden = false;
     clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => { el.hidden = true; }, 3500);
+    showToast._t = setTimeout(() => {
+      el.classList.remove('game-toast--show');
+      setTimeout(() => { el.hidden = true; }, 300);
+    }, 3500);
+  }
+
+  function showTravelBanner(name) {
+    const el = document.getElementById('travelBanner');
+    const text = document.getElementById('travelBannerText');
+    if (!el || !text) return;
+    text.textContent = name;
+    el.hidden = false;
+    el.classList.remove('travel-banner--show');
+    void el.offsetWidth;
+    el.classList.add('travel-banner--show');
+    clearTimeout(showTravelBanner._t);
+    showTravelBanner._t = setTimeout(() => {
+      el.classList.remove('travel-banner--show');
+      setTimeout(() => { el.hidden = true; }, 500);
+    }, 1400);
   }
 
   function showDayModal(result) {
@@ -199,6 +218,10 @@ window.BlossomApp = (function () {
     document.getElementById('endDayBtn')?.addEventListener('click', () => {
       const result = BlossomGame.endDay();
       window.BlossomAudio?.playSfx(result.success ? 'dayWin' : 'dayFail');
+      if (result.success) {
+        window.BlossomFx?.confetti();
+        window.BlossomFx?.screenFlash('#4ade80', 0.45);
+      }
       showDayModal(result);
       BlossomGame.updateHud();
     });
@@ -323,5 +346,5 @@ window.BlossomApp = (function () {
     boot();
   });
 
-  return { showDayModal, showBonnieModal, showToast, boot };
+  return { showDayModal, showBonnieModal, showTravelBanner, showToast, boot };
 })();

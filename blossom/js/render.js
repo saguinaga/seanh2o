@@ -414,7 +414,27 @@ window.BlossomRender = (function () {
     }
   }
 
-  function drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc) {
+  function drawInteractGlow(ctx, p, anim) {
+    const cx = p.x + (p.w || 50) / 2;
+    const cy = p.y + (p.h || 50) / 2;
+    const pulse = 0.5 + Math.sin(anim * 5) * 0.5;
+    const g = ctx.createRadialGradient(cx, cy, 8, cx, cy, 48 + pulse * 12);
+    g.addColorStop(0, `rgba(250, 204, 21, ${0.25 + pulse * 0.2})`);
+    g.addColorStop(1, 'rgba(250, 204, 21, 0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 52 + pulse * 10, 0, Math.PI * 2);
+    ctx.fill();
+    for (let i = 0; i < 6; i++) {
+      const a = anim * 2 + (i / 6) * Math.PI * 2;
+      ctx.fillStyle = `rgba(253, 224, 71, ${0.4 + pulse * 0.3})`;
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(a) * 36, cy + Math.sin(a) * 20, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc, glowing) {
     const av = state.avatar || {};
     const moving = Math.abs(BlossomControls.getMovement().dx) > 0.05
       || Math.abs(BlossomControls.getMovement().dy) > 0.05;
@@ -423,6 +443,16 @@ window.BlossomRender = (function () {
     const px = player.x;
     const py = player.y + bob;
     const scale = state.chubby ? 1.12 : 1;
+
+    if (glowing) {
+      const g = ctx.createRadialGradient(px, py - 20, 4, px, py - 20, 38);
+      g.addColorStop(0, 'rgba(74, 222, 128, 0.35)');
+      g.addColorStop(1, 'rgba(74, 222, 128, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(px, py - 20, 38, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
     ctx.beginPath();
@@ -538,6 +568,7 @@ window.BlossomRender = (function () {
     drawLocationBadge,
     drawChoreTracker,
     drawCareerBadge,
+    drawInteractGlow,
     hitProp,
     roundRect,
   };

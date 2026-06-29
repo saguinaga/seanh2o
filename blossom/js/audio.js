@@ -234,6 +234,29 @@ window.BlossomAudio = (function () {
       case 'warn':
         tone(277.18, 'triangle', 0.2, 0.07);
         break;
+      case 'travel':
+        tone(220, 'sine', 0.12, 0.08);
+        setTimeout(() => tone(330, 'triangle', 0.2, 0.09), 60);
+        setTimeout(() => chime([440, 554.37, 659.25], 0.1), 180);
+        break;
+      case 'combo':
+        chime([523.25, 659.25, 783.99, 987.77], 0.14);
+        break;
+      case 'shiftStart':
+        tone(392, 'triangle', 0.15, 0.09);
+        setTimeout(() => tone(523.25, 'sine', 0.25, 0.1), 100);
+        break;
+      case 'shiftPerfect':
+        chime([587.33, 739.99, 880], 0.15);
+        setTimeout(() => playWhistle(880, 0.8, 0.11), 200);
+        break;
+      case 'levelUp':
+        chime([329.63, 392, 493.88, 659.25], 0.14);
+        setTimeout(() => chime([523.25, 659.25, 783.99], 0.12), 350);
+        break;
+      case 'sparkle':
+        tone(880 + Math.random() * 200, 'sine', 0.12, 0.05);
+        break;
       default:
         break;
     }

@@ -8,6 +8,7 @@ window.BlossomGame = (function () {
   let phaseTimer = 0;
   let transitionLock = 0;
   let nearInteract = null;
+  let lastTs = 0;
 
   const PHASE_MS = 90000;
   let started = false;
@@ -145,8 +146,17 @@ window.BlossomGame = (function () {
         if (result.cancelled) return;
         const res = BlossomCareer.completeShift(state, result.score, result.pretend);
         onMessage(res.msg, res.ok ? 'good' : 'warn');
-        if (res.promoted) window.BlossomAudio?.playSfx('dayWin');
-        else window.BlossomAudio?.playSfx('chore');
+        if (result.perfect) {
+          BlossomFx.confetti();
+          BlossomFx.screenFlash('#c084fc', 0.4);
+          BlossomFx.screenShake(10);
+        } else if (res.promoted) {
+          BlossomFx.starBurst(player.x, player.y - 40);
+          window.BlossomAudio?.playSfx('levelUp');
+        } else {
+          BlossomFx.burst(player.x, player.y - 30, { color: '#4ade80' });
+        }
+        BlossomFx.floatText(player.x, player.y - 55, `+$${res.pay} +${res.stars}⭐`, '#fde047');
         onPersist(state);
         updateHud();
       },
@@ -200,9 +210,11 @@ window.BlossomGame = (function () {
     player.x = spawn.x;
     player.y = spawn.y;
     state.position = { x: player.x, y: player.y };
-    transitionLock = 45;
-    window.BlossomAudio?.playSfx('ui');
-    onMessage(`Walking to ${next.name}…`, 'info');
+    transitionLock = 55;
+    window.BlossomAudio?.playSfx('travel');
+    BlossomFx.travelBurst();
+    BlossomFx.screenFlash('#4ade80', 0.3);
+    window.BlossomApp?.showTravelBanner(next.name);
     updateHud();
     onPersist(state);
   }
@@ -254,7 +266,11 @@ window.BlossomGame = (function () {
     const res = BlossomDay.doChore(state, prop.choreId);
     onMessage(res.msg, res.ok ? 'good' : 'warn');
     if (res.ok) {
-      window.BlossomAudio?.playSfx('chore');
+      const cx = prop.x + (prop.w || 40) / 2;
+      const cy = prop.y + 10;
+      BlossomFx.starBurst(cx, cy);
+      BlossomFx.floatText(cx, cy - 20, '+5 ⭐', '#fde047');
+      window.BlossomAudio?.playSfx('star');
       onPersist(state);
     } else window.BlossomAudio?.playSfx('warn');
   }
@@ -288,6 +304,8 @@ window.BlossomGame = (function () {
     const res = BlossomDay.eatMeal(state, foods[idx], mealKey);
     onMessage(res.msg, res.ok ? 'good' : 'warn');
     if (res.ok) {
+      BlossomFx.starBurst(player.x, player.y - 45);
+      BlossomFx.floatText(player.x, player.y - 60, '+5 ⭐', '#fda4af');
       window.BlossomAudio?.playSfx('eat');
       onPersist(state);
     } else window.BlossomAudio?.playSfx('warn');
@@ -298,7 +316,11 @@ window.BlossomGame = (function () {
     if (el) {
       el.textContent = text;
       el.hidden = false;
+      el.classList.remove('day-reminder--pop');
+      void el.offsetWidth;
+      el.classList.add('day-reminder--pop');
     }
+    BlossomFx.screenFlash('#bae6fd', 0.15);
   }
 
   function tickPhase() {
@@ -334,7 +356,11 @@ window.BlossomGame = (function () {
     const locEl = document.getElementById('hudLocation');
     const careerEl = document.getElementById('hudCareer');
     if (moneyEl) moneyEl.textContent = `$${state.money}`;
-    if (starsEl) starsEl.textContent = `${state.stars}/${window.BLOSSOM_CONFIG.starsPerDay}`;
+    if (starsEl) {
+      starsEl.textContent = `${state.stars}/${window.BLOSSOM_CONFIG.starsPerDay}`;
+      starsEl.classList.toggle('hud-stars--hot', state.stars >= window.BLOSSOM_CONFIG.starsPerDay * 0.75);
+      starsEl.classList.toggle('hud-stars--pulse', state.stars >= window.BLOSSOM_CONFIG.starsPerDay - 5);
+    }
     if (levelEl) levelEl.textContent = `Lv ${state.level}`;
     if (phaseEl) phaseEl.textContent = BlossomDay.currentPhase(state).label;
     if (locEl) locEl.textContent = loc.name;
@@ -352,8 +378,11 @@ window.BlossomGame = (function () {
   }
 
   function loop(ts) {
+    const dt = lastTs ? (ts - lastTs) / 1000 : 0.016;
+    lastTs = ts;
     anim = ts / 1000;
     if (transitionLock > 0) transitionLock -= 1;
+    BlossomFx.update(dt);
     update();
     draw();
     requestAnimationFrame(loop);
@@ -421,14 +450,30 @@ window.BlossomGame = (function () {
   function draw() {
     const loc = getLoc();
     ctx.clearRect(0, 0, BlossomWorld.W, BlossomWorld.H);
-    if (transitionLock > 0) {
-      ctx.fillStyle = `rgba(255, 247, 237, ${Math.min(0.55, transitionLock / 40)})`;
-      ctx.fillRect(0, 0, BlossomWorld.W, BlossomWorld.H);
-    }
+    ctx.save();
+    BlossomFx.applyShake(ctx);
     BlossomRender.drawScene(
       ctx, loc, loc.props, anim, state.choresDone || {}, nearIdFor(nearInteract), state.todaysChores, state
     );
-    BlossomRender.drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc);
+    BlossomFx.drawAmbient(ctx, loc.floorY, state.timeOfDay || 'morning');
+    if (nearInteract) {
+      BlossomRender.drawInteractGlow(ctx, nearInteract, anim);
+    }
+    BlossomRender.drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc, Boolean(nearInteract));
+    BlossomFx.draw(ctx);
+    ctx.restore();
+    if (transitionLock > 0) {
+      const t = transitionLock / 55;
+      ctx.fillStyle = `rgba(255, 247, 237, ${Math.min(0.65, t * 0.7)})`;
+      ctx.fillRect(0, 0, BlossomWorld.W, BlossomWorld.H);
+      ctx.fillStyle = '#166534';
+      ctx.font = '800 22px Fredoka, Nunito, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = 1 - t;
+      ctx.fillText(loc.name, BlossomWorld.W / 2, BlossomWorld.H / 2 - 10);
+      ctx.globalAlpha = 1;
+      ctx.textAlign = 'left';
+    }
     BlossomRender.drawLocationBadge(ctx, loc.name);
     BlossomRender.drawCareerBadge(ctx, state);
     BlossomRender.drawChoreTracker(ctx, state);
@@ -452,6 +497,11 @@ window.BlossomGame = (function () {
       if (bills?.msg) onMessage(bills.msg, bills.ok ? 'info' : 'warn');
     } else {
       BlossomDay.resetAfterFail(state);
+    }
+    if (state.level > prevLevel) {
+      BlossomFx.confetti();
+      BlossomFx.screenFlash('#f472b6', 0.35);
+      window.BlossomAudio?.playSfx('levelUp');
     }
     if (state.level >= BlossomCareer.BONNIE_LEVEL && prevLevel < BlossomCareer.BONNIE_LEVEL) {
       checkBonnieOffer();
