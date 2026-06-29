@@ -1,6 +1,6 @@
 /** Bump lastUpdated when the case study meaningfully changes. */
 window.CASE_STUDY_META = {
-  version: '1.2',
+  version: '1.3',
   lastUpdated: '2026-06',
   status: 'living',
   label: 'Living PM case study',

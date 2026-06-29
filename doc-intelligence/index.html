@@ -31,7 +31,7 @@
       <div class="expansion-path" aria-label="Platform expansion sequence">
         <span class="path-step path-active">Lenders · NPL</span>
         <span class="path-arrow" aria-hidden="true">→</span>
-        <span class="path-step">Brokers · OM</span>
+        <span class="path-step">Brokers · offering memos</span>
         <span class="path-arrow" aria-hidden="true">→</span>
         <span class="path-step">Appraisal · ESA · API</span>
       </div>
@@ -69,7 +69,7 @@
       </p>
       <p>
         <strong>That's where I'd lean into NPL.</strong> Lenders and special servicers have the highest urgency, clearest ROI,
-        and the most repeatable document sets for Phase 1. Win here → same extraction engine serves broker OM packages,
+        and the most repeatable document sets for Phase 1. Win here → same extraction engine serves broker offering memorandums,
         agency underwriting, appraisals, and environmental reports. One platform; phased investment.
       </p>
     </section>
@@ -77,7 +77,7 @@
     <section class="cs-section">
       <h2>Product vision</h2>
       <blockquote class="vision-quote">
-        Ingest unstructured CRE documents from cloud or upload — workout packages, OMs, rent rolls, T-12s, appraisals —
+        Ingest unstructured CRE documents from cloud or upload — workout packages, offering memorandums, rent rolls, T-12s, appraisals —
         extract with human-in-the-loop validation, deliver structured data via browser, Office add-ins, and API.
       </blockquote>
       <p>
@@ -143,7 +143,7 @@
                 <li>Watched folders — auto-ingest when brokers drop docs in Dropbox / Drive / Box</li>
                 <li>Box.com + Microsoft 365 (SharePoint / OneDrive) enterprise connectors</li>
                 <li>T-12 / operating statement extraction + expense normalization</li>
-                <li>Multi-document package view (OM + rent roll + T-12 linked by property)</li>
+                <li>Multi-document package view (offering memorandum + rent roll + T-12 linked by property)</li>
                 <li>Word add-in — IC memo field merge</li>
                 <li>Developer API v1 — REST extractions endpoint</li>
                 <li>Lender-specific export templates (DSCR inputs, occupancy, NOI bridge)</li>
@@ -313,7 +313,7 @@
 
     <section class="cs-section">
       <h2>Customer segments</h2>
-      <p class="section-intro">Brokers and lenders are the core market — highest volume, clearest workflows. Phase 1 design partners: bank workout desks and special servicers (NPL). Phase 2: broker OM packages on the same engine.</p>
+      <p class="section-intro">Brokers and lenders are the core market — highest volume, clearest workflows. Phase 1 design partners: bank workout desks and special servicers (NPL). Phase 2: broker offering memorandums on the same engine.</p>
       <div class="segment-grid">
         <div class="segment-card segment-npl">
           <h3>Banks &amp; CMBS lenders</h3>
@@ -321,7 +321,7 @@
         </div>
         <div class="segment-card segment-broker">
           <h3>Investment brokers</h3>
-          <p><strong>Scale play.</strong> OMs, rent rolls, and marketing packages at high volume. Watched-folder ingest, multi-doc package view, Word/Excel pull. Phase 2 once lender schema is proven.</p>
+          <p><strong>Scale play.</strong> Offering memorandums, rent rolls, and marketing packages at high volume. Watched-folder ingest, multi-doc package view, Word/Excel pull. Phase 2 once lender schema is proven.</p>
         </div>
         <div class="segment-card">
           <h3>Special servicers &amp; asset resolution</h3>
@@ -335,13 +335,28 @@
     </section>
 
     <section class="cs-section">
+      <h2>Discovery &amp; adoption</h2>
+      <p>
+        I wouldn't assume I know what brokers and lenders need — especially for a third-party product where
+        adoption has to be earned, not mandated. Before scaling doc types or channels, I'd embed with users:
+        shadow package intake, sit with analysts during Excel/LOS handoffs, and map which extracted fields
+        actually change a decision vs. which ones look important in a demo.
+      </p>
+      <p>
+        Design partners aren't a checkbox. They're how I'd validate delivery (browser vs. add-in vs. API),
+        correction burden, and whether cloud ingest beats upload for each persona. Weekly active extractors
+        and channel pull rate matter more than feature count — if nobody pulls to Excel, extraction is a science project.
+      </p>
+    </section>
+
+    <section class="cs-section">
       <h2>Go-to-market</h2>
       <ol class="gtm-list">
         <li><strong>Design partners:</strong> 3–5 bank workout desks and special servicers — NPL package intake, covenant flags, lender Excel templates.</li>
-        <li><strong>Limited launch:</strong> Lender workflow live. Case studies: hours → minutes per loan. Broker OM pilot with 2–3 firms.</li>
-        <li><strong>Sales enablement:</strong> Lender track: "NPL-native extraction, not generic OCR." Broker track: "OM + rent roll in your model, not in your inbox."</li>
+        <li><strong>Limited launch:</strong> Lender workflow live. Case studies: hours → minutes per loan. Broker offering-memorandum pilot with 2–3 firms.</li>
+        <li><strong>Sales enablement:</strong> Lender track: "NPL-native extraction, not generic OCR." Broker track: "Offering memorandum + rent roll in your model, not in your inbox."</li>
         <li><strong>Customer success:</strong> Persona playbooks — lender LOS/Excel integration, broker watched-folder setup, API onboarding.</li>
-        <li><strong>Expansion:</strong> Land with lender extraction → broker OM packages → API, batch, appraisal &amp; ESA doc types per account.</li>
+        <li><strong>Expansion:</strong> Land with lender extraction → broker offering memorandums → API, batch, appraisal &amp; ESA doc types per account.</li>
       </ol>
     </section>
 
@@ -349,9 +364,9 @@
       <h2>What I bring</h2>
       <ul class="bring-list">
         <li><strong>End-to-end ownership</strong> — I've taken platforms from requirements through field deployment (Auction.com backend evolution, ground-team tooling).</li>
-        <li><strong>CRE document fluency</strong> — OMs, rent rolls, appraisals, workout packages, servicer reports — I know where unstructured files break into broker and lender workflows.</li>
+        <li><strong>CRE document fluency</strong> — offering memorandums, rent rolls, appraisals, workout packages, servicer reports — I know where unstructured files break into broker and lender workflows.</li>
         <li><strong>Technical partnership</strong> — I write requirements engineers and data scientists can build from; I don't hand them slide decks.</li>
-        <li><strong>Customer proximity</strong> — I work shoulder-to-shoulder with operators. Discovery isn't a quarterly exercise.</li>
+        <li><strong>User-led discovery</strong> — I talk to operators before I scale. For third-party tools, adoption follows the workflow — not the roadmap deck.</li>
         <li><strong>Ship cadence</strong> — I prototype to learn, then prioritize ruthlessly. The iteration tool below exists because that's how I work.</li>
       </ul>
     </section>
