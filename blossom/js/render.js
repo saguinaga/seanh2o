@@ -151,6 +151,7 @@ window.BlossomRender = (function () {
     const onList = !p.choreId || todaysChores?.includes(p.choreId);
     const near = p.choreId === nearId || (p.kind === 'exit' && nearId === `exit-${p.to}`)
       || (p.kind === 'npc' && nearId === 'bonnie')
+      || (p.kind === 'shop' && p.shop === 'boutique' && nearId === 'boutique')
       || (p.kind === 'shop' && p.shop === 'salon' && nearId === 'salon-work')
       || (p.kind === 'stage' && nearId === 'stage-work')
       || (p.kind === 'studio' && nearId === 'studio-work');
@@ -161,7 +162,7 @@ window.BlossomRender = (function () {
 
     const interactHighlight = p.choreId || p.kind === 'exit' || p.kind === 'fridge'
       || p.kind === 'npc' || p.kind === 'stage' || p.kind === 'studio'
-      || (p.kind === 'shop' && (p.choreId || p.shop === 'salon'));
+      || (p.kind === 'shop' && (p.choreId || p.shop === 'salon' || p.shop === 'boutique'));
     if (interactHighlight) {
       if (near && (!p.choreId || (!done && onList))) {
         ctx.strokeStyle = `rgba(250, 204, 21, ${0.5 + pulse * 0.4})`;
@@ -305,6 +306,8 @@ window.BlossomRender = (function () {
       case 'shop':
         if (p.shop === 'salon') {
           BlossomArt.drawSalonRich(ctx, p, anim);
+        } else if (p.shop === 'boutique') {
+          BlossomArt.drawBoutique(ctx, p, anim);
         } else {
           shadow(ctx, 'rgba(0,0,0,0.25)', 16, 0, 8);
           const colors = { market: '#fef08a', cafe: '#fecdd3' };
@@ -435,76 +438,28 @@ window.BlossomRender = (function () {
   }
 
   function drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc, glowing) {
-    const av = state.avatar || {};
     const moving = Math.abs(BlossomControls.getMovement().dx) > 0.05
       || Math.abs(BlossomControls.getMovement().dy) > 0.05;
-    const bob = Math.sin(anim * (moving ? 10 : 3)) * (moving ? 3 : 0.8);
-    const leg = moving ? Math.sin(anim * 12) * 5 : 0;
-    const px = player.x;
-    const py = player.y + bob;
-    const scale = state.chubby ? 1.12 : 1;
-
-    if (glowing) {
-      const g = ctx.createRadialGradient(px, py - 20, 4, px, py - 20, 38);
-      g.addColorStop(0, 'rgba(74, 222, 128, 0.35)');
-      g.addColorStop(1, 'rgba(74, 222, 128, 0)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(px, py - 20, 38, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.beginPath();
-    ctx.ellipse(px, py + 4, 14 * scale, 5, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.save();
-    ctx.translate(px, py);
-    ctx.scale(player.facing * scale, scale);
-
-    ctx.fillStyle = av.skin || '#f5d0a8';
-    ctx.beginPath();
-    ctx.ellipse(0, -40, 15, 17, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = av.hair || '#4a3728';
-    ctx.beginPath();
-    ctx.arc(0, -50, 16, Math.PI, 0);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.beginPath();
-    ctx.arc(-6, -46, 2, 0, Math.PI * 2);
-    ctx.arc(6, -46, 2, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (av.shirtPattern && shirtImg?.complete) {
-      ctx.drawImage(shirtImg, -18, -30, 36, 30);
-    } else {
-      ctx.fillStyle = av.shirtColor || '#5eead4';
-      roundRect(ctx, -17, -30, 34, 28, 6);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = av.skin || '#f5d0a8';
-    roundRect(ctx, -6, -2, 12, 20, 4);
-    ctx.fill();
-    ctx.fillRect(-15, -22, 9, 7);
-    ctx.fillRect(6, -22, 9, 7);
-    ctx.fillRect(-9 + leg, 18, 7, 14);
-    ctx.fillRect(2 - leg, 18, 7, 14);
-
+    const namePos = BlossomAvatar.drawCharacter(ctx, {
+      avatar: state.avatar || {},
+      wardrobe: state.wardrobe,
+      x: player.x,
+      y: player.y,
+      facing: player.facing,
+      anim,
+      moving,
+      shirtImg,
+      glow: glowing,
+      chubby: state.chubby,
+    });
     if (state.sick) {
       ctx.font = '14px sans-serif';
-      ctx.fillText('🤧', 14, -54);
+      ctx.fillText('🤧', player.x + 18, namePos.py - 8);
     }
-
-    ctx.restore();
-
     ctx.fillStyle = '#1e293b';
     ctx.font = 'bold 12px Nunito, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(state.name || 'You', px, py - 62);
+    ctx.fillText(state.name || 'You', namePos.x, namePos.py);
     ctx.textAlign = 'left';
   }
 

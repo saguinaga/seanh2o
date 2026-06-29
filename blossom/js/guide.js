@@ -124,6 +124,8 @@ window.BlossomGuide = (function () {
       '',
       'WASD to move · E to interact · green exits on the right = travel outside',
       '',
+      'Earn money from chores & shifts → visit Bloom Boutique on Main street for hoodies, boots, shades & more!',
+      '',
       'Take your time. Tap End day when ready. Miss the goal? You bloom again tomorrow!',
     ].filter(Boolean).join('\n');
   }

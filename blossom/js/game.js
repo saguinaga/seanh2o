@@ -28,6 +28,7 @@ window.BlossomGame = (function () {
     if (!state.currentLocation) state.currentLocation = 'house';
     if (!state.todaysChores?.length) BlossomDay.assignDailyChores(state);
     if (!state.careerPath) state.careerPath = 'salon';
+    BlossomAvatar.migrate(state);
     onMessage = callbacks.onMessage;
     onPersist = callbacks.onPersist;
     player.x = state.position?.x ?? 400;
@@ -93,7 +94,7 @@ window.BlossomGame = (function () {
 
   function isInteractable(p) {
     if (p.choreId || p.kind === 'exit' || p.kind === 'fridge') return true;
-    if (p.kind === 'shop' && (p.shop === 'cafe' || p.choreId)) return true;
+    if (p.kind === 'shop' && (p.shop === 'cafe' || p.shop === 'boutique' || p.choreId)) return true;
     if (isWorkProp(p)) return true;
     return false;
   }
@@ -127,6 +128,7 @@ window.BlossomGame = (function () {
     if (!p) return null;
     if (p.kind === 'exit') return `exit-${p.to}`;
     if (p.kind === 'npc' && p.id === 'bonnie') return 'bonnie';
+    if (p.kind === 'shop' && p.shop === 'boutique') return 'boutique';
     if (p.kind === 'shop' && p.shop === 'salon') return 'salon-work';
     if (p.kind === 'stage') return 'stage-work';
     if (p.kind === 'studio') return 'studio-work';
@@ -179,6 +181,10 @@ window.BlossomGame = (function () {
     }
     if (prop.kind === 'shop' && prop.shop === 'cafe') {
       openCafe();
+      return;
+    }
+    if (prop.kind === 'shop' && prop.shop === 'boutique') {
+      BlossomBoutique.open(state, { onPersist, onMessage });
       return;
     }
     if (prop.kind === 'npc' && prop.id === 'bonnie') {
@@ -456,6 +462,7 @@ window.BlossomGame = (function () {
         else if (!listed) bubble.textContent = `${nearInteract.label} — not on today's list`;
         else bubble.textContent = `E or tap: ${nearInteract.label}`;
       } else if (nearInteract.kind === 'fridge') bubble.textContent = 'E or tap fridge to eat';
+      else if (nearInteract.shop === 'boutique') bubble.textContent = 'E — Bloom Boutique · buy new clothes!';
       else if (nearInteract.shop === 'cafe') bubble.textContent = 'E or tap café for lunch';
     }
   }

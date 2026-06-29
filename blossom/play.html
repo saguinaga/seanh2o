@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=6">
+  <link rel="stylesheet" href="css/blossom.css?v=7">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -16,46 +16,83 @@
   <div class="create-screen" data-screen="create">
     <div class="create-card">
       <h1>✨ Create your blossom</h1>
-      <p>Choose who you are, draw a shirt, and start with $10 in your cozy house.</p>
-      <form id="createForm">
-        <div class="form-row">
-          <label for="charName">Your name</label>
-          <input type="text" id="charName" name="name" required maxlength="24" placeholder="Quinn" autocomplete="nickname">
-        </div>
-        <div class="form-row">
-          <label>Life stage</label>
-          <div class="radio-row">
-            <label class="radio-pill"><input type="radio" name="lifeStage" value="child" checked> Child</label>
-            <label class="radio-pill"><input type="radio" name="lifeStage" value="adult"> Adult</label>
+      <p>Build your look Mii-style — earn money later at <strong>Bloom Boutique</strong> on Main street!</p>
+      <form id="createForm" class="create-form-mii">
+        <div class="create-layout">
+          <div class="create-preview-col">
+            <canvas id="avatarPreview" width="220" height="280" aria-label="Avatar preview"></canvas>
+            <p class="preview-label">Live preview</p>
+          </div>
+          <div class="create-options-col">
+            <div class="form-row">
+              <label for="charName">Your name</label>
+              <input type="text" id="charName" name="name" required maxlength="24" placeholder="Quinn" autocomplete="nickname">
+            </div>
+            <div class="form-row">
+              <label>Height</label>
+              <div class="radio-row">
+                <label class="radio-pill"><input type="radio" name="height" value="short"> Short</label>
+                <label class="radio-pill"><input type="radio" name="height" value="average" checked> Average</label>
+                <label class="radio-pill"><input type="radio" name="height" value="tall"> Tall</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Build</label>
+              <div class="radio-row">
+                <label class="radio-pill"><input type="radio" name="build" value="slim"> Slim</label>
+                <label class="radio-pill"><input type="radio" name="build" value="average" checked> Average</label>
+                <label class="radio-pill"><input type="radio" name="build" value="solid"> Solid</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Hair style</label>
+              <div class="radio-row radio-row--wrap">
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="short" checked> Short</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="long"> Long</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="spiky"> Spiky</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="curly"> Curly</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="ponytail"> Ponytail</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Glasses</label>
+              <div class="radio-row">
+                <label class="radio-pill"><input type="radio" name="glasses" value="none" checked> None</label>
+                <label class="radio-pill"><input type="radio" name="glasses" value="round"> Round</label>
+                <label class="radio-pill"><input type="radio" name="glasses" value="square"> Square</label>
+              </div>
+            </div>
+            <div class="form-row color-grid">
+              <label>Skin <input type="color" name="skin" value="#f5d0a8"></label>
+              <label>Hair <input type="color" name="hairColor" value="#4a3728"></label>
+              <label>Eyes <input type="color" name="eyeColor" value="#1e293b"></label>
+              <label>Shirt <input type="color" name="shirtColor" value="#5eead4"></label>
+              <label>Pants <input type="color" name="pantsColor" value="#475569"></label>
+              <label>Shoes <input type="color" name="shoesColor" value="#f8fafc"></label>
+            </div>
+            <div class="form-row">
+              <label>Life stage</label>
+              <div class="radio-row">
+                <label class="radio-pill"><input type="radio" name="lifeStage" value="child" checked> Child</label>
+                <label class="radio-pill"><input type="radio" name="lifeStage" value="adult"> Adult</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Dream path</label>
+              <div class="career-pick">
+                <label class="career-card"><input type="radio" name="careerPath" value="salon" checked><span class="career-emoji">💇</span><strong>Salon</strong></label>
+                <label class="career-card"><input type="radio" name="careerPath" value="broadway"><span class="career-emoji">🎭</span><strong>Broadway</strong></label>
+                <label class="career-card"><input type="radio" name="careerPath" value="tiktoker"><span class="career-emoji">📱</span><strong>TikToker</strong></label>
+              </div>
+            </div>
+            <div class="form-row shirt-canvas-wrap">
+              <label>Draw shirt pattern (optional)</label>
+              <canvas id="shirtCanvas" width="160" height="100" aria-label="Draw shirt design"></canvas>
+              <p class="canvas-hint"><button type="button" class="btn-blossom btn-secondary" id="clearShirt" style="padding: 4px 12px; font-size: 0.75rem; min-height: auto;">Clear</button> · <input type="color" id="shirtPen" value="#e11d48" aria-label="Pen color" style="vertical-align: middle; width: 36px; height: 28px;"></p>
+            </div>
           </div>
         </div>
-        <div class="form-row">
-          <label>Dream path</label>
-          <div class="career-pick">
-            <label class="career-card"><input type="radio" name="careerPath" value="salon" checked><span class="career-emoji">💇</span><strong>Salon helper</strong><small>Sweep hair at Bonnie's</small></label>
-            <label class="career-card"><input type="radio" name="careerPath" value="broadway"><span class="career-emoji">🎭</span><strong>Broadway star</strong><small>Harbor park stage</small></label>
-            <label class="career-card"><input type="radio" name="careerPath" value="tiktoker"><span class="career-emoji">📱</span><strong>TikToker</strong><small>Film at home studio</small></label>
-          </div>
-        </div>
-        <div class="form-row">
-          <label for="skin">Skin tone</label>
-          <input type="color" id="skin" name="skin" value="#f5d0a8">
-        </div>
-        <div class="form-row">
-          <label for="hair">Hair color</label>
-          <input type="color" id="hair" name="hair" value="#4a3728">
-        </div>
-        <div class="form-row">
-          <label for="shirtColor">Shirt color</label>
-          <input type="color" id="shirtColor" name="shirtColor" value="#5eead4">
-        </div>
-        <div class="form-row shirt-canvas-wrap">
-          <label>Draw your own shirt</label>
-          <canvas id="shirtCanvas" width="200" height="160" aria-label="Draw shirt design"></canvas>
-          <p class="canvas-hint">Finger or mouse to draw · <button type="button" class="btn-blossom btn-secondary" id="clearShirt" style="padding: 4px 12px; font-size: 0.8rem; min-height: auto;">Clear</button></p>
-          <input type="color" id="shirtPen" value="#e11d48" aria-label="Pen color" style="margin-top: 8px;">
-        </div>
-        <button type="submit" class="btn-blossom btn-primary" style="width: 100%;">Start blooming →</button>
+        <button type="submit" class="btn-blossom btn-primary" style="width: 100%; margin-top: 12px;">Start blooming →</button>
       </form>
       <p class="create-tip">Day 1 goal: <strong>35 stars</strong> — breakfast, 4 chores, lunch &amp; dinner (all at home!)</p>
       <p class="create-guest-note">No account needed — guest play saves on this device.</p>
@@ -183,6 +220,34 @@
     </div>
   </div>
 
+  <!-- Bloom Boutique -->
+  <div class="modal-backdrop boutique-backdrop" id="boutiqueModal" hidden>
+    <div class="modal-card modal-card--boutique">
+      <div class="boutique-header">
+        <div>
+          <h2>👗 Bloom Boutique</h2>
+          <p class="boutique-sub">Spend chore money on fresh fits!</p>
+        </div>
+        <span class="boutique-money" id="boutiqueMoney">$10</span>
+      </div>
+      <div class="boutique-body">
+        <div class="boutique-preview-col">
+          <canvas id="boutiquePreview" width="180" height="230" aria-label="Outfit preview"></canvas>
+        </div>
+        <div class="boutique-shop-col">
+          <div class="boutique-tabs">
+            <button type="button" class="boutique-tab boutique-tab--active" data-boutique-tab="top">Tops</button>
+            <button type="button" class="boutique-tab" data-boutique-tab="bottom">Bottoms</button>
+            <button type="button" class="boutique-tab" data-boutique-tab="shoes">Shoes</button>
+            <button type="button" class="boutique-tab" data-boutique-tab="accessory">Extras</button>
+          </div>
+          <div class="boutique-grid" id="boutiqueGrid"></div>
+        </div>
+      </div>
+      <button type="button" class="btn-blossom btn-secondary boutique-close" id="boutiqueClose">Leave shop</button>
+    </div>
+  </div>
+
   <!-- Auth modal -->
   <div class="modal-backdrop" id="authModal" hidden aria-hidden="true">
     <div class="modal-card">
@@ -211,7 +276,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js?v=5"></script>
-  <script src="js/save.js?v=3"></script>
+  <script src="js/avatar.js?v=1"></script>
+  <script src="js/boutique.js?v=1"></script>
+  <script src="js/save.js?v=4"></script>
   <script src="js/guide.js?v=1"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/audio.js?v=2"></script>

@@ -5,7 +5,7 @@ window.BlossomSave = (function () {
 
   function defaultState() {
     return {
-      version: window.BLOSSOM_CONFIG.gameVersion,
+      version: window.BLOSSOM_CONFIG.gameVersion || 2,
       name: '',
       lifeStage: 'child',
       money: window.BLOSSOM_CONFIG.startMoney,
@@ -28,14 +28,19 @@ window.BlossomSave = (function () {
       playedToday: false,
       guideDismissed: false,
       guideWelcomeSeen: false,
-      avatar: {
+      avatar: BlossomAvatar?.defaultAvatar?.() || {
         skin: '#f5d0a8',
-        hair: '#4a3728',
+        hairColor: '#4a3728',
         hairStyle: 'short',
+        eyeColor: '#1e293b',
+        height: 'average',
+        build: 'average',
         shirtColor: '#5eead4',
         shirtPattern: null,
-        hat: null,
+        pantsColor: '#475569',
+        shoesColor: '#f8fafc',
       },
+      wardrobe: BlossomAvatar?.defaultWardrobe?.() || { owned: [], equipped: {} },
       house: 'small',
       currentLocation: 'house',
       position: { x: 400, y: 360 },
@@ -61,7 +66,9 @@ window.BlossomSave = (function () {
     try {
       const raw = localStorage.getItem(LOCAL_KEY);
       if (!raw) return null;
-      return { ...defaultState(), ...JSON.parse(raw) };
+      const merged = { ...defaultState(), ...JSON.parse(raw) };
+      if (window.BlossomAvatar) BlossomAvatar.migrate(merged);
+      return merged;
     } catch {
       return null;
     }
@@ -100,7 +107,9 @@ window.BlossomSave = (function () {
       .eq('user_id', userId)
       .maybeSingle();
     if (error || !data?.save_data) return null;
-    return { ...defaultState(), ...data.save_data };
+    const merged = { ...defaultState(), ...data.save_data };
+    if (window.BlossomAvatar) BlossomAvatar.migrate(merged);
+    return merged;
   }
 
   async function saveCloud(userId, state) {

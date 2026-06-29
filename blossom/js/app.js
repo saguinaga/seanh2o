@@ -69,41 +69,67 @@ window.BlossomApp = (function () {
     }
   }
 
+  function getCreatePreviewData(form) {
+    const fd = new FormData(form);
+    const avatar = BlossomAvatar.parseCreateForm(fd);
+    const glasses = fd.get('glasses')?.toString() || 'none';
+    const wardrobe = BlossomAvatar.defaultWardrobe();
+    wardrobe.equipped.accessory = glasses === 'none' ? 'acc_none' : `acc_${glasses}`;
+    return { avatar, wardrobe };
+  }
+
+  function refreshCreatePreview() {
+    const form = document.getElementById('createForm');
+    const preview = document.getElementById('avatarPreview');
+    if (!form || !preview) return;
+    const { avatar, wardrobe } = getCreatePreviewData(form);
+    BlossomAvatar.drawPreview(preview, avatar, wardrobe);
+  }
+
   function initCreateForm() {
     const form = document.getElementById('createForm');
-    const canvas = document.getElementById('shirtCanvas');
-    const ctx = canvas?.getContext('2d');
+    const shirtCanvas = document.getElementById('shirtCanvas');
+    const shirtCtx = shirtCanvas?.getContext('2d');
     let drawing = false;
 
-    if (canvas && ctx) {
-      ctx.fillStyle = '#5eead4';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (shirtCanvas && shirtCtx) {
+      shirtCtx.fillStyle = '#5eead4';
+      shirtCtx.fillRect(0, 0, shirtCanvas.width, shirtCanvas.height);
       const draw = (e) => {
         if (!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-        ctx.fillStyle = document.getElementById('shirtPen')?.value || '#e11d48';
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.fill();
+        const rect = shirtCanvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (shirtCanvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (shirtCanvas.height / rect.height);
+        shirtCtx.fillStyle = document.getElementById('shirtPen')?.value || '#e11d48';
+        shirtCtx.beginPath();
+        shirtCtx.arc(x, y, 6, 0, Math.PI * 2);
+        shirtCtx.fill();
+        refreshCreatePreview();
       };
-      canvas.addEventListener('mousedown', () => { drawing = true; });
-      canvas.addEventListener('mouseup', () => { drawing = false; });
-      canvas.addEventListener('mousemove', draw);
-      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; draw(e.touches[0]); }, { passive: false });
-      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
-      canvas.addEventListener('touchend', () => { drawing = false; });
+      shirtCanvas.addEventListener('mousedown', () => { drawing = true; });
+      shirtCanvas.addEventListener('mouseup', () => { drawing = false; });
+      shirtCanvas.addEventListener('mousemove', draw);
+      shirtCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; draw(e.touches[0]); }, { passive: false });
+      shirtCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
+      shirtCanvas.addEventListener('touchend', () => { drawing = false; });
       document.getElementById('clearShirt')?.addEventListener('click', () => {
-        ctx.fillStyle = document.getElementById('shirtColor')?.value || '#5eead4';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        shirtCtx.fillStyle = document.getElementById('shirtColor')?.value || '#5eead4';
+        shirtCtx.fillRect(0, 0, shirtCanvas.width, shirtCanvas.height);
+        refreshCreatePreview();
       });
     }
 
-    document.getElementById('shirtColor')?.addEventListener('input', (e) => {
-      if (!ctx) return;
-      ctx.fillStyle = e.target.value;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    form?.querySelectorAll('input, select').forEach((el) => {
+      el.addEventListener('input', refreshCreatePreview);
+      el.addEventListener('change', refreshCreatePreview);
+    });
+
+    refreshCreatePreview();
+    requestAnimationFrame(function tick() {
+      if (!document.querySelector('[data-screen="create"]')?.hidden) {
+        refreshCreatePreview();
+        requestAnimationFrame(tick);
+      }
     });
 
     form?.addEventListener('submit', async (e) => {
@@ -112,20 +138,26 @@ window.BlossomApp = (function () {
       state = BlossomSave.defaultState();
       state.name = fd.get('name')?.toString().trim() || 'Blossom';
       state.lifeStage = fd.get('lifeStage')?.toString() || 'child';
-      state.avatar.skin = fd.get('skin')?.toString() || '#f5d0a8';
-      state.avatar.hair = fd.get('hair')?.toString() || '#4a3728';
-      state.avatar.shirtColor = fd.get('shirtColor')?.toString() || '#5eead4';
+      state.avatar = BlossomAvatar.parseCreateForm(fd);
+      state.wardrobe = BlossomAvatar.defaultWardrobe();
+      const glasses = fd.get('glasses')?.toString() || 'none';
+      if (glasses !== 'none') {
+        const accId = `acc_${glasses}`;
+        state.wardrobe.equipped.accessory = accId;
+        if (!state.wardrobe.owned.includes(accId)) state.wardrobe.owned.push(accId);
+      }
       state.careerPath = fd.get('careerPath')?.toString() || 'salon';
       state.hired = false;
       state.bonnieOfferSeen = false;
       state.jobRank = 0;
-      if (canvas) {
+      if (shirtCanvas) {
         try {
-          state.avatar.shirtPattern = canvas.toDataURL('image/jpeg', 0.82);
+          state.avatar.shirtPattern = shirtCanvas.toDataURL('image/jpeg', 0.82);
         } catch {
           state.avatar.shirtPattern = null;
         }
       }
+      BlossomAvatar.migrate(state);
       const saved = await BlossomSave.persist(state, BlossomAuth.getUserId());
       if (!saved.localOk) showToast('Could not save locally — try a simpler shirt drawing', 'warn');
       startGame();

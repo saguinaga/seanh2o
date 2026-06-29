@@ -197,6 +197,33 @@ window.BlossomArt = (function () {
     ctx.fillText('Film corner', x + 8, y + 16);
   }
 
+  function drawBoutique(ctx, p, anim) {
+    const { x, y, w, h } = p;
+    const pulse = 0.5 + Math.sin(anim * 3) * 0.5;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(x, y + 38, w, h - 38);
+    drawAwning(ctx, x - 4, y + 30, w + 8, '#f472b6');
+    ctx.fillStyle = '#fce7f3';
+    ctx.fillRect(x + 10, y + 55, w - 20, h - 75);
+    for (let i = 0; i < 3; i++) {
+      const cx = x + 28 + i * 32;
+      ctx.strokeStyle = '#fda4af';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, y + 60);
+      ctx.lineTo(cx, y + h - 25);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(244, 114, 182, ${0.3 + pulse * 0.2})`;
+      ctx.fillRect(cx - 12, y + 68, 24, 40);
+    }
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 13px Fredoka, Nunito, sans-serif';
+    ctx.fillText('✨ Bloom Boutique', x + 8, y + 22);
+    ctx.font = '9px Nunito, sans-serif';
+    ctx.fillStyle = '#be185d';
+    ctx.fillText('NEW styles inside!', x + 10, y + 48);
+  }
+
   function drawSalonRich(ctx, p, anim) {
     const { x, y, w, h } = p;
     ctx.fillStyle = '#1e1b4b';
@@ -246,6 +273,7 @@ window.BlossomArt = (function () {
     drawStage,
     drawStudio,
     drawSalonRich,
+    drawBoutique,
     vignette,
     grassFill,
   };
