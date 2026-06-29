@@ -11,6 +11,8 @@ window.BlossomGame = (function () {
   const PHASE_MS = 90000;
 
   const ROOM = { w: 800, h: 480, floorY: 400 };
+  let started = false;
+  let phaseInterval = null;
 
   function init(cvs, gameState, callbacks) {
     canvas = cvs;
@@ -20,14 +22,19 @@ window.BlossomGame = (function () {
     onPersist = callbacks.onPersist;
     player.x = state.position?.x ?? 400;
     player.y = state.position?.y ?? 320;
-    BlossomControls.init();
-    resize();
-    window.addEventListener('resize', resize);
-    canvas.addEventListener('click', onTap);
-    canvas.addEventListener('touchend', onTapTouch, { passive: false });
-    requestAnimationFrame(loop);
-    setInterval(tickPhase, 1000);
+    if (!started) {
+      started = true;
+      BlossomControls.init();
+      resize();
+      window.addEventListener('resize', resize);
+      canvas.addEventListener('click', onTap);
+      canvas.addEventListener('touchend', onTapTouch, { passive: false });
+      requestAnimationFrame(loop);
+      if (phaseInterval) clearInterval(phaseInterval);
+      phaseInterval = setInterval(tickPhase, 1000);
+    }
     showReminder(BlossomDay.currentPhase(state).hint);
+    updateHud();
   }
 
   function resize() {

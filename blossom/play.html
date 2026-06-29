@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=1">
+  <link rel="stylesheet" href="css/blossom.css?v=2">
 </head>
 <body>
   <!-- Character creation -->
@@ -47,6 +47,7 @@
         </div>
         <button type="submit" class="btn-blossom btn-primary" style="width: 100%;">Start blooming →</button>
       </form>
+      <p class="create-guest-note">No account needed — guest play saves on this device.</p>
       <p style="margin-top: 16px; text-align: center;"><a href="index.html">← Back to Blossom Life</a></p>
     </div>
   </div>
@@ -111,7 +112,7 @@
   </div>
 
   <!-- Auth modal -->
-  <div class="modal-backdrop" id="authModal" hidden>
+  <div class="modal-backdrop" id="authModal" hidden aria-hidden="true">
     <div class="modal-card">
       <h2>Save to the cloud</h2>
       <p>Play as guest on this device, or create an account to sync progress across phones and computers.</p>
@@ -136,15 +137,15 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>window.BLOSSOM_SECRETS = window.BLOSSOM_SECRETS || {};</script>
   <script src="js/config.secrets.js?v=1" onerror="console.info('No config.secrets.js — using config.js anon key')"></script>
   <script src="js/config.js?v=3"></script>
-  <script src="js/save.js?v=1"></script>
+  <script src="js/save.js?v=2"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/day-system.js?v=1"></script>
   <script src="js/controls.js?v=1"></script>
-  <script src="js/game.js?v=1"></script>
-  <script src="js/app.js?v=1"></script>
+  <script src="js/game.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
 </body>
 </html>

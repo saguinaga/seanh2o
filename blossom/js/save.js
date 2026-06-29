@@ -56,8 +56,29 @@ window.BlossomSave = (function () {
     }
   }
 
+  function slimState(state) {
+    const copy = { ...state, avatar: { ...state.avatar } };
+    if (copy.avatar?.shirtPattern?.length > 120000) {
+      copy.avatar.shirtPattern = null;
+    }
+    return copy;
+  }
+
   function saveLocal(state) {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(slimState(state)));
+      return true;
+    } catch (err) {
+      console.warn('Local save failed:', err);
+      try {
+        const fallback = slimState(state);
+        fallback.avatar.shirtPattern = null;
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(fallback));
+        return true;
+      } catch {
+        return false;
+      }
+    }
   }
 
   async function loadCloud(userId) {
@@ -100,8 +121,10 @@ window.BlossomSave = (function () {
   }
 
   async function persist(state, userId) {
-    saveLocal(state);
-    if (userId) await saveCloud(userId, state);
+    const localOk = saveLocal(state);
+    let cloudOk = true;
+    if (userId) cloudOk = await saveCloud(userId, slimState(state));
+    return { localOk, cloudOk };
   }
 
   function clearLocal() {

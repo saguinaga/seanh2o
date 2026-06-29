@@ -470,6 +470,14 @@ a { color: var(--blossom-green-dark); }
 
 .canvas-hint { font-size: 0.8rem; color: var(--blossom-muted); margin-top: 8px; }
 
+.create-guest-note {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--blossom-green-dark);
+  font-weight: 600;
+}
+
 /* Modals */
 .modal-backdrop {
   position: fixed;
@@ -479,6 +487,11 @@ a { color: var(--blossom-green-dark); }
   place-items: center;
   padding: 20px;
   z-index: 100;
+}
+
+.modal-backdrop[hidden] {
+  display: none !important;
+  pointer-events: none;
 }
 
 .modal-card {

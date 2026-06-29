@@ -115,8 +115,15 @@ window.BlossomApp = (function () {
       state.avatar.skin = fd.get('skin')?.toString() || '#f5d0a8';
       state.avatar.hair = fd.get('hair')?.toString() || '#4a3728';
       state.avatar.shirtColor = fd.get('shirtColor')?.toString() || '#5eead4';
-      if (canvas) state.avatar.shirtPattern = canvas.toDataURL('image/png');
-      await BlossomSave.persist(state, BlossomAuth.getUserId());
+      if (canvas) {
+        try {
+          state.avatar.shirtPattern = canvas.toDataURL('image/jpeg', 0.82);
+        } catch {
+          state.avatar.shirtPattern = null;
+        }
+      }
+      const saved = await BlossomSave.persist(state, BlossomAuth.getUserId());
+      if (!saved.localOk) showToast('Could not save locally — try a simpler shirt drawing', 'warn');
       startGame();
     });
   }
@@ -150,7 +157,7 @@ window.BlossomApp = (function () {
     if (!modal) return;
     document.getElementById('dayModalTitle').textContent = result.title;
     document.getElementById('dayModalBody').textContent = result.body;
-    modal.hidden = false;
+    setModalOpen(modal, true);
   }
 
   function initGameUi() {
@@ -160,7 +167,7 @@ window.BlossomApp = (function () {
       BlossomGame.updateHud();
     });
     document.getElementById('dayModalClose')?.addEventListener('click', () => {
-      document.getElementById('dayModal').hidden = true;
+      setModalOpen(document.getElementById('dayModal'), false);
     });
     document.getElementById('chatSend')?.addEventListener('click', sendChat);
     document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
@@ -188,15 +195,46 @@ window.BlossomApp = (function () {
     input.value = '';
   }
 
+  function setModalOpen(modal, open) {
+    if (!modal) return;
+    modal.hidden = !open;
+    modal.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+
+  function closeAuthModal() {
+    setModalOpen(document.getElementById('authModal'), false);
+  }
+
+  function openAuthModal() {
+    setModalOpen(document.getElementById('authModal'), true);
+  }
+
+  function playAsGuest() {
+    closeAuthModal();
+    if (!state?.name) {
+      showScreen('create');
+      showToast('Create a character — progress saves on this device', 'info');
+      return;
+    }
+    showToast('Playing as guest — saved on this device', 'good');
+  }
+
   function initAuthModals() {
     const authModal = document.getElementById('authModal');
-    const open = () => { authModal.hidden = false; };
-    const close = () => { authModal.hidden = true; };
 
-    document.getElementById('openAuth')?.addEventListener('click', open);
-    document.getElementById('openAuthGame')?.addEventListener('click', open);
-    document.getElementById('authClose')?.addEventListener('click', close);
-    document.getElementById('authGuest')?.addEventListener('click', close);
+    document.getElementById('openAuth')?.addEventListener('click', openAuthModal);
+    document.getElementById('openAuthGame')?.addEventListener('click', openAuthModal);
+    document.getElementById('authClose')?.addEventListener('click', closeAuthModal);
+    document.getElementById('authGuest')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      playAsGuest();
+    });
+
+    authModal?.addEventListener('click', (e) => {
+      if (e.target === authModal) closeAuthModal();
+    });
+    authModal?.querySelector('.modal-card')?.addEventListener('click', (e) => e.stopPropagation());
 
     document.getElementById('authForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -217,7 +255,7 @@ window.BlossomApp = (function () {
           await BlossomSave.persist(state, uid);
         }
         showToast('Cloud save connected!', 'good');
-        close();
+        closeAuthModal();
       } catch (err) {
         showToast(err.message || 'Auth failed', err.confirmationRequired ? 'info' : 'bad');
       }
@@ -225,6 +263,7 @@ window.BlossomApp = (function () {
 
     document.getElementById('authSignOut')?.addEventListener('click', async () => {
       await BlossomAuth.signOut();
+      closeAuthModal();
       showToast('Signed out — progress still on this device', 'info');
     });
   }
