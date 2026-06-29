@@ -1,0 +1,109 @@
+/** localStorage + optional Supabase cloud persistence */
+window.BlossomSave = (function () {
+  const LOCAL_KEY = 'blossom_life_v1';
+  const GUEST_KEY = 'blossom_guest_id';
+
+  function defaultState() {
+    return {
+      version: window.BLOSSOM_CONFIG.gameVersion,
+      name: '',
+      lifeStage: 'child',
+      money: window.BLOSSOM_CONFIG.startMoney,
+      stars: 0,
+      bonusStars: 0,
+      level: 1,
+      day: 1,
+      fatItemsToday: 0,
+      chubby: false,
+      sick: false,
+      mealsEaten: { breakfast: false, lunch: false, dinner: false },
+      choresDone: {},
+      avatar: {
+        skin: '#f5d0a8',
+        hair: '#4a3728',
+        hairStyle: 'short',
+        shirtColor: '#5eead4',
+        shirtPattern: null,
+        hat: null,
+      },
+      house: 'small',
+      position: { x: 400, y: 320 },
+      timeOfDay: 'morning',
+      dayPhaseIndex: 0,
+      alive: true,
+      hasPet: false,
+      soundOn: true,
+      createdAt: Date.now(),
+    };
+  }
+
+  function getGuestId() {
+    let id = localStorage.getItem(GUEST_KEY);
+    if (!id) {
+      id = 'guest_' + Math.random().toString(36).slice(2, 12);
+      localStorage.setItem(GUEST_KEY, id);
+    }
+    return id;
+  }
+
+  function loadLocal() {
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY);
+      if (!raw) return null;
+      return { ...defaultState(), ...JSON.parse(raw) };
+    } catch {
+      return null;
+    }
+  }
+
+  function saveLocal(state) {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+  }
+
+  async function loadCloud(userId) {
+    if (!window.BLOSSOM_CONFIG.cloudEnabled || !window.BlossomAuth?.client) return null;
+    const { data, error } = await window.BlossomAuth.client
+      .from('blossom_saves')
+      .select('save_data')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error || !data?.save_data) return null;
+    return { ...defaultState(), ...data.save_data };
+  }
+
+  async function saveCloud(userId, state) {
+    if (!window.BLOSSOM_CONFIG.cloudEnabled || !window.BlossomAuth?.client) return false;
+    const { error } = await window.BlossomAuth.client.from('blossom_saves').upsert({
+      user_id: userId,
+      save_data: state,
+      updated_at: new Date().toISOString(),
+    });
+    return !error;
+  }
+
+  async function load(userId) {
+    if (userId) {
+      const cloud = await loadCloud(userId);
+      if (cloud) return cloud;
+    }
+    return loadLocal() || defaultState();
+  }
+
+  async function persist(state, userId) {
+    saveLocal(state);
+    if (userId) await saveCloud(userId, state);
+  }
+
+  function clearLocal() {
+    localStorage.removeItem(LOCAL_KEY);
+  }
+
+  return {
+    defaultState,
+    getGuestId,
+    load,
+    persist,
+    clearLocal,
+    loadLocal,
+  };
+})();

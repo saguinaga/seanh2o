@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Play — Blossom Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/blossom.css?v=1">
+</head>
+<body>
+  <!-- Character creation -->
+  <div class="create-screen" data-screen="create">
+    <div class="create-card">
+      <h1>Create your blossom</h1>
+      <p>Choose who you are, draw a shirt, and start with $10 in your cozy house.</p>
+      <form id="createForm">
+        <div class="form-row">
+          <label for="charName">Your name</label>
+          <input type="text" id="charName" name="name" required maxlength="24" placeholder="Quinn" autocomplete="nickname">
+        </div>
+        <div class="form-row">
+          <label>Life stage</label>
+          <div class="radio-row">
+            <label class="radio-pill"><input type="radio" name="lifeStage" value="child" checked> Child</label>
+            <label class="radio-pill"><input type="radio" name="lifeStage" value="adult"> Adult</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="skin">Skin tone</label>
+          <input type="color" id="skin" name="skin" value="#f5d0a8">
+        </div>
+        <div class="form-row">
+          <label for="hair">Hair color</label>
+          <input type="color" id="hair" name="hair" value="#4a3728">
+        </div>
+        <div class="form-row">
+          <label for="shirtColor">Shirt color</label>
+          <input type="color" id="shirtColor" name="shirtColor" value="#5eead4">
+        </div>
+        <div class="form-row shirt-canvas-wrap">
+          <label>Draw your own shirt</label>
+          <canvas id="shirtCanvas" width="200" height="160" aria-label="Draw shirt design"></canvas>
+          <p class="canvas-hint">Finger or mouse to draw · <button type="button" class="btn-blossom btn-secondary" id="clearShirt" style="padding: 4px 12px; font-size: 0.8rem; min-height: auto;">Clear</button></p>
+          <input type="color" id="shirtPen" value="#e11d48" aria-label="Pen color" style="margin-top: 8px;">
+        </div>
+        <button type="submit" class="btn-blossom btn-primary" style="width: 100%;">Start blooming →</button>
+      </form>
+      <p style="margin-top: 16px; text-align: center;"><a href="index.html">← Back to Blossom Life</a></p>
+    </div>
+  </div>
+
+  <!-- Game -->
+  <div class="game-shell" data-screen="game" hidden>
+    <header class="game-topbar">
+      <a href="index.html" style="color: #94a3b8; text-decoration: none;">🌸</a>
+      <span id="playerName">You</span>
+      <span id="authBadge" class="auth-badge">Guest</span>
+      <button type="button" class="toolbar-btn toolbar-btn--ghost" id="openAuthGame" style="min-height: 36px; padding: 0 12px; font-size: 0.75rem;">Account</button>
+    </header>
+
+    <p class="cloud-note" id="cloudNote" hidden></p>
+
+    <div class="game-stage">
+      <canvas id="gameCanvas" width="800" height="480" aria-label="Blossom Life house"></canvas>
+
+      <div class="game-hud">
+        <div class="hud-money">
+          <span class="hud-money-icon">$</span>
+          <span id="hudMoney">$10</span>
+        </div>
+        <div class="hud-stars" id="hudStars">0/50</div>
+        <div class="hud-meta"><span id="hudLevel">Lv 1</span> · <span id="hudPhase">Morning</span></div>
+      </div>
+
+      <p class="day-reminder" id="dayReminder" hidden></p>
+
+      <div class="game-controls" id="mobileControls">
+        <div class="joystick-base" id="joystickBase" aria-label="Move">
+          <div class="joystick-knob" id="joystickKnob"></div>
+        </div>
+        <button type="button" class="jump-btn" id="jumpBtn" aria-label="Jump">JUMP</button>
+      </div>
+
+      <p class="desktop-hint">WASD / arrows to move · Space to jump · Click fridge &amp; chores</p>
+    </div>
+
+    <footer class="game-bottom">
+      <p class="npc-bubble" id="npcBubble">Tap objects or walk to the fridge to eat!</p>
+      <div class="chat-bar">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Talk to NPCs…" maxlength="120" enterkeyhint="send">
+        <button type="button" class="chat-send" id="chatSend">Say</button>
+      </div>
+      <div class="game-toolbar">
+        <button type="button" class="toolbar-btn" id="endDayBtn">End day</button>
+        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="soundToggle">🔊</button>
+      </div>
+    </footer>
+  </div>
+
+  <div class="game-toast" id="gameToast" hidden></div>
+
+  <!-- Day result modal -->
+  <div class="modal-backdrop" id="dayModal" hidden>
+    <div class="modal-card">
+      <h2 id="dayModalTitle">Day complete</h2>
+      <p id="dayModalBody"></p>
+      <button type="button" class="btn-blossom btn-primary" id="dayModalClose">Keep blooming</button>
+    </div>
+  </div>
+
+  <!-- Auth modal -->
+  <div class="modal-backdrop" id="authModal" hidden>
+    <div class="modal-card">
+      <h2>Save to the cloud</h2>
+      <p>Play as guest on this device, or create an account to sync progress across phones and computers.</p>
+      <form id="authForm">
+        <div class="form-row">
+          <label for="authEmail">Email</label>
+          <input type="email" id="authEmail" name="email" required autocomplete="email">
+        </div>
+        <div class="form-row">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" name="password" required minlength="6" autocomplete="current-password">
+        </div>
+        <div class="radio-row" style="margin-bottom: 16px;">
+          <label class="radio-pill"><input type="radio" name="mode" value="signin" checked> Sign in</label>
+          <label class="radio-pill"><input type="radio" name="mode" value="signup"> Sign up</label>
+        </div>
+        <button type="submit" class="btn-blossom btn-primary" style="width: 100%;">Connect cloud save</button>
+      </form>
+      <button type="button" class="btn-blossom btn-secondary" id="authGuest" style="width: 100%; margin-top: 10px;">Keep playing as guest</button>
+      <button type="button" class="btn-blossom btn-secondary" id="authSignOut" style="width: 100%; margin-top: 10px;">Sign out</button>
+      <button type="button" class="btn-blossom btn-secondary" id="authClose" style="width: 100%; margin-top: 10px;">Close</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js?v=1"></script>
+  <script src="js/save.js?v=1"></script>
+  <script src="js/auth.js?v=1"></script>
+  <script src="js/day-system.js?v=1"></script>
+  <script src="js/controls.js?v=1"></script>
+  <script src="js/game.js?v=1"></script>
+  <script src="js/app.js?v=1"></script>
+</body>
+</html>
