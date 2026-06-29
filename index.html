@@ -11,7 +11,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=33">
+    <link rel="stylesheet" href="styles.css?v=34">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -132,22 +132,6 @@
             border-color: white;
         }
 
-        .project-vibe {
-            opacity: 0.92;
-            border-color: rgba(148, 163, 184, 0.25) !important;
-        }
-        .project-vibe-head {
-            height: 120px;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #cbd5e1;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: -.2px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
         .project-expansion {
             display: flex;
             flex-wrap: wrap;
@@ -408,55 +392,66 @@
     <!-- Projects -->
     <section id="projects" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
         <div style="max-width: 1100px; margin: 0 auto;">
-            <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; margin-bottom: 32px;">
+            <div class="projects-header">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Modeling tools + side experiments</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Calculators I use + one doc experiment</p>
                 </div>
-                <a href="#tools" style="color: #f59e0b; font-weight: 600; text-decoration: none;">View all tools →</a>
+                <a href="#tools" class="projects-header-link">View all tools →</a>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
-                
-                <!-- Featured Tool 1 -->
-                <a href="#buy-hold-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Buy & Hold">
-                    <div style="height: 148px; background: linear-gradient(135deg, #0ea5e9, #6366f1); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
-                        Buy &amp; Hold Calculator
-                    </div>
-                    <div style="padding: 22px 24px;">
-                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Real-time rental underwriting</div>
-                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0;">
-                            Cash flow, CoC, cap rate, total ROI, scenario comparison, HYSA opportunity cost. Built the way I’d actually use it.
-                        </p>
-                    </div>
-                </a>
+            <div class="projects-grid">
 
-                <!-- Featured Tool 2 -->
-                <a href="#fix-flip-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Fix & Flip">
-                    <div style="height: 148px; background: linear-gradient(135deg, #e11d48, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
-                        Fix &amp; Flip Analyzer
-                    </div>
-                    <div style="padding: 22px 24px;">
-                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Deal stress-testing &amp; modeling</div>
-                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0;">
-                            ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.
-                        </p>
-                    </div>
-                </a>
-
-                <!-- Vibe coding experiment -->
-                <a href="doc-intelligence/demo.html" class="glass-card project-vibe" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Doc Intelligence">
-                    <div class="project-vibe-head">Doc Intelligence Prototype</div>
-                    <div style="padding: 22px 24px;">
-                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Vibe coding · PDF → Excel / Word</div>
-                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 10px;">
-                            Upload a PDF, parse CRE fields client-side, walk a workout workflow, export real .xlsx and .doc files. PM roadmap write-up lives separately.
-                        </p>
-                        <div style="font-size: 0.85rem; color: #64748b;">
-                            <a href="doc-intelligence/" style="color: #94a3b8; text-decoration: underline;" data-plausible-event="Launch Case Study - Doc Intelligence" onclick="event.stopPropagation();">PM roadmap →</a>
+                <article class="project-card glass-card">
+                    <a href="#buy-hold-calculator" class="project-card-link" data-plausible-event="Launch Tool - Buy & Hold">
+                        <div class="project-card-visual project-card-visual--blue">
+                            <span class="project-card-visual-title">Buy &amp; Hold Calculator</span>
                         </div>
+                        <div class="project-card-body">
+                            <h3 class="project-card-heading">Real-time rental underwriting</h3>
+                            <p class="project-card-text">Cash flow, CoC, cap rate, total ROI, scenario comparison, HYSA opportunity cost. Built the way I’d actually use it.</p>
+                            <span class="project-card-cta">Open calculator →</span>
+                        </div>
+                    </a>
+                </article>
+
+                <article class="project-card glass-card">
+                    <a href="#fix-flip-calculator" class="project-card-link" data-plausible-event="Launch Tool - Fix & Flip">
+                        <div class="project-card-visual project-card-visual--rose">
+                            <span class="project-card-visual-title">Fix &amp; Flip Analyzer</span>
+                        </div>
+                        <div class="project-card-body">
+                            <h3 class="project-card-heading">Deal stress-testing &amp; modeling</h3>
+                            <p class="project-card-text">ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.</p>
+                            <span class="project-card-cta">Open analyzer →</span>
+                        </div>
+                    </a>
+                </article>
+
+                <article class="project-card glass-card project-card--experiment">
+                    <a href="doc-intelligence/demo.html" class="project-card-link" data-plausible-event="Launch Tool - Doc Intelligence">
+                        <div class="project-card-visual project-card-visual--doc">
+                            <span class="project-card-badge">Side project</span>
+                            <span class="project-card-visual-title">Doc Intelligence</span>
+                            <span class="project-card-flow" aria-hidden="true">
+                                <span>PDF</span><span class="project-card-flow-arrow">→</span><span>XLSX</span><span class="project-card-flow-arrow">→</span><span>DOC</span>
+                            </span>
+                        </div>
+                        <div class="project-card-body">
+                            <h3 class="project-card-heading">Upload a PDF, export to Office</h3>
+                            <p class="project-card-text">Drop a servicer report or loan package. Client-side extraction pulls CRE fields through a review workflow — then download real spreadsheets and memos.</p>
+                            <ul class="project-card-tags" aria-label="Capabilities">
+                                <li>PDF parse</li>
+                                <li>.xlsx export</li>
+                                <li>.doc export</li>
+                            </ul>
+                            <span class="project-card-cta">Try the prototype →</span>
+                        </div>
+                    </a>
+                    <div class="project-card-footer">
+                        <a href="doc-intelligence/" class="project-card-secondary" data-plausible-event="Launch Case Study - Doc Intelligence">PM roadmap write-up →</a>
                     </div>
-                </a>
+                </article>
 
             </div>
         </div>
