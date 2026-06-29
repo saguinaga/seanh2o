@@ -130,6 +130,25 @@ window.BlossomGuide = (function () {
     ].filter(Boolean).join('\n');
   }
 
+  function isMobileGuide() {
+    return window.matchMedia('(max-width: 768px)').matches;
+  }
+
+  function setGuideExpanded(expanded) {
+    const panel = document.getElementById('starGuide');
+    const toggle = document.getElementById('guideToggle');
+    if (!panel) return;
+    if (!isMobileGuide()) {
+      panel.classList.remove('star-guide--collapsed');
+      panel.classList.add('star-guide--expanded');
+      if (toggle) toggle.setAttribute('aria-expanded', 'true');
+      return;
+    }
+    panel.classList.toggle('star-guide--collapsed', !expanded);
+    panel.classList.toggle('star-guide--expanded', expanded);
+    if (toggle) toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  }
+
   function updatePanel(state) {
     const panel = document.getElementById('starGuide');
     if (!panel) return;
@@ -139,18 +158,30 @@ window.BlossomGuide = (function () {
     }
     panel.hidden = false;
     const { goal, lines } = buildChecklist(state);
+    const step = nextStep(state);
     const goalEl = document.getElementById('guideGoal');
     const listEl = document.getElementById('guideChecklist');
     const tipEl = document.getElementById('guideTip');
+    const peekEl = document.getElementById('guidePeek');
     if (goalEl) goalEl.textContent = `${state.stars}/${goal} ⭐`;
     if (listEl) {
       listEl.innerHTML = lines.map((l) =>
         `<li class="guide-check ${l.ok ? 'guide-check--done' : ''}">${l.ok ? '✓' : '○'} ${l.text}</li>`
       ).join('');
     }
-    if (tipEl) tipEl.textContent = nextStep(state).hint;
+    if (tipEl) tipEl.textContent = step.hint;
+    if (peekEl) peekEl.textContent = step.hint;
     const bar = document.getElementById('guideProgressBar');
     if (bar) bar.style.width = `${Math.min(100, (state.stars / goal) * 100)}%`;
+    const expanded = isMobileGuide() ? Boolean(state.guideExpanded) : true;
+    setGuideExpanded(expanded);
+  }
+
+  function togglePanel(state) {
+    if (!state || !isMobileGuide()) return state;
+    state.guideExpanded = !state.guideExpanded;
+    setGuideExpanded(state.guideExpanded);
+    return state;
   }
 
   return {
@@ -164,5 +195,8 @@ window.BlossomGuide = (function () {
     shouldShowPanel,
     welcomeBody,
     updatePanel,
+    togglePanel,
+    setGuideExpanded,
+    isMobileGuide,
   };
 })();

@@ -1036,26 +1036,31 @@ a { color: var(--blossom-green-dark); }
   line-height: 1.45;
 }
 
+/* Star path — mobile-first: tiny chip, tap for bottom sheet */
 .star-guide {
   position: absolute;
-  left: 8px;
-  top: 8px;
-  z-index: 12;
-  width: min(200px, 42vw);
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(74, 222, 128, 0.35);
-  border-radius: 14px;
-  padding: 10px 12px;
+  z-index: 15;
   pointer-events: auto;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(74, 222, 128, 0.35);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  transition: border-radius 0.25s ease, box-shadow 0.25s ease;
 }
 
-.star-guide__head {
+.star-guide__toggle {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
 }
 
 .star-guide__title {
@@ -1063,20 +1068,34 @@ a { color: var(--blossom-green-dark); }
   font-size: 0.78rem;
   font-weight: 700;
   color: #86efac;
+  white-space: nowrap;
 }
 
 .star-guide__goal {
   font-size: 0.75rem;
   font-weight: 800;
   color: #fde047;
+  white-space: nowrap;
+}
+
+.star-guide__chevron {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: #86efac;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.star-guide--expanded .star-guide__chevron {
+  transform: rotate(180deg);
 }
 
 .star-guide__bar {
-  height: 6px;
+  height: 5px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-top: 6px;
 }
 
 .star-guide__fill {
@@ -1085,6 +1104,20 @@ a { color: var(--blossom-green-dark); }
   background: linear-gradient(90deg, #4ade80, #fde047);
   border-radius: 999px;
   transition: width 0.35s ease;
+}
+
+.star-guide__peek {
+  margin: 6px 0 0;
+  font-size: 0.68rem;
+  line-height: 1.3;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.star-guide__body {
+  margin-top: 8px;
 }
 
 .star-guide__list {
@@ -1107,22 +1140,109 @@ a { color: var(--blossom-green-dark); }
   color: #94a3b8;
   font-style: italic;
   line-height: 1.35;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .star-guide__dismiss {
-  background: none;
-  border: none;
-  color: #64748b;
-  font-size: 0.62rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #cbd5e1;
+  font-size: 0.68rem;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
   font-family: inherit;
-  text-decoration: underline;
+  width: 100%;
 }
 
+/* Mobile: tiny chip top-left; tap opens top sheet (keeps joystick clear) */
 @media (max-width: 768px) {
-  .star-guide { width: min(180px, 48vw); padding: 8px 10px; }
+  .star-guide {
+    top: 4px;
+    left: 4px;
+    right: auto;
+    width: auto;
+    max-width: min(200px, 52vw);
+    padding: 7px 9px;
+    border-radius: 11px;
+  }
+
+  .star-guide--collapsed .star-guide__body {
+    display: none;
+  }
+
+  .star-guide--collapsed .star-guide__peek {
+    display: block;
+  }
+
+  .star-guide--expanded {
+    left: 4px;
+    right: 4px;
+    top: 4px;
+    max-width: none;
+    width: auto;
+    padding: 10px 12px 12px;
+    border-radius: 14px;
+    max-height: min(36vh, 220px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  }
+
+  .star-guide--expanded .star-guide__peek {
+    display: none;
+  }
+
+  .star-guide--expanded .star-guide__body {
+    display: block;
+  }
+
+  .game-hud .hud-meta,
+  .game-hud .hud-career {
+    display: none;
+  }
+}
+
+/* Desktop: classic side panel, always open */
+@media (min-width: 769px) {
+  .star-guide {
+    left: 8px;
+    top: 8px;
+    width: min(200px, 28vw);
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .star-guide--collapsed,
+  .star-guide--expanded {
+    /* same layout on desktop */
+  }
+
+  .star-guide__toggle {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .star-guide__chevron,
+  .star-guide__peek {
+    display: none !important;
+  }
+
+  .star-guide__body {
+    display: block !important;
+  }
+
+  .star-guide__dismiss {
+    background: none;
+    border: none;
+    padding: 0;
+    width: auto;
+    text-decoration: underline;
+    color: #64748b;
+    font-size: 0.62rem;
+    font-weight: 400;
+  }
 }
 
 /* Bloom Boutique */

@@ -213,6 +213,7 @@ window.BlossomApp = (function () {
   function showStarGuide() {
     if (state) {
       state.guideDismissed = false;
+      state.guideExpanded = true;
       BlossomGuide.updatePanel(state);
       BlossomSave.persist(state, BlossomAuth.getUserId());
     }
@@ -291,9 +292,15 @@ window.BlossomApp = (function () {
       setModalOpen(document.getElementById('welcomeGuideModal'), false);
     });
     document.getElementById('guideHelpBtn')?.addEventListener('click', () => showStarGuide());
+    document.getElementById('guideToggle')?.addEventListener('click', () => {
+      if (!state) return;
+      state = BlossomGuide.togglePanel(state) || state;
+      BlossomSave.persist(state, BlossomAuth.getUserId());
+    });
     document.getElementById('guideDismiss')?.addEventListener('click', () => {
       if (state) {
         state.guideDismissed = true;
+        state.guideExpanded = false;
         BlossomGuide.updatePanel(state);
         BlossomSave.persist(state, BlossomAuth.getUserId());
       }
