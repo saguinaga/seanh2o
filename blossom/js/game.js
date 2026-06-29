@@ -16,6 +16,7 @@ window.BlossomGame = (function () {
   }
   let started = false;
   let phaseInterval = null;
+  let dpr = 1;
 
   function getLoc() {
     return BlossomWorld.getLocation(state.currentLocation || 'house');
@@ -63,8 +64,12 @@ window.BlossomGame = (function () {
     else h = w / aspect;
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
-    canvas.width = BlossomWorld.W;
-    canvas.height = BlossomWorld.H;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(BlossomWorld.W * dpr);
+    canvas.height = Math.floor(BlossomWorld.H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
   }
 
   function scalePoint(clientX, clientY) {
@@ -469,7 +474,10 @@ window.BlossomGame = (function () {
 
   function draw() {
     const loc = getLoc();
-    ctx.clearRect(0, 0, BlossomWorld.W, BlossomWorld.H);
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.save();
     BlossomFx.applyShake(ctx);
     BlossomRender.drawScene(

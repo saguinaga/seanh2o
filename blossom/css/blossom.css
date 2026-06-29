@@ -329,12 +329,14 @@ a { color: var(--blossom-green-dark); }
   box-shadow:
     0 0 0 2px rgba(74, 222, 128, 0.25),
     0 12px 48px rgba(0, 0, 0, 0.55),
+    0 0 80px rgba(74, 222, 128, 0.12),
     var(--glow-green);
   max-width: 100%;
   max-height: 100%;
   touch-action: none;
   position: relative;
   z-index: 1;
+  image-rendering: auto;
 }
 
 .travel-banner {

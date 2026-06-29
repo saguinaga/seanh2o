@@ -32,6 +32,26 @@ window.BlossomAvatar = (function () {
 
   const STARTER_OWNED = Object.values(ITEMS).filter((i) => i.starter).map((i) => i.id);
 
+  function shade(hex, amt) {
+    return BlossomArt?.shade?.(hex, amt) || hex;
+  }
+
+  function skinGrad(ctx, cx, cy, rx, ry, skin) {
+    const g = ctx.createRadialGradient(cx - rx * 0.3, cy - ry * 0.35, 2, cx, cy, Math.max(rx, ry));
+    g.addColorStop(0, shade(skin, 0.14));
+    g.addColorStop(0.55, skin);
+    g.addColorStop(1, shade(skin, -0.1));
+    return g;
+  }
+
+  function clothGrad(ctx, x, y, w, h, color) {
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    g.addColorStop(0, shade(color, 0.12));
+    g.addColorStop(0.5, color);
+    g.addColorStop(1, shade(color, -0.14));
+    return g;
+  }
+
   function roundRect(ctx, x, y, w, h, r) {
     const rad = Math.min(r, w / 2, h / 2);
     ctx.beginPath();
@@ -100,6 +120,20 @@ window.BlossomAvatar = (function () {
     return { h, b, total: h * b };
   }
 
+  function drawHairBack(ctx, av, y, s) {
+    const c = av.hairColor || '#4a3728';
+    const style = av.hairStyle || 'short';
+    ctx.fillStyle = shade(c, -0.08);
+    if (style === 'long') {
+      roundRect(ctx, -20 * s, y - 48 * s, 10 * s, 30 * s, 4);
+      ctx.fill();
+      ctx.fillRect(10 * s, y - 48 * s, 10 * s, 30 * s);
+    } else if (style === 'ponytail') {
+      roundRect(ctx, 12 * s, y - 58 * s, 9 * s, 24 * s, 4);
+      ctx.fill();
+    }
+  }
+
   function drawHair(ctx, av, y, s) {
     const c = av.hairColor || '#4a3728';
     ctx.fillStyle = c;
@@ -108,7 +142,10 @@ window.BlossomAvatar = (function () {
       ctx.beginPath();
       ctx.arc(0, y - 50 * s, 17 * s, Math.PI, 0);
       ctx.fill();
-      roundRect(ctx, -17 * s, y - 52 * s, 34 * s, 8 * s, 4);
+      roundRect(ctx, -17 * s, y - 52 * s, 34 * s, 10 * s, 4);
+      ctx.fill();
+      ctx.fillStyle = shade(c, 0.1);
+      roundRect(ctx, -12 * s, y - 50 * s, 24 * s, 6 * s, 3);
       ctx.fill();
     } else if (style === 'long') {
       ctx.beginPath();
@@ -142,26 +179,56 @@ window.BlossomAvatar = (function () {
 
   function drawFace(ctx, av, y, s) {
     const skin = av.skin || '#f5d0a8';
-    ctx.fillStyle = skin;
+    ctx.fillStyle = skinGrad(ctx, 0, y - 40 * s, 15 * s, 17 * s, skin);
     ctx.beginPath();
     ctx.ellipse(0, y - 40 * s, 15 * s, 17 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.12)';
+    ctx.lineWidth = 1.2 * s;
+    ctx.stroke();
+
+    ctx.fillStyle = shade(skin, -0.06);
+    ctx.beginPath();
+    ctx.ellipse(-14 * s, y - 40 * s, 3 * s, 5 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(14 * s, y - 40 * s, 3 * s, 5 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(251, 113, 133, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(-9 * s, y - 36 * s, 3.5 * s, 2 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(9 * s, y - 36 * s, 3.5 * s, 2 * s, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.ellipse(-6 * s, y - 42 * s, 4 * s, 5 * s, 0, 0, Math.PI * 2);
-    ctx.ellipse(6 * s, y - 42 * s, 4 * s, 5 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(-6 * s, y - 42 * s, 4.5 * s, 5.5 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(6 * s, y - 42 * s, 4.5 * s, 5.5 * s, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = av.eyeColor || '#1e293b';
     ctx.beginPath();
-    ctx.arc(-6 * s, y - 41 * s, 2 * s, 0, Math.PI * 2);
-    ctx.arc(6 * s, y - 41 * s, 2 * s, 0, Math.PI * 2);
+    ctx.arc(-6 * s, y - 41 * s, 2.2 * s, 0, Math.PI * 2);
+    ctx.arc(6 * s, y - 41 * s, 2.2 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-5 * s, y - 42 * s, 0.9 * s, 0, Math.PI * 2);
+    ctx.arc(7 * s, y - 42 * s, 0.9 * s, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.strokeStyle = shade(av.hairColor || '#4a3728', -0.2);
+    ctx.lineWidth = 1.8 * s;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-8 * s, y - 48 * s);
+    ctx.quadraticCurveTo(-6 * s, y - 50 * s, -4 * s, y - 48 * s);
+    ctx.moveTo(4 * s, y - 48 * s);
+    ctx.quadraticCurveTo(6 * s, y - 50 * s, 8 * s, y - 48 * s);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.18)';
     ctx.lineWidth = 1.5 * s;
     ctx.beginPath();
-    ctx.arc(0, y - 34 * s, 4 * s, 0.1, Math.PI - 0.1);
+    ctx.arc(0, y - 33 * s, 3.5 * s, 0.15, Math.PI - 0.15);
     ctx.stroke();
 
     const accItem = ITEMS[av._equippedAcc] || ITEMS.acc_none;
@@ -202,44 +269,78 @@ window.BlossomAvatar = (function () {
     }
   }
 
+  function drawArms(ctx, av, y, s, leg, moving, anim) {
+    const skin = av.skin || '#f5d0a8';
+    const swing = moving ? Math.sin(anim * 12) * 8 : 0;
+    [-1, 1].forEach((side) => {
+      const ax = side * 20 * s;
+      const ay = y - 18 * s + (side === 1 ? swing : -swing) * 0.4;
+      ctx.fillStyle = skinGrad(ctx, ax, ay, 5 * s, 7 * s, skin);
+      roundRect(ctx, ax - 5 * s, ay, 10 * s, 14 * s, 4);
+      ctx.fill();
+      ctx.fillStyle = shade(skin, -0.08);
+      roundRect(ctx, ax - 4 * s, ay + 12 * s, 8 * s, 6 * s, 3);
+      ctx.fill();
+    });
+  }
+
   function drawTop(ctx, av, top, y, s, shirtImg) {
     const color = top?.starter ? (av.shirtColor || top.color) : (top?.color || av.shirtColor || '#5eead4');
     const style = top?.style || 'tee';
+    const tx = -19 * s;
+    const ty = y - 32 * s;
+    const tw = 38 * s;
+    const th = 30 * s;
     if (av.shirtPattern && shirtImg?.complete && style === 'tee') {
-      ctx.drawImage(shirtImg, -18 * s, y - 30 * s, 36 * s, 30 * s);
+      roundRect(ctx, tx, ty, tw, th, 7);
+      ctx.save();
+      ctx.clip();
+      ctx.drawImage(shirtImg, tx, ty, tw, th);
+      ctx.restore();
     } else if (style === 'hoodie') {
-      ctx.fillStyle = color;
-      roundRect(ctx, -20 * s, y - 32 * s, 40 * s, 34 * s, 8);
+      ctx.fillStyle = clothGrad(ctx, tx, ty, tw, th + 4 * s, color);
+      roundRect(ctx, -21 * s, y - 34 * s, 42 * s, 36 * s, 9);
       ctx.fill();
-      ctx.fillStyle = 'rgba(0,0,0,0.08)';
-      roundRect(ctx, -8 * s, y - 28 * s, 16 * s, 20 * s, 6);
+      ctx.fillStyle = 'rgba(0,0,0,0.1)';
+      roundRect(ctx, -9 * s, y - 28 * s, 18 * s, 22 * s, 6);
       ctx.fill();
+      ctx.strokeStyle = shade(color, -0.2);
+      ctx.lineWidth = 1;
+      ctx.stroke();
     } else if (style === 'blazer') {
-      ctx.fillStyle = color;
-      roundRect(ctx, -19 * s, y - 30 * s, 38 * s, 32 * s, 4);
+      ctx.fillStyle = clothGrad(ctx, tx, ty, tw, th, color);
+      roundRect(ctx, tx, ty, tw, th + 2 * s, 5);
       ctx.fill();
       ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(-4 * s, y - 26 * s, 8 * s, 24 * s);
+      ctx.fillRect(-5 * s, y - 28 * s, 10 * s, 26 * s);
+      ctx.fillStyle = shade(color, -0.25);
+      ctx.fillRect(-19 * s, y - 4 * s, 38 * s, 4 * s);
     } else if (style === 'striped') {
-      ctx.fillStyle = color;
-      roundRect(ctx, -18 * s, y - 30 * s, 36 * s, 28 * s, 6);
+      ctx.fillStyle = clothGrad(ctx, tx, ty, tw, th, color);
+      roundRect(ctx, tx + 1 * s, ty, tw - 2 * s, th, 7);
       ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      for (let i = -16; i < 20; i += 6) ctx.fillRect(i * s, y - 30 * s, 3 * s, 28 * s);
+      ctx.fillStyle = 'rgba(255,255,255,0.38)';
+      for (let i = -16; i < 20; i += 6) ctx.fillRect(i * s, ty, 3 * s, th);
     } else {
-      ctx.fillStyle = color;
-      roundRect(ctx, -18 * s, y - 30 * s, 36 * s, 28 * s, 6);
+      ctx.fillStyle = clothGrad(ctx, tx, ty, tw, th, color);
+      roundRect(ctx, tx + 1 * s, ty, tw - 2 * s, th, 7);
       ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(tx + 4 * s, ty + 4 * s, tw * 0.35, th * 0.4);
     }
     if (top?.sparkle) {
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.fillRect(-10 * s, y - 24 * s, 4 * s, 4 * s);
       ctx.fillRect(6 * s, y - 18 * s, 3 * s, 3 * s);
+      ctx.fillRect(-4 * s, y - 14 * s, 2 * s, 2 * s);
     }
     const skin = av.skin || '#f5d0a8';
-    ctx.fillStyle = skin;
-    ctx.fillRect(-16 * s, y - 22 * s, 9 * s, 8 * s);
-    ctx.fillRect(7 * s, y - 22 * s, 9 * s, 8 * s);
+    ctx.fillStyle = skinGrad(ctx, -12 * s, y - 18 * s, 5 * s, 5 * s, skin);
+    roundRect(ctx, -17 * s, y - 22 * s, 10 * s, 9 * s, 4);
+    ctx.fill();
+    ctx.fillStyle = skinGrad(ctx, 12 * s, y - 18 * s, 5 * s, 5 * s, skin);
+    roundRect(ctx, 7 * s, y - 22 * s, 10 * s, 9 * s, 4);
+    ctx.fill();
   }
 
   function drawBottom(ctx, av, bottom, y, s, leg) {
@@ -265,25 +366,36 @@ window.BlossomAvatar = (function () {
       ctx.fillRect(-9 * s + leg, y + 12 * s, 7 * s, 16 * s);
       ctx.fillRect(2 * s - leg, y + 12 * s, 7 * s, 16 * s);
     } else {
-      ctx.fillStyle = color;
+      ctx.fillStyle = clothGrad(ctx, -15 * s, y - 2 * s, 30 * s, 18 * s, color);
       roundRect(ctx, -15 * s, y - 2 * s, 30 * s, 18 * s, 5);
       ctx.fill();
       if (style === 'cargo') {
-        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        ctx.fillStyle = 'rgba(0,0,0,0.14)';
         roundRect(ctx, -12 * s, y + 4 * s, 8 * s, 6 * s, 2);
         ctx.fill();
         roundRect(ctx, 4 * s, y + 4 * s, 8 * s, 6 * s, 2);
         ctx.fill();
       }
       if (style === 'jeans') {
-        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(0, y + 14 * s);
         ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        roundRect(ctx, -11 * s, y + 2 * s, 7 * s, 5 * s, 2);
+        ctx.fill();
+        roundRect(ctx, 4 * s, y + 2 * s, 7 * s, 5 * s, 2);
+        ctx.fill();
       }
-      ctx.fillRect(-10 * s + leg, y + 16 * s, 8 * s, 16 * s);
-      ctx.fillRect(2 * s - leg, y + 16 * s, 8 * s, 16 * s);
+      const skin = av.skin || '#f5d0a8';
+      ctx.fillStyle = skinGrad(ctx, -6 * s + leg, y + 24 * s, 4 * s, 10 * s, skin);
+      roundRect(ctx, -10 * s + leg, y + 16 * s, 8 * s, 17 * s, 3);
+      ctx.fill();
+      ctx.fillStyle = skinGrad(ctx, 6 * s - leg, y + 24 * s, 4 * s, 10 * s, skin);
+      roundRect(ctx, 2 * s - leg, y + 16 * s, 8 * s, 17 * s, 3);
+      ctx.fill();
     }
   }
 
@@ -317,11 +429,15 @@ window.BlossomAvatar = (function () {
       ctx.fill();
       return;
     } else {
-      ctx.fillStyle = color;
+      ctx.fillStyle = clothGrad(ctx, -11 * s + leg, ly - 4 * s, 11 * s, 7 * s, color);
       roundRect(ctx, -11 * s + leg, ly - 4 * s, 11 * s, 7 * s, 4);
       ctx.fill();
+      ctx.fillStyle = clothGrad(ctx, 0 * s - leg, ly - 4 * s, 11 * s, 7 * s, color);
       roundRect(ctx, 0 * s - leg, ly - 4 * s, 11 * s, 7 * s, 4);
       ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.fillRect(-8 * s + leg, ly - 2 * s, 5 * s, 2 * s);
+      ctx.fillRect(3 * s - leg, ly - 2 * s, 5 * s, 2 * s);
     }
     ctx.fillStyle = sole;
     roundRect(ctx, -12 * s + leg, ly + 2 * s, 12 * s, 4 * s, 2);
@@ -346,18 +462,22 @@ window.BlossomAvatar = (function () {
     const py = y + bob;
 
     if (glow) {
-      const g = ctx.createRadialGradient(x, py - 20, 4, x, py - 20, 42);
-      g.addColorStop(0, 'rgba(74, 222, 128, 0.35)');
+      const g = ctx.createRadialGradient(x, py - 20, 4, x, py - 20, 48);
+      g.addColorStop(0, 'rgba(74, 222, 128, 0.42)');
+      g.addColorStop(0.5, 'rgba(250, 204, 21, 0.15)');
       g.addColorStop(1, 'rgba(74, 222, 128, 0)');
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(x, py - 20, 42, 0, Math.PI * 2);
+      ctx.arc(x, py - 20, 48, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    const sh = ctx.createRadialGradient(x, py + 2, 2, x, py + 2, 20 * s);
+    sh.addColorStop(0, 'rgba(15, 23, 42, 0.28)');
+    sh.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = sh;
     ctx.beginPath();
-    ctx.ellipse(x, py + 4, 16 * s, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, py + 4, 18 * s, 6, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.save();
@@ -368,14 +488,17 @@ window.BlossomAvatar = (function () {
     const bottom = getEquipped({ wardrobe }, 'bottom') || ITEMS.bottom_starter;
     const shoes = getEquipped({ wardrobe }, 'shoes') || ITEMS.shoes_starter;
 
-    drawHair(ctx, av, 0, 1);
-    drawFace(ctx, av, 0, 1);
-    drawTop(ctx, av, top, 0, 1, shirtImg);
-    ctx.fillStyle = av.skin || '#f5d0a8';
-    roundRect(ctx, -7, -2, 14, 10, 4);
-    ctx.fill();
+    drawHairBack(ctx, av, 0, 1);
+    drawArms(ctx, av, 0, 1, leg, moving, anim);
     drawBottom(ctx, av, bottom, 0, 1, leg);
     drawShoes(ctx, shoes, 0, 1, leg, av.skin, av);
+    drawTop(ctx, av, top, 0, 1, shirtImg);
+    const skin = av.skin || '#f5d0a8';
+    ctx.fillStyle = skinGrad(ctx, 0, 2, 7, 6, skin);
+    roundRect(ctx, -7, -2, 14, 11, 4);
+    ctx.fill();
+    drawFace(ctx, av, 0, 1);
+    drawHair(ctx, av, 0, 1);
 
     ctx.restore();
     return { x, py: py - 62 * s };
@@ -386,12 +509,20 @@ window.BlossomAvatar = (function () {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    g.addColorStop(0, '#e0f2fe');
+    g.addColorStop(0, '#bae6fd');
+    g.addColorStop(0.55, '#e0f2fe');
     g.addColorStop(1, '#fce7f3');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    BlossomArt?.drawCloud?.(ctx, canvas.width * 0.25, canvas.height * 0.12, 0.7, 0.5);
+    BlossomArt?.drawCloud?.(ctx, canvas.width * 0.7, canvas.height * 0.08, 0.55, 0.4);
+    const fg = ctx.createLinearGradient(0, canvas.height * 0.65, 0, canvas.height);
+    fg.addColorStop(0, 'rgba(74, 222, 128, 0.15)');
+    fg.addColorStop(1, 'rgba(34, 197, 94, 0.35)');
+    ctx.fillStyle = fg;
     ctx.fillRect(0, canvas.height * 0.72, canvas.width, canvas.height * 0.28);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillRect(0, canvas.height * 0.72, canvas.width, 4);
     drawCharacter(ctx, {
       avatar,
       wardrobe: wardrobe || { equipped: defaultWardrobe().equipped, owned: STARTER_OWNED },
