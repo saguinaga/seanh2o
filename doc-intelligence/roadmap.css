@@ -92,6 +92,19 @@ body {
 
 .npl-wedge strong { color: #fcd34d; }
 
+.language-note {
+  font-size: 0.88rem;
+  color: #8b9cb8;
+  line-height: 1.55;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-left: 2px solid rgba(0, 201, 167, 0.35);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 8px 8px 0;
+}
+
+.language-note strong { color: var(--text); }
+
 .expansion-path {
   display: flex;
   flex-wrap: wrap;

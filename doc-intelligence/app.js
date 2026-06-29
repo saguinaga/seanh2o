@@ -2,7 +2,7 @@ const DEAL = 'Harborview Tower';
 
 const STEPS = [
   { id: 0, eyebrow: 'NPL workflow lab', title: 'Walk through one workout package', nav: 'Start' },
-  { id: 1, eyebrow: 'Step 1 — Ingest', title: 'Import the NPL workout package', nav: 'Ingest' },
+  { id: 1, eyebrow: 'Step 1 — Ingest', title: 'Import the workout package', nav: 'Ingest' },
   { id: 2, eyebrow: 'Step 2 — Extract', title: 'Run the extraction pipeline', nav: 'Extract' },
   { id: 3, eyebrow: 'Step 3 — Review', title: 'Human-in-the-loop validation', nav: 'Review' },
   { id: 4, eyebrow: 'Step 4 — Insights', title: 'Structured data for decisions', nav: 'Insights' },
@@ -12,7 +12,7 @@ const STEPS = [
 const PERSONAS = {
   npl: {
     quote: '"I have 40 loans in special servicing. I can\'t spend half a day per file pulling DSCR and NOI out of servicer PDFs."',
-    pain: 'NPL workout intake — 3+ hours per loan package.',
+    pain: 'Workout package intake — 3+ hours per loan.',
     ingest: 'Box / SharePoint: servicer drops workout package, you pull loan + collateral fields in one pass.',
     insights: 'UPB, DSCR, LTV, NOI, occupancy — covenant breaches flagged before you open Excel.',
     deliver: 'Workout Excel template pull. That\'s where modification decisions get made.',
