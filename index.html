@@ -132,72 +132,21 @@
             border-color: white;
         }
 
-        .hero-featured-work {
-            margin-top: 28px;
-            max-width: 520px;
-            padding: 18px 20px;
-            background: rgba(7, 13, 24, 0.72);
-            border: 1px solid rgba(0, 201, 167, 0.35);
-            border-radius: 12px;
-            backdrop-filter: blur(8px);
+        .project-vibe {
+            opacity: 0.92;
+            border-color: rgba(148, 163, 184, 0.25) !important;
         }
-        .hero-featured-label {
-            display: inline-block;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #00c9a7;
-            margin-bottom: 8px;
-        }
-        .hero-featured-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 6px;
-            letter-spacing: -0.02em;
-        }
-        .hero-featured-desc {
-            font-size: 0.88rem;
-            line-height: 1.5;
-            color: #94a3b8;
-            margin-bottom: 12px;
-        }
-        .hero-featured-link {
-            display: inline-block;
-            font-size: 0.9rem;
+        .project-vibe-head {
+            height: 120px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
             font-weight: 600;
-            color: #00c9a7;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(0, 201, 167, 0.4);
-        }
-        .hero-featured-link:hover {
-            color: #5eead4;
-            border-bottom-color: #5eead4;
-        }
-        .project-featured {
-            border-color: rgba(0, 201, 167, 0.45) !important;
-            box-shadow: 0 0 0 1px rgba(0, 201, 167, 0.12), 0 12px 40px -12px rgba(0, 201, 167, 0.25);
-        }
-        .project-featured-badge {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #0b1220;
-            background: #00c9a7;
-            padding: 5px 10px;
-            border-radius: 999px;
-        }
-        .project-featured-head {
-            height: auto !important;
-            min-height: 120px;
-            padding: 28px 24px;
-            align-items: flex-start !important;
-            text-align: left;
+            font-size: 1rem;
+            letter-spacing: -.2px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
         .project-expansion {
             display: flex;
@@ -286,16 +235,6 @@
         .nav-links a:hover {
             color: #67e8f9;
         }
-        .nav-case-study {
-            color: #00c9a7 !important;
-            border: 1px solid rgba(0, 201, 167, 0.35);
-            padding: 6px 14px !important;
-            border-radius: 999px;
-            margin-left: 20px !important;
-        }
-        .nav-case-study:hover {
-            background: rgba(0, 201, 167, 0.12);
-        }
         .logo strong {
             color: #f1f5f9;
             font-size: 1.1rem;
@@ -353,10 +292,6 @@
                 align-items: center;
                 justify-content: center;
             }
-            .hero-featured-work {
-                max-width: none;
-                margin-top: 22px;
-            }
             .cta-button { font-size: 1rem; padding: 14px 28px; }
             .nav-container { height: 64px; position: relative; padding: 0 12px; }
             .nav-toggle { display: flex; }
@@ -384,13 +319,6 @@
                 color: #e0f2fe;
             }
             .nav-links a:last-child { border-bottom: none; }
-            .nav-case-study {
-                margin-left: 0 !important;
-                border: none !important;
-                border-bottom: 1px solid rgba(103,232,249,0.1) !important;
-                border-radius: 0 !important;
-                padding: 14px 24px !important;
-            }
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 2rem; }
@@ -415,7 +343,6 @@
                 <a href="#philosophy" data-plausible-event="Nav - Approach">Approach</a>
                 <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#projects" data-plausible-event="Nav - Projects">Projects</a>
-                <a href="doc-intelligence/" data-plausible-event="Nav - Case Study" class="nav-case-study">PM Roadmap</a>
                 <a href="#contact" data-plausible-event="Nav - Contact">Contact</a>
             </div>
         </div>
@@ -434,12 +361,6 @@
             <div class="hero-cta-row" style="margin-top: 12px;">
                 <a href="#tools" class="cta-button" data-plausible-event="CTA - See the Tools">See the Tools</a>
                 <a href="#projects" class="cta-button cta-secondary" data-plausible-event="CTA - Explore Projects">Explore Projects</a>
-            </div>
-            <div class="hero-featured-work">
-                <span class="hero-featured-label">Featured PM work</span>
-                <p class="hero-featured-title">CRE Document Intelligence Roadmap</p>
-                <p class="hero-featured-desc">Full platform for <strong style="color:#e0f2fe;font-weight:600;">brokers and lenders</strong> — appraisals, offering memorandums, rent rolls, loan files. Phase 1 wedges into <strong style="color:#00c9a7;font-weight:600;">NPL</strong> workout intake where ROI is clearest.</p>
-                <a href="doc-intelligence/" class="hero-featured-link" data-plausible-event="CTA - Case Study">Read the full roadmap →</a>
             </div>
         </div>
     </section>
@@ -490,29 +411,10 @@
             <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; margin-bottom: 32px;">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Featured product work + modeling tools</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Modeling tools + side experiments</p>
                 </div>
                 <a href="#tools" style="color: #f59e0b; font-weight: 600; text-decoration: none;">View all tools →</a>
             </div>
-
-            <!-- NPL case study — featured above tools; this is where PM work belongs -->
-            <a href="doc-intelligence/" class="glass-card project-featured" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block; margin-bottom: 24px; position: relative;" data-plausible-event="Launch Case Study - Doc Intelligence">
-                <span class="project-featured-badge">Phase 1 wedge</span>
-                <div class="project-featured-head" style="background: linear-gradient(135deg, #0b1220 0%, #132337 50%, #0d3d38 100%); display: flex; flex-direction: column; justify-content: center; color: white; border-bottom: 1px solid rgba(0, 201, 167, 0.2); gap: 6px;">
-                    <span style="font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #00c9a7; font-weight: 600;">Sean Aguinaga · PM Case Study</span>
-                    <span style="font-weight: 700; font-size: 1.25rem; letter-spacing: -.3px;">CRE Document Intelligence Roadmap</span>
-                </div>
-                <div style="padding: 22px 24px;">
-                    <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Brokers and lenders first. NPL as Phase 1 wedge.</div>
-                    <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 12px;">
-                        Phased roadmap for AI document intelligence — browser, Office add-ins, API. Phase 1: lender workout packages (NPL). Phase 2: broker offering memorandums + rent roll on the same extraction engine. Living case study — updated as thinking evolves.
-                    </p>
-                    <div class="project-expansion">
-                        <strong>Lenders · NPL</strong><span>→</span><span>Brokers · offering memos</span><span>→</span><span>Appraisal · ESA · API</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #00c9a7; font-weight: 600; margin-top: 14px;">Read the roadmap →</div>
-                </div>
-            </a>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
                 
@@ -539,6 +441,20 @@
                         <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0;">
                             ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.
                         </p>
+                    </div>
+                </a>
+
+                <!-- Vibe coding experiment -->
+                <a href="doc-intelligence/demo.html" class="glass-card project-vibe" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Doc Intelligence">
+                    <div class="project-vibe-head">Doc Intelligence Prototype</div>
+                    <div style="padding: 22px 24px;">
+                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Vibe coding · PDF → Excel / Word</div>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 10px;">
+                            Upload a PDF, parse CRE fields client-side, walk a workout workflow, export real .xlsx and .doc files. PM roadmap write-up lives separately.
+                        </p>
+                        <div style="font-size: 0.85rem; color: #64748b;">
+                            <a href="doc-intelligence/" style="color: #94a3b8; text-decoration: underline;" data-plausible-event="Launch Case Study - Doc Intelligence" onclick="event.stopPropagation();">PM roadmap →</a>
+                        </div>
                     </div>
                 </a>
 

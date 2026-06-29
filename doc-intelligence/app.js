@@ -61,7 +61,7 @@ const PIPELINE_STAGES = [
   { icon: '✓', name: 'Validate', desc: 'Confidence scoring' },
 ];
 
-const EXTRACTED_FIELDS = [
+const DEFAULT_EXTRACTED_FIELDS = [
   { key: 'property_name', label: 'Collateral Property', value: 'Harborview Tower', confidence: 98 },
   { key: 'loan_id', label: 'Loan ID', value: 'LN-2018-39201', confidence: 99 },
   { key: 'upb', label: 'Unpaid Principal Balance', value: '$38,200,000', confidence: 97 },
@@ -73,6 +73,12 @@ const EXTRACTED_FIELDS = [
   { key: 'collateral_value', label: 'As-Is Appraised Value', value: '$34,100,000', confidence: 91 },
   { key: 'workout_status', label: 'Workout Status', value: 'Modification under review', confidence: 95 },
 ];
+
+function cloneFields() {
+  return DEFAULT_EXTRACTED_FIELDS.map((f) => ({ ...f }));
+}
+
+let activeFields = cloneFields();
 
 const RENT_ROLL = [
   { unit: '101', type: '1 BR', sf: 720, tenant: 'James Mitchell', start: '03/01/2023', end: '02/28/2024', rent: '$1,650', status: 'Delinquent' },
@@ -111,8 +117,11 @@ let uploaded = false;
 let uploadSource = null;
 let connectedProvider = null;
 let pipelineRunning = false;
+let pipelineComplete = false;
 let approvedFields = new Set();
 let currentPersona = 'npl';
+let uploadMeta = { fileName: null, pages: 0, fromPdf: false, keywords: [] };
+let pdfExcerpt = '';
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -147,33 +156,53 @@ function applyPersona() {
   if (excelHint) excelHint.textContent = p.excelHint;
 }
 
+function getCurrentFieldValues() {
+  const fromDom = {};
+  $$('.field-value').forEach((input) => {
+    if (input.dataset.key) fromDom[input.dataset.key] = input.value;
+  });
+  return activeFields.map((f) => ({
+    ...f,
+    value: fromDom[f.key] !== undefined ? fromDom[f.key] : f.value,
+  }));
+}
+
+function parseNum(raw) {
+  if (!raw) return null;
+  const n = Number(String(raw).replace(/[^0-9.]/g, ''));
+  return Number.isNaN(n) ? null : n;
+}
+
 function buildStructuredOutput() {
+  const fields = getCurrentFieldValues();
   const data = {};
-  EXTRACTED_FIELDS.forEach((f) => { data[f.key] = f.value; });
+  fields.forEach((f) => { data[f.key] = f.value; });
+  const avgConf = fields.reduce((s, f) => s + f.confidence, 0) / fields.length;
   return {
     document_id: 'doc_8f3a2c91',
     property_id: 'prop_riverside_commons',
     extracted_at: new Date().toISOString(),
+    source_file: uploadMeta.fileName || null,
     document_type: 'npl_workout_package',
     loan_status: 'non_performing',
-    confidence_score: 0.91,
+    confidence_score: Math.round(avgConf) / 100,
     fields: data,
     loan: {
-      loan_id: 'LN-2018-39201',
-      upb: 38200000,
-      dscr: 0.78,
-      ltv: 1.18,
-      days_delinquent: 127,
-      workout_status: 'modification_under_review',
+      loan_id: data.loan_id,
+      upb: parseNum(data.upb),
+      dscr: parseNum(data.dscr),
+      ltv: parseNum(data.ltv),
+      days_delinquent: parseNum(data.delinquency),
+      workout_status: data.workout_status,
     },
     rent_roll: RENT_ROLL.map(({ unit, type, sf, tenant, start, end, rent, status }) => ({
       unit, type, sqft: sf, tenant, lease_start: start, lease_end: end, monthly_rent: rent, status,
     })),
     collateral: {
-      property_name: 'Harborview Tower',
-      net_operating_income: 2104000,
-      as_is_value: 34100000,
-      occupancy: 0.784,
+      property_name: data.property_name,
+      net_operating_income: parseNum(data.noi),
+      as_is_value: parseNum(data.collateral_value),
+      occupancy: parseNum(data.occupancy),
     },
   };
 }
@@ -233,7 +262,7 @@ function goToStep(step, { force = false } = {}) {
   updateTopbar();
   applyPersona();
 
-  if (step === 2 && uploaded && !pipelineRunning && !$('#progressFill').style.width) {
+  if (step === 2 && uploaded && !pipelineRunning && !pipelineComplete) {
     runPipeline();
   }
   if (step === 3) renderFields();
@@ -262,7 +291,15 @@ function resetDemo() {
   uploadSource = null;
   connectedProvider = null;
   pipelineRunning = false;
+  pipelineComplete = false;
   approvedFields.clear();
+  activeFields = cloneFields();
+  uploadMeta = { fileName: null, pages: 0, fromPdf: false, keywords: [] };
+  pdfExcerpt = '';
+  const preview = $('#pdfPreview');
+  if (preview) preview.hidden = true;
+  const fileInput = $('#fileInput');
+  if (fileInput) fileInput.value = '';
   $('#queueList').innerHTML = '<li class="queue-empty">No documents queued</li>';
   $('#cloudStatus').hidden = true;
   const wp = $('#watchedFolderPath');
@@ -299,16 +336,20 @@ function runPipeline() {
   pipelineRunning = true;
   updateTopbar();
 
-  $('#pipelineDocName').textContent = 'Harborview Tower — Special Servicer Report.pdf';
+  const docLabel = uploadMeta.fileName || 'Harborview Tower — Special Servicer Report.pdf';
+  $('#pipelineDocName').textContent = docLabel;
   const stages = $$('.stage-card');
   const sourceLabel = uploadSource || 'manual upload';
+  const pageNote = uploadMeta.pages ? `${uploadMeta.pages} pages` : '48 pages';
   const logs = [
-    `Document received via ${sourceLabel} — 48 pages, 12.4 MB`,
-    'Classified as Special Servicer Report / NPL workout (confidence 0.96)',
-    'OCR complete — 14 tables detected',
+    `Document received via ${sourceLabel} — ${pageNote}`,
+    uploadMeta.fromPdf
+      ? `PDF text parsed — keywords: ${uploadMeta.keywords.join(', ') || 'general CRE'}`
+      : 'Classified as Special Servicer Report / workout package (confidence 0.96)',
+    'OCR complete — tables and headers detected',
     'Extracting loan fields: UPB, DSCR, LTV, delinquency…',
-    'Normalizing to NPL workout schema v1.0',
-    'Validation complete — 94% aggregate confidence',
+    'Normalizing to workout schema v1.0',
+    `Validation complete — ${uploadMeta.fromPdf ? 'fields merged from PDF + demo schema' : '94% aggregate confidence'}`,
   ];
 
   let stageIdx = 0;
@@ -332,6 +373,7 @@ function runPipeline() {
       $('#progressPct').textContent = '100%';
       addLog('Extraction ready for human review');
       pipelineRunning = false;
+      pipelineComplete = true;
       maxReached = Math.max(maxReached, 3);
       updateTopbar();
     }
@@ -340,13 +382,93 @@ function runPipeline() {
   tick();
 }
 
+function applyPdfAnalysis(analysis, pdfMeta) {
+  uploadMeta = {
+    fileName: pdfMeta.fileName,
+    pages: pdfMeta.pages,
+    fromPdf: analysis.fromPdf,
+    keywords: analysis.keywords,
+    sizeMb: pdfMeta.sizeMb,
+  };
+  pdfExcerpt = analysis.excerpt;
+  activeFields = cloneFields();
+  Object.entries(analysis.hits).forEach(([key, value]) => {
+    const field = activeFields.find((f) => f.key === key);
+    if (field && value) {
+      field.value = value;
+      field.confidence = Math.min(99, field.confidence + 2);
+    }
+  });
+  if (analysis.fromPdf) {
+    activeFields.forEach((f) => {
+      if (!analysis.hits[f.key]) f.confidence = Math.max(72, f.confidence - 8);
+    });
+  }
+}
+
+function renderPdfPreview() {
+  const box = $('#pdfPreview');
+  if (!box) return;
+  if (!uploadMeta.fileName) {
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+  $('#pdfPreviewMeta').textContent =
+    `${uploadMeta.fileName} · ${uploadMeta.pages} page${uploadMeta.pages === 1 ? '' : 's'} · ${uploadMeta.sizeMb || '?'} MB`;
+  const kw = uploadMeta.keywords.length ? uploadMeta.keywords.join(', ') : 'No CRE keywords detected';
+  $('#pdfPreviewKeywords').textContent = `Detected terms: ${kw}`;
+  $('#pdfPreviewExcerpt').textContent = pdfExcerpt
+    ? pdfExcerpt.slice(0, 500) + (pdfExcerpt.length > 500 ? '…' : '')
+    : 'No extractable text — scanned PDF may need OCR.';
+  $('#pdfPreviewNote').textContent = uploadMeta.fromPdf
+    ? 'Fields updated from PDF text. Review step still applies demo enrichment where the PDF was silent.'
+    : 'Demo package loaded — upload a PDF with UPB, DSCR, LTV, or NOI to parse real text.';
+  const docHeader = $('.doc-preview-header span');
+  if (docHeader && uploadMeta.fileName) docHeader.textContent = uploadMeta.fileName;
+}
+
+async function handlePdfUpload(file) {
+  if (!file || file.type !== 'application/pdf') {
+    showIngestStatus('Please upload a PDF file.');
+    return;
+  }
+  showIngestStatus('Reading PDF…');
+  try {
+    const pdfMeta = await window.DocPdfAnalyze.extractTextFromPdf(file);
+    const analysis = window.DocPdfAnalyze.analyzeCreText(pdfMeta.text, pdfMeta.fileName);
+    applyPdfAnalysis(analysis, pdfMeta);
+    connectedProvider = null;
+    $('#cloudStatus').hidden = true;
+    queuePackage('PDF upload');
+    renderPdfPreview();
+    showIngestStatus(analysis.fromPdf
+      ? `Parsed ${analysis.matchedKeys.length} field(s) from your PDF.`
+      : 'PDF loaded — using demo fields where text did not match.');
+  } catch (err) {
+    console.error(err);
+    showIngestStatus('Could not read PDF. Try the demo package instead.');
+  }
+}
+
+function showIngestStatus(msg) {
+  const el = $('#uploadStatus');
+  if (el) el.textContent = msg;
+}
+
 function queuePackage(sourceLabel) {
   uploaded = true;
   uploadSource = sourceLabel;
+  pipelineComplete = false;
+  $('#progressFill').style.width = '0%';
+  $('#progressPct').textContent = '0%';
+  $('#processingLog').innerHTML = '';
+  $$('.stage-card').forEach((c) => c.classList.remove('running', 'done'));
   const prefix = connectedProvider ? '☁️' : '📄';
+  const primary = uploadMeta.fileName || 'Harborview Tower — Special Servicer Report.pdf';
   $('#queueList').innerHTML = `
     <li>
-      <span>${prefix} Harborview Tower — Special Servicer Report.pdf</span>
+      <span>${prefix} ${primary}</span>
       <span class="queue-status">Ready · ${sourceLabel}</span>
     </li>
     <li>
@@ -360,11 +482,17 @@ function queuePackage(sourceLabel) {
 
 function simulateUpload() {
   connectedProvider = null;
+  uploadMeta = { fileName: null, pages: 0, fromPdf: false, keywords: [] };
+  pdfExcerpt = '';
+  activeFields = cloneFields();
+  const preview = $('#pdfPreview');
+  if (preview) preview.hidden = true;
   $('#cloudStatus').hidden = true;
   const wp = $('#watchedFolderPath');
   if (wp) wp.hidden = true;
   $$('.cloud-btn').forEach((b) => b.classList.remove('connected'));
-  queuePackage('manual upload');
+  queuePackage('demo package');
+  showIngestStatus('Demo Harborview workout package loaded.');
 }
 
 function connectCloud(provider) {
@@ -402,7 +530,7 @@ function initCloudConnectors() {
 
 function renderFields() {
   const list = $('#fieldsList');
-  list.innerHTML = EXTRACTED_FIELDS.map((f) => {
+  list.innerHTML = activeFields.map((f) => {
     const level = confLevel(f.confidence);
     const approved = approvedFields.has(f.key);
     return `
@@ -416,9 +544,9 @@ function renderFields() {
     `;
   }).join('');
 
-  const high = EXTRACTED_FIELDS.filter((f) => confLevel(f.confidence) === 'high').length;
-  const med = EXTRACTED_FIELDS.filter((f) => confLevel(f.confidence) === 'med').length;
-  const low = EXTRACTED_FIELDS.filter((f) => confLevel(f.confidence) === 'low').length;
+  const high = activeFields.filter((f) => confLevel(f.confidence) === 'high').length;
+  const med = activeFields.filter((f) => confLevel(f.confidence) === 'med').length;
+  const low = activeFields.filter((f) => confLevel(f.confidence) === 'low').length;
 
   $('#confidenceSummary').innerHTML = `
     <div class="conf-badge"><span class="conf-dot high"></span>${high} high confidence</div>
@@ -453,16 +581,19 @@ function highlightField(key) {
 }
 
 function approveAllFields() {
-  EXTRACTED_FIELDS.forEach((f) => approvedFields.add(f.key));
+  activeFields.forEach((f) => approvedFields.add(f.key));
   renderFields();
   maxReached = Math.max(maxReached, 4);
 }
 
 function renderInsights() {
+  const byKey = Object.fromEntries(getCurrentFieldValues().map((f) => [f.key, f]));
+  const dscr = parseNum(byKey.dscr?.value);
+  const ltv = parseNum(byKey.ltv?.value);
   $('#insightsKpis').innerHTML = `
-    <div class="kpi-card"><div class="label">UPB</div><div class="value">$38.2M</div><div class="sub">LN-2018-39201</div></div>
-    <div class="kpi-card"><div class="label">DSCR</div><div class="value">0.78</div><div class="sub danger">Covenant breach</div></div>
-    <div class="kpi-card"><div class="label">LTV (As-Is)</div><div class="value">118%</div><div class="sub">Underwater collateral</div></div>
+    <div class="kpi-card"><div class="label">UPB</div><div class="value">${byKey.upb?.value || '—'}</div><div class="sub">${byKey.loan_id?.value || '—'}</div></div>
+    <div class="kpi-card"><div class="label">DSCR</div><div class="value">${byKey.dscr?.value || '—'}</div><div class="sub${dscr && dscr < 1 ? ' danger' : ''}">${dscr && dscr < 1 ? 'Covenant breach' : 'Coverage ratio'}</div></div>
+    <div class="kpi-card"><div class="label">LTV (As-Is)</div><div class="value">${byKey.ltv?.value || '—'}</div><div class="sub">${ltv && ltv > 100 ? 'Underwater collateral' : 'Collateral leverage'}</div></div>
     <div class="kpi-card"><div class="label">Time saved</div><div class="value">~2.5 hr</div><div class="sub">vs. manual NPL intake</div></div>
   `;
 
@@ -515,25 +646,32 @@ function initExcelGrid() {
 }
 
 function pullExcelData() {
+  const fields = getCurrentFieldValues();
+  const byKey = Object.fromEntries(fields.map((f) => [f.key, f]));
   const mapping = [
-    { row: '2', value: '$38,200,000', conf: '97%' },
-    { row: '3', value: '0.78', conf: '86%' },
-    { row: '4', value: '118%', conf: '84%' },
-    { row: '5', value: '$2,104,000 / 78.4%', conf: '92%' },
+    { row: '2', key: 'upb' },
+    { row: '3', key: 'dscr' },
+    { row: '4', key: 'ltv' },
+    { row: '5', keys: ['noi', 'occupancy'] },
   ];
   mapping.forEach((m) => {
+    const f = m.key ? byKey[m.key] : null;
+    const value = m.keys
+      ? `${byKey.noi?.value || '—'} / ${byKey.occupancy?.value || '—'}`
+      : f?.value || '—';
+    const conf = f ? `${f.confidence}%` : (m.keys ? `${byKey.noi?.confidence || '—'}%` : '—');
     const valCell = $(`.excel-cell[data-row="${m.row}"][data-col="2"]`);
     const confCell = $(`.excel-cell[data-row="${m.row}"][data-col="4"]`);
-    if (valCell) { valCell.textContent = m.value; valCell.classList.add('filled'); }
-    if (confCell) { confCell.textContent = m.conf; confCell.classList.add('filled'); }
+    if (valCell) { valCell.textContent = value; valCell.classList.add('filled'); }
+    if (confCell) { confCell.textContent = conf; confCell.classList.add('filled'); }
   });
-  $('#excelFields').innerHTML = EXTRACTED_FIELDS.slice(0, 5).map((f) =>
+  $('#excelFields').innerHTML = fields.slice(0, 6).map((f) =>
     `<li>✓ ${f.label}: ${f.value}</li>`
   ).join('');
 }
 
 function mergeWordFields() {
-  const data = Object.fromEntries(EXTRACTED_FIELDS.map((f) => [f.key, f.value]));
+  const data = Object.fromEntries(getCurrentFieldValues().map((f) => [f.key, f.value]));
   $$('.merge-field').forEach((el) => {
     const key = el.dataset.merge;
     if (data[key]) {
@@ -591,10 +729,55 @@ function initDeliverTabs() {
 
 function initUploadZone() {
   const zone = $('#uploadZone');
+  const fileInput = $('#fileInput');
   zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-  zone.addEventListener('drop', (e) => { e.preventDefault(); zone.classList.remove('dragover'); simulateUpload(); });
-  $('#simulateUploadBtn').addEventListener('click', simulateUpload);
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer?.files?.[0];
+    if (file) handlePdfUpload(file);
+  });
+  zone.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    fileInput?.click();
+  });
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) handlePdfUpload(file);
+  });
+  $('#simulateUploadBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    simulateUpload();
+  });
+  $('#choosePdfBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput?.click();
+  });
+}
+
+function exportExcelWorkbook() {
+  try {
+    window.DocOfficeExport.downloadExcelWorkbook(getCurrentFieldValues(), RENT_ROLL, uploadMeta);
+    showToast('Excel workbook downloaded');
+  } catch (e) {
+    showToast('Excel export unavailable');
+  }
+}
+
+function copyExcelPaste() {
+  window.DocOfficeExport.copyExcelPaste(getCurrentFieldValues())
+    .then(() => showToast('Copied — paste into Excel'))
+    .catch(() => showToast('Copy failed'));
+}
+
+function exportWordMemo() {
+  try {
+    window.DocOfficeExport.downloadWordMemo(getCurrentFieldValues(), uploadMeta);
+    showToast('Word memo downloaded');
+  } catch (e) {
+    showToast('Word export unavailable');
+  }
 }
 
 function initTypeSelector() {
@@ -635,7 +818,10 @@ function init() {
   $('#dlCsvBtn').addEventListener('click', downloadCsv);
   $('#pushDashBtn').addEventListener('click', () => showToast('Pushed to analytics dashboard'));
   $('#excelPullBtn').addEventListener('click', pullExcelData);
+  $('#excelDownloadBtn')?.addEventListener('click', exportExcelWorkbook);
+  $('#excelCopyBtn')?.addEventListener('click', copyExcelPaste);
   $('#wordMergeBtn').addEventListener('click', mergeWordFields);
+  $('#wordDownloadBtn')?.addEventListener('click', exportWordMemo);
   $('#apiCallBtn').addEventListener('click', executeApiCall);
 }
 

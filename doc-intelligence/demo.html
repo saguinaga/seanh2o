@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>CRE Document Intelligence — Interactive Walkthrough | Sean Aguinaga</title>
+  <title>Doc Intelligence Prototype — PDF + Office Export | Sean Aguinaga</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <a href="index.html" class="back-portfolio">← PM roadmap</a>
+      <a href="../index.html#projects" class="back-portfolio">← Portfolio</a>
       <div class="brand">
         <div class="brand-mark">SA</div>
         <div>
           <strong>Sean Aguinaga</strong>
-          <span>Iteration prototype</span>
+          <span>Vibe coding experiment</span>
         </div>
       </div>
 
@@ -41,8 +41,8 @@
 
     <main class="main">
       <div class="iteration-banner">
-        <strong>Iteration tool</strong> — stress-test workflow decisions from the
-        <a href="index.html">PM roadmap</a>. Not the shipped product.
+        <strong>Vibe coding lab</strong> — upload a real PDF, walk the workflow, export to Excel or Word.
+        <a href="index.html">PM roadmap</a> lives separately if you want the strategy write-up.
       </div>
       <header class="topbar">
         <p class="eyebrow" id="stepEyebrow">Workflow lab</p>
@@ -52,11 +52,12 @@
       <!-- Step 0: Workflow lab intro -->
       <section class="panel active" data-step="0" id="panel-0">
         <div class="lab-intro card">
-          <p class="lab-eyebrow">Why this exists</p>
+          <p class="lab-eyebrow">What you can do here</p>
           <p>
-            Strategy and sequencing live on the <a href="index.html">PM roadmap</a>.
-            This prototype lets me (and you) walk through ingest → extract → review → deliver
-            on one workout package — Harborview Tower — and pressure-test whether Phase 1 scope feels right.
+            Drop a <strong>PDF</strong> (servicer report, loan summary, offering memorandum) and the client parses text for CRE fields.
+            Walk ingest → extract → review → deliver on the Harborview demo package, then pull real
+            <strong>.xlsx</strong> and <strong>.doc</strong> exports. Strategy notes are on the
+            <a href="index.html">PM roadmap</a> — this page is the working prototype.
           </p>
           <blockquote class="voice-quote" id="voiceQuote">"I'm not hunting page 34 for NOI again. I need it in my model."</blockquote>
           <p class="thesis-meta">Switch stakeholder lens in the sidebar to see how delivery emphasis shifts.</p>
@@ -112,13 +113,27 @@
 
         <div class="ingest-or">or upload directly</div>
 
+        <div class="card pdf-preview" id="pdfPreview" hidden>
+          <div class="pdf-preview-header">
+            <h3>PDF analysis</h3>
+            <span class="pdf-preview-meta" id="pdfPreviewMeta"></span>
+          </div>
+          <p class="pdf-preview-keywords" id="pdfPreviewKeywords"></p>
+          <pre class="pdf-preview-excerpt" id="pdfPreviewExcerpt"></pre>
+          <p class="pdf-preview-note" id="pdfPreviewNote"></p>
+        </div>
+
         <div class="ingest-layout">
           <div class="card upload-zone" id="uploadZone">
             <div class="upload-icon">📄</div>
-            <h3>Manual upload</h3>
-            <p>Drag &amp; drop PDFs, scans, or Excel rent rolls.</p>
-            <button type="button" class="btn btn-ghost" id="simulateUploadBtn">Load workout package locally</button>
-            <input type="file" id="fileInput" hidden multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg">
+            <h3>Upload a PDF</h3>
+            <p>Drag &amp; drop or choose a PDF — UPB, DSCR, LTV, NOI, occupancy parsed client-side.</p>
+            <div class="upload-actions">
+              <button type="button" class="btn btn-primary btn-sm" id="choosePdfBtn">Choose PDF</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="simulateUploadBtn">Load demo package</button>
+            </div>
+            <p class="upload-status" id="uploadStatus"></p>
+            <input type="file" id="fileInput" hidden accept=".pdf,application/pdf">
           </div>
 
           <div class="card">
@@ -283,7 +298,11 @@
                 <div class="office-sidebar">
                   <h4>Pull into model</h4>
                   <p id="excelSidebarHint">One click — NOI, cap rate, rent roll into your underwriting template.</p>
-                  <button type="button" class="btn btn-primary btn-sm" id="excelPullBtn">Pull NPL workout fields</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="excelPullBtn">Pull into grid</button>
+                  <div class="office-actions">
+                    <button type="button" class="btn btn-ghost btn-sm" id="excelDownloadBtn">Download .xlsx</button>
+                    <button type="button" class="btn btn-ghost btn-sm" id="excelCopyBtn">Copy for paste</button>
+                  </div>
                   <ul class="office-fields" id="excelFields"></ul>
                 </div>
               </div>
@@ -306,7 +325,10 @@
                 </div>
                 <div class="office-sidebar">
                   <h4>Merge fields</h4>
-                  <button type="button" class="btn btn-primary btn-sm" id="wordMergeBtn">Merge all fields</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="wordMergeBtn">Merge into preview</button>
+                  <div class="office-actions">
+                    <button type="button" class="btn btn-ghost btn-sm" id="wordDownloadBtn">Download .doc</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -350,6 +372,10 @@
     </main>
   </div>
 
-  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="pdf-analyze.js?v=1"></script>
+  <script src="office-export.js?v=1"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
