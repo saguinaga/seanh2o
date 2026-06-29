@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="roadmap.css?v=7">
+  <link rel="stylesheet" href="roadmap.css?v=8">
 </head>
 <body>
   <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
@@ -15,6 +15,11 @@
   <article class="case-study">
     <header class="cs-hero">
       <p class="case-label">Product case study · Sean Aguinaga</p>
+      <div class="case-meta" id="caseStudyMeta" aria-live="polite">
+        <span class="case-meta-badge" id="caseStudyStatus">Living PM case study</span>
+        <span class="case-meta-updated" id="caseStudyUpdated">Updated —</span>
+      </div>
+      <p class="case-meta-note" id="caseStudyNote"></p>
       <h1>How I'd own CRE Document Intelligence</h1>
       <p class="platform-scope">
         End-to-end ownership of an <strong>AI document intelligence platform</strong> — extracting structure from
@@ -332,8 +337,8 @@
     <section class="cs-section">
       <h2>Go-to-market</h2>
       <ol class="gtm-list">
-        <li><strong>Design partners (Month 1–3):</strong> 3–5 bank workout desks and special servicers — NPL package intake, covenant flags, lender Excel templates.</li>
-        <li><strong>Limited launch (Month 4–6):</strong> Lender workflow live. Case studies: hours → minutes per loan. Broker OM pilot with 2–3 firms.</li>
+        <li><strong>Design partners:</strong> 3–5 bank workout desks and special servicers — NPL package intake, covenant flags, lender Excel templates.</li>
+        <li><strong>Limited launch:</strong> Lender workflow live. Case studies: hours → minutes per loan. Broker OM pilot with 2–3 firms.</li>
         <li><strong>Sales enablement:</strong> Lender track: "NPL-native extraction, not generic OCR." Broker track: "OM + rent roll in your model, not in your inbox."</li>
         <li><strong>Customer success:</strong> Persona playbooks — lender LOS/Excel integration, broker watched-folder setup, API onboarding.</li>
         <li><strong>Expansion:</strong> Land with lender extraction → broker OM packages → API, batch, appraisal &amp; ESA doc types per account.</li>
@@ -368,9 +373,24 @@
     </section>
 
     <footer class="cs-footer">
-      <p>Sean Aguinaga · Product leader · Real estate tech</p>
+      <p>Sean Aguinaga · Product leader · Real estate tech · <span id="caseStudyVersion"></span></p>
       <a href="../index.html#contact" class="contact-btn">Get in touch →</a>
     </footer>
   </article>
+  <script src="meta.js"></script>
+  <script>
+    (function () {
+      var m = window.CASE_STUDY_META;
+      if (!m) return;
+      var status = document.getElementById('caseStudyStatus');
+      var updated = document.getElementById('caseStudyUpdated');
+      var note = document.getElementById('caseStudyNote');
+      var version = document.getElementById('caseStudyVersion');
+      if (status && m.label) status.textContent = m.label;
+      if (updated && m.lastUpdated) updated.textContent = 'Updated ' + m.lastUpdated;
+      if (note && m.note) note.textContent = m.note;
+      if (version && m.version) version.textContent = 'v' + m.version;
+    })();
+  </script>
 </body>
 </html>

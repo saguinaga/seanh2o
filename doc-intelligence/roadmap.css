@@ -53,6 +53,49 @@ body {
   margin-bottom: 12px;
 }
 
+.case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 14px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.case-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 201, 167, 0.3);
+  color: #9fe8d9;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.case-meta-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 201, 167, 0.6);
+}
+
+.case-meta-updated {
+  color: #6b7f99;
+}
+
+.case-meta-note {
+  width: 100%;
+  font-size: 0.82rem;
+  color: #7d8fa8;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
 .cs-hero h1 {
   font-size: clamp(1.85rem, 4.5vw, 2.5rem);
   font-weight: 700;

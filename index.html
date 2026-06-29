@@ -441,7 +441,7 @@
                 <span class="hero-featured-label">Featured PM work</span>
                 <p class="hero-featured-title">CRE Document Intelligence Roadmap</p>
                 <p class="hero-featured-desc">Full platform for <strong style="color:#e0f2fe;font-weight:600;">brokers and lenders</strong> — appraisals, OMs, rent rolls, loan files. Phase 1 wedges into <strong style="color:#00c9a7;font-weight:600;">NPL</strong> workout intake where ROI is clearest.</p>
-                <a href="doc-intelligence/" class="hero-featured-link" data-plausible-event="CTA - Case Study">Read the 18-month roadmap →</a>
+                <a href="doc-intelligence/" class="hero-featured-link" data-plausible-event="CTA - Case Study">Read the full roadmap →</a>
             </div>
         </div>
     </section>
@@ -507,7 +507,7 @@
                 <div style="padding: 22px 24px;">
                     <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Brokers and lenders first. NPL as Phase 1 wedge.</div>
                     <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 12px;">
-                        18-month roadmap for AI document intelligence — browser, Office add-ins, API. Phase 1: lender workout packages (NPL). Phase 2: broker OM + rent roll on the same extraction engine.
+                        Phased roadmap for AI document intelligence — browser, Office add-ins, API. Phase 1: lender workout packages (NPL). Phase 2: broker OM + rent roll on the same extraction engine. Living case study — updated as thinking evolves.
                     </p>
                     <div class="project-expansion">
                         <strong>Lenders · NPL</strong><span>→</span><span>Brokers · OM</span><span>→</span><span>Appraisal · ESA · API</span>
@@ -1179,7 +1179,7 @@
     </section>
 
     <footer style="text-align:center; padding:48px 20px; background:#0f172a; color:#64748b; font-size:0.9rem;">
-        <p>© 2026 Sean Aguinaga — Systems that remember people.</p>
+        <p>© <span id="copyrightYear"></span> Sean Aguinaga — Systems that remember people.</p>
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->
@@ -1206,6 +1206,10 @@
         window.addEventListener('resize', function () {
           if (window.innerWidth > 768) closeMenu();
         });
+      })();
+      (function () {
+        var y = document.getElementById('copyrightYear');
+        if (y) y.textContent = String(new Date().getFullYear());
       })();
     </script>
 </body>
