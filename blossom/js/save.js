@@ -73,20 +73,30 @@ window.BlossomSave = (function () {
 
   async function saveCloud(userId, state) {
     if (!window.BLOSSOM_CONFIG.cloudEnabled || !window.BlossomAuth?.client) return false;
-    const { error } = await window.BlossomAuth.client.from('blossom_saves').upsert({
-      user_id: userId,
-      save_data: state,
-      updated_at: new Date().toISOString(),
-    });
+    const { error } = await window.BlossomAuth.client.from('blossom_saves').upsert(
+      {
+        user_id: userId,
+        save_data: state,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id' }
+    );
+    if (error) console.warn('Cloud save failed:', error.message);
     return !error;
   }
 
+  /** Prefer cloud save; upload local guest progress on first login. */
   async function load(userId) {
+    const local = loadLocal();
     if (userId) {
       const cloud = await loadCloud(userId);
-      if (cloud) return cloud;
+      if (cloud?.name) return cloud;
+      if (local?.name) {
+        await saveCloud(userId, local);
+        return local;
+      }
     }
-    return loadLocal() || defaultState();
+    return local || defaultState();
   }
 
   async function persist(state, userId) {

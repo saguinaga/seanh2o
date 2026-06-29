@@ -1,7 +1,12 @@
-/** Supabase — paste your project URL + anon key to enable cloud saves. */
+/**
+ * Blossom Life — Supabase cloud saves
+ * Project: https://supabase.com/dashboard/project/mtqezgchhggmlrfzfyjb
+ * Anon key:  Settings → API → "anon public" (safe to commit; RLS protects data)
+ */
 window.BLOSSOM_CONFIG = {
-  supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabaseUrl: 'https://mtqezgchhggmlrfzfyjb.supabase.co',
+  // Paste anon key below, or set in config.secrets.js (see config.secrets.example.js)
+  supabaseAnonKey: window.BLOSSOM_SECRETS?.supabaseAnonKey || '',
   gameVersion: 1,
   starsPerDay: 50,
   starsSkipLevel: 60,

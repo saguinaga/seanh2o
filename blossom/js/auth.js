@@ -42,8 +42,17 @@ window.BlossomAuth = (function () {
 
   async function signUp(email, password) {
     if (!client) throw new Error('Cloud saves not configured');
-    const { data, error } = await client.auth.signUp({ email, password });
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${location.origin}${location.pathname}` },
+    });
     if (error) throw error;
+    if (!data.session) {
+      const err = new Error('Account created! Check your email to confirm, then sign in.');
+      err.confirmationRequired = true;
+      throw err;
+    }
     session = data.session;
     notify();
     return data;

@@ -6,8 +6,19 @@ window.BlossomApp = (function () {
   async function boot() {
     await BlossomAuth.init();
     BlossomAuth.onChange(async (session) => {
+      const prevUser = userId;
       userId = session?.user?.id || null;
       updateAuthUi();
+      if (userId && userId !== prevUser) {
+        const loaded = await BlossomSave.load(userId);
+        if (loaded?.name) {
+          state = loaded;
+          if (document.querySelector('[data-screen="game"]')?.hidden === false) {
+            document.getElementById('playerName').textContent = state.name;
+            BlossomGame.updateHud?.();
+          }
+        }
+      }
       if (userId && state) await BlossomSave.persist(state, userId);
     });
     updateAuthUi();
@@ -46,10 +57,15 @@ window.BlossomApp = (function () {
       badge.className = 'auth-badge';
     }
     if (cloudNote) {
-      cloudNote.hidden = window.BLOSSOM_CONFIG.cloudEnabled;
-      cloudNote.textContent = window.BLOSSOM_CONFIG.cloudEnabled
-        ? ''
-        : 'Cloud saves: add Supabase keys in config.js to sync across devices.';
+      if (window.BLOSSOM_CONFIG.cloudEnabled) {
+        cloudNote.hidden = BlossomAuth.isLoggedIn();
+        cloudNote.textContent = BlossomAuth.isLoggedIn()
+          ? ''
+          : '☁️ Cloud saves ready — tap Account to sign in and sync across devices.';
+      } else {
+        cloudNote.hidden = false;
+        cloudNote.textContent = 'Cloud saves: paste your Supabase anon key in config.js (see API settings).';
+      }
     }
   }
 
@@ -195,11 +211,15 @@ window.BlossomApp = (function () {
         }
         if (mode === 'signup') await BlossomAuth.signUp(email, password);
         else await BlossomAuth.signIn(email, password);
-        if (state) await BlossomSave.persist(state, BlossomAuth.getUserId());
+        const uid = BlossomAuth.getUserId();
+        if (state && uid) {
+          state = await BlossomSave.load(uid);
+          await BlossomSave.persist(state, uid);
+        }
         showToast('Cloud save connected!', 'good');
         close();
       } catch (err) {
-        showToast(err.message || 'Auth failed', 'bad');
+        showToast(err.message || 'Auth failed', err.confirmationRequired ? 'info' : 'bad');
       }
     });
 

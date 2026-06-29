@@ -33,6 +33,7 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+blossom/js/config.secrets.js
 
 # If a build step is ever added
 dist/

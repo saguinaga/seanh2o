@@ -517,6 +517,7 @@ a { color: var(--blossom-green-dark); }
 .game-toast--good { border: 2px solid #4ade80; }
 .game-toast--warn { border: 2px solid #fbbf24; }
 .game-toast--bad { border: 2px solid #f87171; }
+.game-toast--info { border: 2px solid #7dd3fc; }
 
 .cloud-note {
   font-size: 0.75rem;
