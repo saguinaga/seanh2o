@@ -128,6 +128,21 @@
             background: rgba(255,255,255,0.1);
             border-color: white;
         }
+        .hero-case-link {
+            margin-top: 18px;
+            font-size: 0.9rem;
+        }
+        .hero-case-link a {
+            color: #00c9a7;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0, 201, 167, 0.4);
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .hero-case-link a:hover {
+            color: #5eead4;
+            border-bottom-color: #5eead4;
+        }
 
         /* Voxel / Cybernetic theme accents matching the Game of Life bg */
         .glass-card {
@@ -199,6 +214,16 @@
         .nav-links a:hover {
             color: #67e8f9;
         }
+        .nav-case-study {
+            color: #00c9a7 !important;
+            border: 1px solid rgba(0, 201, 167, 0.35);
+            padding: 6px 14px !important;
+            border-radius: 999px;
+            margin-left: 20px !important;
+        }
+        .nav-case-study:hover {
+            background: rgba(0, 201, 167, 0.12);
+        }
         .logo strong {
             color: #f1f5f9;
             font-size: 1.1rem;
@@ -266,6 +291,13 @@
                 color: #e0f2fe;
             }
             .nav-links a:last-child { border-bottom: none; }
+            .nav-case-study {
+                margin-left: 0 !important;
+                border: none !important;
+                border-bottom: 1px solid rgba(103,232,249,0.1) !important;
+                border-radius: 0 !important;
+                padding: 14px 24px !important;
+            }
         }
     </style>
 </head>
@@ -285,6 +317,7 @@
                 <a href="#philosophy" data-plausible-event="Nav - Approach">Approach</a>
                 <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#projects" data-plausible-event="Nav - Projects">Projects</a>
+                <a href="doc-intelligence/" data-plausible-event="Nav - Case Study" class="nav-case-study">Case Study</a>
                 <a href="#contact" data-plausible-event="Nav - Contact">Contact</a>
             </div>
         </div>
@@ -306,6 +339,9 @@
                 <a href="#tools" class="cta-button" data-plausible-event="CTA - See the Tools">See the Tools</a>
                 <a href="#projects" class="cta-button cta-secondary" data-plausible-event="CTA - Explore Projects">Explore Projects</a>
             </div>
+            <p class="hero-case-link">
+                <a href="doc-intelligence/" data-plausible-event="CTA - Case Study">PM case study: NPL document intelligence roadmap →</a>
+            </p>
         </div>
     </section>
 
@@ -355,7 +391,7 @@
             <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; margin-bottom: 32px;">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Featured tools + creative experiments</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Product work + modeling tools</p>
                 </div>
                 <a href="#tools" style="color: #f59e0b; font-weight: 600; text-decoration: none;">View all tools →</a>
             </div>
@@ -375,7 +411,22 @@
                     </div>
                 </a>
 
-                <!-- Featured Tool 2 -->
+                <!-- PM roadmap case study — slot 2 -->
+                <a href="doc-intelligence/" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block; border-color: rgba(0, 201, 167, 0.35);" data-plausible-event="Launch Case Study - Doc Intelligence">
+                    <div style="height: 148px; background: linear-gradient(135deg, #0b1220 0%, #132337 50%, #0d3d38 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; border-bottom: 1px solid rgba(0, 201, 167, 0.2); gap: 6px;">
+                        <span style="font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #00c9a7; font-weight: 600;">Sean Aguinaga · PM Case Study</span>
+                        <span style="font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px;">NPL Document Intelligence Roadmap</span>
+                    </div>
+                    <div style="padding: 22px 24px;">
+                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">NPL-first document intelligence roadmap</div>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 12px;">
+                            18-month plan starting with non-performing loan workout packages — plus an iteration prototype. The roadmap is the work.
+                        </p>
+                        <div style="font-size: 0.9rem; color: #00c9a7; font-weight: 600;">Read the roadmap →</div>
+                    </div>
+                </a>
+
+                <!-- Featured Tool 3 -->
                 <a href="#fix-flip-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Fix & Flip">
                     <div style="height: 148px; background: linear-gradient(135deg, #e11d48, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                         Fix &amp; Flip Analyzer
@@ -387,16 +438,6 @@
                         </p>
                     </div>
                 </a>
-
-                <!-- Vibe / Creative placeholder -->
-                <div class="glass-card" style="border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column;">
-                    <div style="font-weight: 600; color: #67e8f9; margin-bottom: 10px; font-size: 0.95rem;">VIBE CODES &amp; EXPERIMENTS</div>
-                    <h3 style="margin: 0 0 10px; color: #f1f5f9; font-size: 1.15rem;">Creative coding &amp; side explorations</h3>
-                    <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.55; flex: 1;">
-                        Audio experiments, interactive visualizations, and quick tools built to explore ideas. More coming as I continue shipping.
-                    </p>
-                    <div style="margin-top: 12px; font-size: 0.85rem; color: #64748b;">Stay tuned →</div>
-                </div>
 
             </div>
         </div>
@@ -1037,7 +1078,7 @@
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->
-    <script type="module" src="calculator.js?v=26"></script>
+    <script type="module" src="calculator.js?v=27"></script>
     <script src="flip-calculator.js?v=5"></script>
     <script>
       (function () {

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sean Aguinaga — NPL Document Intelligence PM Roadmap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="roadmap.css">
+</head>
+<body>
+  <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
+
+  <article class="case-study">
+    <header class="cs-hero">
+      <p class="case-label">Product case study · Sean Aguinaga</p>
+      <h1>How I'd own CRE Document Intelligence</h1>
+      <p class="npl-wedge">Primary wedge: <strong>NPL &amp; special servicing</strong> — banks and lenders drowning in distressed loan files.</p>
+      <p class="cs-lead">
+        I'm a product leader with 15+ years building transaction systems in real estate.
+        This page is the work — a product manager roadmap for an AI document intelligence platform,
+        starting where lender pain is acute: <strong>non-performing loan workout packages</strong>.
+      </p>
+      <p class="cs-you">
+        <strong>You're not evaluating a prototype.</strong> You're evaluating how I think, prioritize,
+        and ship. The interactive prototype linked below is an iteration tool I use to pressure-test
+        workflow decisions — not the product itself.
+      </p>
+    </header>
+
+    <section class="cs-section">
+      <h2>The opportunity — NPL first</h2>
+      <p>
+        When a CRE loan goes non-performing, the special servicer receives a <strong>workout package</strong>:
+        servicer reports, loan documents, T-12s, rent rolls, appraisals (as-is / as-stabilized), borrower
+        correspondence, and modification proposals — often 200+ pages across a dozen formats. Asset resolution
+        teams spend <strong>2–4 hours per loan</strong> pulling UPB, DSCR, LTV, NOI, occupancy, and covenant
+        status into workout models and credit memos. Portfolio volume makes manual intake unsustainable.
+      </p>
+      <p>
+        <strong>NPL is the wedge.</strong> Lenders and special servicers have the highest urgency, clearest ROI,
+        and the most repeatable document sets. Win here → expand to acquisition (OM), agency lending, and
+        broker workflows. The platform extracts collateral and loan data from unstructured files and delivers
+        it into Excel workout templates, LOS systems, and API pipelines.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Product vision</h2>
+      <blockquote class="vision-quote">
+        Ingest NPL workout packages from cloud or upload, extract loan and collateral data with
+        human-in-the-loop validation, deliver structured fields into the systems where workouts get decided.
+      </blockquote>
+      <p>
+        I'd own this end-to-end: vision and requirements through engineering partnership, QA reliability,
+        legal alignment on data rights, and go-to-market with sales and customer success. The platform
+        isn't a single UI — it's an extraction engine plus a multi-channel delivery layer.
+      </p>
+    </section>
+
+    <section class="cs-section roadmap-section">
+      <h2>Product roadmap</h2>
+      <p class="section-intro">Phased by business value and technical feasibility. Each phase has a clear wedge, exit criteria, and metrics before the next phase earns investment.</p>
+
+      <div class="roadmap-phases">
+        <div class="phase-card phase-1">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 1 · 0–6 months</span>
+            <h3>NPL foundation — workout package intake</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Cut NPL package intake from ~3 hours to under 20 min per loan.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>Ship</h4>
+              <ul>
+                <li>Cloud ingest: Box + SharePoint (lender-mandated) + Google Drive fallback</li>
+                <li>Classification: servicer report, loan file, T-12, rent roll, appraisal</li>
+                <li>Extract loan fields: UPB, maturity, rate, DSCR, LTV, delinquency status</li>
+                <li>Extract collateral: NOI, occupancy, rent roll, as-is value</li>
+                <li>Browser review UI — source highlighting, covenant flag review</li>
+                <li>Excel add-in — NPL workout template pull (UPB, DSCR, NOI, occupancy)</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Requirements I'd write</h4>
+              <ul>
+                <li>Schema v1: loan{}, collateral{}, financials{}, rent_roll[]</li>
+                <li>Loan-to-collateral linking — one package, one property ID</li>
+                <li>Covenant breach detection — DSCR &lt;1.0, LTV &gt;100% auto-flag</li>
+                <li>Audit trail + SOC2-aligned ingest for bank compliance</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>&gt;92% accuracy on P0 NPL fields post-review</li>
+                <li>5 bank / special servicer design partners active weekly</li>
+                <li>Workout Excel pull on &gt;70% of completed extractions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase-card phase-2">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 2 · 6–12 months</span>
+            <h3>Scale — portfolio NPL &amp; agency lending</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Batch portfolio ingest — 50+ NPL loans — plus expand to performing loan underwriting.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>Ship</h4>
+              <ul>
+                <li>Watched folders — auto-ingest when brokers drop docs in Dropbox / Drive / Box</li>
+                <li>Box.com + Microsoft 365 (SharePoint / OneDrive) enterprise connectors</li>
+                <li>T-12 / operating statement extraction + expense normalization</li>
+                <li>Multi-document package view (OM + rent roll + T-12 linked by property)</li>
+                <li>Word add-in — IC memo field merge</li>
+                <li>Developer API v1 — REST extractions endpoint</li>
+                <li>Lender-specific export templates (DSCR inputs, occupancy, NOI bridge)</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Partnerships</h4>
+              <ul>
+                <li>QA/DevOps: reliability SLAs, regression suite per doc type</li>
+                <li>Legal: derivative data rights framework with clients</li>
+                <li>Data science: model retraining loop from human corrections</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Full package processing &lt;5 min median</li>
+                <li>API adoption by 3+ enterprise partners</li>
+                <li>NRR &gt;110% on document intelligence SKU</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase-card phase-3">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 3 · 12–18 months</span>
+            <h3>Expand — new doc types &amp; derivative products</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Broaden TAM and build data products on extracted corpus.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>Ship</h4>
+              <ul>
+                <li>Appraisal comp table extraction</li>
+                <li>Phase I ESA — RECs, findings, regulatory flags</li>
+                <li>Batch portfolio ingest (50+ properties)</li>
+                <li>Webhook/async API for enterprise pipelines</li>
+                <li>Derivative analytics: market rent benchmarks, expense ratios by asset class</li>
+              </ul>
+            </div>
+            <div>
+              <h4>GTM expansion</h4>
+              <ul>
+                <li>Environmental consulting &amp; engineering firms</li>
+                <li>Law firms — lease abstraction path</li>
+                <li>Embedded API for LOS and data warehouse partners</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>5+ document types in production</li>
+                <li>Derivative data product revenue stream live</li>
+                <li>Platform NPS &gt;40 among power users</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section integration-section">
+      <h2>Cloud integrations — meet firms where files already live</h2>
+      <p>
+        CRE teams don't store deal packages in your app. They live in <strong>Dropbox</strong>,
+        <strong>Google Drive</strong>, <strong>Box</strong>, and <strong>SharePoint / OneDrive</strong> —
+        often mandated by IT. Forcing a new upload portal adds friction and kills adoption.
+        Ingest has to be a connector layer, not a drag-and-drop-only UI.
+      </p>
+
+      <div class="integration-models">
+        <div class="integ-card">
+          <h3>1 · Connect &amp; pick</h3>
+          <p class="integ-phase">Phase 1</p>
+          <p>OAuth into the user's cloud account. Browse folders, select a deal package, pull files for extraction. Read-only scopes. Lowest engineering lift, immediate value.</p>
+          <p class="integ-who">Analysts, small teams, design partners.</p>
+        </div>
+        <div class="integ-card">
+          <h3>2 · Watched folders</h3>
+          <p class="integ-phase">Phase 2</p>
+          <p>Admin or user designates a folder (e.g. <code>/Deals/Inbox</code>). New file lands → webhook or poll → auto-classify → queue for extraction. Brokers drop OMs; platform reacts.</p>
+          <p class="integ-who">Brokerages, lenders with high deal volume.</p>
+        </div>
+        <div class="integ-card">
+          <h3>3 · Enterprise connector</h3>
+          <p class="integ-phase">Phase 2–3</p>
+          <p>IT-provisioned Box / M365 integration at org level. SSO, DLP policies, per-business-unit folder maps. Extracted JSON can write back to a structured output folder.</p>
+          <p class="integ-who">Banks, PE firms, 1,000+ seat accounts.</p>
+        </div>
+        <div class="integ-card">
+          <h3>4 · API &amp; email ingest</h3>
+          <p class="integ-phase">Phase 2</p>
+          <p>Partners push via API. Inbound <code>deals@extract.company.com</code> or shared mailbox for forwarded OMs. Covers firms that never standardize on one cloud.</p>
+          <p class="integ-who">LOS vendors, environmental consultants, API partners.</p>
+        </div>
+      </div>
+
+      <h3 class="integ-subhead">Provider priority</h3>
+      <table class="metrics-table">
+        <thead>
+          <tr><th>Provider</th><th>When</th><th>Rationale</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Google Drive</td><td>Phase 1</td><td>Ubiquitous among analysts and boutique shops; strong picker API</td></tr>
+          <tr><td>Dropbox</td><td>Phase 1</td><td>Common in broker marketing workflows; simple folder shares</td></tr>
+          <tr><td>Box</td><td>Phase 2</td><td>Enterprise CRE, banks, legal — IT-approved, compliance-friendly</td></tr>
+          <tr><td>Microsoft 365</td><td>Phase 2</td><td>SharePoint deal rooms + OneDrive; dominant at large lenders</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="integ-subhead">Requirements I'd own with engineering &amp; legal</h3>
+      <ul class="bring-list">
+        <li><strong>Read-only by default</strong> — ingest copies; never mutate source files without explicit opt-in.</li>
+        <li><strong>Per-connector audit trail</strong> — source URI, connector type, who authorized, ingest timestamp.</li>
+        <li><strong>Token lifecycle</strong> — refresh handling, revoke on offboarding, no long-lived broad scopes.</li>
+        <li><strong>Data processing agreement</strong> — align with client cloud terms; derivative extraction rights separate from storage access.</li>
+        <li><strong>Idempotent ingest</strong> — same file version doesn't re-extract; new version triggers delta or full re-run per policy.</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>How I prioritize</h2>
+      <div class="prioritize-grid">
+        <div class="prio-card">
+          <h3>Impact</h3>
+          <p>NPL workout intake is 3+ hours per loan × portfolio volume × bank willingness to pay. Highest urgency, clearest ROI — that's the wedge.</p>
+        </div>
+        <div class="prio-card">
+          <h3>Feasibility</h3>
+          <p>Extraction accuracy achievable with current models, schema complexity, and review burden. I'd rather ship 2 doc types at 94% than 6 at 80%.</p>
+        </div>
+        <div class="prio-card">
+          <h3>Channel fit</h3>
+          <p>Excel first — that's where underwriting lives. API second for enterprise. Browser is the trust layer, not the destination.</p>
+        </div>
+        <div class="prio-card">
+          <h3>Strategic leverage</h3>
+          <p>Each extraction improves the data corpus. Prioritize doc types that compound into derivative products and deepen platform moat.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Success metrics</h2>
+      <table class="metrics-table">
+        <thead>
+          <tr><th>Metric</th><th>North star / target</th><th>Why it matters</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>NPL package intake time</td><td>3 hr → &lt;20 min per loan</td><td>Direct ROI for special servicing teams</td></tr>
+          <tr><td>Loans processed / analyst / week</td><td>3× increase</td><td>Portfolio throughput without headcount</td></tr>
+          <tr><td>Field accuracy (post-review)</td><td>&gt;92% on P0 doc types</td><td>Trust is the product; without it, nothing ships</td></tr>
+          <tr><td>Weekly active extractors</td><td>Growth + retention by persona</td><td>Adoption, not vanity signups</td></tr>
+          <tr><td>Channel pull rate</td><td>Excel + API vs. browser-only</td><td>Proves delivery strategy, not just extraction</td></tr>
+          <tr><td>Cloud ingest share</td><td>&gt;50% of docs via connector by Phase 2</td><td>Proves we met firms in their existing workflow</td></tr>
+          <tr><td>Time file-drop → extract start</td><td>&lt;60s on watched folders</td><td>Automation value vs. manual upload</td></tr>
+          <tr><td>Correction rate</td><td>Declining over time per doc type</td><td>Model + schema improvement loop working</td></tr>
+          <tr><td>Revenue / account expansion</td><td>NRR, upsell to API + batch</td><td>Commercialization proof for the product line</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="cs-section">
+      <h2>Customer segments — NPL first, then expand</h2>
+      <div class="segment-grid">
+        <div class="segment-card segment-npl">
+          <h3>Special servicers &amp; NPL asset resolution</h3>
+          <p><strong>Phase 1 wedge.</strong> Workout packages land daily. Servicer reports + collateral docs → structured loan file in hours, not days. Design partners here first.</p>
+        </div>
+        <div class="segment-card">
+          <h3>Banks &amp; CMBS lenders</h3>
+          <p>1,000+ lender clients with NPL exposure. Box/SharePoint ingest, workout Excel templates, API into LOS. Highest contract value.</p>
+        </div>
+        <div class="segment-card">
+          <h3>Acquisition analysts (PE, REIT)</h3>
+          <p>Phase 2 expansion — distressed asset acquisitions reuse NPL extraction schemas. OM + rent roll on top of loan file model.</p>
+        </div>
+        <div class="segment-card">
+          <h3>Investment brokers &amp; API partners</h3>
+          <p>Phase 2–3 — OM summarization, environmental consultants, white-label API once NPL schema is proven.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Go-to-market</h2>
+      <ol class="gtm-list">
+        <li><strong>Design partners (Month 1–3):</strong> 3–5 special servicers / bank NPL desks. Co-develop workout Excel templates and covenant flag UX.</li>
+        <li><strong>Limited launch (Month 4–6):</strong> NPL package intake live. Case studies: hours → minutes per loan, portfolio throughput gains.</li>
+        <li><strong>Sales enablement:</strong> "NPL-native extraction, not generic OCR." Lead with servicer report + collateral — language lenders use.</li>
+        <li><strong>Customer success:</strong> Onboarding playbooks per persona, integration support for Excel/API, office hours.</li>
+        <li><strong>Expansion:</strong> Land with extraction → expand to API, batch, additional doc types per account.</li>
+      </ol>
+    </section>
+
+    <section class="cs-section">
+      <h2>What I bring</h2>
+      <ul class="bring-list">
+        <li><strong>End-to-end ownership</strong> — I've taken platforms from requirements through field deployment (Auction.com backend evolution, ground-team tooling).</li>
+        <li><strong>CRE + lender workflow fluency</strong> — NPL workout packages, servicer reports, covenant analysis — I know where documents break into workout models.</li>
+        <li><strong>Technical partnership</strong> — I write requirements engineers and data scientists can build from; I don't hand them slide decks.</li>
+        <li><strong>Customer proximity</strong> — I work shoulder-to-shoulder with operators. Discovery isn't a quarterly exercise.</li>
+        <li><strong>Ship cadence</strong> — I prototype to learn, then prioritize ruthlessly. The iteration tool below exists because that's how I work.</li>
+      </ul>
+    </section>
+
+    <section class="cs-section prototype-section">
+      <div class="prototype-callout">
+        <div class="prototype-copy">
+          <span class="proto-label">Iteration tool — not the product</span>
+          <h2>Interactive workflow prototype</h2>
+          <p>
+            I built this to stress-test ingest → extract → review → deliver decisions while writing the roadmap above.
+            Walk through one NPL workout package (Harborview Tower) to see how the workflow feels — then compare it to
+            what I'd actually ship in Phase 1.
+          </p>
+          <p class="proto-diff"><strong>Roadmap = what I'd commit to.</strong> Prototype = how I iterate before committing.</p>
+        </div>
+        <a href="demo.html" class="proto-btn">Open iteration prototype →</a>
+      </div>
+    </section>
+
+    <footer class="cs-footer">
+      <p>Sean Aguinaga · Product leader · Real estate tech</p>
+      <a href="../index.html#contact" class="contact-btn">Get in touch →</a>
+    </footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRE Document Intelligence — Interactive Walkthrough | Sean Aguinaga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a href="index.html" class="back-portfolio">← PM roadmap</a>
+      <div class="brand">
+        <div class="brand-mark">SA</div>
+        <div>
+          <strong>Sean Aguinaga</strong>
+          <span>Iteration prototype</span>
+        </div>
+      </div>
+
+      <nav class="step-nav" id="stepNav" aria-label="Workflow steps"></nav>
+
+      <div class="sidebar-footer">
+        <div class="persona-chip">
+          <span class="persona-label">Stakeholder lens</span>
+          <select id="personaSelect" aria-label="User persona">
+            <option value="npl" selected>NPL / Special Servicing</option>
+            <option value="lender">Bank Portfolio / CMBS</option>
+            <option value="analyst">Distressed Acquisition</option>
+            <option value="broker">Investment Broker</option>
+            <option value="developer">Enterprise Developer</option>
+          </select>
+        </div>
+        <p class="persona-pain" id="personaPain"></p>
+        <a href="../index.html#projects" class="portfolio-link">Back to portfolio</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="iteration-banner">
+        <strong>Iteration tool</strong> — stress-test workflow decisions from the
+        <a href="index.html">PM roadmap</a>. Not the shipped product.
+      </div>
+      <header class="topbar">
+        <p class="eyebrow" id="stepEyebrow">Workflow lab</p>
+        <h1 id="stepTitle">Walk through one deal package</h1>
+      </header>
+
+      <!-- Step 0: Workflow lab intro -->
+      <section class="panel active" data-step="0" id="panel-0">
+        <div class="lab-intro card">
+          <p class="lab-eyebrow">Why this exists</p>
+          <p>
+            Strategy and sequencing live on the <a href="index.html">PM roadmap</a>.
+            This prototype lets me (and you) walk through ingest → extract → review → deliver
+            on one NPL workout package — Harborview Tower — and pressure-test whether Phase 1 scope feels right.
+          </p>
+          <blockquote class="voice-quote" id="voiceQuote">"I'm not hunting page 34 for NOI again. I need it in my model."</blockquote>
+          <p class="thesis-meta">Switch stakeholder lens in the sidebar to see how delivery emphasis shifts.</p>
+        </div>
+
+        <div class="flow-diagram card">
+          <h3>What you'll walk through</h3>
+          <div class="flow-track">
+            <div class="flow-node"><span>01</span>Ingest</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node"><span>02</span>Extract</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node"><span>03</span>Review</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node"><span>04</span>Insights</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node"><span>05</span>Deliver</div>
+          </div>
+          <p class="flow-caption">Maps to Phase 1: servicer report + collateral docs, covenant review, NPL Excel pull.</p>
+        </div>
+      </section>
+
+      <!-- Step 1: Ingest -->
+      <section class="panel" data-step="1" id="panel-1">
+        <p class="step-context" id="ingestContext"></p>
+        <div class="ingest-stack">
+        <div class="ingest-cloud card">
+          <div class="ingest-cloud-header">
+            <h3>Import from cloud storage</h3>
+            <span class="ingest-rec" id="ingestRec">NPL / lender workflows</span>
+          </div>
+          <p class="ingest-cloud-desc">Read-only. Files stay in your cloud.</p>
+          <div class="cloud-connectors" id="cloudConnectors">
+            <button type="button" class="cloud-btn" data-provider="box">
+              <span class="cloud-icon">B</span> Box
+            </button>
+            <button type="button" class="cloud-btn" data-provider="m365">
+              <span class="cloud-icon">M</span> SharePoint
+            </button>
+            <button type="button" class="cloud-btn" data-provider="google">
+              <span class="cloud-icon">G</span> Google Drive
+            </button>
+            <button type="button" class="cloud-btn" data-provider="dropbox">
+              <span class="cloud-icon">◆</span> Dropbox
+            </button>
+          </div>
+          <div class="cloud-status" id="cloudStatus" hidden>
+            <span class="cloud-status-dot"></span>
+            <span id="cloudStatusText"></span>
+          </div>
+          <p class="watched-hint" id="watchedFolderPath" hidden></p>
+        </div>
+
+        <div class="ingest-or">or upload directly</div>
+
+        <div class="ingest-layout">
+          <div class="card upload-zone" id="uploadZone">
+            <div class="upload-icon">📄</div>
+            <h3>Manual upload</h3>
+            <p>Drag &amp; drop PDFs, scans, or Excel rent rolls.</p>
+            <button type="button" class="btn btn-ghost" id="simulateUploadBtn">Load NPL package locally</button>
+            <input type="file" id="fileInput" hidden multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg">
+          </div>
+
+          <div class="card">
+            <h3>Document classification</h3>
+            <div class="type-selector" id="typeSelector">
+              <label class="type-option selected"><input type="radio" name="docType" value="servicer" checked> Special Servicer Report</label>
+              <label class="type-option"><input type="radio" name="docType" value="loanfile"> Loan File / Note</label>
+              <label class="type-option"><input type="radio" name="docType" value="t12"> Operating Statement (T-12)</label>
+              <label class="type-option"><input type="radio" name="docType" value="rentroll"> Rent Roll</label>
+              <label class="type-option"><input type="radio" name="docType" value="appraisal"> Appraisal (As-Is)</label>
+            </div>
+
+            <h3 class="mt-lg">Package queue</h3>
+            <ul class="queue-list" id="queueList">
+              <li class="queue-empty">No documents queued</li>
+            </ul>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Extract -->
+      <section class="panel" data-step="2" id="panel-2">
+        <div class="pipeline-header">
+          <div>
+            <h2>Extraction pipeline</h2>
+            <p id="pipelineDocName">Processing document…</p>
+          </div>
+          <div class="pipeline-progress">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <span id="progressPct">0%</span>
+          </div>
+        </div>
+
+        <div class="pipeline-stages" id="pipelineStages"></div>
+
+        <div class="extraction-log card">
+          <h3>Processing log</h3>
+          <ul id="processingLog"></ul>
+        </div>
+      </section>
+
+      <!-- Step 3: Review -->
+      <section class="panel" data-step="3" id="panel-3">
+        <p class="step-context">Covenant fields (DSCR, LTV) get human review before workout decisions — non-negotiable for NPL.</p>
+        <div class="review-toolbar">
+          <div class="confidence-summary" id="confidenceSummary"></div>
+          <div class="review-actions">
+            <button type="button" class="btn btn-ghost" id="flagLowConfBtn">Flag low confidence</button>
+            <button type="button" class="btn btn-primary" id="approveAllBtn">Approve all fields</button>
+          </div>
+        </div>
+
+        <div class="review-split">
+          <div class="card doc-preview">
+            <div class="doc-preview-header">
+              <span>Harborview Tower — Special Servicer Report.pdf</span>
+              <span class="page-indicator">Page 8 of 62</span>
+            </div>
+            <div class="doc-mock" id="docMock">
+              <div class="doc-mock-page">
+                <h4>LOAN &amp; COLLATERAL SUMMARY — NPL</h4>
+                <p class="doc-line" data-field="loan_id">Loan ID: <mark>LN-2018-39201</mark> · Status: <mark>Non-performing</mark></p>
+                <p class="doc-line" data-field="property_name">Collateral: <mark>Harborview Tower</mark> — 248-unit multifamily, Dallas TX</p>
+                <p class="doc-line" data-field="upb">Unpaid Principal Balance: <mark>$38,200,000</mark></p>
+                <p class="doc-line" data-field="delinquency">Days delinquent: <mark>127</mark> · Maturity: 09/01/2024 (matured)</p>
+                <p class="doc-line" data-field="dscr">DSCR (TTM): <mark>0.78</mark> — covenant breach</p>
+                <p class="doc-line" data-field="ltv">LTV (as-is): <mark>118%</mark></p>
+                <p class="doc-line" data-field="noi">Collateral NOI (TTM): <mark>$2,104,000</mark> · Occupancy: <mark>78.4%</mark></p>
+                <p class="doc-line" data-field="collateral_value">As-is appraised value: <mark>$34,100,000</mark></p>
+                <p class="doc-line" data-field="workout_status">Workout status: <mark>Modification under review</mark></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card fields-panel">
+            <h3>Extracted fields</h3>
+            <p class="fields-hint">Click a field to highlight source. Edit before approval — this is the trust layer.</p>
+            <div class="fields-list" id="fieldsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: Insights -->
+      <section class="panel" data-step="4" id="panel-4">
+        <p class="step-context" id="insightsContext"></p>
+        <div class="insights-kpis" id="insightsKpis"></div>
+
+        <div class="insights-grid">
+          <div class="card chart-card">
+            <h3>Revenue &amp; NOI breakdown</h3>
+            <div class="bar-chart" id="noiChart"></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Unit mix</h3>
+            <div class="donut-wrap">
+              <div class="donut" id="unitDonut"></div>
+              <ul class="donut-legend" id="unitLegend"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-header">
+            <h3>Rent roll — normalized schema</h3>
+            <button type="button" class="btn btn-ghost btn-sm" id="exportTableBtn">Export CSV</button>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="rentRollTable">
+              <thead>
+                <tr>
+                  <th>Unit</th><th>Type</th><th>SF</th><th>Tenant</th>
+                  <th>Lease Start</th><th>Lease End</th><th>Monthly Rent</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rentRollBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 5: Deliver + GTM -->
+      <section class="panel" data-step="5" id="panel-5">
+        <p class="lead deliver-lead" id="deliverLead">
+          NPL delivery: workout Excel templates first, then LOS API — that's where modification decisions get made.
+        </p>
+
+        <div class="deliver-tabs">
+          <button type="button" class="deliver-tab active" data-tab="browser">Browser</button>
+          <button type="button" class="deliver-tab" data-tab="excel">Excel Add-in</button>
+          <button type="button" class="deliver-tab" data-tab="word">Word Add-in</button>
+          <button type="button" class="deliver-tab" data-tab="api">Developer API</button>
+        </div>
+
+        <div class="deliver-panels">
+          <div class="deliver-panel active" data-tab-panel="browser">
+            <div class="deliver-grid">
+              <div class="card">
+                <h3>Export &amp; dashboards</h3>
+                <p>Browser is the review layer. Export and dashboard push are secondary to in-workflow delivery.</p>
+                <div class="export-buttons">
+                  <button type="button" class="btn btn-primary" id="dlJsonBtn">Download JSON</button>
+                  <button type="button" class="btn btn-ghost" id="dlCsvBtn">Download CSV</button>
+                  <button type="button" class="btn btn-ghost" id="pushDashBtn">Push to dashboard</button>
+                </div>
+                <div class="toast" id="browserToast" hidden></div>
+              </div>
+              <div class="card preview-json">
+                <h3>Normalized output</h3>
+                <pre id="jsonPreview"></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="deliver-panel" data-tab-panel="excel">
+            <div class="office-mock excel-mock">
+              <div class="office-ribbon">
+                <span>Home</span><span>Insert</span><span class="active">Doc Intel</span><span>Formulas</span>
+              </div>
+              <div class="office-body">
+                <div class="excel-grid" id="excelGrid"></div>
+                <div class="office-sidebar">
+                  <h4>Pull into model</h4>
+                  <p id="excelSidebarHint">One click — NOI, cap rate, rent roll into your underwriting template.</p>
+                  <button type="button" class="btn btn-primary btn-sm" id="excelPullBtn">Pull NPL workout fields</button>
+                  <ul class="office-fields" id="excelFields"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="deliver-panel" data-tab-panel="word">
+            <div class="office-mock word-mock">
+              <div class="office-ribbon">
+                <span>Home</span><span class="active">Doc Intel</span><span>References</span>
+              </div>
+              <div class="office-body">
+                <div class="word-doc" id="wordDoc">
+                  <h2>NPL Workout Memo</h2>
+                  <p>Loan: <span class="merge-field" data-merge="loan_id">—</span> · Collateral: <span class="merge-field" data-merge="property_name">—</span></p>
+                  <p>UPB: <span class="merge-field" data-merge="upb">—</span> · Days delinquent: <span class="merge-field" data-merge="delinquency">—</span></p>
+                  <p>DSCR: <span class="merge-field" data-merge="dscr">—</span> · LTV: <span class="merge-field" data-merge="ltv">—</span></p>
+                  <p>Collateral NOI: <span class="merge-field" data-merge="noi">—</span> at <span class="merge-field" data-merge="occupancy">—</span> occupancy.</p>
+                  <p>Recommendation: <span class="merge-field" data-merge="workout_status">—</span></p>
+                </div>
+                <div class="office-sidebar">
+                  <h4>Merge fields</h4>
+                  <button type="button" class="btn btn-primary btn-sm" id="wordMergeBtn">Merge all fields</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="deliver-panel" data-tab-panel="api">
+            <div class="api-layout">
+              <div class="card">
+                <h3>Partner &amp; enterprise API</h3>
+                <p>Programmatic access for LOS integrations, data warehouses, and white-label partners.</p>
+                <div class="api-endpoint">
+                  <span class="method">GET</span>
+                  <code>/v1/documents/{id}/extractions</code>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" id="apiCallBtn">Execute sample request</button>
+              </div>
+              <div class="card">
+                <h3>Response</h3>
+                <pre class="api-response" id="apiResponse">Click "Execute sample request" to see the payload.</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="completion-banner card" id="completionBanner">
+          <div>
+            <h3>Workflow walkthrough complete</h3>
+            <p>Back to the roadmap for strategy, metrics, and phasing — or run again with a different stakeholder lens.</p>
+          </div>
+          <div class="completion-actions">
+            <button type="button" class="btn btn-ghost" id="restartBtn">Run again</button>
+            <a href="index.html" class="btn btn-primary">← PM roadmap</a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="action-dock">
+        <button type="button" class="btn btn-ghost" id="resetBtn">Reset</button>
+        <button type="button" class="btn btn-primary" id="nextBtn">Continue →</button>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
