@@ -11,7 +11,7 @@
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=29">
+    <link rel="stylesheet" href="styles.css?v=30">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -131,30 +131,89 @@
             background: rgba(255,255,255,0.1);
             border-color: white;
         }
-        .hero-case-link {
-            margin-top: 18px;
-            font-size: 0.9rem;
+
+        .hero-featured-work {
+            margin-top: 28px;
+            max-width: 520px;
+            padding: 18px 20px;
+            background: rgba(7, 13, 24, 0.72);
+            border: 1px solid rgba(0, 201, 167, 0.35);
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
         }
-        .hero-case-link a {
+        .hero-featured-label {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #00c9a7;
+            margin-bottom: 8px;
+        }
+        .hero-featured-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+        .hero-featured-desc {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .hero-featured-link {
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 600;
             color: #00c9a7;
             text-decoration: none;
-            font-weight: 600;
             border-bottom: 1px solid rgba(0, 201, 167, 0.4);
-            transition: color 0.15s, border-color 0.15s;
         }
-        .hero-case-link a:hover {
+        .hero-featured-link:hover {
             color: #5eead4;
             border-bottom-color: #5eead4;
         }
-        .cta-case-study {
-            background: #00c9a7;
-            color: #0b1220;
-            border: 2px solid #00c9a7;
+        .project-featured {
+            border-color: rgba(0, 201, 167, 0.45) !important;
+            box-shadow: 0 0 0 1px rgba(0, 201, 167, 0.12), 0 12px 40px -12px rgba(0, 201, 167, 0.25);
         }
-        .cta-case-study:hover {
-            background: #5eead4;
-            border-color: #5eead4;
+        .project-featured-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
             color: #0b1220;
+            background: #00c9a7;
+            padding: 5px 10px;
+            border-radius: 999px;
+        }
+        .project-featured-head {
+            height: auto !important;
+            min-height: 120px;
+            padding: 28px 24px;
+            align-items: flex-start !important;
+            text-align: left;
+        }
+        .project-expansion {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            margin-top: 14px;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+        .project-expansion strong {
+            color: #00c9a7;
+            font-weight: 600;
+        }
+        .project-expansion span {
+            color: #475569;
         }
 
         /* Voxel / Cybernetic theme accents matching the Game of Life bg */
@@ -294,11 +353,9 @@
                 align-items: center;
                 justify-content: center;
             }
-            .hero-case-link {
-                text-align: center;
-                font-size: 0.85rem;
-                line-height: 1.5;
-                padding: 0 4px;
+            .hero-featured-work {
+                max-width: none;
+                margin-top: 22px;
             }
             .cta-button { font-size: 1rem; padding: 14px 28px; }
             .nav-container { height: 64px; position: relative; padding: 0 12px; }
@@ -358,7 +415,7 @@
                 <a href="#philosophy" data-plausible-event="Nav - Approach">Approach</a>
                 <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#projects" data-plausible-event="Nav - Projects">Projects</a>
-                <a href="doc-intelligence/" data-plausible-event="Nav - Case Study" class="nav-case-study">Case Study</a>
+                <a href="doc-intelligence/" data-plausible-event="Nav - Case Study" class="nav-case-study">NPL Roadmap</a>
                 <a href="#contact" data-plausible-event="Nav - Contact">Contact</a>
             </div>
         </div>
@@ -377,13 +434,15 @@
             <p>For me, the customer is anyone involved in a transaction. Customer journeys aren’t a slide. They’re the thread that should run through every system, every handoff, every conversation. That’s the work I care about.</p>
 
             <div class="hero-cta-row" style="margin-top: 12px;">
-                <a href="doc-intelligence/" class="cta-button cta-case-study" data-plausible-event="CTA - Case Study">NPL Case Study →</a>
                 <a href="#tools" class="cta-button" data-plausible-event="CTA - See the Tools">See the Tools</a>
                 <a href="#projects" class="cta-button cta-secondary" data-plausible-event="CTA - Explore Projects">Explore Projects</a>
             </div>
-            <p class="hero-case-link">
-                <a href="doc-intelligence/" data-plausible-event="CTA - Case Study Sub">PM roadmap: NPL document intelligence (18-month plan + prototype) →</a>
-            </p>
+            <div class="hero-featured-work">
+                <span class="hero-featured-label">Featured PM work</span>
+                <p class="hero-featured-title">NPL Document Intelligence Roadmap</p>
+                <p class="hero-featured-desc">Where I'd start: non-performing loan workout packages — highest urgency, clearest ROI. The roadmap covers the full platform; NPL is the wedge.</p>
+                <a href="doc-intelligence/" class="hero-featured-link" data-plausible-event="CTA - Case Study">Read the 18-month roadmap →</a>
+            </div>
         </div>
     </section>
 
@@ -433,10 +492,29 @@
             <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; margin-bottom: 32px;">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Product work + modeling tools</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Featured product work + modeling tools</p>
                 </div>
                 <a href="#tools" style="color: #f59e0b; font-weight: 600; text-decoration: none;">View all tools →</a>
             </div>
+
+            <!-- NPL case study — featured above tools; this is where PM work belongs -->
+            <a href="doc-intelligence/" class="glass-card project-featured" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block; margin-bottom: 24px; position: relative;" data-plausible-event="Launch Case Study - Doc Intelligence">
+                <span class="project-featured-badge">NPL wedge</span>
+                <div class="project-featured-head" style="background: linear-gradient(135deg, #0b1220 0%, #132337 50%, #0d3d38 100%); display: flex; flex-direction: column; justify-content: center; color: white; border-bottom: 1px solid rgba(0, 201, 167, 0.2); gap: 6px;">
+                    <span style="font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #00c9a7; font-weight: 600;">Sean Aguinaga · PM Case Study</span>
+                    <span style="font-weight: 700; font-size: 1.25rem; letter-spacing: -.3px;">NPL Document Intelligence Roadmap</span>
+                </div>
+                <div style="padding: 22px 24px;">
+                    <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">Start with distressed loans. Expand from there.</div>
+                    <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 12px;">
+                        18-month product plan for CRE document intelligence — Phase 1 is NPL workout package intake (servicer reports, covenant fields, Excel pull). Includes an iteration prototype, not a shipped product.
+                    </p>
+                    <div class="project-expansion">
+                        <strong>NPL</strong><span>→</span><span>Agency lending</span><span>→</span><span>Acquisition / OM</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #00c9a7; font-weight: 600; margin-top: 14px;">Read the roadmap →</div>
+                </div>
+            </a>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
                 
@@ -453,22 +531,7 @@
                     </div>
                 </a>
 
-                <!-- PM roadmap case study — slot 2 -->
-                <a href="doc-intelligence/" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block; border-color: rgba(0, 201, 167, 0.35);" data-plausible-event="Launch Case Study - Doc Intelligence">
-                    <div style="height: 148px; background: linear-gradient(135deg, #0b1220 0%, #132337 50%, #0d3d38 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; border-bottom: 1px solid rgba(0, 201, 167, 0.2); gap: 6px;">
-                        <span style="font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #00c9a7; font-weight: 600;">Sean Aguinaga · PM Case Study</span>
-                        <span style="font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px;">NPL Document Intelligence Roadmap</span>
-                    </div>
-                    <div style="padding: 22px 24px;">
-                        <div style="font-weight: 600; margin-bottom: 6px; color: #f1f5f9;">NPL-first document intelligence roadmap</div>
-                        <p style="font-size: 0.95rem; line-height: 1.5; color: #94a3b8; margin: 0 0 12px;">
-                            18-month plan starting with non-performing loan workout packages — plus an iteration prototype. The roadmap is the work.
-                        </p>
-                        <div style="font-size: 0.9rem; color: #00c9a7; font-weight: 600;">Read the roadmap →</div>
-                    </div>
-                </a>
-
-                <!-- Featured Tool 3 -->
+                <!-- Featured Tool 2 -->
                 <a href="#fix-flip-calculator" class="glass-card" style="text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; display: block;" data-plausible-event="Launch Tool - Fix & Flip">
                     <div style="height: 148px; background: linear-gradient(135deg, #e11d48, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.15rem; letter-spacing: -.3px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                         Fix &amp; Flip Analyzer

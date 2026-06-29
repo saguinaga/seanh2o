@@ -92,6 +92,38 @@ body {
 
 .npl-wedge strong { color: #fcd34d; }
 
+.expansion-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.path-step {
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.path-step.path-active {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.35);
+  font-weight: 600;
+}
+
+.path-arrow {
+  color: #4b5f7a;
+  font-size: 0.75rem;
+}
+
 .segment-npl {
   border-color: rgba(251, 191, 36, 0.35);
   background: linear-gradient(135deg, var(--card), rgba(251, 191, 36, 0.06));
@@ -514,6 +546,14 @@ body {
     font-size: 1rem;
     padding-left: 14px;
   }
+
+  .expansion-path {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .path-arrow { display: none; }
 }
 
 @media (max-width: 400px) {

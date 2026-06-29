@@ -1518,11 +1518,17 @@ body {
     font-size: 1.75rem !important;
   }
 
-  #projects .glass-card > div:first-child {
+  #projects .glass-card:not(.project-featured) > div:first-child {
     height: 128px !important;
     font-size: 1rem !important;
     padding: 0 12px;
     text-align: center;
+  }
+
+  #projects .project-featured-badge {
+    top: 10px;
+    right: 10px;
+    font-size: 0.6rem;
   }
 
   #contact button[type="submit"] {
