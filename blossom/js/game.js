@@ -1,27 +1,32 @@
-/** Canvas world, player, interactions */
+/** Canvas world — multi-location exploration + interactions */
 window.BlossomGame = (function () {
   let canvas, ctx, state, onMessage, onPersist;
-  let player = { x: 400, y: 320, vy: 0, onGround: true, facing: 1 };
+  let player = { x: 400, y: 360, vy: 0, onGround: true, facing: 1 };
   let anim = 0;
   let shirtImg = null;
   let shirtSrc = '';
-  let reminder = '';
-  let reminderTimer = 0;
   let phaseTimer = 0;
-  const PHASE_MS = 90000;
+  let transitionLock = 0;
+  let nearInteract = null;
 
-  const ROOM = { w: 800, h: 480, floorY: 400 };
+  const PHASE_MS = 90000;
   let started = false;
   let phaseInterval = null;
+
+  function getLoc() {
+    return BlossomWorld.getLocation(state.currentLocation || 'house');
+  }
 
   function init(cvs, gameState, callbacks) {
     canvas = cvs;
     ctx = canvas.getContext('2d');
     state = gameState;
+    if (!state.currentLocation) state.currentLocation = 'house';
+    if (!state.todaysChores?.length) BlossomDay.assignDailyChores(state);
     onMessage = callbacks.onMessage;
     onPersist = callbacks.onPersist;
     player.x = state.position?.x ?? 400;
-    player.y = state.position?.y ?? 320;
+    player.y = state.position?.y ?? getLoc().floorY - 20;
     if (!started) {
       started = true;
       BlossomControls.init();
@@ -29,6 +34,7 @@ window.BlossomGame = (function () {
       window.addEventListener('resize', resize);
       canvas.addEventListener('click', onTap);
       canvas.addEventListener('touchend', onTapTouch, { passive: false });
+      window.addEventListener('keydown', onInteractKey);
       requestAnimationFrame(loop);
       if (phaseInterval) clearInterval(phaseInterval);
       phaseInterval = setInterval(tickPhase, 1000);
@@ -39,32 +45,103 @@ window.BlossomGame = (function () {
 
   function resize() {
     const wrap = canvas.parentElement;
-    const aspect = ROOM.w / ROOM.h;
+    const aspect = BlossomWorld.W / BlossomWorld.H;
     let w = wrap.clientWidth;
     let h = wrap.clientHeight;
     if (w / h > aspect) w = h * aspect;
     else h = w / aspect;
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
-    canvas.width = ROOM.w;
-    canvas.height = ROOM.h;
+    canvas.width = BlossomWorld.W;
+    canvas.height = BlossomWorld.H;
   }
 
   function scalePoint(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     return {
-      x: ((clientX - rect.left) / rect.width) * ROOM.w,
-      y: ((clientY - rect.top) / rect.height) * ROOM.h,
+      x: ((clientX - rect.left) / rect.width) * BlossomWorld.W,
+      y: ((clientY - rect.top) / rect.height) * BlossomWorld.H,
     };
   }
 
-  function near(px, py, zone) {
-    return px >= zone.x && px <= zone.x + zone.w && py >= zone.y && py <= zone.y + zone.h;
+  function feetPos() {
+    return { x: player.x, y: player.y };
+  }
+
+  function isInteractable(p) {
+    return p.choreId || p.kind === 'exit' || p.kind === 'fridge'
+      || (p.kind === 'shop' && (p.shop === 'cafe' || p.choreId));
+  }
+
+  function distanceToProp(ft, p) {
+    const w = p.w || 50;
+    const h = p.h || 50;
+    const nx = Math.max(p.x, Math.min(ft.x, p.x + w));
+    const ny = Math.max(p.y, Math.min(ft.y, p.y + h));
+    return Math.hypot(ft.x - nx, ft.y - ny);
+  }
+
+  function findNearProp() {
+    const loc = getLoc();
+    const ft = feetPos();
+    let best = null;
+    let bestDist = 88;
+    loc.props.forEach((p) => {
+      if (!isInteractable(p)) return;
+      const d = distanceToProp(ft, p);
+      if (d < bestDist) {
+        bestDist = d;
+        best = p;
+      }
+    });
+    return best;
+  }
+
+  function interactWithProp(prop) {
+    if (!prop) return;
+    if (tryTransition(prop)) return;
+    if (prop.kind === 'fridge') {
+      openFridge();
+      return;
+    }
+    if (prop.kind === 'shop' && prop.shop === 'cafe') {
+      openCafe();
+      return;
+    }
+    if (prop.choreId) doChoreProp(prop);
+  }
+
+  function nearIdFor(p) {
+    if (!p) return null;
+    if (p.kind === 'exit') return `exit-${p.to}`;
+    return p.choreId || p.kind;
+  }
+
+  function changeLocation(toId, spawn) {
+    if (transitionLock > 0) return;
+    const next = BlossomWorld.getLocation(toId);
+    state.currentLocation = toId;
+    player.x = spawn.x;
+    player.y = spawn.y;
+    state.position = { x: player.x, y: player.y };
+    transitionLock = 45;
+    window.BlossomAudio?.playSfx('ui');
+    onMessage(`Walking to ${next.name}…`, 'info');
+    updateHud();
+    onPersist(state);
+  }
+
+  function tryTransition(prop) {
+    if (prop?.kind === 'exit' && prop.to) {
+      changeLocation(prop.to, prop.spawn);
+      return true;
+    }
+    return false;
   }
 
   function onTap(e) {
     const p = scalePoint(e.clientX, e.clientY);
-    tryInteract(p.x, p.y);
+    handleInteract(p.x, p.y);
   }
 
   function onTapTouch(e) {
@@ -72,42 +149,64 @@ window.BlossomGame = (function () {
     e.preventDefault();
     const t = e.changedTouches[0];
     const p = scalePoint(t.clientX, t.clientY);
-    tryInteract(p.x, p.y);
+    handleInteract(p.x, p.y);
   }
 
-  function tryInteract(x, y) {
-    const fridge = BlossomDay.FRIDGE;
-    if (near(x, y, fridge)) {
-      openFridge();
+  function handleInteract(x, y) {
+    const loc = getLoc();
+    for (const prop of loc.props) {
+      if (!BlossomRender.hitProp(x, y, prop)) continue;
+      if (!isInteractable(prop)) continue;
+      interactWithProp(prop);
       return;
     }
-    for (const chore of BlossomDay.CHORES) {
-      if (near(x, y, chore)) {
-        const res = BlossomDay.doChore(state, chore.id);
-        onMessage(res.msg, res.ok ? 'good' : 'warn');
-        if (res.ok) {
-          window.BlossomAudio?.playSfx('chore');
-          onPersist(state);
-        } else window.BlossomAudio?.playSfx('warn');
-        return;
-      }
+  }
+
+  function onInteractKey(e) {
+    if (e.key !== 'e' && e.key !== 'Enter') return;
+    if (document.querySelector('.modal-backdrop:not([hidden])')) return;
+    if (nearInteract) {
+      e.preventDefault();
+      interactWithProp(nearInteract);
     }
+  }
+
+  function doChoreProp(prop) {
+    const res = BlossomDay.doChore(state, prop.choreId);
+    onMessage(res.msg, res.ok ? 'good' : 'warn');
+    if (res.ok) {
+      window.BlossomAudio?.playSfx('chore');
+      onPersist(state);
+    } else window.BlossomAudio?.playSfx('warn');
   }
 
   function openFridge() {
     const phase = BlossomDay.currentPhase(state);
     const meal = phase.meal;
     if (!meal) {
-      onMessage('Kitchen is closed for now. Finish your evening routine!', 'warn');
+      onMessage('Kitchen is closed for now. Try the café on Main street for lunch!', 'warn');
       window.BlossomAudio?.playSfx('warn');
       return;
     }
-    const foods = BlossomDay.FOODS[meal];
+    pickMeal(meal, BlossomDay.FOODS[meal]);
+  }
+
+  function openCafe() {
+    const phase = BlossomDay.currentPhase(state);
+    if (phase.meal !== 'lunch') {
+      onMessage('Café is open for lunch in the afternoon.', 'warn');
+      window.BlossomAudio?.playSfx('warn');
+      return;
+    }
+    pickMeal('lunch', BlossomDay.FOODS.lunch);
+  }
+
+  function pickMeal(mealKey, foods) {
     const names = foods.map((f, i) => `${i + 1}. ${f.name} ($${f.price}) [${f.type}]`).join('\n');
-    const pick = prompt(`Choose ${meal}:\n${names}\n\nEnter 1, 2, or 3:`);
+    const pick = prompt(`Choose ${mealKey}:\n${names}\n\nEnter 1, 2, or 3:`);
     const idx = Number(pick) - 1;
     if (idx < 0 || idx > 2) return;
-    const res = BlossomDay.eatMeal(state, foods[idx], meal);
+    const res = BlossomDay.eatMeal(state, foods[idx], mealKey);
     onMessage(res.msg, res.ok ? 'good' : 'warn');
     if (res.ok) {
       window.BlossomAudio?.playSfx('eat');
@@ -116,8 +215,6 @@ window.BlossomGame = (function () {
   }
 
   function showReminder(text) {
-    reminder = text;
-    reminderTimer = 8;
     const el = document.getElementById('dayReminder');
     if (el) {
       el.textContent = text;
@@ -137,13 +234,6 @@ window.BlossomGame = (function () {
         triggerFail();
       }
     }
-    if (reminderTimer > 0) {
-      reminderTimer -= 1;
-      if (reminderTimer <= 0) {
-        const el = document.getElementById('dayReminder');
-        if (el) el.hidden = true;
-      }
-    }
     updateHud();
   }
 
@@ -157,26 +247,39 @@ window.BlossomGame = (function () {
   }
 
   function updateHud() {
+    const loc = getLoc();
     const moneyEl = document.getElementById('hudMoney');
     const starsEl = document.getElementById('hudStars');
     const levelEl = document.getElementById('hudLevel');
     const phaseEl = document.getElementById('hudPhase');
+    const locEl = document.getElementById('hudLocation');
     if (moneyEl) moneyEl.textContent = `$${state.money}`;
     if (starsEl) starsEl.textContent = `${state.stars}/${window.BLOSSOM_CONFIG.starsPerDay}`;
     if (levelEl) levelEl.textContent = `Lv ${state.level}`;
     if (phaseEl) phaseEl.textContent = BlossomDay.currentPhase(state).label;
+    if (locEl) locEl.textContent = loc.name;
+    const hint = document.getElementById('travelHint');
+    if (hint) {
+      const exits = loc.props.filter((p) => p.kind === 'exit');
+      hint.textContent = exits.length
+        ? 'Walk to green exits to travel · tap objects to interact'
+        : 'Tap objects to interact';
+    }
   }
 
   function loop(ts) {
     anim = ts / 1000;
+    if (transitionLock > 0) transitionLock -= 1;
     update();
     draw();
     requestAnimationFrame(loop);
   }
 
   function update() {
+    const loc = getLoc();
+    const floorY = loc.floorY - 20;
     const { dx, dy, jump } = BlossomControls.getMovement();
-    const speed = 2.8;
+    const speed = 2.9;
     player.x += dx * speed;
     player.y += dy * speed * 0.85;
     if (dx !== 0) player.facing = dx > 0 ? 1 : -1;
@@ -188,152 +291,74 @@ window.BlossomGame = (function () {
     window.BlossomAudio?.maybeStep(Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1);
     player.vy += 0.35;
     player.y += player.vy;
-    if (player.y > ROOM.floorY - 20) {
-      player.y = ROOM.floorY - 20;
+    if (player.y > floorY) {
+      player.y = floorY;
       player.vy = 0;
       player.onGround = true;
     }
-    player.x = Math.max(30, Math.min(ROOM.w - 30, player.x));
-    player.y = Math.max(ROOM.floorY - 120, Math.min(ROOM.floorY - 20, player.y));
+    player.x = Math.max(30, Math.min(BlossomWorld.W - 30, player.x));
+    player.y = Math.max(loc.floorY - 120, Math.min(floorY, player.y));
     state.position = { x: player.x, y: player.y };
-  }
 
-  function drawRoom() {
-    const g = ctx.createLinearGradient(0, 0, 0, ROOM.h);
-    g.addColorStop(0, '#fef3c7');
-    g.addColorStop(0.5, '#fde68a');
-    g.addColorStop(1, '#d4a574');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, ROOM.w, ROOM.h);
-
-    ctx.fillStyle = '#a8d5ba';
-    ctx.fillRect(0, ROOM.floorY, ROOM.w, ROOM.h - ROOM.floorY);
-    ctx.strokeStyle = '#7cb895';
-    ctx.lineWidth = 3;
-    for (let i = 0; i < ROOM.w; i += 40) {
-      ctx.beginPath();
-      ctx.moveTo(i, ROOM.floorY);
-      ctx.lineTo(i + 20, ROOM.h);
-      ctx.stroke();
-    }
-
-    drawWindow(80, 60, 120, 80);
-    drawWindow(600, 60, 120, 80);
-
-    drawFurniture('Bed', 100, 120, 140, 90, '#c4b5fd');
-    drawFurniture('Desk', 180, 220, 90, 60, '#fcd34d');
-    drawFurniture('Sink', 500, 170, 90, 70, '#93c5fd');
-    drawFurniture('Fridge', BlossomDay.FRIDGE.x, BlossomDay.FRIDGE.y, BlossomDay.FRIDGE.w, BlossomDay.FRIDGE.h, '#6ee7b7', true);
-    drawFurniture('Couch', 350, 300, 160, 70, '#f9a8d4');
-    drawFurniture('Plant', 40, 280, 50, 60, '#86efac');
-
-    ctx.fillStyle = 'rgba(0,0,0,0.06)';
-    ctx.font = '11px Nunito, sans-serif';
-    BlossomDay.CHORES.forEach((c) => {
-      ctx.fillText(c.label, c.x, c.y - 4);
-    });
-    ctx.fillText('Fridge — tap to eat', BlossomDay.FRIDGE.x, BlossomDay.FRIDGE.y - 6);
-  }
-
-  function drawWindow(x, y, w, h) {
-    ctx.fillStyle = '#bae6fd';
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(x, y, w, h);
-    ctx.beginPath();
-    ctx.moveTo(x + w / 2, y);
-    ctx.lineTo(x + w / 2, y + h);
-    ctx.moveTo(x, y + h / 2);
-    ctx.lineTo(x + w, y + h / 2);
-    ctx.stroke();
-  }
-
-  function drawFurniture(label, x, y, w, h, color, highlight) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
-    if (highlight) {
-      ctx.strokeStyle = '#059669';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 4]);
-      ctx.strokeRect(x - 2, y - 2, w + 4, h + 4);
-      ctx.setLineDash([]);
-    }
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.font = 'bold 10px Nunito, sans-serif';
-    ctx.fillText(label, x + 6, y + 14);
-  }
-
-  function drawPlayer() {
-    const av = state.avatar || {};
-    const bob = Math.sin(anim * 6) * (BlossomControls.getMovement().dx || BlossomControls.getMovement().dy ? 2 : 0.5);
-    const px = player.x;
-    const py = player.y + bob;
-    const scale = state.chubby ? 1.15 : 1;
-
-    ctx.save();
-    ctx.translate(px, py);
-    ctx.scale(player.facing * scale, scale);
-
-    ctx.fillStyle = av.skin || '#f5d0a8';
-    ctx.beginPath();
-    ctx.ellipse(0, -38, 14, 16, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = av.hair || '#4a3728';
-    ctx.beginPath();
-    ctx.arc(0, -48, 15, Math.PI, 0);
-    ctx.fill();
-
-    if (av.shirtPattern) {
-      if (av.shirtPattern !== shirtSrc) {
-        shirtSrc = av.shirtPattern;
-        shirtImg = new Image();
-        shirtImg.src = shirtSrc;
+    nearInteract = findNearProp();
+    if (transitionLock <= 0 && nearInteract?.kind === 'exit') {
+      if (Math.hypot(dx, dy) > 0.35 || BlossomControls.getMovement().jump) {
+        tryTransition(nearInteract);
       }
-      if (shirtImg?.complete) ctx.drawImage(shirtImg, -18, -28, 36, 28);
-      else {
-        ctx.fillStyle = av.shirtColor || '#5eead4';
-        ctx.fillRect(-16, -28, 32, 26);
-      }
-    } else {
-      ctx.fillStyle = av.shirtColor || '#5eead4';
-      ctx.fillRect(-16, -28, 32, 26);
     }
 
-    ctx.fillStyle = av.skin || '#f5d0a8';
-    ctx.fillRect(-5, -2, 10, 18);
-    ctx.fillRect(-14, -20, 8, 6);
-    ctx.fillRect(6, -20, 8, 6);
-    ctx.fillRect(-8, 16, 6, 14);
-    ctx.fillRect(2, 16, 6, 14);
-
-    if (state.sick) {
-      ctx.fillStyle = '#93c5fd';
-      ctx.font = '14px sans-serif';
-      ctx.fillText('🤧', 12, -50);
+    const bubble = document.getElementById('npcBubble');
+    if (bubble && nearInteract) {
+      if (nearInteract.kind === 'exit') bubble.textContent = nearInteract.label + ' (walk into it)';
+      else if (nearInteract.choreId) {
+        const done = state.choresDone[nearInteract.choreId];
+        const listed = BlossomDay.isChoreToday(state, nearInteract.choreId);
+        if (done) bubble.textContent = `✓ ${nearInteract.label}`;
+        else if (!listed) bubble.textContent = `${nearInteract.label} — not on today's list`;
+        else bubble.textContent = `E or tap: ${nearInteract.label}`;
+      } else if (nearInteract.kind === 'fridge') bubble.textContent = 'E or tap fridge to eat';
+      else if (nearInteract.shop === 'cafe') bubble.textContent = 'E or tap café for lunch';
     }
-
-    ctx.restore();
-
-    ctx.fillStyle = '#334155';
-    ctx.font = 'bold 12px Nunito, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(state.name || 'You', px, py - 58);
-    ctx.textAlign = 'left';
   }
 
   function draw() {
-    ctx.clearRect(0, 0, ROOM.w, ROOM.h);
-    drawRoom();
-    drawPlayer();
+    const loc = getLoc();
+    ctx.clearRect(0, 0, BlossomWorld.W, BlossomWorld.H);
+    if (transitionLock > 0) {
+      ctx.fillStyle = `rgba(255, 247, 237, ${Math.min(0.55, transitionLock / 40)})`;
+      ctx.fillRect(0, 0, BlossomWorld.W, BlossomWorld.H);
+    }
+    BlossomRender.drawScene(
+      ctx, loc, loc.props, anim, state.choresDone || {}, nearIdFor(nearInteract), state.todaysChores
+    );
+    BlossomRender.drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc);
+    BlossomRender.drawLocationBadge(ctx, loc.name);
+    BlossomRender.drawChoreTracker(ctx, state);
+
+    if (avPatternLoad(state)) {
+      /* shirt img async */
+    }
+  }
+
+  function avPatternLoad(state) {
+    const av = state.avatar || {};
+    if (av.shirtPattern && av.shirtPattern !== shirtSrc) {
+      shirtSrc = av.shirtPattern;
+      shirtImg = new Image();
+      shirtImg.src = shirtSrc;
+    }
+    return true;
   }
 
   function endDay() {
     const result = BlossomDay.evaluateDay(state);
     if (result.success) BlossomDay.startNewDay(state);
     else BlossomDay.resetAfterFail(state);
+    state.currentLocation = 'house';
+    player.x = 400;
+    player.y = getLoc().floorY - 20;
     onPersist(state);
+    updateHud();
     return result;
   }
 

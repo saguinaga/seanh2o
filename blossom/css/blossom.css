@@ -339,6 +339,13 @@ a { color: var(--blossom-green-dark); }
   font-style: italic;
 }
 
+.travel-hint {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-align: center;
+  margin-top: -4px;
+}
+
 .chat-bar {
   display: flex;
   gap: 8px;

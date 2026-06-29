@@ -18,6 +18,7 @@ window.BlossomSave = (function () {
       sick: false,
       mealsEaten: { breakfast: false, lunch: false, dinner: false },
       choresDone: {},
+      todaysChores: [],
       avatar: {
         skin: '#f5d0a8',
         hair: '#4a3728',
@@ -27,7 +28,8 @@ window.BlossomSave = (function () {
         hat: null,
       },
       house: 'small',
-      position: { x: 400, y: 320 },
+      currentLocation: 'house',
+      position: { x: 400, y: 360 },
       timeOfDay: 'morning',
       dayPhaseIndex: 0,
       alive: true,

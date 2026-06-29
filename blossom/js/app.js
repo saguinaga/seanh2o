@@ -154,7 +154,7 @@ window.BlossomApp = (function () {
     );
     BlossomGame.updateHud();
     const bubble = document.getElementById('npcBubble');
-    if (bubble) bubble.textContent = 'Cozy day at home — tap 🔊 if you need to mute the music.';
+    if (bubble) bubble.textContent = 'Leave through the green exit (right) to do outdoor chores!';
   }
 
   function showToast(msg, type = 'info') {

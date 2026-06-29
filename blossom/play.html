@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=2">
+  <link rel="stylesheet" href="css/blossom.css?v=3">
 </head>
 <body>
   <!-- Character creation -->
@@ -72,7 +72,7 @@
           <span id="hudMoney">$10</span>
         </div>
         <div class="hud-stars" id="hudStars">0/50</div>
-        <div class="hud-meta"><span id="hudLevel">Lv 1</span> · <span id="hudPhase">Morning</span></div>
+        <div class="hud-meta"><span id="hudLocation">Home</span> · <span id="hudLevel">Lv 1</span> · <span id="hudPhase">Morning</span></div>
       </div>
 
       <p class="day-reminder" id="dayReminder" hidden></p>
@@ -84,11 +84,12 @@
         <button type="button" class="jump-btn" id="jumpBtn" aria-label="Jump">JUMP</button>
       </div>
 
-      <p class="desktop-hint">WASD / arrows to move · Space to jump · Click fridge &amp; chores</p>
+      <p class="desktop-hint">WASD move · Space jump · E interact · Green exits = travel</p>
     </div>
 
     <footer class="game-bottom">
-      <p class="npc-bubble" id="npcBubble">Tap objects or walk to the fridge to eat!</p>
+      <p class="npc-bubble" id="npcBubble">Walk to the green exit to leave home · tap objects to interact</p>
+      <p class="travel-hint" id="travelHint"></p>
       <div class="chat-bar">
         <input type="text" class="chat-input" id="chatInput" placeholder="Talk to NPCs…" maxlength="120" enterkeyhint="send">
         <button type="button" class="chat-send" id="chatSend">Say</button>
@@ -142,9 +143,11 @@
   <script src="js/save.js?v=2"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/audio.js?v=1"></script>
-  <script src="js/day-system.js?v=1"></script>
+  <script src="js/world.js?v=1"></script>
+  <script src="js/render.js?v=2"></script>
+  <script src="js/day-system.js?v=3"></script>
   <script src="js/controls.js?v=1"></script>
-  <script src="js/game.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/game.js?v=5"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>

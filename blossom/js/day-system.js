@@ -1,20 +1,29 @@
 /** Time-of-day, meals, chores, star goals, day evaluation */
 window.BlossomDay = (function () {
   const PHASES = [
-    { id: 'morning', label: 'Morning', hint: 'Time for breakfast! Head to the fridge.', meal: 'breakfast' },
-    { id: 'afternoon', label: 'Afternoon', hint: 'Lunch time! Don\'t forget to eat.', meal: 'lunch' },
-    { id: 'evening', label: 'Evening', hint: 'Sunset dinner — 5 stars if you eat.', meal: 'dinner' },
-    { id: 'night', label: 'Night', hint: 'Finish chores and hit 50 stars!', meal: null },
+    { id: 'morning', label: 'Morning', hint: 'Breakfast at home, then head outside for errands!', meal: 'breakfast' },
+    { id: 'afternoon', label: 'Afternoon', hint: 'Lunch at home or the café on Main street.', meal: 'lunch' },
+    { id: 'evening', label: 'Evening', hint: 'Dinner at home — then finish any last chores.', meal: 'dinner' },
+    { id: 'night', label: 'Night', hint: 'Hit 50 stars! Check home, yard, street & park.', meal: null },
   ];
 
+  const OUTDOOR_CHORES = ['trash', 'plants_out', 'mailbox', 'groceries', 'litter', 'ducks', 'playground'];
+  const CHORES_PER_DAY = 8;
+
   const CHORES = [
-    { id: 'dishes', label: 'Wash dishes', x: 520, y: 200, w: 80, h: 60 },
-    { id: 'bed', label: 'Make bed', x: 120, y: 140, w: 100, h: 70 },
-    { id: 'trash', label: 'Take out trash', x: 680, y: 280, w: 70, h: 50 },
-    { id: 'sweep', label: 'Sweep floor', x: 300, y: 380, w: 120, h: 50 },
-    { id: 'homework', label: 'Do homework', x: 200, y: 240, w: 80, h: 60 },
-    { id: 'teeth', label: 'Brush teeth', x: 600, y: 140, w: 60, h: 50 },
-    { id: 'plants', label: 'Water plants', x: 50, y: 300, w: 60, h: 50 },
+    { id: 'bed', label: 'Make bed' },
+    { id: 'dishes', label: 'Wash dishes' },
+    { id: 'homework', label: 'Do homework' },
+    { id: 'teeth', label: 'Brush teeth' },
+    { id: 'sweep', label: 'Sweep floor' },
+    { id: 'plants', label: 'Water plants' },
+    { id: 'trash', label: 'Take out trash' },
+    { id: 'plants_out', label: 'Water garden' },
+    { id: 'mailbox', label: 'Check mail' },
+    { id: 'groceries', label: 'Market errand' },
+    { id: 'litter', label: 'Pick up litter' },
+    { id: 'ducks', label: 'Feed ducks' },
+    { id: 'playground', label: 'Tidy playground' },
   ];
 
   const FOODS = {
@@ -34,8 +43,6 @@ window.BlossomDay = (function () {
       { name: 'Ice cream', type: 'Dessert', price: 2, fat: true },
     ],
   };
-
-  const FRIDGE = { x: 720, y: 180, w: 70, h: 90 };
 
   function currentPhase(state) {
     return PHASES[state.dayPhaseIndex] || PHASES[0];
@@ -66,7 +73,34 @@ window.BlossomDay = (function () {
     return { ok: true, msg: `Yum! ${food.name} (+${gain.stars} stars)`, food };
   }
 
+  function shuffle(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function assignDailyChores(state) {
+    const all = CHORES.map((c) => c.id);
+    const picked = new Set();
+    shuffle(OUTDOOR_CHORES).slice(0, 3).forEach((id) => picked.add(id));
+    shuffle(all).forEach((id) => {
+      if (picked.size >= CHORES_PER_DAY) return;
+      picked.add(id);
+    });
+    state.todaysChores = [...picked];
+  }
+
+  function isChoreToday(state, choreId) {
+    return state.todaysChores?.includes(choreId);
+  }
+
   function doChore(state, choreId) {
+    if (!isChoreToday(state, choreId)) {
+      return { ok: false, msg: 'That chore isn\'t on your list today — check another spot!' };
+    }
     if (state.choresDone[choreId]) return { ok: false, msg: 'Already done today!' };
     const chore = CHORES.find((c) => c.id === choreId);
     if (!chore) return { ok: false, msg: 'Unknown chore' };
@@ -112,6 +146,8 @@ window.BlossomDay = (function () {
     state.dayPhaseIndex = 0;
     state.timeOfDay = 'morning';
     state.alive = true;
+    state.currentLocation = 'house';
+    assignDailyChores(state);
   }
 
   function resetAfterFail(state) {
@@ -122,17 +158,20 @@ window.BlossomDay = (function () {
     state.timeOfDay = 'morning';
     state.alive = true;
     state.money = Math.max(5, state.money - 2);
+    state.currentLocation = 'house';
+    assignDailyChores(state);
   }
 
   return {
     PHASES,
     CHORES,
     FOODS,
-    FRIDGE,
     currentPhase,
     advancePhase,
     eatMeal,
     doChore,
+    assignDailyChores,
+    isChoreToday,
     evaluateDay,
     startNewDay,
     resetAfterFail,
