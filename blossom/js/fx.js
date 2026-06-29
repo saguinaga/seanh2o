@@ -7,15 +7,34 @@ window.BlossomFx = (function () {
   let flashColor = '#fef08a';
   let ambient = [];
   let time = 0;
+  let ambientReady = false;
+  const FALLBACK_W = 800;
+  const FALLBACK_H = 480;
 
   function rand(a, b) { return a + Math.random() * (b - a); }
 
+  function worldW() {
+    return window.BlossomWorld?.W ?? FALLBACK_W;
+  }
+
+  function worldH() {
+    return window.BlossomWorld?.H ?? FALLBACK_H;
+  }
+
+  function ensureAmbient() {
+    if (ambientReady) return;
+    initAmbient();
+    ambientReady = true;
+  }
+
   function initAmbient() {
+    const W = worldW();
+    const H = worldH();
     ambient = [];
     for (let i = 0; i < 24; i++) {
       ambient.push({
-        x: Math.random() * BlossomWorld.W,
-        y: Math.random() * BlossomWorld.H * 0.7,
+        x: Math.random() * W,
+        y: Math.random() * H * 0.7,
         s: rand(1.5, 3.5),
         sp: rand(0.2, 0.8),
         ph: Math.random() * Math.PI * 2,
@@ -51,10 +70,11 @@ window.BlossomFx = (function () {
   }
 
   function confetti() {
+    ensureAmbient();
     const colors = ['#f472b6', '#4ade80', '#38bdf8', '#fde047', '#c084fc', '#fb7185'];
     for (let i = 0; i < 80; i++) {
       particles.push({
-        x: rand(0, BlossomWorld.W), y: rand(-40, -5),
+        x: rand(0, worldW()), y: rand(-40, -5),
         vx: rand(-2, 2), vy: rand(2, 6),
         life: 1, decay: 0.004, size: rand(4, 8),
         color: colors[i % colors.length], grav: 0.06, kind: 'confetti',
@@ -77,9 +97,10 @@ window.BlossomFx = (function () {
   }
 
   function travelBurst() {
+    ensureAmbient();
     for (let i = 0; i < 30; i++) {
       particles.push({
-        x: rand(0, BlossomWorld.W), y: rand(100, BlossomWorld.H),
+        x: rand(0, worldW()), y: rand(100, worldH()),
         vx: rand(-6, 6), vy: rand(-2, 2),
         life: 1, decay: 0.03, size: rand(3, 7),
         color: 'rgba(74, 222, 128, 0.8)', grav: 0, kind: 'dot',
@@ -88,6 +109,7 @@ window.BlossomFx = (function () {
   }
 
   function update(dt) {
+    ensureAmbient();
     time += dt;
     shake *= 0.82;
     flash *= 0.88;
@@ -108,12 +130,14 @@ window.BlossomFx = (function () {
     ambient.forEach((a) => {
       a.x += Math.sin(time * a.sp + a.ph) * 0.35;
       a.y += Math.cos(time * a.sp * 0.7 + a.ph) * 0.2;
-      if (a.x < -10) a.x = BlossomWorld.W + 10;
-      if (a.x > BlossomWorld.W + 10) a.x = -10;
+      const W = worldW();
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
     });
   }
 
   function drawAmbient(ctx, floorY, phaseId) {
+    ensureAmbient();
     ambient.forEach((a) => {
       if (a.y > floorY + 20) return;
       const alpha = 0.35 + Math.sin(time * 2 + a.ph) * 0.25;
@@ -187,7 +211,7 @@ window.BlossomFx = (function () {
     if (flash > 0.02) {
       ctx.fillStyle = flashColor;
       ctx.globalAlpha = flash * 0.45;
-      ctx.fillRect(0, 0, BlossomWorld.W, BlossomWorld.H);
+      ctx.fillRect(0, 0, worldW(), worldH());
       ctx.globalAlpha = 1;
     }
   }
@@ -199,8 +223,6 @@ window.BlossomFx = (function () {
       ctx.translate(ox, oy);
     }
   }
-
-  initAmbient();
 
   return {
     burst, starBurst, confetti, floatText, screenShake, screenFlash,
