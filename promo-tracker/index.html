@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Promo Stack — deep bonus & credit planner</title>
+  <title>Free Trip Planner — how the points reels actually work</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -12,8 +12,8 @@
   <div class="wrap">
     <header class="topbar">
       <div>
-        <h1>Promo Stack</h1>
-        <p>Chase, Amex, Citi, Discover & more — issuer gates, SUB catalog, credit score simulation</p>
+        <h1>Free Trip Planner</h1>
+        <p>Your favorite travel creator’s “free” vacation — mapped to real card offers, timing rules & credit score impact</p>
       </div>
       <div class="topbar-actions">
         <a href="../index.html" class="btn-ghost">← Home</a>
@@ -25,31 +25,71 @@
     </header>
 
     <p class="disclaimer">
-      Educational planner only — not financial or credit advice. SUB values, issuer rules (5/24, 2/90, 8/65, etc.)
-      and score impacts are <strong>heuristic models</strong>. Verify current offers and your real reports before applying.
+      Educational planner — not financial or credit advice. “Free” trips mean <strong>points cover the sticker price</strong>
+      after minimum spend & annual fees. We show what influencers post <em>and</em> what they leave out (5/24, credit dips, MSR).
+      Verify live offers before applying.
     </p>
 
     <div class="stats">
-      <div class="stat"><strong id="statBaseline">—</strong><span>Baseline score</span></div>
-      <div class="stat"><strong id="statSimEnd">—</strong><span>Projected end</span></div>
-      <div class="stat"><strong id="statMaxDrop">—</strong><span>Max drop</span></div>
-      <div class="stat"><strong id="statPipeVal">$0</strong><span>Pipeline value</span></div>
-      <div class="stat"><strong id="statDoneVal">$0</strong><span>Captured</span></div>
+      <div class="stat stat--hero"><strong id="statTripValue">$0</strong><span>Trip $ in your plan</span></div>
+      <div class="stat"><strong id="statTripsFunded">0</strong><span>Trips fully funded</span></div>
+      <div class="stat"><strong id="statMsr">$0</strong><span>Organized spend (MSR)</span></div>
+      <div class="stat"><strong id="statMaxDrop">—</strong><span>Credit dip (est.)</span></div>
+      <div class="stat"><strong id="statDoneVal">$0</strong><span>Already “booked”</span></div>
     </div>
 
     <nav class="tabs" role="tablist">
-      <button type="button" class="tab tab--active" data-tab="baseline" role="tab">Baseline</button>
-      <button type="button" class="tab" data-tab="gates" role="tab">Issuer gates</button>
-      <button type="button" class="tab" data-tab="catalog" role="tab">Card catalog</button>
-      <button type="button" class="tab" data-tab="plan" role="tab">Your plan</button>
-      <button type="button" class="tab" data-tab="simulation" role="tab">Score simulation</button>
+      <button type="button" class="tab tab--active" data-tab="trips" role="tab">✈️ Free trips</button>
+      <button type="button" class="tab" data-tab="plan" role="tab">Your stack</button>
+      <button type="button" class="tab" data-tab="catalog" role="tab">Card picks</button>
+      <button type="button" class="tab" data-tab="baseline" role="tab">Your credit</button>
+      <button type="button" class="tab" data-tab="gates" role="tab">Issuer rules</button>
+      <button type="button" class="tab" data-tab="simulation" role="tab">Score reality</button>
     </nav>
 
+    <!-- FREE TRIPS -->
+    <section class="tab-panel tab-panel--active" id="panel-trips" role="tabpanel">
+      <div class="hero-panel">
+        <div class="hero-panel__copy">
+          <p class="hero-panel__eyebrow">What the algorithm won’t tell you</p>
+          <h2>Turn card sign-up bonuses into the trips they post about</h2>
+          <p>Pick a creator-style stack, see which dream trip it funds, and check the credit score hit before your spouse applies for three cards in one weekend.</p>
+        </div>
+        <div class="hero-panel__cta">
+          <button type="button" class="btn" id="loadBabymoon">Load Cabo babymoon stack</button>
+          <button type="button" class="btn-ghost" id="loadEurope">Europe reel stack</button>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:20px">
+        <div class="panel">
+          <h2>Trips your plan could fund</h2>
+          <p class="hint">Based on total travel value in your stack (pending + done). Sticker prices — real redemptions vary.</p>
+          <div class="trip-grid" id="tripGrid"></div>
+        </div>
+        <div class="panel">
+          <h2>The real math</h2>
+          <div id="realMath"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h2>Creator stacks (load &amp; customize)</h2>
+        <p class="hint">These mirror what travel influencers recommend — with honest notes attached.</p>
+        <div class="stack-grid" id="stackGrid"></div>
+      </div>
+
+      <div class="panel panel--reality" style="margin-top:20px">
+        <h2>What they say vs. what happens</h2>
+        <div class="reality-grid" id="realityGrid"></div>
+      </div>
+    </section>
+
     <!-- BASELINE -->
-    <section class="tab-panel tab-panel--active" id="panel-baseline" role="tabpanel">
+    <section class="tab-panel" id="panel-baseline" role="tabpanel" hidden>
       <div class="grid-2">
         <div class="panel">
-          <h2>Identity & baseline score</h2>
+          <h2>About you & your score</h2>
           <div class="profile-grid">
             <label>Age
               <input type="number" id="age" data-profile min="18" max="99" value="34">
@@ -154,8 +194,8 @@
     <!-- ISSUER GATES -->
     <section class="tab-panel" id="panel-gates" role="tabpanel" hidden>
       <div class="panel">
-        <h2>Issuer eligibility dashboard</h2>
-        <p class="hint">Heuristic gates based on your baseline counters. Green = likely eligible; red = commonly blocked.</p>
+        <h2>Can you actually get approved?</h2>
+        <p class="hint">The rules influencers skip in the caption. Green = you’re probably fine; red = wait or pick another card.</p>
         <div class="issuer-grid" id="issuerGrid"></div>
       </div>
     </section>
@@ -164,14 +204,14 @@
     <section class="tab-panel" id="panel-catalog" role="tabpanel" hidden>
       <div class="panel">
         <div class="catalog-toolbar">
-          <h2>Card & SUB catalog</h2>
+          <h2>Cards behind the “free” trip</h2>
           <label class="catalog-filter">Issuer
             <select id="catalogIssuer">
               <option value="all">All issuers</option>
             </select>
           </label>
         </div>
-        <p class="hint">Estimated SUBs — verify on issuer sites. Values use typical cents-per-point assumptions.</p>
+        <p class="hint">Each card is a chunk of a vacation. SUBs are estimates — always verify before applying.</p>
         <div class="catalog-grid" id="catalogGrid"></div>
       </div>
     </section>
@@ -180,7 +220,7 @@
     <section class="tab-panel" id="panel-plan" role="tabpanel" hidden>
       <div class="grid-2">
         <div class="panel">
-          <h2>Suggested sequence</h2>
+          <h2>When to apply (so you don’t get denied)</h2>
           <div id="timeline"></div>
         </div>
         <div class="panel">
@@ -190,8 +230,8 @@
       </div>
       <section class="panel" style="margin-top:20px">
         <div class="plan-toolbar">
-          <h2>Your plan</h2>
-          <button type="button" class="btn-ghost" id="loadSeed">Load example plan</button>
+          <h2>Your card stack</h2>
+          <button type="button" class="btn-ghost" id="loadSeed">Reload Cabo example</button>
         </div>
         <div class="offer-list" id="offerList"></div>
       </section>
@@ -201,13 +241,13 @@
     <section class="tab-panel" id="panel-simulation" role="tabpanel" hidden>
       <div class="grid-2">
         <div class="panel">
-          <h2>Score trajectory</h2>
+          <h2>What happens to your credit score</h2>
           <div class="chart-wrap">
             <canvas id="scoreChart" aria-label="Credit score simulation chart"></canvas>
           </div>
         </div>
         <div class="panel">
-          <h2>Simulation summary</h2>
+          <h2>The part they don’t post</h2>
           <div id="simSummary"></div>
           <h3 class="subhead">FICO factor weights (model)</h3>
           <div class="factor-bars" id="factorWeights"></div>

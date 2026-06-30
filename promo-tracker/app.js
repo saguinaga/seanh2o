@@ -1,12 +1,17 @@
 import {
   OFFER_TYPES, STATUS, ISSUERS, defaultState, defaultProfile,
-  evaluateOffer, suggestTimeline, seedOffers, migrateState, bumpProfileOnApproval,
+  evaluateOffer, suggestTimeline, seedOffers, seedInfluencerStack, migrateState, bumpProfileOnApproval,
 } from './rules.js';
 import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST } from './issuers.js';
 import {
   CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES,
 } from './catalog.js';
 import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js';
+import {
+  INFLUENCER_STACKS, INFLUENCER_VS_REALITY,
+  activeOffersValue, pipelineValue, capturedValue, outOfPocketEstimate,
+  tripsFundedByValue, cardTripPitch, stackTotalValue,
+} from './trips.js';
 
 const STORAGE_KEY = 'promo_tracker_v2';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -153,17 +158,114 @@ function readProfile() {
 }
 
 function renderStats(sim) {
-  const doneVal = state.offers.filter((o) => o.status === 'done').reduce((s, o) => s + (o.valueUsd || 0), 0);
-  const pipeVal = state.offers.filter((o) => !['done', 'skip'].includes(o.status)).reduce((s, o) => s + (o.valueUsd || 0), 0);
+  const tripVal = activeOffersValue(state.offers);
+  const doneVal = capturedValue(state.offers);
+  const oop = outOfPocketEstimate(state.offers);
+  const funded = tripsFundedByValue(tripVal).filter((t) => t.status === 'funded').length;
 
+  $('#statTripValue').textContent = fmtMoney(tripVal);
+  $('#statTripsFunded').textContent = String(funded);
+  $('#statMsr').textContent = fmtMoney(oop.msr);
   $('#statDoneVal').textContent = fmtMoney(doneVal);
-  $('#statPipeVal').textContent = fmtMoney(pipeVal);
-  $('#statBaseline').textContent = String(state.profile.baselineScore || '—');
   if (sim) {
-    $('#statSimEnd').textContent = String(sim.summary.endScore);
     $('#statMaxDrop').textContent = sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '0';
     $('#statMaxDrop').style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
+  } else {
+    $('#statMaxDrop').textContent = '—';
   }
+}
+
+function renderTrips(sim) {
+  const tripVal = activeOffersValue(state.offers);
+  const pipeVal = pipelineValue(state.offers);
+  const oop = outOfPocketEstimate(state.offers);
+  const trips = tripsFundedByValue(tripVal);
+
+  const tripGrid = $('#tripGrid');
+  if (tripGrid) {
+    if (!state.offers.length) {
+      tripGrid.innerHTML = '<p class="empty">Load a creator stack above to see which vacations your points could cover.</p>';
+    } else {
+      tripGrid.innerHTML = trips.map((t) => `
+        <article class="trip-card trip-card--${t.status}">
+          <div class="trip-card__emoji">${t.emoji}</div>
+          <div class="trip-card__body">
+            <h3>${escapeHtml(t.name)}</h3>
+            <p class="trip-card__tagline">${escapeHtml(t.tagline)}</p>
+            <div class="trip-card__bar"><div class="trip-card__fill" style="width:${t.fundedPct}%"></div></div>
+            <p class="trip-card__meta">
+              ${t.status === 'funded'
+    ? `<span class="trip-card__badge trip-card__badge--yes">Fully funded</span> · ~${fmtMoney(t.cashPrice)} trip`
+    : `<span class="trip-card__badge">${t.fundedPct}% there</span> · need ${fmtMoney(t.gap)} more`}
+              · ${escapeHtml(t.vibe)}
+            </p>
+          </div>
+        </article>
+      `).join('');
+    }
+  }
+
+  const realMath = $('#realMath');
+  if (realMath) {
+    const fees = oop.fees;
+    realMath.innerHTML = `
+      <div class="sim-summary">
+        <div class="sim-summary__row"><span>Travel value in stack</span><strong>${fmtMoney(tripVal)}</strong></div>
+        <div class="sim-summary__row"><span>Still to earn (pipeline)</span><strong>${fmtMoney(pipeVal)}</strong></div>
+        <div class="sim-summary__row"><span>Minimum spend to unlock</span><strong>${fmtMoney(oop.msr)}</strong></div>
+        <div class="sim-summary__row"><span>Annual fees (year 1)</span><strong>${fmtMoney(fees)}</strong></div>
+        ${sim ? `<div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
+          <span>Est. credit score dip</span><strong>−${sim.summary.maxDrop} pts</strong>
+        </div>` : ''}
+      </div>
+      <p class="hint" style="margin-top:12px">${escapeHtml(oop.note)}. Taxes, resort fees &amp; seat selection still cost cash.</p>
+    `;
+  }
+
+  const stackGrid = $('#stackGrid');
+  if (stackGrid) {
+    stackGrid.innerHTML = INFLUENCER_STACKS.map((s) => {
+      const val = stackTotalValue(s.catalogIds);
+      const topTrip = tripsFundedByValue(val)[0];
+      return `
+        <article class="stack-card">
+          <header class="stack-card__head">
+            <span class="stack-card__emoji">${s.emoji}</span>
+            <div>
+              <h3>${escapeHtml(s.name)}</h3>
+              <p class="stack-card__hook">${escapeHtml(s.hook)}</p>
+            </div>
+            <strong class="stack-card__val">${fmtMoney(val)}</strong>
+          </header>
+          <p class="stack-card__caption">${escapeHtml(s.caption)}</p>
+          <p class="stack-card__trip">Funds ~${topTrip?.fundedPct || 0}% of a ${escapeHtml(topTrip?.name || 'getaway')}</p>
+          <button type="button" class="btn-sm btn" data-stack="${s.id}">Load this stack</button>
+        </article>
+      `;
+    }).join('');
+
+    stackGrid.querySelectorAll('[data-stack]').forEach((btn) => {
+      btn.addEventListener('click', () => loadStack(btn.dataset.stack));
+    });
+  }
+
+  const realityGrid = $('#realityGrid');
+  if (realityGrid) {
+    realityGrid.innerHTML = INFLUENCER_VS_REALITY.map((row) => `
+      <div class="reality-row">
+        <div class="reality-row__reel">${escapeHtml(row.reel)}</div>
+        <div class="reality-row__truth">${escapeHtml(row.reality)}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function loadStack(stackId) {
+  if (state.offers.length && !confirm('Replace your current stack with this creator example?')) return;
+  state.offers = seedInfluencerStack(stackId);
+  save();
+  renderAll();
+  switchTab('plan');
 }
 
 function renderQuickGates() {
@@ -242,6 +344,7 @@ function renderCatalog() {
           <span>AF ${card.annualFee ? fmtMoney(card.annualFee) : '$0'}</span>
           ${card.creditLine ? `<span>~${fmtMoney(card.creditLine)} line</span>` : card.charge ? '<span>Charge card</span>' : ''}
         </div>
+        <p class="catalog-card__trip">${escapeHtml(cardTripPitch(card))}</p>
         <div class="catalog-card__tags">${(card.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
         ${ev.blockers.length ? `<ul class="offer-alerts offer-alerts--block">${ev.blockers.slice(0, 2).map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
         <button type="button" class="btn-sm ${inPlan ? 'btn-ghost' : 'btn'}" data-catalog="${card.id}" ${inPlan ? 'disabled' : ''}>
@@ -307,7 +410,7 @@ function renderOffers() {
   const list = $('#offerList');
   if (!list) return;
   if (!state.offers.length) {
-    list.innerHTML = '<p class="empty">No offers yet — browse the catalog or add a custom offer.</p>';
+    list.innerHTML = '<p class="empty">No cards in your stack yet — start on Free trips or Card picks.</p>';
     return;
   }
   const sorted = [...state.offers].sort((a, b) => (a.priority || 99) - (b.priority || 99));
@@ -377,7 +480,8 @@ function renderSimulation(timeline) {
           <span>Max drop</span><strong>−${sim.summary.maxDrop} pts</strong>
         </div>
         <div class="sim-summary__row"><span>CC applications</span><strong>${sim.summary.totalApplications}</strong></div>
-        ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Mortgage-sensitive: projected drop may affect rate shopping.</p>' : ''}
+        ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Buying a house soon? This stack may ding your rate — influencers never mention that.</p>' : ''}
+        <p class="hint" style="margin-top:10px">Score usually recovers as inquiries age and MSR balances pay off — but not overnight.</p>
       </div>
     `;
   }
@@ -481,7 +585,8 @@ function renderAll() {
   renderCatalog();
   const timeline = renderTimeline();
   renderOffers();
-  renderSimulation(timeline);
+  const sim = renderSimulation(timeline);
+  renderTrips(sim);
 }
 
 function switchTab(name) {
@@ -613,12 +718,9 @@ function init() {
   $('#catalogIssuer')?.addEventListener('change', renderCatalog);
 
   $('#addOffer')?.addEventListener('click', () => openForm(null));
-  $('#loadSeed')?.addEventListener('click', () => {
-    if (state.offers.length && !confirm('Replace offers with example plan (Chase CSP + Amex Gold + bank bonus)?')) return;
-    state.offers = seedOffers();
-    save();
-    renderAll();
-  });
+  $('#loadSeed')?.addEventListener('click', () => loadStack('babymoon-cabo'));
+  $('#loadBabymoon')?.addEventListener('click', () => loadStack('babymoon-cabo'));
+  $('#loadEurope')?.addEventListener('click', () => loadStack('europe-reel'));
   $('#exportBtn')?.addEventListener('click', exportJson);
   $('#importBtn')?.addEventListener('click', () => $('#importFile').click());
   $('#importFile')?.addEventListener('change', (e) => {

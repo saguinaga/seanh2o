@@ -5,6 +5,7 @@
   --text: #f1f5f9;
   --muted: #94a3b8;
   --accent: #38bdf8;
+  --accent2: #a78bfa;
   --green: #4ade80;
   --amber: #fbbf24;
   --rose: #fb7185;
@@ -125,6 +126,16 @@ a { color: var(--accent); }
   display: block;
   font-size: 1.35rem;
   color: var(--green);
+}
+
+.stat--hero {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(167, 139, 250, 0.12));
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
+.stat--hero strong {
+  color: var(--accent);
+  font-size: 1.5rem;
 }
 
 .stat span {
@@ -699,3 +710,201 @@ a { color: var(--accent); }
 }
 
 .form-actions .btn { flex: 1; }
+
+.hero-panel {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(167, 139, 250, 0.1) 50%, rgba(251, 113, 133, 0.08) 100%);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.hero-panel__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent2);
+  margin: 0 0 6px;
+}
+
+.hero-panel__copy h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.hero-panel__copy p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  max-width: 560px;
+}
+
+.hero-panel__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.trip-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trip-card {
+  display: flex;
+  gap: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  border: 1px solid var(--panel2);
+}
+
+.trip-card--funded { border-color: rgba(74, 222, 128, 0.45); }
+.trip-card--almost { border-color: rgba(56, 189, 248, 0.4); }
+
+.trip-card__emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.trip-card__body { flex: 1; min-width: 0; }
+
+.trip-card__body h3 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.trip-card__tagline {
+  margin: 2px 0 8px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.trip-card__bar {
+  height: 6px;
+  background: var(--panel2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.trip-card__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 3px;
+}
+
+.trip-card__meta {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.trip-card__badge {
+  font-weight: 700;
+  color: var(--amber);
+}
+
+.trip-card__badge--yes { color: var(--green); }
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.stack-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 14px;
+  border: 1px solid var(--panel2);
+}
+
+.stack-card__head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.stack-card__emoji { font-size: 1.6rem; }
+
+.stack-card__head h3 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.stack-card__hook {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.stack-card__val {
+  margin-left: auto;
+  color: var(--green);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.stack-card__caption {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+
+.stack-card__trip {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.reality-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reality-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  border: 1px solid var(--panel2);
+}
+
+@media (max-width: 700px) {
+  .reality-row { grid-template-columns: 1fr; }
+}
+
+.reality-row__reel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent2);
+}
+
+.reality-row__truth {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.panel--reality h2 { color: var(--accent2); }
+
+.catalog-card__trip {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin: 0;
+  font-weight: 600;
+}

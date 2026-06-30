@@ -1,6 +1,6 @@
 /** Credit gates, profile v2, sequencing — educational, not financial advice */
 import { evaluateIssuerGates } from './issuers.js';
-import { findCatalog } from './catalog.js';
+import { findCatalog, catalogEntryToOffer } from './catalog.js';
 
 export const ISSUERS = [
   'Chase', 'Amex', 'Citi', 'Discover', 'Capital One', 'Bank of America', 'Wells Fargo', 'US Bank', 'Barclays', 'Other',
@@ -287,60 +287,36 @@ export function suggestTimeline(offers, profile) {
   return timeline;
 }
 
+const INFLUENCER_STACK_ENTRIES = {
+  'babymoon-cabo': [
+    { catalogId: 'chase-csp', priority: 1, status: 'planned', notes: 'Card 1 — book flights or Hyatt transfer. Check 5/24 first.' },
+    { catalogId: 'amex-gold', priority: 2, status: 'planned', notes: 'Card 2 — groceries & dining MSR. Wait ~90d after Chase.' },
+  ],
+  'europe-reel': [
+    { catalogId: 'chase-csp', priority: 1, status: 'planned', notes: 'Flights via Chase Travel or transfer partners.' },
+    { catalogId: 'chase-ihg', priority: 2, status: 'planned', notes: 'Hotel nights — IHG SUB is huge for Europe reels.' },
+    { catalogId: 'amex-gold', priority: 3, status: 'idea', notes: 'Dining abroad + MR stash.' },
+  ],
+  'disney-mom': [
+    { catalogId: 'chase-cfu', priority: 1, status: 'planned', notes: 'Everyday spend — pairs with Sapphire later.' },
+    { catalogId: 'chase-csp', priority: 2, status: 'planned', notes: 'Portal redemption for park hotel.' },
+    { catalogId: 'capone-venture', priority: 3, status: 'idea', notes: 'Flexible miles backup.' },
+  ],
+};
+
 export function seedOffers() {
-  const y = new Date().toISOString().slice(0, 10);
-  return [
-    {
-      id: crypto.randomUUID(),
-      type: 'bank',
-      title: 'Checking bonus — $300',
-      issuer: 'Other',
-      valueUsd: 300,
-      hardPull: false,
-      minSpend: 1000,
-      status: 'planned',
-      priority: 1,
-      earliestDate: y,
-      completedDate: '',
-      notes: 'Direct deposit + keep open 90d',
-    },
-    {
-      id: crypto.randomUUID(),
-      catalogId: 'chase-csp',
-      type: 'cc',
-      title: 'Sapphire Preferred — 75k pts',
-      issuer: 'Chase',
-      valueUsd: 1125,
-      subPoints: 75000,
-      program: 'chase_ur',
-      hardPull: true,
-      minSpend: 5000,
-      msrMonths: 3,
-      creditLine: 10000,
-      status: 'planned',
-      priority: 2,
-      earliestDate: '',
-      completedDate: '',
-      notes: 'Check 5/24 before applying',
-    },
-    {
-      id: crypto.randomUUID(),
-      catalogId: 'amex-gold',
-      type: 'cc',
-      title: 'Gold Card — 90k pts',
-      issuer: 'Amex',
-      valueUsd: 1080,
-      subPoints: 90000,
-      program: 'amex_mr',
-      hardPull: true,
-      minSpend: 6000,
-      msrMonths: 6,
-      creditLine: 0,
-      status: 'idea',
-      priority: 3,
-      earliestDate: '',
-      completedDate: '',
-      notes: 'Wait 90d after Chase app',
-    },
-  ];
+  return seedInfluencerStack('babymoon-cabo');
+}
+
+/** Stacks that travel creators tease — educational examples */
+export function seedInfluencerStack(stackId) {
+  const entries = INFLUENCER_STACK_ENTRIES[stackId] || INFLUENCER_STACK_ENTRIES['babymoon-cabo'];
+  return entries.map((entry) => {
+    const card = findCatalog(entry.catalogId);
+    if (!card) return null;
+    const offer = catalogEntryToOffer(card, entry.priority);
+    offer.status = entry.status || 'planned';
+    offer.notes = entry.notes || offer.notes;
+    return offer;
+  }).filter(Boolean);
 }

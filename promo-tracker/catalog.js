@@ -65,6 +65,7 @@ export function catalogEntryToOffer(card, priority = 5) {
     msrMonths: card.msrMonths,
     creditLine: card.creditLine,
     annualFee: card.annualFee,
+    charge: card.charge,
     status: 'planned',
     priority,
     earliestDate: '',
