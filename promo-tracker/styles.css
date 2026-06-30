@@ -22,11 +22,194 @@ body {
   color: var(--text);
   line-height: 1.5;
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 a { color: var(--accent); }
 
+.scenery-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 15% 20%, rgba(56, 189, 248, 0.09), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 85% 75%, rgba(167, 139, 250, 0.08), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(251, 113, 133, 0.06), transparent 45%),
+    radial-gradient(ellipse 40% 35% at 90% 15%, rgba(74, 222, 128, 0.05), transparent 40%);
+}
+
+.scenery {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scenery-card {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: clamp(140px, 18vw, 220px);
+  height: clamp(96px, 12vw, 150px);
+  border-radius: 16px;
+  transform: rotate(var(--rot));
+  opacity: 0.2;
+  filter: saturate(1.15);
+  animation: scenery-float 22s ease-in-out infinite;
+  animation-delay: var(--delay);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.scenery-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--scene-bg);
+  background-size: cover;
+}
+
+.scenery-card::after {
+  content: var(--scene-label);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 10px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+}
+
+/* Destination “postcard” art — pure CSS gradients + silhouettes */
+.scenery-card--fiji {
+  --scene-label: '🏝️ Fiji';
+  --scene-bg:
+    linear-gradient(180deg, #7dd3fc 0%, #38bdf8 38%, #0ea5e9 62%, #0369a1 100%);
+}
+.scenery-card--fiji::before {
+  background:
+    radial-gradient(ellipse 90% 25% at 50% 88%, #fcd34d 0%, transparent 70%),
+    radial-gradient(circle at 78% 22%, rgba(255, 255, 255, 0.55) 0%, transparent 8%),
+    linear-gradient(180deg, #7dd3fc 0%, #38bdf8 42%, #0891b2 68%, #164e63 100%);
+  box-shadow: inset 0 -30px 0 0 #34d399;
+}
+
+.scenery-card--japan {
+  --scene-label: '🗾 Japan';
+  --scene-bg: linear-gradient(180deg, #fda4af 0%, #fb7185 35%, #9f1239 100%);
+}
+.scenery-card--japan::before {
+  background:
+    radial-gradient(ellipse 55% 18% at 50% 72%, #1e293b 0%, transparent 70%),
+    radial-gradient(circle at 72% 28%, #f8fafc 0%, #f8fafc 11%, transparent 12%),
+    linear-gradient(180deg, #fecdd3 0%, #fda4af 30%, #e11d48 55%, #881337 100%);
+}
+
+.scenery-card--norway {
+  --scene-label: '🇳🇴 Norway';
+}
+.scenery-card--norway::before {
+  background:
+    linear-gradient(125deg, transparent 40%, rgba(167, 243, 208, 0.35) 45%, transparent 50%),
+    linear-gradient(160deg, #1e3a5f 0%, #0f172a 45%, #020617 100%),
+    radial-gradient(ellipse 80% 30% at 30% 100%, #334155 0%, transparent 60%);
+}
+.scenery-card--norway::after {
+  content: '🇳🇴 Norway';
+  color: #a5f3fc;
+}
+
+.scenery-card--africa {
+  --scene-label: '🦁 Safari';
+}
+.scenery-card--africa::before {
+  background:
+    radial-gradient(ellipse 40% 20% at 50% 78%, #ea580c 0%, transparent 70%),
+    linear-gradient(180deg, #fdba74 0%, #f97316 28%, #c2410c 55%, #7c2d12 85%, #431407 100%);
+}
+
+.scenery-card--cabo {
+  --scene-label: '🌅 Cabo';
+}
+.scenery-card--cabo::before {
+  background:
+    radial-gradient(ellipse 70% 35% at 50% 92%, #fde047 0%, #f59e0b 40%, transparent 72%),
+    linear-gradient(180deg, #38bdf8 0%, #818cf8 35%, #c084fc 60%, #1e1b4b 100%);
+}
+
+.scenery-card--paris {
+  --scene-label: '🗼 Paris';
+}
+.scenery-card--paris::before {
+  background:
+    linear-gradient(180deg, transparent 55%, #1e293b 55%, #0f172a 100%),
+    linear-gradient(180deg, #a5b4fc 0%, #6366f1 40%, #312e81 100%);
+}
+.scenery-card--paris::after {
+  content: '🗼 Paris';
+}
+
+.scenery-card--hawaii {
+  --scene-label: '🌺 Hawaii';
+}
+.scenery-card--hawaii::before {
+  background:
+    radial-gradient(ellipse 50% 22% at 20% 80%, #166534 0%, transparent 70%),
+    radial-gradient(ellipse 40% 18% at 80% 75%, #15803d 0%, transparent 65%),
+    linear-gradient(180deg, #7dd3fc 0%, #2dd4bf 45%, #0d9488 100%);
+}
+
+.scenery-card--iceland {
+  --scene-label: '🌌 Iceland';
+}
+.scenery-card--iceland::before {
+  background:
+    linear-gradient(165deg, rgba(74, 222, 128, 0.45) 0%, transparent 35%),
+    linear-gradient(180deg, #1e1b4b 0%, #0f172a 50%, #020617 100%),
+    radial-gradient(ellipse 60% 25% at 50% 95%, #475569 0%, transparent 70%);
+}
+.scenery-card--iceland::after {
+  color: #86efac;
+}
+
+.scenery-card--bali {
+  --scene-label: '🌴 Bali';
+}
+.scenery-card--bali::before {
+  background:
+    radial-gradient(ellipse 35% 30% at 25% 70%, #166534 0%, transparent 70%),
+    radial-gradient(ellipse 30% 25% at 70% 65%, #14532d 0%, transparent 65%),
+    linear-gradient(180deg, #67e8f9 0%, #22d3ee 50%, #0891b2 100%);
+}
+
+.scenery-card--santorini {
+  --scene-label: '🇬🇷 Santorini';
+}
+.scenery-card--santorini::before {
+  background:
+    linear-gradient(180deg, #38bdf8 0%, #60a5fa 42%, #1d4ed8 100%),
+    linear-gradient(165deg, transparent 48%, #f8fafc 48%, #f8fafc 62%, transparent 62%),
+    linear-gradient(175deg, transparent 58%, #e2e8f0 58%, #cbd5e1 72%, transparent 72%);
+}
+
+@keyframes scenery-float {
+  0%, 100% { transform: rotate(var(--rot)) translateY(0); }
+  50% { transform: rotate(var(--rot)) translateY(-14px); }
+}
+
 .wrap {
+  position: relative;
+  z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
   padding: 24px 20px 48px;
@@ -39,8 +222,14 @@ a { color: var(--accent); }
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 28px;
-  padding-bottom: 20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding: 0 20px 20px;
   border-bottom: 1px solid var(--panel2);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius);
 }
 
 .topbar h1 {
@@ -94,7 +283,9 @@ a { color: var(--accent); }
 .disclaimer {
   font-size: 0.78rem;
   color: var(--muted);
-  background: rgba(56, 189, 248, 0.08);
+  background: rgba(30, 41, 59, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(56, 189, 248, 0.2);
   border-radius: var(--radius);
   padding: 12px 14px;
@@ -115,7 +306,9 @@ a { color: var(--accent); }
 }
 
 .stat {
-  background: var(--panel);
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius);
   padding: 14px;
   border: 1px solid var(--panel2);
@@ -149,7 +342,11 @@ a { color: var(--accent); }
   gap: 6px;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--panel2);
-  padding-bottom: 10px;
+  padding: 10px;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: var(--radius);
 }
 
 .tab {
@@ -185,7 +382,9 @@ a { color: var(--accent); }
 }
 
 .panel {
-  background: var(--panel);
+  background: rgba(30, 41, 59, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius);
   padding: 18px;
   border: 1px solid var(--panel2);
@@ -712,7 +911,9 @@ a { color: var(--accent); }
 .form-actions .btn { flex: 1; }
 
 .hero-panel {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(167, 139, 250, 0.1) 50%, rgba(251, 113, 133, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.14) 0%, rgba(167, 139, 250, 0.12) 50%, rgba(251, 113, 133, 0.1) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(167, 139, 250, 0.3);
   border-radius: var(--radius);
   padding: 22px 24px;
@@ -1078,3 +1279,35 @@ a { color: var(--accent); }
 }
 
 .household-card li { margin-bottom: 6px; }
+
+@media (max-width: 900px) {
+  .scenery-card {
+    opacity: 0.12;
+    width: clamp(110px, 28vw, 160px);
+    height: clamp(76px, 18vw, 110px);
+  }
+
+  .scenery-card--bali,
+  .scenery-card--iceland,
+  .scenery-card--santorini {
+    display: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .scenery-card {
+    opacity: 0.08;
+  }
+
+  .scenery-card--hawaii,
+  .scenery-card--paris,
+  .scenery-card--norway {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scenery-card {
+    animation: none;
+  }
+}
