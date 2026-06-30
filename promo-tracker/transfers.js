@@ -2,6 +2,23 @@
 
 import { findCatalog, POINT_VALUES } from './catalog.js';
 import { DREAM_TRIPS } from './trips.js';
+function programPointValue(programId, points, transferBonusPct = 0) {
+  const pts = Math.max(0, Number(points) || 0);
+  const meta = PROGRAMS[programId];
+  const portalCpp = meta?.portalCpp || POINT_VALUES[programId] || 0.01;
+  let bestCpp = portalCpp;
+  TRANSFER_RULES.filter((r) => r.from === programId).forEach((r) => {
+    const p = PARTNERS[r.to];
+    if (p?.cpp > bestCpp) bestCpp = p.cpp;
+  });
+  const mult = 1 + (Math.max(0, transferBonusPct) / 100);
+  return {
+    portalCpp,
+    transferCpp: bestCpp,
+    portalUsd: Math.round(pts * portalCpp),
+    transferUsd: Math.round(pts * bestCpp * mult),
+  };
+}
 
 export const PROGRAMS = {
   chase_ur: {
@@ -259,7 +276,7 @@ export function stackPointsByProgram(offers) {
 }
 
 /** Full wallet: existing + partner + stack SUB */
-export function pointsWallet(profile, offers) {
+export function pointsWallet(profile, offers, transferBonusPct = 0) {
   const existing = { ...defaultPointsBalances(), ...profile.existingPoints };
   const partner = { ...defaultPointsBalances(), ...profile.partnerPoints };
   const fromStack = stackPointsByProgram(offers);
@@ -283,10 +300,15 @@ export function pointsWallet(profile, offers) {
     const total = yours + spouse + stack;
     if (total <= 0) return;
 
-    const cpp = POINT_VALUES[prog] || 0.01;
-    const usd = Math.round(total * cpp);
+    const val = programPointValue(prog, total, transferBonusPct);
     totalPoints += total;
-    totalUsd += usd;
+    totalUsd += val.portalUsd;
+
+    const best = TRANSFER_RULES
+      .filter((r) => r.from === prog)
+      .map((r) => PARTNERS[r.to])
+      .filter(Boolean)
+      .sort((a, b) => b.cpp - a.cpp)[0];
 
     lines.push({
       program: prog,
@@ -295,15 +317,23 @@ export function pointsWallet(profile, offers) {
       spouse,
       stack,
       total,
-      usd,
-      cpp,
+      usd: val.portalUsd,
+      cpp: val.portalCpp,
+      portalUsd: val.portalUsd,
+      transferUsd: val.transferUsd,
+      upliftUsd: Math.max(0, val.transferUsd - val.portalUsd),
+      bestPartner: best || null,
+      transferCpp: val.transferCpp,
     });
   });
+
+  const totalTravelUsd = lines.reduce((s, l) => s + (l.transferUsd || l.usd), 0);
 
   return {
     lines: lines.sort((a, b) => b.total - a.total),
     totalPoints,
     totalUsd,
+    totalTravelUsd,
     byProgram: Object.fromEntries(lines.map((l) => [l.program, l.total])),
     fromStack,
     existing,

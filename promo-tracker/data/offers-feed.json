@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-06-30T22:42:36.996Z",
-    "hash": "e640e3df4a72de20",
-    "previousHash": null,
+    "generatedAt": "2026-06-30T22:46:34.567Z",
+    "hash": "3309aa17a3cf543b",
+    "previousHash": "e640e3df4a72de20",
     "sources": [
       "catalog",
       "doctor_of_credit_rss",
@@ -33,12 +33,13 @@
       "hardPull": true,
       "tags": [
         "travel",
-        "dining"
+        "dining",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-chase-csr",
@@ -58,12 +59,13 @@
       "hardPull": true,
       "tags": [
         "travel",
-        "premium"
+        "premium",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-chase-cfu",
@@ -82,12 +84,13 @@
       "creditLine": 8000,
       "hardPull": true,
       "tags": [
-        "cashback"
+        "cashback",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-chase-cff",
@@ -106,12 +109,13 @@
       "creditLine": 8000,
       "hardPull": true,
       "tags": [
-        "rotating"
+        "rotating",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-chase-united",
@@ -130,12 +134,13 @@
       "creditLine": 10000,
       "hardPull": true,
       "tags": [
-        "airline"
+        "airline",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-chase-ihg",
@@ -154,12 +159,39 @@
       "creditLine": 10000,
       "hardPull": true,
       "tags": [
-        "hotel"
+        "hotel",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-chase-amazon",
+      "catalogId": "chase-amazon",
+      "type": "cc",
+      "issuer": "Chase",
+      "name": "Amazon Prime Visa",
+      "title": "Amazon Prime Visa — $150",
+      "subPoints": 0,
+      "subCash": 150,
+      "program": "chase_ur",
+      "valueUsd": 150,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "amazon",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-amex-gold",
@@ -179,12 +211,13 @@
       "hardPull": true,
       "tags": [
         "dining",
-        "grocery"
+        "grocery",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-amex-plat",
@@ -204,12 +237,13 @@
       "hardPull": true,
       "tags": [
         "travel",
-        "premium"
+        "premium",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-amex-bbp",
@@ -229,12 +263,13 @@
       "hardPull": true,
       "tags": [
         "business",
-        "2x"
+        "2x",
+        "business"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-amex-bcp",
@@ -253,12 +288,13 @@
       "creditLine": 8000,
       "hardPull": true,
       "tags": [
-        "cashback"
+        "cashback",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-amex-delta",
@@ -277,12 +313,38 @@
       "creditLine": 8000,
       "hardPull": true,
       "tags": [
-        "airline"
+        "airline",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-amex-hilton",
+      "catalogId": "amex-hilton",
+      "type": "cc",
+      "issuer": "Amex",
+      "name": "Hilton Honors Surpass",
+      "title": "Hilton Honors Surpass — 130k pts",
+      "subPoints": 130000,
+      "subCash": 0,
+      "program": "amex_mr",
+      "valueUsd": 1560,
+      "msr": 3000,
+      "msrMonths": 6,
+      "annualFee": 150,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "hotel",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-citi-premier",
@@ -301,12 +363,13 @@
       "creditLine": 10000,
       "hardPull": true,
       "tags": [
-        "travel"
+        "travel",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://www.citi.com/credit-cards/citi-strata-premier-credit-card",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-citi-custom",
@@ -325,12 +388,13 @@
       "creditLine": 5000,
       "hardPull": true,
       "tags": [
-        "cashback"
+        "cashback",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-citi-double",
@@ -349,12 +413,40 @@
       "creditLine": 8000,
       "hardPull": true,
       "tags": [
-        "2x"
+        "2x",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-citi-costco",
+      "catalogId": "citi-costco",
+      "type": "cc",
+      "issuer": "Citi",
+      "name": "Costco Anywhere Visa",
+      "title": "Costco Anywhere Visa — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "citi_ty",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 10000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "costco",
+        "gas",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-discover-it",
@@ -374,12 +466,13 @@
       "hardPull": true,
       "tags": [
         "match",
-        "rotating"
+        "rotating",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": "https://www.discover.com/credit-cards/cash-back/it-card.html",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-discover-miles",
@@ -398,12 +491,39 @@
       "creditLine": 5000,
       "hardPull": true,
       "tags": [
-        "match"
+        "match",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-discover-secured",
+      "catalogId": "discover-secured",
+      "type": "cc",
+      "issuer": "Discover",
+      "name": "it Secured",
+      "title": "it Secured — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "discover",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 12,
+      "annualFee": 0,
+      "creditLine": 500,
+      "hardPull": true,
+      "tags": [
+        "secured",
+        "rebuild",
+        "secured"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-capone-venture",
@@ -422,12 +542,13 @@
       "creditLine": 10000,
       "hardPull": true,
       "tags": [
-        "travel"
+        "travel",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-capone-savor",
@@ -446,12 +567,38 @@
       "creditLine": 5000,
       "hardPull": true,
       "tags": [
-        "dining"
+        "dining",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-capone-quicksilver",
+      "catalogId": "capone-quicksilver",
+      "type": "cc",
+      "issuer": "Capital One",
+      "name": "Quicksilver",
+      "title": "Quicksilver — 20k pts",
+      "subPoints": 20000,
+      "subCash": 0,
+      "program": "capone",
+      "valueUsd": 200,
+      "msr": 500,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "1.5x",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-bofa-premium",
@@ -470,12 +617,13 @@
       "creditLine": 12000,
       "hardPull": true,
       "tags": [
-        "travel"
+        "travel",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-bofa-customized",
@@ -494,12 +642,89 @@
       "creditLine": 6000,
       "hardPull": true,
       "tags": [
-        "cashback"
+        "cashback",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-bofa-unlimited",
+      "catalogId": "bofa-unlimited",
+      "type": "cc",
+      "issuer": "Bank of America",
+      "name": "Unlimited Cash",
+      "title": "Unlimited Cash — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "bofa",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 6000,
+      "hardPull": true,
+      "tags": [
+        "1.5x",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-wf-autograph",
+      "catalogId": "wf-autograph",
+      "type": "cc",
+      "issuer": "Wells Fargo",
+      "name": "Autograph",
+      "title": "Autograph — 20k pts",
+      "subPoints": 20000,
+      "subCash": 0,
+      "program": "wells",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "travel",
+        "3x",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-wf-active-cash",
+      "catalogId": "wf-active-cash",
+      "type": "cc",
+      "issuer": "Wells Fargo",
+      "name": "Active Cash",
+      "title": "Active Cash — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "wells",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "2x",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-usb-altitude",
@@ -518,12 +743,13 @@
       "creditLine": 10000,
       "hardPull": true,
       "tags": [
-        "travel"
+        "travel",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "card-usb-shopper",
@@ -542,12 +768,1013 @@
       "creditLine": 5000,
       "hardPull": true,
       "tags": [
-        "cashback"
+        "cashback",
+        "national"
       ],
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-usb-altitude-reserve",
+      "catalogId": "usb-altitude-reserve",
+      "type": "cc",
+      "issuer": "US Bank",
+      "name": "Altitude Reserve",
+      "title": "Altitude Reserve — 50k pts",
+      "subPoints": 50000,
+      "subCash": 0,
+      "program": "usbank",
+      "valueUsd": 600,
+      "msr": 4500,
+      "msrMonths": 3,
+      "annualFee": 400,
+      "creditLine": 15000,
+      "hardPull": true,
+      "tags": [
+        "travel",
+        "premium",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-barc-jetblue",
+      "catalogId": "barc-jetblue",
+      "type": "cc",
+      "issuer": "Barclays",
+      "name": "JetBlue Plus",
+      "title": "JetBlue Plus — 60k pts",
+      "subPoints": 60000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 480,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 99,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "airline",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-barc-wyndham",
+      "catalogId": "barc-wyndham",
+      "type": "cc",
+      "issuer": "Barclays",
+      "name": "Wyndham Earner Plus",
+      "title": "Wyndham Earner Plus — 45k pts",
+      "subPoints": 45000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 360,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 75,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "hotel",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-pnc-cash",
+      "catalogId": "pnc-cash",
+      "type": "cc",
+      "issuer": "PNC",
+      "name": "Cash Rewards Visa",
+      "title": "Cash Rewards Visa — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "pnc",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "cashback",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-pnc-points",
+      "catalogId": "pnc-points",
+      "type": "cc",
+      "issuer": "PNC",
+      "name": "Points Visa",
+      "title": "Points Visa — 40k pts",
+      "subPoints": 40000,
+      "subCash": 0,
+      "program": "pnc",
+      "valueUsd": 320,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "travel",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-td-double",
+      "catalogId": "td-double",
+      "type": "cc",
+      "issuer": "TD Bank",
+      "name": "Double Up",
+      "title": "Double Up — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 1500,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "2x",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-td-target",
+      "catalogId": "td-target",
+      "type": "cc",
+      "issuer": "TD Bank",
+      "name": "Target RedCard Credit",
+      "title": "Target RedCard Credit — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 3000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "target",
+        "5pct",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-truist-enjoy",
+      "catalogId": "truist-enjoy",
+      "type": "cc",
+      "issuer": "Truist",
+      "name": "Enjoy Cash",
+      "title": "Enjoy Cash — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "cashback",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-truist-travel",
+      "catalogId": "truist-travel",
+      "type": "cc",
+      "issuer": "Truist",
+      "name": "Enjoy Travel",
+      "title": "Enjoy Travel — 30k pts",
+      "subPoints": 30000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 240,
+      "msr": 3000,
+      "msrMonths": 3,
+      "annualFee": 89,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "travel",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-regions-explore",
+      "catalogId": "regions-explore",
+      "type": "cc",
+      "issuer": "Regions",
+      "name": "Explore Visa",
+      "title": "Explore Visa — 30k pts",
+      "subPoints": 30000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 240,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "travel",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-regions-cash",
+      "catalogId": "regions-cash",
+      "type": "cc",
+      "issuer": "Regions",
+      "name": "Cash Rewards",
+      "title": "Cash Rewards — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "cashback",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-53-cash",
+      "catalogId": "53-cash",
+      "type": "cc",
+      "issuer": "Fifth Third",
+      "name": "1% Cash Back",
+      "title": "1% Cash Back — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 500,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "cashback",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-huntington-voice",
+      "catalogId": "huntington-voice",
+      "type": "cc",
+      "issuer": "Huntington",
+      "name": "Voice Rewards",
+      "title": "Voice Rewards — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "choice-category",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-bmo-cashback",
+      "catalogId": "bmo-cashback",
+      "type": "cc",
+      "issuer": "BMO",
+      "name": "CashBack Mastercard",
+      "title": "CashBack Mastercard — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "cashback",
+        "regional"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-nfcu-more",
+      "catalogId": "nfcu-more",
+      "type": "cc",
+      "issuer": "Navy Federal",
+      "name": "More Rewards Amex",
+      "title": "More Rewards Amex — 20k pts",
+      "subPoints": 20000,
+      "subCash": 0,
+      "program": "navy",
+      "valueUsd": 160,
+      "msr": 2000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "3x",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-nfcu-cash",
+      "catalogId": "nfcu-cash",
+      "type": "cc",
+      "issuer": "Navy Federal",
+      "name": "cashRewards",
+      "title": "cashRewards — $250",
+      "subPoints": 0,
+      "subCash": 250,
+      "program": "navy",
+      "valueUsd": 250,
+      "msr": 2000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "cashback",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-nfcu-flagship",
+      "catalogId": "nfcu-flagship",
+      "type": "cc",
+      "issuer": "Navy Federal",
+      "name": "Flagship Rewards",
+      "title": "Flagship Rewards — 30k pts",
+      "subPoints": 30000,
+      "subCash": 0,
+      "program": "navy",
+      "valueUsd": 240,
+      "msr": 3000,
+      "msrMonths": 3,
+      "annualFee": 49,
+      "creditLine": 10000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "travel",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-penfed-pathfinder",
+      "catalogId": "penfed-pathfinder",
+      "type": "cc",
+      "issuer": "PenFed",
+      "name": "Pathfinder Rewards",
+      "title": "Pathfinder Rewards — 50k pts",
+      "subPoints": 50000,
+      "subCash": 0,
+      "program": "penfed",
+      "valueUsd": 450,
+      "msr": 3000,
+      "msrMonths": 3,
+      "annualFee": 95,
+      "creditLine": 10000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "travel",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-penfed-power",
+      "catalogId": "penfed-power",
+      "type": "cc",
+      "issuer": "PenFed",
+      "name": "Power Cash Rewards",
+      "title": "Power Cash Rewards — $100",
+      "subPoints": 0,
+      "subCash": 100,
+      "program": "penfed",
+      "valueUsd": 100,
+      "msr": 1500,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "2x",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-dcu-platinum",
+      "catalogId": "dcu-platinum",
+      "type": "cc",
+      "issuer": "DCU",
+      "name": "Visa Platinum",
+      "title": "Visa Platinum — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "dcu",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "low-rate",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-dcu-cash",
+      "catalogId": "dcu-cash",
+      "type": "cc",
+      "issuer": "DCU",
+      "name": "Visa Cash Back",
+      "title": "Visa Cash Back — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "dcu",
+      "valueUsd": 200,
+      "msr": 2000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "cashback",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-alliant-sig",
+      "catalogId": "alliant-sig",
+      "type": "cc",
+      "issuer": "Alliant",
+      "name": "Visa Signature Cashback",
+      "title": "Visa Signature Cashback — $100",
+      "subPoints": 0,
+      "subCash": 100,
+      "program": "regional",
+      "valueUsd": 100,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "2.5x",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-andrews-globe",
+      "catalogId": "andrews-globe",
+      "type": "cc",
+      "issuer": "Andrews FCU",
+      "name": "GlobeTrek Rewards",
+      "title": "GlobeTrek Rewards — 30k pts",
+      "subPoints": 30000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 240,
+      "msr": 3000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "travel",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-apple-card",
+      "catalogId": "apple-card",
+      "type": "cc",
+      "issuer": "Goldman Sachs",
+      "name": "Apple Card",
+      "title": "Apple Card — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "apple",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "fintech",
+        "daily-cash",
+        "fintech"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-sofi-unlimited",
+      "catalogId": "sofi-unlimited",
+      "type": "cc",
+      "issuer": "SoFi",
+      "name": "Unlimited 2%",
+      "title": "Unlimited 2% — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "sofi",
+      "valueUsd": 200,
+      "msr": 3000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "fintech",
+        "2x",
+        "fintech"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-sofi-essential",
+      "catalogId": "sofi-essential",
+      "type": "cc",
+      "issuer": "SoFi",
+      "name": "Essential Card",
+      "title": "Essential Card — $100",
+      "subPoints": 0,
+      "subCash": 100,
+      "program": "sofi",
+      "valueUsd": 100,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "fintech",
+        "fintech"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-sync-paypal",
+      "catalogId": "sync-paypal",
+      "type": "cc",
+      "issuer": "Synchrony",
+      "name": "PayPal Cashback Mastercard",
+      "title": "PayPal Cashback Mastercard — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "sync",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "2x",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-sync-venmo",
+      "catalogId": "sync-venmo",
+      "type": "cc",
+      "issuer": "Synchrony",
+      "name": "Venmo Credit Card",
+      "title": "Venmo Credit Card — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "sync",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "cashback",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-sync-lowes",
+      "catalogId": "sync-lowes",
+      "type": "cc",
+      "issuer": "Synchrony",
+      "name": "Lowe's Advantage",
+      "title": "Lowe's Advantage — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "sync",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "5pct",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-sync-sams",
+      "catalogId": "sync-sams",
+      "type": "cc",
+      "issuer": "Synchrony",
+      "name": "Sam's Club Mastercard",
+      "title": "Sam's Club Mastercard — $30",
+      "subPoints": 0,
+      "subCash": 30,
+      "program": "sync",
+      "valueUsd": 30,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "gas",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-bread-bjs",
+      "catalogId": "bread-bjs",
+      "type": "cc",
+      "issuer": "Bread Financial",
+      "name": "BJ's One Mastercard",
+      "title": "BJ's One Mastercard — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "sync",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 5000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "warehouse",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-comenity-ulta",
+      "catalogId": "comenity-ulta",
+      "type": "cc",
+      "issuer": "Comenity",
+      "name": "Ultamate Rewards Mastercard",
+      "title": "Ultamate Rewards Mastercard — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "sync",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 3000,
+      "hardPull": true,
+      "tags": [
+        "store",
+        "beauty",
+        "store"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-elan-fidelity",
+      "catalogId": "elan-fidelity",
+      "type": "cc",
+      "issuer": "Elan",
+      "name": "Fidelity Rewards Visa (Elan)",
+      "title": "Fidelity Rewards Visa (Elan) — $200",
+      "subPoints": 0,
+      "subCash": 200,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 3000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 10000,
+      "hardPull": true,
+      "tags": [
+        "elan",
+        "2x",
+        "invest",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-chase-ink-cash",
+      "catalogId": "chase-ink-cash",
+      "type": "cc",
+      "issuer": "Chase",
+      "name": "Ink Business Cash",
+      "title": "Ink Business Cash — 75k pts",
+      "subPoints": 75000,
+      "subCash": 0,
+      "program": "chase_ur",
+      "valueUsd": 1125,
+      "msr": 6000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 10000,
+      "hardPull": true,
+      "tags": [
+        "business",
+        "5x",
+        "business"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-chase-ink-unlimited",
+      "catalogId": "chase-ink-unlimited",
+      "type": "cc",
+      "issuer": "Chase",
+      "name": "Ink Business Unlimited",
+      "title": "Ink Business Unlimited — 75k pts",
+      "subPoints": 75000,
+      "subCash": 0,
+      "program": "chase_ur",
+      "valueUsd": 1125,
+      "msr": 6000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 10000,
+      "hardPull": true,
+      "tags": [
+        "business",
+        "1.5x",
+        "business"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-amex-bgr",
+      "catalogId": "amex-bgr",
+      "type": "cc",
+      "issuer": "Amex",
+      "name": "Business Gold",
+      "title": "Business Gold — 100k pts",
+      "subPoints": 100000,
+      "subCash": 0,
+      "program": "amex_mr",
+      "valueUsd": 1200,
+      "msr": 15000,
+      "msrMonths": 3,
+      "annualFee": 375,
+      "creditLine": 0,
+      "hardPull": true,
+      "tags": [
+        "business",
+        "business"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-fnbo-getaway",
+      "catalogId": "fnbo-getaway",
+      "type": "cc",
+      "issuer": "FNBO",
+      "name": "Getaway Visa",
+      "title": "Getaway Visa — 25k pts",
+      "subPoints": 25000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 200,
+      "msr": 1000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "travel",
+        "national"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-creditone-plat",
+      "catalogId": "creditone-plat",
+      "type": "cc",
+      "issuer": "Credit One",
+      "name": "Platinum Visa",
+      "title": "Platinum Visa — offer",
+      "subPoints": 0,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 0,
+      "msr": 0,
+      "msrMonths": 3,
+      "annualFee": 39,
+      "creditLine": 500,
+      "hardPull": true,
+      "tags": [
+        "rebuild",
+        "fee-heavy",
+        "secured"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "card-firsttech-choice",
+      "catalogId": "firsttech-choice",
+      "type": "cc",
+      "issuer": "First Tech FCU",
+      "name": "Choice Rewards",
+      "title": "Choice Rewards — 20k pts",
+      "subPoints": 20000,
+      "subCash": 0,
+      "program": "regional",
+      "valueUsd": 160,
+      "msr": 2000,
+      "msrMonths": 3,
+      "annualFee": 0,
+      "creditLine": 8000,
+      "hardPull": true,
+      "tags": [
+        "cu",
+        "cu"
+      ],
+      "source": "catalog",
+      "sourceUrl": null,
+      "docUrl": "https://www.doctorofcredit.com/",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     }
   ],
   "banks": [
@@ -566,7 +1793,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/chase-bank-bonus/",
       "notes": "Verify DD requirements on DOC.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "bank-bofa-200",
@@ -582,7 +1809,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/best-bank-account-bonuses/",
       "notes": "Amount varies by promo period.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "bank-capone-400",
@@ -598,7 +1825,155 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/capital-one-bank-bonus-360-checking360-savings/",
       "notes": "Often requires large deposit.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-wf-325",
+      "type": "bank",
+      "issuer": "Wells Fargo",
+      "title": "Wells Fargo checking — est. $325",
+      "valueUsd": 325,
+      "minSpend": 1000,
+      "hardPull": false,
+      "tags": [
+        "checking"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/wells-fargo-checking-bonus/",
+      "notes": "Promo varies; may require DD.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-pnc-400",
+      "type": "bank",
+      "issuer": "PNC",
+      "title": "PNC Virtual Wallet — est. $400",
+      "valueUsd": 400,
+      "minSpend": 5000,
+      "hardPull": false,
+      "tags": [
+        "checking"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/pnc-bank-bonus/",
+      "notes": "Often tiered by deposit + DD.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-td-300",
+      "type": "bank",
+      "issuer": "TD Bank",
+      "title": "TD Beyond checking — est. $300",
+      "valueUsd": 300,
+      "minSpend": 2500,
+      "hardPull": false,
+      "tags": [
+        "checking"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/td-bank-bonus/",
+      "notes": "East-coast availability.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-truist-400",
+      "type": "bank",
+      "issuer": "Truist",
+      "title": "Truist checking — est. $400",
+      "valueUsd": 400,
+      "minSpend": 1000,
+      "hardPull": false,
+      "tags": [
+        "checking"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/truist-bank-bonus/",
+      "notes": "Verify regional eligibility.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-nfcu-250",
+      "type": "bank",
+      "issuer": "Navy Federal",
+      "title": "Navy Federal checking — est. $250",
+      "valueUsd": 250,
+      "minSpend": 0,
+      "hardPull": false,
+      "tags": [
+        "checking",
+        "cu"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/navy-federal-credit-union-bonus/",
+      "notes": "Membership required.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-dcu-100",
+      "type": "bank",
+      "issuer": "DCU",
+      "title": "DCU checking — est. $100",
+      "valueUsd": 100,
+      "minSpend": 500,
+      "hardPull": false,
+      "tags": [
+        "checking",
+        "cu"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/dcu-bonus/",
+      "notes": "CU membership required.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-sofi-300",
+      "type": "bank",
+      "issuer": "SoFi",
+      "title": "SoFi checking + savings — est. $300",
+      "valueUsd": 300,
+      "minSpend": 5000,
+      "hardPull": false,
+      "tags": [
+        "checking",
+        "fintech"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/sofi-money-bonus/",
+      "notes": "Direct deposit tiers change often.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-ally-200",
+      "type": "bank",
+      "issuer": "Other",
+      "title": "Ally savings — est. promo",
+      "valueUsd": 200,
+      "minSpend": 0,
+      "hardPull": false,
+      "tags": [
+        "savings",
+        "online"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/best-bank-account-bonuses/",
+      "notes": "Online banks rotate offers.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
+    },
+    {
+      "feedId": "bank-schwab-100",
+      "type": "bank",
+      "issuer": "Other",
+      "title": "Schwab brokerage referral — est. $100",
+      "valueUsd": 100,
+      "minSpend": 0,
+      "hardPull": false,
+      "tags": [
+        "brokerage"
+      ],
+      "source": "curated",
+      "sourceUrl": "https://www.doctorofcredit.com/best-brokerage-bonuses-and-free-trades/",
+      "notes": "Referral / transfer promos.",
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     }
   ],
   "portals": [
@@ -616,7 +1991,7 @@
       "source": "curated",
       "sourceUrl": "https://www.rakuten.com/",
       "notes": "Rate varies by merchant; stack with category bonus.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "portal-topcashback",
@@ -631,7 +2006,7 @@
       "source": "curated",
       "sourceUrl": "https://www.topcashback.com/",
       "notes": "Compare vs Rakuten before large purchases.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     }
   ],
   "transferBonuses": [
@@ -653,7 +2028,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/american-express-membership-rewards-transfer-bonuses/",
       "notes": "Periodic 20–30% bonuses — wait before large transfers.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     },
     {
       "feedId": "xfer-chase-hyatt",
@@ -671,7 +2046,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/chase-ultimate-rewards-transfer-partners/",
       "notes": "Often best value without a promo.",
-      "updatedAt": "2026-06-30T22:42:36.996Z"
+      "updatedAt": "2026-06-30T22:46:34.567Z"
     }
   ],
   "docAlerts": [
@@ -716,6 +2091,21 @@
       "sourceUrl": "https://www.doctorofcredit.com/rakuten-wednesdays-7-at-lowes-on-july-1st/",
       "pubDate": "Mon, 29 Jun 2026 19:09:18 +0000",
       "description": "Rakuten weekly Big Deal on Wednesday:\r\n\r\nJuly 1st: 7% on Lowes.com\r\nJuly 8th: 10% on Expedia (hotel)\r\nJuly 22nd: 22% on Viator \r\nJuly 29th: 25% on PetSmart",
+      "tags": [
+        "doc-rss"
+      ]
+    },
+    {
+      "feedId": "doc-best-brokerage-bonuses-8211-earn-up-to-5-000",
+      "type": "bank",
+      "issuer": "Other",
+      "title": "Best Brokerage Bonuses &#8211; Earn Up To $5,000",
+      "valueUsd": 0,
+      "hardPull": false,
+      "source": "doctor_of_credit",
+      "sourceUrl": "https://www.doctorofcredit.com/best-brokerage-bonuses-earn-up-to-3500/",
+      "pubDate": "Mon, 29 Jun 2026 14:00:51 +0000",
+      "description": "This page has been updated for 2026. We are now also including hold periods in the top description to make it easier to sort. Remember it might make sense to hit the smaller bonuses with shorter hold periods before hitting the ones with longer hold periods. You can also now easil",
       "tags": [
         "doc-rss"
       ]

@@ -1,6 +1,10 @@
-/** Realistic offer earnings — pipeline, timing, net value */
+/** Realistic offer earnings — pipeline, timing, net value + transfer upside */
 
 import { findCatalog, pointsToUsd } from './catalog.js';
+import {
+  offerCashValue, offerTravelValue, valueQueuedOffers, valueCapturedOffers,
+  DEFAULT_TRANSFER_BONUS_PCT, planEstimates,
+} from './valuation.js';
 
 const DAY = 86400000;
 
@@ -68,16 +72,45 @@ export const OFFER_PLANS = [
     ],
     caption: 'Pure cash path when you want earnings without touching card velocity.',
   },
+  {
+    id: 'creator-stack',
+    name: 'Creator stack · ~18 months',
+    hook: '2 players · transfers · biz cards',
+    emoji: '✨',
+    estValue: 0,
+    estTravelValue: 0,
+    entries: [
+      { type: 'bank', title: 'Checking bonus — $300', issuer: 'Chase', valueUsd: 300, hardPull: false, minSpend: 1000, status: 'planned', priority: 1, owner: 'player1', notes: 'Player 1 · no hard pull' },
+      { type: 'bank', title: 'Savings bonus — $400', issuer: 'Capital One', valueUsd: 400, hardPull: false, minSpend: 0, status: 'planned', priority: 2, owner: 'player1', notes: 'Player 1 · fund before card apps' },
+      { type: 'bank', title: 'CU checking — $250', issuer: 'Navy Federal', valueUsd: 250, hardPull: false, minSpend: 500, status: 'planned', priority: 3, owner: 'player2', notes: 'Player 2 · membership required' },
+      { catalogId: 'chase-csp', priority: 4, status: 'planned', owner: 'player1', notes: 'Player 1 · UR pool anchor. Transfer → Hyatt for reel math.' },
+      { catalogId: 'chase-csr', priority: 5, status: 'planned', owner: 'player1', notes: 'Player 1 · ~90d after CSP. Portal 1.5¢ or Hyatt 2¢+' },
+      { catalogId: 'chase-ink-cash', priority: 6, status: 'planned', owner: 'player1', notes: 'Player 1 · business SUB — often outside 5/24' },
+      { catalogId: 'chase-ihg', priority: 7, status: 'idea', owner: 'player1', notes: 'Player 1 · hotel points land in IHG (no UR transfer needed)' },
+      { catalogId: 'amex-gold', priority: 8, status: 'planned', owner: 'player2', notes: 'Player 2 · groceries/dining MSR. MR → Flying Blue / Delta.' },
+      { catalogId: 'amex-plat', priority: 9, status: 'planned', owner: 'player2', notes: 'Player 2 · ~90d after Gold. Lounge flex content.' },
+      { catalogId: 'amex-delta', priority: 10, status: 'idea', owner: 'player2', notes: 'Player 2 · SkyMiles already in airline currency' },
+      { catalogId: 'citi-premier', priority: 11, status: 'planned', owner: 'player2', notes: 'Player 2 · TY → Turkish / American for trips' },
+      { catalogId: 'capone-venture', priority: 12, status: 'idea', owner: 'player2', notes: 'Player 2 · Cap One → Singapore / Emirates aspirational' },
+      { catalogId: 'chase-cfu', priority: 13, status: 'idea', owner: 'player1', notes: 'Player 1 · low MSR UR top-off card' },
+      { type: 'shopping', title: 'Portal stack — big purchase', issuer: 'Rakuten', valueUsd: 120, hardPull: false, status: 'idea', priority: 14, owner: 'player1', notes: 'Stack portal + category bonus on planned spend' },
+    ],
+    caption: 'The “$20k vacation” pitch: ~$9k+ cash floor, ~$18–25k trip value when UR/MR transfer to Hyatt + airlines. Two players, spaced 18mo.',
+  },
 ];
 
-export function offerValue(o) {
-  if (o.valueUsd) return o.valueUsd;
-  if (o.subPoints && o.program) return pointsToUsd(o.subPoints, o.program);
-  if (o.catalogId) {
-    const c = findCatalog(o.catalogId);
-    if (c) return c.subCash || pointsToUsd(c.subPoints, c.program);
+// Pre-compute plan estimates for cards
+OFFER_PLANS.forEach((plan) => {
+  if (plan.entries?.length) {
+    const est = planEstimates(plan.entries, DEFAULT_TRANSFER_BONUS_PCT);
+    if (!plan.estValue) plan.estValue = est.cash;
+    plan.estTravelValue = est.travel;
+    plan.estPoints = est.points;
   }
-  return 0;
+});
+
+export function offerValue(o) {
+  return offerCashValue(o);
 }
 
 export function annualFeesPending(offers) {
@@ -112,12 +145,17 @@ export function capturedUsd(offers) {
 }
 
 /** Months spanned by timeline + $/month run rate */
-export function earningsProjection(offers, timeline) {
+export function earningsProjection(offers, timeline, { transferBonusPct = 0 } = {}) {
   const pipeline = pipelineUsd(offers);
   const captured = capturedUsd(offers);
   const fees = annualFeesPending(offers);
   const netPipeline = Math.max(0, pipeline - fees);
   const total = captured + netPipeline;
+
+  const queuedVal = valueQueuedOffers(offers, { transferBonusPct });
+  const capturedVal = valueCapturedOffers(offers, transferBonusPct);
+  const netTravelPipeline = Math.max(0, queuedVal.travel - fees);
+  const travelTotal = capturedVal.travel + netTravelPipeline;
 
   let months = 6;
   if (timeline?.length >= 2) {
@@ -130,6 +168,7 @@ export function earningsProjection(offers, timeline) {
   }
 
   const perMonth = months > 0 ? Math.round(netPipeline / months) : 0;
+  const travelPerMonth = months > 0 ? Math.round(netTravelPipeline / months) : 0;
   const byType = {};
   offers.filter((o) => !['skip'].includes(o.status)).forEach((o) => {
     const t = o.type || 'cc';
@@ -142,10 +181,21 @@ export function earningsProjection(offers, timeline) {
     total,
     fees,
     netPipeline,
+    travelPipeline: queuedVal.travel,
+    travelCaptured: capturedVal.travel,
+    netTravelPipeline,
+    travelTotal,
+    travelUplift: Math.max(0, queuedVal.travel - pipeline),
+    travelUpliftWithBonus: Math.max(0, queuedVal.travel - pipeline),
+    totalPoints: queuedVal.points + capturedVal.points,
+    pointsQueued: queuedVal.points,
+    byProgram: queuedVal.byProgram,
     months,
     perMonth,
+    travelPerMonth,
     msr: msrExposure(offers),
     queued: queuedCount(offers),
     byType,
+    transferBonusPct,
   };
 }

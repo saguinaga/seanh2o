@@ -1,6 +1,7 @@
 /** Optional vacation goals — motivation, not the core product */
 
 import { findCatalog, pointsToUsd } from './catalog.js';
+import { offerCashValue, offerTravelValue } from './valuation.js';
 
 export const DREAM_TRIPS = [
   { id: 'cabo', emoji: '🌅', name: 'Cabo weekend', cashPrice: 2200 },
@@ -37,6 +38,15 @@ export function tripsFundedByValue(valueUsd) {
 }
 
 export function cardTripPitch(card) {
-  const val = card.subCash || pointsToUsd(card.subPoints, card.program);
-  return `Est. ${val >= 1000 ? `$${Math.round(val).toLocaleString()} value` : `$${val}`} — verify live SUB`;
+  const fake = { catalogId: card.id, subPoints: card.subPoints, program: card.program, valueUsd: card.subCash };
+  const cash = offerCashValue(fake);
+  const travel = offerTravelValue(fake);
+  if (travel > cash + 50) {
+    return `~${fmtUsd(travel)} trip value (${fmtUsd(cash)} cash floor) — transfer partners`;
+  }
+  return `Est. ${fmtUsd(cash)} — verify live welcome bonus`;
+}
+
+function fmtUsd(n) {
+  return n >= 1000 ? `$${Math.round(n).toLocaleString()}` : `$${n}`;
 }

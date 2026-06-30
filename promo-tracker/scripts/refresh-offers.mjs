@@ -29,6 +29,15 @@ const BANK_SEEDS = [
   { feedId: 'bank-chase-300', type: 'bank', issuer: 'Chase', title: 'Chase checking — est. $300', valueUsd: 300, minSpend: 1000, hardPull: false, tags: ['checking', 'direct-deposit'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/chase-bank-bonus/', notes: 'Verify DD requirements on DOC.' },
   { feedId: 'bank-bofa-200', type: 'bank', issuer: 'Bank of America', title: 'BofA checking — est. $200', valueUsd: 200, minSpend: 1000, hardPull: false, tags: ['checking'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/best-bank-account-bonuses/', notes: 'Amount varies by promo period.' },
   { feedId: 'bank-capone-400', type: 'bank', issuer: 'Capital One', title: 'Capital One 360 — est. $400', valueUsd: 400, minSpend: 0, hardPull: false, tags: ['savings'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/capital-one-bank-bonus-360-checking360-savings/', notes: 'Often requires large deposit.' },
+  { feedId: 'bank-wf-325', type: 'bank', issuer: 'Wells Fargo', title: 'Wells Fargo checking — est. $325', valueUsd: 325, minSpend: 1000, hardPull: false, tags: ['checking'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/wells-fargo-checking-bonus/', notes: 'Promo varies; may require DD.' },
+  { feedId: 'bank-pnc-400', type: 'bank', issuer: 'PNC', title: 'PNC Virtual Wallet — est. $400', valueUsd: 400, minSpend: 5000, hardPull: false, tags: ['checking'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/pnc-bank-bonus/', notes: 'Often tiered by deposit + DD.' },
+  { feedId: 'bank-td-300', type: 'bank', issuer: 'TD Bank', title: 'TD Beyond checking — est. $300', valueUsd: 300, minSpend: 2500, hardPull: false, tags: ['checking'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/td-bank-bonus/', notes: 'East-coast availability.' },
+  { feedId: 'bank-truist-400', type: 'bank', issuer: 'Truist', title: 'Truist checking — est. $400', valueUsd: 400, minSpend: 1000, hardPull: false, tags: ['checking'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/truist-bank-bonus/', notes: 'Verify regional eligibility.' },
+  { feedId: 'bank-nfcu-250', type: 'bank', issuer: 'Navy Federal', title: 'Navy Federal checking — est. $250', valueUsd: 250, minSpend: 0, hardPull: false, tags: ['checking', 'cu'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/navy-federal-credit-union-bonus/', notes: 'Membership required.' },
+  { feedId: 'bank-dcu-100', type: 'bank', issuer: 'DCU', title: 'DCU checking — est. $100', valueUsd: 100, minSpend: 500, hardPull: false, tags: ['checking', 'cu'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/dcu-bonus/', notes: 'CU membership required.' },
+  { feedId: 'bank-sofi-300', type: 'bank', issuer: 'SoFi', title: 'SoFi checking + savings — est. $300', valueUsd: 300, minSpend: 5000, hardPull: false, tags: ['checking', 'fintech'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/sofi-money-bonus/', notes: 'Direct deposit tiers change often.' },
+  { feedId: 'bank-ally-200', type: 'bank', issuer: 'Other', title: 'Ally savings — est. promo', valueUsd: 200, minSpend: 0, hardPull: false, tags: ['savings', 'online'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/best-bank-account-bonuses/', notes: 'Online banks rotate offers.' },
+  { feedId: 'bank-schwab-100', type: 'bank', issuer: 'Other', title: 'Schwab brokerage referral — est. $100', valueUsd: 100, minSpend: 0, hardPull: false, tags: ['brokerage'], source: 'curated', sourceUrl: 'https://www.doctorofcredit.com/best-brokerage-bonuses-and-free-trades/', notes: 'Referral / transfer promos.' },
 ];
 
 const PORTAL_SEEDS = [
@@ -60,19 +69,63 @@ function decodeXml(s) {
   return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#039;/g, "'").trim();
 }
 
+const ISSUER_PATTERNS = [
+  ['Chase', ['chase', 'sapphire', 'freedom flex', 'freedom unlimited', 'ink business', 'united mileageplus', 'ihg']],
+  ['Amex', ['amex', 'american express', 'membership rewards', 'delta skymiles', 'hilton honors', 'marriott bonvoy']],
+  ['Citi', ['citi', 'costco anywhere', 'strata', 'thankyou', 'aadvantage']],
+  ['Discover', ['discover it', 'discover card', 'discover miles']],
+  ['Capital One', ['capital one', 'venture x', 'venture rewards', 'savorone', 'quicksilver']],
+  ['Bank of America', ['bank of america', 'bofa', 'premium rewards']],
+  ['Wells Fargo', ['wells fargo', 'autograph', 'active cash', 'bilt']], // bilt is WF-backed
+  ['US Bank', ['us bank', 'u.s. bank', 'altitude connect', 'altitude reserve']],
+  ['Barclays', ['barclays', 'jetblue', 'wyndham', 'aadvantage aviator']],
+  ['PNC', ['pnc bank', 'pnc cash', 'virtual wallet']],
+  ['TD Bank', ['td bank', 'target redcard']],
+  ['Truist', ['truist', 'suntrust', 'bb&t']],
+  ['Regions', ['regions bank', 'regions explore']],
+  ['Fifth Third', ['fifth third', '5/3', '53 bank']],
+  ['Huntington', ['huntington bank', 'huntington voice']],
+  ['BMO', ['bmo harris', 'bmo bank']],
+  ['Navy Federal', ['navy federal', 'nfcu']],
+  ['PenFed', ['penfed', 'pentagon federal']],
+  ['DCU', ['dcu', 'digital federal credit union']],
+  ['Alliant', ['alliant credit union', 'alliant cu']],
+  ['Andrews FCU', ['andrews federal', 'andrews fcu']],
+  ['Goldman Sachs', ['apple card', 'goldman sachs', 'apple pay later']],
+  ['SoFi', ['sofi credit', 'sofi card', 'sofi money']],
+  ['Synchrony', ['synchrony', 'paypal cashback', 'venmo credit', "sam's club mastercard", "lowe's advantage", 'amazon store card']],
+  ['Bread Financial', ['bread financial', 'bread cashback', "bj's one", 'comenity capital']],
+  ['Comenity', ['comenity', 'ultamate rewards']],
+  ['Elan', ['elan financial', 'fidelity rewards visa']],
+  ['Credit One', ['credit one']],
+  ['FNBO', ['fnbo', 'first national bank of omaha', 'getaway visa']],
+  ['First Tech FCU', ['first tech', 'first tech federal']],
+  ['Mercury', ['mercury credit', 'mercury io']],
+  ['Brex', ['brex card', 'brex 30']],
+];
+
+const CC_KEYWORDS = [
+  'credit card', 'sub', 'signup', 'sign-up', 'sign up bonus', 'welcome bonus',
+  'intro bonus', 'new cardmember', 'prequalified', 'pre-approved',
+  ...ISSUER_PATTERNS.flatMap(([, keys]) => keys),
+];
+
 function classifyDocItem(item) {
   const t = item.title.toLowerCase();
   if (t.includes('transfer bonus') || (t.includes('transfer') && t.includes('bonus'))) {
     return 'transfer_bonus';
   }
-  if (t.includes('bank bonus') || t.includes('checking bonus') || t.includes('savings bonus') || (t.includes('checking') && t.includes('bonus'))) {
+  if (t.includes('bank bonus') || t.includes('checking bonus') || t.includes('savings bonus')
+    || t.includes('brokerage bonus') || t.includes('credit union bonus')
+    || (t.includes('checking') && t.includes('bonus'))
+    || (t.includes('direct deposit') && t.includes('bonus'))) {
     return 'bank';
   }
-  if (t.includes('rakuten') || t.includes('portal') || t.includes('cashback monitor')) {
+  if (t.includes('rakuten') || t.includes('portal') || t.includes('cashback monitor')
+    || t.includes('befrugal') || t.includes('shopback')) {
     return 'shopping';
   }
-  if (t.includes('credit card') || t.includes('sub') || t.includes('signup') || t.includes('sign-up')
-    || ['chase', 'amex', 'american express', 'citi', 'discover', 'capital one'].some((k) => t.includes(k))) {
+  if (CC_KEYWORDS.some((k) => t.includes(k))) {
     return 'cc';
   }
   return null;
@@ -80,13 +133,10 @@ function classifyDocItem(item) {
 
 function guessIssuer(title) {
   const t = title.toLowerCase();
-  if (t.includes('chase')) return 'Chase';
-  if (t.includes('amex') || t.includes('american express')) return 'Amex';
-  if (t.includes('citi')) return 'Citi';
-  if (t.includes('discover')) return 'Discover';
-  if (t.includes('capital one')) return 'Capital One';
-  if (t.includes('wells fargo')) return 'Wells Fargo';
-  if (t.includes('us bank')) return 'US Bank';
+  for (const [issuer, keys] of ISSUER_PATTERNS) {
+    if (keys.some((k) => t.includes(k))) return issuer;
+  }
+  if (t.includes('credit union') || t.includes(' fcU') || t.includes('federal credit')) return 'Other';
   return 'Other';
 }
 
@@ -145,7 +195,7 @@ function buildCardEntries() {
     annualFee: card.annualFee,
     creditLine: card.creditLine,
     hardPull: card.hardPull,
-    tags: card.tags || [],
+    tags: [...(card.tags || []), card.category].filter(Boolean),
     source: 'catalog',
     sourceUrl: OFFICIAL_URLS[card.id] || null,
     docUrl: 'https://www.doctorofcredit.com/',

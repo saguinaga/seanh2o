@@ -68,11 +68,11 @@ export function defaultHousehold() {
   };
 }
 
-export function householdWallet(profile, household, offers) {
-  const p1 = pointsWallet(profile, offers.filter((o) => getOfferOwner(household, o.id) !== 'player2'));
+export function householdWallet(profile, household, offers, transferBonusPct = 0) {
+  const p1 = pointsWallet(profile, offers.filter((o) => getOfferOwner(household, o.id) !== 'player2'), transferBonusPct);
   const p2Offers = offers.filter((o) => getOfferOwner(household, o.id) === 'player2');
   const p2Prof = { ...profile, ...household.player2Profile, existingPoints: household.player2Profile?.existingPoints };
-  const p2 = pointsWallet(p2Prof, p2Offers);
+  const p2 = pointsWallet(p2Prof, p2Offers, transferBonusPct);
 
   const combined = { ...p1.byProgram };
   Object.entries(p2.byProgram).forEach(([k, v]) => {
@@ -104,7 +104,7 @@ export function suggestOfferOwner(profile, household, offer) {
   if (g1.status === 'blocked' && g2.status === 'blocked') return { owner: null, reason: 'Both blocked — wait or skip' };
   const p1Cards = profile.personalCards24mo ?? profile.cards24mo ?? 0;
   const p2Cards = p2.personalCards24mo ?? p2.cards24mo ?? 0;
-  if (p1Cards > p2Cards) return { owner: 'player2', reason: 'Balance 5/24 — player 2 has more room' };
+  if (p1Cards > p2Cards) return { owner: 'player2', reason: 'Player 2 has opened fewer cards recently — better Chase odds' };
   return { owner: 'player1', reason: 'Default to player 1' };
 }
 
