@@ -4,7 +4,7 @@ import { findCatalog, pointsToUsd } from './catalog.js';
 import {
   offerCashValue, offerTravelValue, valueQueuedOffers, valueCapturedOffers,
   DEFAULT_TRANSFER_BONUS_PCT, planEstimates,
-} from './valuation-engine.js';
+} from './bb-value.js';
 
 const DAY = 86400000;
 

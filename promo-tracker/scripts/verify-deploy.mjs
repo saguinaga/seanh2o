@@ -3,11 +3,11 @@
 const BASE = process.env.DEPLOY_URL || 'https://seanaguinaga.com/promo-tracker';
 const REQUIRED = [
   'index.html',
-  'app.js',
+  'board.js',
+  'bb-labels.js',
+  'bb-value.js',
   'rules.js',
   'issuers.js',
-  'plain-labels.js',
-  'valuation-engine.js',
   'themes.js',
   'wallet-integration.js',
   'earnings.js',
@@ -27,21 +27,20 @@ for (const path of REQUIRED) {
   if (!ok) failed += 1;
 }
 
-const appUrl = `${BASE}/app.js?v=deploy-fix-v2`;
-const app = await (await fetch(appUrl)).text();
-if (!app.includes('plain-labels.js') || !app.includes('valuation-engine.js')) {
-  console.log('FAIL cached app.js missing plain-labels/valuation-engine imports');
+const index = await (await fetch(`${BASE}/index.html`)).text();
+if (!index.includes('board.js?v=20260630a')) {
+  console.log('FAIL index.html missing board.js entry');
   failed += 1;
 } else {
-  console.log('OK app.js import paths (cache-busted entry)');
+  console.log('OK index.html loads board.js');
 }
 
-for (const legacy of ['help.js', 'valuation.js', 'valuation-engine.js', 'plain-labels.js']) {
-  const res = await fetch(`${BASE}/${legacy}`, { method: 'HEAD' });
-  if (res.status !== 200) {
-    console.log(`FAIL ${res.status} ${legacy}`);
-    failed += 1;
-  }
+const board = await (await fetch(`${BASE}/board.js?v=20260630a`)).text();
+if (!board.includes('bb-labels.js') || !board.includes('bb-value.js')) {
+  console.log('FAIL board.js missing bb-labels/bb-value imports');
+  failed += 1;
+} else {
+  console.log('OK board.js import paths');
 }
 
 process.exit(failed ? 1 : 0);

@@ -1,7 +1,7 @@
 /** Optional vacation goals — motivation, not the core product */
 
 import { findCatalog, pointsToUsd } from './catalog.js';
-import { offerCashValue, offerTravelValue } from './valuation-engine.js';
+import { offerCashValue, offerTravelValue } from './bb-value.js';
 
 export const DREAM_TRIPS = [
   { id: 'cabo', emoji: '🌅', name: 'Cabo weekend', cashPrice: 2200 },

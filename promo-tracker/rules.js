@@ -1,6 +1,6 @@
 /** Credit gates, profile v2, sequencing — educational, not financial advice */
 import { evaluateIssuerGates, ISSUER_LIST } from './issuers.js';
-import { ruleLabel } from './plain-labels.js';
+import { ruleLabel } from './bb-labels.js';
 import { findCatalog, catalogEntryToOffer } from './catalog.js';
 import { OFFER_PLANS } from './earnings.js';
 import { DEFAULT_THEME, isValidTheme } from './themes.js';

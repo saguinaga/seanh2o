@@ -1,5 +1,5 @@
 /** Issuer-specific velocity & eligibility rules (heuristics — verify before applying) */
-import { ruleLabel, ruleTip } from './plain-labels.js';
+import { ruleLabel, ruleTip } from './bb-labels.js';
 
 export const ISSUER_GROUPS = [
   {
