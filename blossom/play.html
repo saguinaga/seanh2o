@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=10">
+  <link rel="stylesheet" href="css/blossom.css?v=11">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -162,12 +162,14 @@
     <footer class="game-bottom">
       <p class="npc-bubble" id="npcBubble">Walk to the green exit to leave home · tap objects to interact</p>
       <p class="travel-hint" id="travelHint"></p>
+      <div class="chat-log" id="chatLog" aria-live="polite"></div>
       <div class="chat-bar">
         <input type="text" class="chat-input" id="chatInput" placeholder="Talk to NPCs…" maxlength="120" enterkeyhint="send">
         <button type="button" class="chat-send" id="chatSend">Say</button>
       </div>
       <div class="game-toolbar">
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="guideHelpBtn" title="How to get stars">📖</button>
+        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="photoBtn" title="Photo mode (P)">📷</button>
         <button type="button" class="toolbar-btn" id="endDayBtn">End day</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="soundToggle" title="Sound on" aria-pressed="true">🔊</button>
       </div>
@@ -207,6 +209,11 @@
         </div>
       </div>
       <p class="shift-timer" id="shiftTimer">15s</p>
+      <div class="shift-beat" id="shiftBeatBar" aria-hidden="true">
+        <div class="shift-beat__zone"></div>
+        <div class="shift-beat__marker" id="shiftBeatMarker"></div>
+      </div>
+      <p class="shift-beat-hint" id="shiftBeatHint">Hit the green zone, then pick the right tool!</p>
       <p class="shift-combo" id="shiftCombo" hidden></p>
       <p class="shift-progress" id="shiftProgress">Score 0/3</p>
       <div class="shift-tools">
@@ -283,23 +290,27 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js?v=5"></script>
-  <script src="js/world.js?v=3"></script>
-  <script src="js/art.js?v=3"></script>
-  <script src="js/gfx.js?v=1"></script>
-  <script src="js/avatar.js?v=3"></script>
+  <script src="js/world.js?v=4"></script>
+  <script src="js/art.js?v=4"></script>
+  <script src="js/gfx.js?v=2"></script>
+  <script src="js/weather.js?v=1"></script>
+  <script src="js/pet.js?v=1"></script>
+  <script src="js/chat.js?v=1"></script>
+  <script src="js/photo.js?v=1"></script>
+  <script src="js/avatar.js?v=4"></script>
   <script src="js/career.js?v=1"></script>
   <script src="js/effects.js?v=1"></script>
-  <script src="js/audio.js?v=2"></script>
+  <script src="js/audio.js?v=3"></script>
   <script src="js/save.js?v=4"></script>
   <script src="js/guide.js?v=2"></script>
   <script src="js/auth.js?v=1"></script>
   <script src="js/boutique.js?v=1"></script>
   <script src="js/day-system.js?v=5"></script>
-  <script src="js/shift.js?v=2"></script>
+  <script src="js/shift.js?v=3"></script>
   <script src="js/controls.js?v=2"></script>
-  <script src="js/render.js?v=7"></script>
-  <script src="js/game.js?v=12"></script>
-  <script src="js/app.js?v=9"></script>
+  <script src="js/render.js?v=8"></script>
+  <script src="js/game.js?v=13"></script>
+  <script src="js/app.js?v=10"></script>
   <script>
   (function recoverFromStaleScripts() {
     if (window.BlossomFx) {

@@ -449,17 +449,18 @@ window.BlossomAvatar = (function () {
   function drawCharacter(ctx, opts) {
     const {
       avatar, wardrobe, x, y, facing = 1, anim = 0, moving = false,
-      shirtImg, glow = false, chubby = false,
+      shirtImg, glow = false, chubby = false, landSquash = 0, facingVisual = null,
     } = opts;
     const av = { ...avatar };
     if (wardrobe?.equipped) {
       av._equippedAcc = wardrobe.equipped.accessory;
     }
     const sc = bodyScale(av);
-    let s = sc.total * (chubby ? 1.08 : 1);
-    const bob = Math.sin(anim * (moving ? 10 : 3)) * (moving ? 3 : 0.8);
-    const leg = moving ? Math.sin(anim * 12) * 5 : 0;
+    let s = sc.total * (chubby ? 1.08 : 1) * (1 - landSquash * 0.06);
+    const bob = Math.sin(anim * (moving ? 10 : 3)) * (moving ? 3 : 0.8) - landSquash * 4;
+    const leg = moving ? Math.sin(anim * 12) * (6 + Math.abs(Math.sin(anim * 12)) * 2) : 0;
     const py = y + bob;
+    const faceDir = facingVisual ?? facing;
 
     if (glow) {
       const g = ctx.createRadialGradient(x, py - 20, 4, x, py - 20, 48);
@@ -486,7 +487,7 @@ window.BlossomAvatar = (function () {
 
     ctx.save();
     ctx.translate(x, py);
-    ctx.scale(facing * s, s);
+    ctx.scale(faceDir * s, s * (1 + landSquash * 0.08));
 
     const top = getEquipped({ wardrobe }, 'top') || ITEMS.top_starter;
     const bottom = getEquipped({ wardrobe }, 'bottom') || ITEMS.bottom_starter;

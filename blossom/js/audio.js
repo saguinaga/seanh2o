@@ -14,6 +14,8 @@ window.BlossomAudio = (function () {
   let windSource = null;
   let padNodes = [];
   let lastStep = 0;
+  let locAmbience = null;
+  let currentLocAmb = '';
 
   // D major pentatonic — soft whistle/flute feel
   const MELODY = [293.66, 329.63, 369.99, 440, 493.88, 587.33, 659.25];
@@ -148,6 +150,72 @@ window.BlossomAudio = (function () {
     setTimeout(tick, 800);
   }
 
+  function stopLocAmbience() {
+    if (!locAmbience) return;
+    try {
+      locAmbience.nodes.forEach((n) => {
+        try { n.stop?.(); n.disconnect?.(); } catch { /* noop */ }
+      });
+    } catch { /* noop */ }
+    if (locAmbience.timer) clearInterval(locAmbience.timer);
+    locAmbience = null;
+    currentLocAmb = '';
+  }
+
+  function setLocationAmbience(locId, roomId) {
+    const key = `${locId}-${roomId || ''}`;
+    if (!ctx || !enabled || !unlocked || key === currentLocAmb) return;
+    stopLocAmbience();
+    currentLocAmb = key;
+    const nodes = [];
+    const t = ctx.currentTime;
+
+    function loopNoise(vol, freq, type = 'lowpass') {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuffer(2);
+      src.loop = true;
+      const filter = ctx.createBiquadFilter();
+      filter.type = type;
+      filter.frequency.value = freq;
+      const gain = ctx.createGain();
+      gain.gain.value = vol;
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(ambientBus);
+      src.start(t);
+      nodes.push(src);
+      return { src, gain };
+    }
+
+    let timer = null;
+    if (locId === 'yard') {
+      const bird = loopNoise(0.012, 2400, 'bandpass');
+      timer = setInterval(() => {
+        if (!enabled || !unlocked) return;
+        playWhistle(MELODY[Math.floor(Math.random() * 3)], 0.35, 0.04);
+      }, 9000 + Math.random() * 5000);
+      nodes.push({ stop: () => clearInterval(timer) });
+    } else if (locId === 'street') {
+      loopNoise(0.02, 700);
+      timer = setInterval(() => {
+        if (!enabled || !unlocked) return;
+        tone(180 + Math.random() * 40, 'sine', 0.08, 0.02, ambientBus);
+      }, 4200 + Math.random() * 3000);
+      nodes.push({ stop: () => clearInterval(timer) });
+    } else if (locId === 'house' && roomId === 'kitchen') {
+      const hum = loopNoise(0.018, 120);
+      timer = setInterval(() => {
+        if (!enabled || !unlocked) return;
+        tone(90, 'sine', 0.05, 0.015, ambientBus);
+      }, 6000);
+      nodes.push({ stop: () => clearInterval(timer) });
+    } else if (locId === 'park') {
+      loopNoise(0.015, 900);
+    }
+
+    locAmbience = { nodes, timer };
+  }
+
   function startAmbient() {
     if (!ctx || !enabled || ambientRunning) return;
     startWind();
@@ -161,6 +229,7 @@ window.BlossomAudio = (function () {
       clearInterval(melodyTimer);
       melodyTimer = null;
     }
+    stopLocAmbience();
     if (windSource) {
       try {
         windSource.src.stop();
@@ -217,6 +286,22 @@ window.BlossomAudio = (function () {
       case 'step':
         tone(90 + Math.random() * 20, 'sine', 0.06, 0.025);
         break;
+      case 'stepWood':
+        tone(110 + Math.random() * 15, 'triangle', 0.05, 0.022);
+        break;
+      case 'stepTile':
+        tone(220 + Math.random() * 30, 'sine', 0.04, 0.018);
+        break;
+      case 'stepGrass':
+        tone(70 + Math.random() * 20, 'sine', 0.07, 0.02);
+        break;
+      case 'stepPavement':
+        tone(140 + Math.random() * 25, 'square', 0.045, 0.02);
+        break;
+      case 'phaseShift':
+        chime([392, 493.88, 587.33], 0.1);
+        setTimeout(() => playWhistle(659.25, 0.7, 0.06), 200);
+        break;
       case 'ui':
         tone(660, 'sine', 0.08, 0.06);
         break;
@@ -262,12 +347,18 @@ window.BlossomAudio = (function () {
     }
   }
 
-  function maybeStep(isMoving) {
+  function maybeStep(isMoving, surface) {
     if (!isMoving || !enabled || !unlocked) return;
     const now = Date.now();
-    if (now - lastStep < 340) return;
+    const gap = surface === 'grass' ? 380 : 320;
+    if (now - lastStep < gap) return;
     lastStep = now;
-    playSfx('step');
+    const map = { wood: 'stepWood', tile: 'stepTile', grass: 'stepGrass', pavement: 'stepPavement' };
+    playSfx(map[surface] || 'step');
+  }
+
+  function playPhaseTransition() {
+    playSfx('phaseShift');
   }
 
   function bindUnlockOnGesture() {
@@ -287,6 +378,8 @@ window.BlossomAudio = (function () {
     setEnabled,
     playSfx,
     maybeStep,
+    playPhaseTransition,
+    setLocationAmbience,
     isEnabled: () => enabled,
   };
 })();

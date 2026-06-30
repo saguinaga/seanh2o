@@ -128,6 +128,22 @@ window.BlossomWorld = (function () {
     return findProp(locId, (p) => p.kind === 'shop' && p.shop === 'cafe');
   }
 
+  function getRoomAt(x, loc) {
+    if (!loc?.rooms?.length) return null;
+    const room = loc.rooms.find((r) => x >= r.x && x < r.x + r.w);
+    return room?.id || null;
+  }
+
+  function footSurface(loc, roomId) {
+    if (loc.id === 'street') return 'pavement';
+    if (loc.id === 'yard' || loc.id === 'park') return 'grass';
+    if (loc.id === 'house') {
+      if (roomId === 'kitchen' || roomId === 'bath') return 'tile';
+      return 'wood';
+    }
+    return 'wood';
+  }
+
   return {
     W,
     H,
@@ -137,5 +153,7 @@ window.BlossomWorld = (function () {
     choresForLocation,
     getFridgeProp,
     getCafeProp,
+    getRoomAt,
+    footSurface,
   };
 })();

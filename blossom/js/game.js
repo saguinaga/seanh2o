@@ -8,8 +8,10 @@ window.BlossomGame = (function () {
   function fx() { return window.BlossomFx || FX_STUB; }
 
   let canvas, ctx, state, onMessage, onPersist;
-  let player = { x: 400, y: 360, vy: 0, onGround: true, facing: 1 };
+  let player = { x: 400, y: 360, vy: 0, onGround: true, facing: 1, facingVisual: 1, landSquash: 0, wasAirborne: false };
   let anim = 0;
+  let chatLog = [];
+  let phaseFade = 0;
   let shirtImg = null;
   let shirtSrc = '';
   let phaseTimer = 0;
@@ -41,6 +43,7 @@ window.BlossomGame = (function () {
     onPersist = callbacks.onPersist;
     player.x = state.position?.x ?? 360;
     player.y = state.position?.y ?? getLoc().floorY - 20;
+    BlossomPet?.reset?.(player);
     if (!started) {
       started = true;
       BlossomControls.init();
@@ -49,6 +52,7 @@ window.BlossomGame = (function () {
       canvas.addEventListener('click', onTap);
       canvas.addEventListener('touchend', onTapTouch, { passive: false });
       window.addEventListener('keydown', onInteractKey);
+      window.addEventListener('keydown', onPhotoKey);
       requestAnimationFrame(loop);
       if (phaseInterval) clearInterval(phaseInterval);
       phaseInterval = setInterval(tickPhase, 1000);
@@ -228,14 +232,21 @@ window.BlossomGame = (function () {
     if (prop.choreId) doChoreProp(prop);
   }
 
+  function haptic(ms) {
+    try { if (navigator.vibrate) navigator.vibrate(ms || 14); } catch { /* noop */ }
+  }
+
   function changeLocation(toId, spawn) {
     if (transitionLock > 0) return;
     const next = BlossomWorld.getLocation(toId);
     state.currentLocation = toId;
+    state.currentRoom = BlossomWorld.getRoomAt(spawn.x, next);
     player.x = spawn.x;
     player.y = spawn.y;
     state.position = { x: player.x, y: player.y };
     transitionLock = 55;
+    BlossomRender.invalidateCache?.();
+    BlossomPet?.reset?.(player);
     window.BlossomAudio?.playSfx('travel');
     fx().travelBurst();
     fx().screenFlash('#4ade80', 0.3);
@@ -277,6 +288,14 @@ window.BlossomGame = (function () {
     }
   }
 
+  function onPhotoKey(e) {
+    if (BlossomControls.isTypingTarget?.()) return;
+    if (e.key?.toLowerCase() !== 'p') return;
+    if (document.querySelector('.modal-backdrop:not([hidden])')) return;
+    e.preventDefault();
+    window.BlossomPhoto?.toggle?.();
+  }
+
   function onInteractKey(e) {
     if (BlossomControls.isTypingTarget?.()) return;
     if (e.key !== 'e' && e.key !== 'Enter') return;
@@ -297,6 +316,8 @@ window.BlossomGame = (function () {
       fx().starBurst(cx, cy);
       fx().floatText(cx, cy - 20, '+5 ⭐', '#fde047');
       window.BlossomAudio?.playSfx('star');
+      haptic(18);
+      BlossomPet?.onChore?.();
       onPersist(state);
     } else window.BlossomAudio?.playSfx('warn');
   }
@@ -353,8 +374,11 @@ window.BlossomGame = (function () {
     phaseTimer += 1000;
     if (phaseTimer >= phaseMs()) {
       phaseTimer = 0;
+      if (BlossomPhoto?.isActive?.()) return;
       const next = BlossomDay.advancePhase(state);
       if (next) {
+        phaseFade = 1;
+        window.BlossomAudio?.playPhaseTransition?.();
         const hint = (state.day || 1) <= 3 ? BlossomGuide.phaseHint(state) : next.hint;
         showReminder(hint);
         onPersist(state);
@@ -425,19 +449,29 @@ window.BlossomGame = (function () {
     player.x += dx * speed;
     player.y += dy * speed * 0.85;
     if (dx !== 0) player.facing = dx > 0 ? 1 : -1;
+    player.facingVisual += (player.facing - player.facingVisual) * 0.22;
     if (jump && player.onGround) {
       player.vy = -7;
       player.onGround = false;
+      player.wasAirborne = true;
       window.BlossomAudio?.playSfx('jump');
     }
-    window.BlossomAudio?.maybeStep(Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1);
+    const roomId = BlossomWorld.getRoomAt(player.x, loc);
+    state.currentRoom = roomId;
+    const surface = BlossomWorld.footSurface(loc, roomId);
+    window.BlossomAudio?.maybeStep(Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1, surface);
+    window.BlossomAudio?.setLocationAmbience?.(loc.id, roomId);
     player.vy += 0.35;
     player.y += player.vy;
     if (player.y > floorY) {
+      if (player.wasAirborne && player.vy > 2) player.landSquash = 1;
       player.y = floorY;
       player.vy = 0;
       player.onGround = true;
+      player.wasAirborne = false;
     }
+    player.landSquash = Math.max(0, (player.landSquash || 0) - 0.12);
+    BlossomPet?.update?.(player, loc);
     player.x = Math.max(30, Math.min(BlossomWorld.W - 30, player.x));
     player.y = Math.max(loc.floorY - 120, Math.min(floorY, player.y));
     state.position = { x: player.x, y: player.y };
@@ -492,12 +526,21 @@ window.BlossomGame = (function () {
       ctx, loc, loc.props, anim, state.choresDone || {}, nearIdFor(nearInteract), state.todaysChores, state
     );
     fx().drawAmbient(ctx, loc.floorY, state.timeOfDay || 'morning');
-    if (nearInteract) {
+    if (nearInteract && !BlossomPhoto?.isActive?.()) {
       BlossomRender.drawInteractGlow(ctx, nearInteract, anim);
+      BlossomRender.drawInteractPrompt(ctx, nearInteract, anim);
     }
     BlossomRender.drawPlayer(ctx, state, player, anim, shirtImg, shirtSrc, Boolean(nearInteract));
+    if (BlossomPet?.visible?.(loc)) {
+      /* drawn in world layer */
+    }
     fx().draw(ctx);
     ctx.restore();
+    if (phaseFade > 0) {
+      phaseFade = Math.max(0, phaseFade - 0.025);
+      ctx.fillStyle = `rgba(253, 224, 71, ${phaseFade * 0.35})`;
+      ctx.fillRect(0, 0, BlossomWorld.W, BlossomWorld.H);
+    }
     if (transitionLock > 0) {
       const t = transitionLock / 55;
       ctx.fillStyle = `rgba(255, 247, 237, ${Math.min(0.65, t * 0.7)})`;
@@ -510,9 +553,11 @@ window.BlossomGame = (function () {
       ctx.globalAlpha = 1;
       ctx.textAlign = 'left';
     }
-    BlossomRender.drawLocationBadge(ctx, loc.name);
-    BlossomRender.drawCareerBadge(ctx, state);
-    BlossomRender.drawChoreTracker(ctx, state);
+    if (!BlossomPhoto?.isActive?.()) {
+      BlossomRender.drawLocationBadge(ctx, loc.name);
+      BlossomRender.drawCareerBadge(ctx, state);
+      BlossomRender.drawChoreTracker(ctx, state);
+    }
     avPatternLoad(state);
   }
 
@@ -557,5 +602,29 @@ window.BlossomGame = (function () {
     updateHud();
   }
 
-  return { init, updateHud, endDay, showReminder, onBonnieAccepted, checkBonnieOffer };
+  function getNearInteract() {
+    return nearInteract;
+  }
+
+  function getChatLog() {
+    return chatLog;
+  }
+
+  function sendChatMessage(text) {
+    const result = BlossomChat?.send?.(text, state, nearInteract, chatLog);
+    if (result) {
+      const bubble = document.getElementById('npcBubble');
+      if (bubble) {
+        bubble.textContent = result.body;
+        bubble.classList.add('npc-bubble--chat');
+      }
+      window.BlossomAudio?.playSfx('chat');
+    }
+    return result;
+  }
+
+  return {
+    init, updateHud, endDay, showReminder, onBonnieAccepted, checkBonnieOffer,
+    getNearInteract, getChatLog, sendChatMessage, haptic,
+  };
 })();

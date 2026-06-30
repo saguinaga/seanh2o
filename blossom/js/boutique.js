@@ -56,6 +56,7 @@ window.BlossomBoutique = (function () {
         onMessage?.(res.msg, res.ok ? 'good' : 'warn');
         if (res.ok) {
           window.BlossomAudio?.playSfx('star');
+          window.BlossomGame?.haptic?.(22);
           BlossomAvatar.equipItem(state, btn.dataset.buy);
           onPersist?.(state);
         } else window.BlossomAudio?.playSfx('warn');

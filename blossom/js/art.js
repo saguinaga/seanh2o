@@ -269,6 +269,8 @@ window.BlossomArt = (function () {
 
   function drawNpcBonnie(ctx, x, y, anim, near) {
     const bob = Math.sin(anim * 2) * 2;
+    const wave = near ? Math.sin(anim * 6) * 0.35 : 0;
+    const blink = Math.sin(anim * 0.9) > 0.92;
     const py = y + bob;
     if (near) {
       const g = ctx.createRadialGradient(x, py - 20, 10, x, py - 20, 55);
@@ -315,16 +317,36 @@ window.BlossomArt = (function () {
     ctx.fillStyle = shade('#be185d', 0.1);
     roundRect(ctx, x - 18, py - 58, 36, 8, 4);
     ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.ellipse(x - 6, py - 46, 4, 5, 0, 0, Math.PI * 2);
-    ctx.ellipse(x + 6, py - 46, 4, 5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#831843';
-    ctx.beginPath();
-    ctx.arc(x - 6, py - 45, 2, 0, Math.PI * 2);
-    ctx.arc(x + 6, py - 45, 2, 0, Math.PI * 2);
-    ctx.fill();
+    if (!blink) {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.ellipse(x - 6, py - 46, 4, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(x + 6, py - 46, 4, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#831843';
+      ctx.beginPath();
+      ctx.arc(x - 6, py - 45, 2, 0, Math.PI * 2);
+      ctx.arc(x + 6, py - 45, 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.strokeStyle = '#831843';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - 9, py - 45);
+      ctx.lineTo(x - 3, py - 45);
+      ctx.moveTo(x + 3, py - 45);
+      ctx.lineTo(x + 9, py - 45);
+      ctx.stroke();
+    }
+    if (near) {
+      ctx.save();
+      ctx.translate(x + 22, py - 18);
+      ctx.rotate(-0.6 + wave);
+      ctx.fillStyle = skin;
+      roundRect(ctx, -4, -4, 10, 18, 4);
+      ctx.fill();
+      ctx.restore();
+    }
     ctx.fillStyle = '#f9a8d4';
     ctx.beginPath();
     ctx.ellipse(x - 10, py - 40, 3, 2, 0, 0, Math.PI * 2);

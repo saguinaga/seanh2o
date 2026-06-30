@@ -18,6 +18,9 @@ window.BlossomShift = (function () {
   let currentNeed = 'wash';
   let pretend = false;
   let theme = 'salon';
+  let beatPos = 0;
+  let beatDir = 1;
+  let beatTimer = null;
 
   function $(id) { return document.getElementById(id); }
 
@@ -54,7 +57,9 @@ window.BlossomShift = (function () {
   function close() {
     active = false;
     if (timer) clearInterval(timer);
+    if (beatTimer) clearInterval(beatTimer);
     timer = null;
+    beatTimer = null;
     const modal = $('shiftModal');
     const card = modal?.querySelector('.shift-card');
     card?.classList.remove('shift-card--open', 'shift-card--urgent', 'shift-card--perfect');
@@ -87,7 +92,17 @@ window.BlossomShift = (function () {
     }
     currentNeed = NEEDS[Math.floor(Math.random() * NEEDS.length)];
     timeLeft = pretend ? 12 : 15;
+    beatPos = Math.random() * 60 + 20;
+    beatDir = 1;
     updateUi(total);
+    updateBeatBar();
+    if (beatTimer) clearInterval(beatTimer);
+    beatTimer = setInterval(() => {
+      beatPos += beatDir * (pretend ? 2.8 : 3.6);
+      if (beatPos >= 96) { beatPos = 96; beatDir = -1; }
+      if (beatPos <= 4) { beatPos = 4; beatDir = 1; }
+      updateBeatBar();
+    }, 40);
     if (timer) clearInterval(timer);
     timer = setInterval(() => {
       timeLeft -= 1;
@@ -102,6 +117,20 @@ window.BlossomShift = (function () {
         nextRound();
       }
     }, 1000);
+  }
+
+  function updateBeatBar() {
+    const marker = $('shiftBeatMarker');
+    const bar = $('shiftBeatBar');
+    if (marker) marker.style.left = `${beatPos}%`;
+    if (bar) {
+      const inZone = beatPos >= 42 && beatPos <= 58;
+      bar.classList.toggle('shift-beat--hot', inZone);
+    }
+  }
+
+  function timingBonus() {
+    return beatPos >= 40 && beatPos <= 60;
   }
 
   function updateUi(total) {
@@ -137,7 +166,17 @@ window.BlossomShift = (function () {
   function pick(toolId) {
     if (!active) return;
     const btn = document.querySelector(`[data-shift-tool="${toolId}"]`);
+    const onBeat = timingBonus();
+    const hint = $('shiftBeatHint');
     if (toolId === currentNeed) {
+      if (!onBeat) {
+        combo = 0;
+        timeLeft = Math.max(1, timeLeft - 2);
+        window.BlossomAudio?.playSfx('warn');
+        flashCard('shift-card--miss');
+        if (hint) hint.textContent = 'Hit the green zone for a perfect!';
+        return;
+      }
       score += 1;
       combo += 1;
       window.BlossomAudio?.playSfx(combo > 2 ? 'combo' : 'chore');
@@ -145,12 +184,15 @@ window.BlossomShift = (function () {
       btn?.classList.add('shift-tool-btn--hit');
       setTimeout(() => btn?.classList.remove('shift-tool-btn--hit'), 300);
       if (combo >= 3) window.BlossomAudio?.playSfx('combo');
+      if (hint) hint.textContent = 'Perfect timing!';
     } else {
       combo = 0;
       window.BlossomAudio?.playSfx('warn');
       flashCard('shift-card--miss');
       btn?.classList.add('shift-tool-btn--miss');
       setTimeout(() => btn?.classList.remove('shift-tool-btn--miss'), 300);
+      if (hint) hint.textContent = 'Wrong tool — try again!';
+      return;
     }
     nextRound();
   }

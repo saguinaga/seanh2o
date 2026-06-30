@@ -270,7 +270,87 @@ window.BlossomGfx = (function () {
   }
 
   function needsShadow(kind) {
-    return !['road', 'fence', 'tree', 'exit', 'rug', 'path', 'pond', 'bridge', 'npc', 'lamp'].includes(kind);
+    return !['road', 'fence', 'tree', 'exit', 'rug', 'path', 'pond', 'bridge', 'npc', 'lamp', 'pet'].includes(kind);
+  }
+
+  function roomLighting(ctx, roomId, x, y, w, h, phaseId, anim) {
+    if (roomId === 'bath') {
+      const g = ctx.createRadialGradient(x + w / 2, y + 20, 4, x + w / 2, y + h / 2, w * 0.7);
+      g.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
+      g.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      for (let i = x + 8; i < x + w - 8; i += 14) {
+        ctx.fillRect(i, y + h * 0.3, 8, 3);
+      }
+    } else if (roomId === 'kitchen') {
+      const glow = ctx.createLinearGradient(x, y, x, y + h * 0.5);
+      glow.addColorStop(0, 'rgba(253, 186, 116, 0.22)');
+      glow.addColorStop(1, 'rgba(253, 186, 116, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(x, y, w, h * 0.55);
+      ctx.fillStyle = 'rgba(254, 243, 199, 0.35)';
+      ctx.fillRect(x + 8, y + 6, w - 16, 5);
+    } else if (roomId === 'bedroom' && (phaseId === 'evening' || phaseId === 'night')) {
+      const pulse = 0.65 + Math.sin(anim * 1.1) * 0.1;
+      const lg = ctx.createRadialGradient(x + w * 0.35, y + 40, 2, x + w * 0.35, y + 80, 90);
+      lg.addColorStop(0, `rgba(253, 224, 71, ${pulse * 0.2})`);
+      lg.addColorStop(1, 'rgba(253, 224, 71, 0)');
+      ctx.fillStyle = lg;
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(x + w * 0.32, y + 36, 10, 14);
+    }
+  }
+
+  function drawWindowView(ctx, x, y, w, h, anim) {
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, '#7dd3fc');
+    g.addColorStop(0.5, '#86efac');
+    g.addColorStop(1, '#4ade80');
+    ctx.fillStyle = g;
+    ctx.fillRect(x + 4, y + 4, w - 8, h - 8);
+    const scroll = anim * 12;
+    ctx.fillStyle = '#16a34a';
+    ctx.beginPath();
+    ctx.moveTo(x + 6, y + h - 8);
+    for (let i = 0; i <= w - 12; i += 10) {
+      const py = y + h - 14 + Math.sin((i + scroll) * 0.05) * 4;
+      ctx.lineTo(x + 6 + i, py);
+    }
+    ctx.lineTo(x + w - 6, y + h - 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.beginPath();
+    ctx.arc(x + w * 0.3 + Math.sin(anim) * 4, y + 14, 8, 0, Math.PI * 2);
+    ctx.fill();
+    if (window.BlossomGfx?.drawCloudPremium) {
+      drawCloudPremium(ctx, x + w * 0.55, y + 10, 0.35, 0.5, anim);
+    }
+  }
+
+  const layerCache = { canvas: null, key: '' };
+
+  function drawCachedInterior(ctx, loc, drawFn) {
+    const key = `${loc.id}-${(loc.rooms || []).map((r) => r.wall).join('|')}`;
+    if (!layerCache.canvas) {
+      layerCache.canvas = document.createElement('canvas');
+      layerCache.canvas.width = W();
+      layerCache.canvas.height = H();
+    }
+    if (layerCache.key !== key) {
+      const b = layerCache.canvas.getContext('2d');
+      b.clearRect(0, 0, W(), H());
+      drawFn(b);
+      layerCache.key = key;
+    }
+    ctx.drawImage(layerCache.canvas, 0, 0);
+  }
+
+  function invalidateLayerCache() {
+    layerCache.key = '';
   }
 
   return {
@@ -286,7 +366,12 @@ window.BlossomGfx = (function () {
     wallAmbientOcclusion,
     drawTreePremium,
     carpetPattern,
+    colorGrade,
     finishFrame,
     needsShadow,
+    roomLighting,
+    drawWindowView,
+    drawCachedInterior,
+    invalidateLayerCache,
   };
 })();

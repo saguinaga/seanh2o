@@ -306,6 +306,9 @@ window.BlossomApp = (function () {
       }
     });
     document.getElementById('chatSend')?.addEventListener('click', sendChat);
+    document.getElementById('chatInput')?.addEventListener('focus', () => {
+      document.getElementById('chatLog')?.classList.add('chat-log--open');
+    });
     document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
       e.stopPropagation();
       if (e.key === 'Enter') {
@@ -326,17 +329,12 @@ window.BlossomApp = (function () {
     const input = document.getElementById('chatInput');
     const text = input?.value?.trim();
     if (!text) return;
-    const replies = [
-      `Mom: "Great job, ${state.name}! Keep going for those stars!"`,
-      'Neighbor: "I heard there\'s a café hiring soon!"',
-      'Pet: *happy wiggle*',
-      'You: *practices for the audition*',
-    ];
-    const reply = replies[Math.floor(Math.random() * replies.length)];
-    window.BlossomAudio?.playSfx('chat');
-    showToast(reply, 'info');
-    document.getElementById('npcBubble').textContent = reply.split(':')[1]?.trim() || reply;
+    const result = window.BlossomGame?.sendChatMessage?.(text);
+    if (result) {
+      showToast(`${result.who}: ${result.body}`, 'info');
+    }
     input.value = '';
+    document.getElementById('chatLog')?.classList.add('chat-log--open');
   }
 
   function setModalOpen(modal, open) {
