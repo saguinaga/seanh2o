@@ -327,9 +327,11 @@ a { color: var(--blossom-green-dark); }
   display: block;
   border-radius: 14px;
   box-shadow:
-    0 0 0 2px rgba(74, 222, 128, 0.25),
-    0 12px 48px rgba(0, 0, 0, 0.55),
-    0 0 80px rgba(74, 222, 128, 0.12),
+    0 0 0 2px rgba(74, 222, 128, 0.3),
+    0 0 0 4px rgba(15, 23, 42, 0.45),
+    0 16px 56px rgba(0, 0, 0, 0.6),
+    0 0 100px rgba(74, 222, 128, 0.16),
+    0 0 140px rgba(192, 132, 252, 0.08),
     var(--glow-green);
   max-width: 100%;
   max-height: 100%;
@@ -337,6 +339,7 @@ a { color: var(--blossom-green-dark); }
   position: relative;
   z-index: 1;
   image-rendering: auto;
+  filter: saturate(1.06) contrast(1.03);
 }
 
 .travel-banner {

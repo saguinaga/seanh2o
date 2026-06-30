@@ -472,13 +472,17 @@ window.BlossomAvatar = (function () {
       ctx.fill();
     }
 
-    const sh = ctx.createRadialGradient(x, py + 2, 2, x, py + 2, 20 * s);
-    sh.addColorStop(0, 'rgba(15, 23, 42, 0.28)');
-    sh.addColorStop(1, 'rgba(15, 23, 42, 0)');
-    ctx.fillStyle = sh;
-    ctx.beginPath();
-    ctx.ellipse(x, py + 4, 18 * s, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
+    if (window.BlossomGfx?.groundShadow) {
+      BlossomGfx.groundShadow(ctx, x, py + 4, 20 * s, 7, 0.34);
+    } else {
+      const sh = ctx.createRadialGradient(x, py + 2, 2, x, py + 2, 20 * s);
+      sh.addColorStop(0, 'rgba(15, 23, 42, 0.28)');
+      sh.addColorStop(1, 'rgba(15, 23, 42, 0)');
+      ctx.fillStyle = sh;
+      ctx.beginPath();
+      ctx.ellipse(x, py + 4, 18 * s, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.save();
     ctx.translate(x, py);
@@ -500,6 +504,19 @@ window.BlossomAvatar = (function () {
     drawFace(ctx, av, 0, 1);
     drawHair(ctx, av, 0, 1);
 
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.ellipse(-11, -40, 12, 14, -0.08, Math.PI * 0.55, Math.PI * 1.12);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.18)';
+    ctx.beginPath();
+    ctx.ellipse(-8, -44, 4, 2.5, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    roundRect(ctx, -16, -30, 8, 18, 4);
+    ctx.fill();
+
     ctx.restore();
     return { x, py: py - 62 * s };
   }
@@ -514,8 +531,14 @@ window.BlossomAvatar = (function () {
     g.addColorStop(1, '#fce7f3');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    BlossomArt?.drawCloud?.(ctx, canvas.width * 0.25, canvas.height * 0.12, 0.7, 0.5);
-    BlossomArt?.drawCloud?.(ctx, canvas.width * 0.7, canvas.height * 0.08, 0.55, 0.4);
+    const anim = Date.now() / 800;
+    if (window.BlossomGfx?.drawCloudPremium) {
+      BlossomGfx.drawCloudPremium(ctx, canvas.width * 0.25, canvas.height * 0.12, 0.7, 0.55, anim);
+      BlossomGfx.drawCloudPremium(ctx, canvas.width * 0.7, canvas.height * 0.08, 0.55, 0.45, anim + 2);
+    } else {
+      BlossomArt?.drawCloud?.(ctx, canvas.width * 0.25, canvas.height * 0.12, 0.7, 0.5);
+      BlossomArt?.drawCloud?.(ctx, canvas.width * 0.7, canvas.height * 0.08, 0.55, 0.4);
+    }
     const fg = ctx.createLinearGradient(0, canvas.height * 0.65, 0, canvas.height);
     fg.addColorStop(0, 'rgba(74, 222, 128, 0.15)');
     fg.addColorStop(1, 'rgba(34, 197, 94, 0.35)');

@@ -56,10 +56,16 @@ window.BlossomRender = (function () {
     ctx.fillRect(0, 0, BlossomWorld.W, loc.floorY);
 
     if (loc.id !== 'house') {
+      const mountainSets = {
+        yard: ['#4ade8066', '#22c55e55', '#16a34a44'],
+        street: ['#60a5fa66', '#3b82f655', '#2563eb44'],
+        park: ['#6ee7b766', '#34d39955', '#10b98144'],
+      };
+      BlossomGfx.parallaxMountains(ctx, loc.floorY, anim, mountainSets[loc.id] || mountainSets.yard);
       const hillSets = {
-        yard: ['#6ee7b799', '#34d39977', '#10b98155'],
-        street: ['#93c5fd99', '#60a5fa66', '#3b82f655'],
-        park: ['#a7f3d099', '#6ee7b777', '#34d39955'],
+        yard: ['#6ee7b799', '#34d39988', '#10b98166'],
+        street: ['#93c5fd99', '#60a5fa77', '#3b82f666'],
+        park: ['#a7f3d099', '#6ee7b788', '#34d39966'],
       };
       BlossomArt.drawHills(ctx, loc.floorY, hillSets[loc.id] || hillSets.yard, anim);
     }
@@ -80,6 +86,9 @@ window.BlossomRender = (function () {
         ctx.globalAlpha = 1;
       } else {
         BlossomArt.drawSun(ctx, 680, phaseId === 'evening' ? 115 : 62, 30, anim);
+        if (phaseId === 'morning' || phaseId === 'afternoon') {
+          BlossomGfx.godRays(ctx, 680, 62, anim, 0.85);
+        }
         if (phaseId === 'evening') {
           const rg = ctx.createLinearGradient(0, 0, BlossomWorld.W, loc.floorY);
           rg.addColorStop(0, 'rgba(249, 115, 22, 0.15)');
@@ -97,7 +106,7 @@ window.BlossomRender = (function () {
     if (loc.id !== 'house') {
       clouds.forEach(([cx, cy, sc, al], i) => {
         const drift = Math.sin(anim * 0.25 + i * 1.4) * 18;
-        BlossomArt.drawCloud(ctx, cx + drift, cy, sc, phaseId === 'night' ? al * 0.35 : al);
+        BlossomGfx.drawCloudPremium(ctx, cx + drift, cy, sc, phaseId === 'night' ? al * 0.35 : al, anim + i);
       });
     }
 
@@ -167,9 +176,12 @@ window.BlossomRender = (function () {
       ctx.textAlign = 'center';
       ctx.fillText(room.label, room.x + room.w / 2, wallTop + 26);
       ctx.textAlign = 'left';
+      BlossomGfx.wallAmbientOcclusion(ctx, room.x + 4, baseY - 22, room.w - 8, 22);
+      const lx = room.x + room.w / 2;
+      BlossomGfx.ceilingLight(ctx, lx, wallTop + 22, 14, 'rgba(253, 224, 71, ALPHA)', anim, 'day');
     });
 
-    ctx.fillStyle = BlossomArt.noisePattern(ctx, 64, 64, 'rgba(255,255,255,0.03)', 'rgba(0,0,0,0.025)');
+    ctx.fillStyle = BlossomArt.noisePattern(ctx, 64, 64, 'rgba(255,255,255,0.04)', 'rgba(0,0,0,0.03)');
     ctx.fillRect(10, wallTop + 8, BlossomWorld.W - 20, baseY - wallTop - 8);
 
     dividers.forEach((w) => {
@@ -184,9 +196,12 @@ window.BlossomRender = (function () {
     ];
     windows.forEach((win, i) => {
       BlossomArt.drawWindow(ctx, win.x, win.y, win.w, win.h, anim + i, win.lit);
+      if (win.lit) {
+        BlossomArt.warmLight(ctx, win.x + win.w / 2, win.y + win.h + 30, 55, 0.1);
+      }
     });
 
-    BlossomArt.warmLight(ctx, 126, 155, 100, 0.12);
+    BlossomArt.warmLight(ctx, 126, 155, 100, 0.14);
     BlossomArt.warmLight(ctx, 380, 150, 115, 0.14);
     BlossomArt.warmLight(ctx, 580, 158, 90, 0.1);
 
@@ -225,11 +240,15 @@ window.BlossomRender = (function () {
   function drawGround(ctx, loc, anim) {
     if (loc.id === 'house' && loc.rooms?.length) {
       loc.rooms.forEach((room) => {
-        const fg = ctx.createLinearGradient(room.x, loc.floorY, room.x, BlossomWorld.H);
-        fg.addColorStop(0, room.floor);
-        fg.addColorStop(1, BlossomArt.shade(room.floor, -0.12));
-        ctx.fillStyle = fg;
-        ctx.fillRect(room.x, loc.floorY, room.w, BlossomWorld.H - loc.floorY);
+        if (room.id === 'kitchen') {
+          BlossomGfx.kitchenTiles(ctx, room.x, loc.floorY, room.w, BlossomWorld.H - loc.floorY);
+        } else {
+          const fg = ctx.createLinearGradient(room.x, loc.floorY, room.x, BlossomWorld.H);
+          fg.addColorStop(0, room.floor);
+          fg.addColorStop(1, BlossomArt.shade(room.floor, -0.12));
+          ctx.fillStyle = fg;
+          ctx.fillRect(room.x, loc.floorY, room.w, BlossomWorld.H - loc.floorY);
+        }
       });
       ctx.strokeStyle = 'rgba(0,0,0,0.07)';
       loc.rooms.forEach((room) => {
@@ -281,9 +300,11 @@ window.BlossomRender = (function () {
       ctx.setLineDash([]);
       ctx.fillStyle = 'rgba(255,255,255,0.12)';
       for (let i = 0; i < 12; i++) ctx.fillRect(80 + i * 62, loc.floorY + 48, 28, 4);
+      BlossomGfx.streetReflection(ctx, loc.floorY, anim);
     } else {
       BlossomArt.grassFill(ctx, 0, loc.floorY, BlossomWorld.W, BlossomWorld.H - loc.floorY);
       BlossomArt.drawGrassBlades(ctx, 0, loc.floorY, BlossomWorld.W, BlossomWorld.H - loc.floorY, anim);
+      BlossomGfx.dappledLight(ctx, loc.floorY, anim);
       ctx.fillStyle = 'rgba(255,255,255,0.08)';
       for (let i = 0; i < 32; i++) {
         ctx.beginPath();
@@ -294,32 +315,7 @@ window.BlossomRender = (function () {
   }
 
   function drawTree(ctx, x, y, scale, anim) {
-    const s = scale || 1;
-    const sway = Math.sin(anim * 1.4) * 3;
-    shadow(ctx, 'rgba(0,0,0,0.25)', 12, sway * 0.3, 7);
-    const tg = ctx.createLinearGradient(x - 8 * s, y + 40 * s, x + 8 * s, y + 90 * s);
-    tg.addColorStop(0, '#92400e');
-    tg.addColorStop(1, '#78350f');
-    ctx.fillStyle = tg;
-    roundRect(ctx, x - 9 * s, y + 38 * s, 18 * s, 54 * s, 5);
-    ctx.fill();
-    clearShadow(ctx);
-    ctx.fillStyle = '#14532d';
-    ctx.beginPath();
-    ctx.moveTo(x + sway, y - 38 * s);
-    ctx.lineTo(x + 48 * s + sway, y + 32 * s);
-    ctx.lineTo(x - 48 * s + sway, y + 32 * s);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = '#22c55e';
-    ctx.beginPath();
-    ctx.arc(x + sway * 0.5, y + 2 * s, 32 * s, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#4ade80';
-    ctx.beginPath();
-    ctx.arc(x - 12 * s + sway, y - 8 * s, 18 * s, 0, Math.PI * 2);
-    ctx.arc(x + 14 * s + sway, y - 4 * s, 16 * s, 0, Math.PI * 2);
-    ctx.fill();
+    BlossomGfx.drawTreePremium(ctx, x, y, scale, anim);
   }
 
   function drawFurnitureGrad(ctx, x, y, w, h, r, base, lit) {
@@ -364,19 +360,14 @@ window.BlossomRender = (function () {
       ctx.stroke();
     }
 
+    if (BlossomGfx.needsShadow(p.kind) && p.w && p.h) {
+      BlossomGfx.contactShadow(ctx, p.x, p.y, p.w, p.h);
+    }
+
     switch (p.kind) {
-      case 'rug': {
-        const rg = ctx.createRadialGradient(p.x + p.w / 2, p.y + p.h / 2, 4, p.x + p.w / 2, p.y + p.h / 2, p.w / 2);
-        rg.addColorStop(0, '#fda4af');
-        rg.addColorStop(1, '#f472b6');
-        ctx.fillStyle = rg;
-        roundRect(ctx, p.x, p.y, p.w, p.h, 14);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(190, 24, 93, 0.25)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+      case 'rug':
+        BlossomGfx.carpetPattern(ctx, p.x, p.y, p.w, p.h);
         break;
-      }
       case 'bed':
         shadow(ctx);
         drawFurnitureGrad(ctx, p.x, p.y, p.w, p.h, 12, '#a78bfa', true);
@@ -742,7 +733,7 @@ window.BlossomRender = (function () {
       ctx.fillStyle = phaseId === 'night' ? 'rgba(15, 23, 42, 0.35)' : 'rgba(249, 115, 22, 0.08)';
       ctx.fillRect(0, 0, BlossomWorld.W, loc.floorY);
     }
-    BlossomArt.vignette(ctx, BlossomWorld.W, BlossomWorld.H, phaseId === 'night' ? 0.28 : 0.16);
+    BlossomGfx.finishFrame(ctx, BlossomWorld.W, BlossomWorld.H, { loc, phaseId, anim });
   }
 
   function drawChoreTracker(ctx, state) {

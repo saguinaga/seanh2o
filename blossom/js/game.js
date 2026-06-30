@@ -71,7 +71,7 @@ window.BlossomGame = (function () {
     else h = w / aspect;
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     canvas.width = Math.floor(BlossomWorld.W * dpr);
     canvas.height = Math.floor(BlossomWorld.H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
