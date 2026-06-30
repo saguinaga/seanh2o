@@ -27,12 +27,21 @@ for (const path of REQUIRED) {
   if (!ok) failed += 1;
 }
 
-const app = await (await fetch(`${BASE}/app.js`)).text();
-if (!app.includes('plain-labels.js')) {
-  console.log('FAIL app.js missing plain-labels import (stale deploy)');
+const appUrl = `${BASE}/app.js?v=deploy-fix-v2`;
+const app = await (await fetch(appUrl)).text();
+if (!app.includes('plain-labels.js') || !app.includes('valuation-engine.js')) {
+  console.log('FAIL cached app.js missing plain-labels/valuation-engine imports');
   failed += 1;
 } else {
-  console.log('OK app.js import paths');
+  console.log('OK app.js import paths (cache-busted entry)');
+}
+
+for (const legacy of ['help.js', 'valuation.js', 'valuation-engine.js', 'plain-labels.js']) {
+  const res = await fetch(`${BASE}/${legacy}`, { method: 'HEAD' });
+  if (res.status !== 200) {
+    console.log(`FAIL ${res.status} ${legacy}`);
+    failed += 1;
+  }
 }
 
 process.exit(failed ? 1 : 0);
