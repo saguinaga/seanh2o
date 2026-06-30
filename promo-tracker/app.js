@@ -31,6 +31,7 @@ import {
   helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
 } from './help.js';
+import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -72,6 +73,7 @@ const COUNTER_FIELDS = [
 ];
 
 let state = load();
+applyTheme(state.theme || DEFAULT_THEME);
 let scoreChart = null;
 let offersFeed = null;
 let transferBonusPct = DEFAULT_TRANSFER_BONUS_PCT;
@@ -1174,17 +1176,22 @@ function updateScoreChart(sim) {
   const labels = sim.steps.map((s) => s.label.length > 22 ? `${s.label.slice(0, 20)}…` : s.label);
   const data = sim.steps.map((s) => s.score);
 
+  const colors = chartColors(state.theme);
+  const minScore = Math.min(...data);
+
   const chartData = {
     labels,
     datasets: [{
       label: 'Projected score',
       data,
-      borderColor: '#e60023',
-      backgroundColor: 'rgba(230, 0, 35, 0.08)',
+      borderColor: colors.border,
+      backgroundColor: colors.fill,
       fill: true,
       tension: 0.3,
       pointRadius: 4,
-      pointBackgroundColor: data.map((v, i) => (i === 0 ? '#2d8a5e' : v === Math.min(...data) ? '#d64562' : '#e60023')),
+      pointBackgroundColor: data.map((v, i) => (
+        i === 0 ? colors.pointStart : v === minScore ? colors.pointLow : colors.pointDefault
+      )),
     }],
   };
 
@@ -1206,12 +1213,12 @@ function updateScoreChart(sim) {
       y: {
         min: Math.max(300, Math.min(...data) - 25),
         max: Math.min(850, Math.max(...data) + 15),
-        grid: { color: 'rgba(62, 39, 35, 0.08)' },
-        ticks: { color: '#8a7a72' },
+        grid: { color: colors.grid },
+        ticks: { color: colors.ticks },
       },
       x: {
         grid: { display: false },
-        ticks: { color: '#8a7a72', maxRotation: 45 },
+        ticks: { color: colors.ticks, maxRotation: 45 },
       },
     },
   };
@@ -1391,6 +1398,7 @@ function importJson(file) {
     try {
       state = migrateState(JSON.parse(reader.result));
       if (!state.household) state.household = defaultHousehold();
+      applyTheme(state.theme || DEFAULT_THEME);
       save();
       renderAll();
     } catch {
@@ -1407,10 +1415,28 @@ function populateInboxIssuers() {
   sel.dataset.bound = '1';
 }
 
+function initThemePicker() {
+  const sel = $('#themeSelect');
+  if (!sel) return;
+  sel.innerHTML = Object.values(THEMES).map((t) => (
+    `<option value="${t.id}" title="${escapeHtml(t.hint)}">${t.emoji} ${t.label}</option>`
+  )).join('');
+  state.theme = applyTheme(state.theme || DEFAULT_THEME);
+  sel.value = state.theme;
+  sel.title = THEMES[state.theme]?.hint || '';
+  sel.addEventListener('change', () => {
+    state.theme = applyTheme(sel.value);
+    sel.title = THEMES[state.theme]?.hint || '';
+    save();
+    renderAll();
+  });
+}
+
 async function init() {
   const glossaryEl = $('#glossaryPanel');
   if (glossaryEl) glossaryEl.innerHTML = glossaryHtml();
 
+  initThemePicker();
   populateIssuerSelects();
   populateInboxIssuers();
 

@@ -1,17 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="cozy">
 <head>
   <meta charset="UTF-8">
+  <script>
+    (function () {
+      var known = { cozy: 1, paper: 1, bloom: 1, midnight: 1 };
+      var theme = 'cozy';
+      try {
+        var raw = localStorage.getItem('promo_tracker_v3')
+          || localStorage.getItem('promo_tracker_v2')
+          || localStorage.getItem('promo_tracker_v1');
+        if (raw) {
+          var saved = JSON.parse(raw);
+          if (saved.theme && known[saved.theme]) theme = saved.theme;
+        }
+      } catch (e) { /* use default */ }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#fffdfb">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Bonus Board — cozy offer & travel planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=pinterest-light-v2">
+  <link rel="stylesheet" href="styles.css?v=themes-v1">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -39,6 +55,12 @@
         </div>
       </div>
       <div class="topbar-actions">
+        <label class="theme-picker">
+          <span class="theme-picker__icon" aria-hidden="true">🎨</span>
+          <select id="themeSelect" aria-label="Choose theme">
+            <option value="cozy">🌸 Cozy</option>
+          </select>
+        </label>
         <a href="../index.html" class="btn-ghost">← Home</a>
         <button type="button" class="btn-ghost" id="exportBtn">Save backup</button>
         <button type="button" class="btn-ghost" id="importBtn">Restore</button>
@@ -503,6 +525,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=pinterest-light-v2"></script>
+  <script type="module" src="app.js?v=themes-v1"></script>
 </body>
 </html>

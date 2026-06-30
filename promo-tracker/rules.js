@@ -1,14 +1,14 @@
 /** Credit gates, profile v2, sequencing — educational, not financial advice */
-import { evaluateIssuerGates } from './issuers.js';
+import { evaluateIssuerGates, ISSUER_LIST } from './issuers.js';
+import { ruleLabel } from './help.js';
 import { findCatalog, catalogEntryToOffer } from './catalog.js';
 import { OFFER_PLANS } from './earnings.js';
+import { DEFAULT_THEME, isValidTheme } from './themes.js';
 
-export const ISSUERS = [
-  'Chase', 'Amex', 'Citi', 'Discover', 'Capital One', 'Bank of America', 'Wells Fargo', 'US Bank', 'Barclays', 'Other',
-];
+export const ISSUERS = ISSUER_LIST;
 
 export const OFFER_TYPES = {
-  cc: { label: 'Credit card SUB', icon: '💳', defaultCooldown: 90 },
+  cc: { label: 'Credit card welcome bonus', shortLabel: 'Card bonus', icon: '💳', defaultCooldown: 90 },
   bank: { label: 'Bank bonus', icon: '🏦', defaultCooldown: 365 },
   shopping: { label: 'Portal / stack', icon: '🛒', defaultCooldown: 0 },
   travel: { label: 'Travel promo', icon: '✈️', defaultCooldown: 365 },
@@ -84,6 +84,25 @@ export function defaultProfile() {
     wfCards6mo: 0,
     usbCards12mo: 0,
     barcCards6mo: 0,
+    pncCards6mo: 0,
+    tdCards6mo: 0,
+    truistCards6mo: 0,
+    regionsCards6mo: 0,
+    fifthThirdCards12mo: 0,
+    huntingtonCards6mo: 0,
+    bmoCards6mo: 0,
+    nfcuCards90d: 0,
+    penfedCards6mo: 0,
+    dcuCards6mo: 0,
+    alliantCards6mo: 0,
+    andrewsCards6mo: 0,
+    goldmanCardsTotal: 0,
+    sofiCards6mo: 0,
+    syncCards6mo: 0,
+    breadCards6mo: 0,
+    elanCards6mo: 0,
+    fnboCards6mo: 0,
+    firstTechCards6mo: 0,
     existingPoints: {
       chase_ur: 0, amex_mr: 0, citi_ty: 0, capone: 0, bofa: 0, usbank: 0, discover: 0,
     },
@@ -99,6 +118,7 @@ export function defaultProfile() {
 export function defaultState() {
   return {
     version: 3,
+    theme: DEFAULT_THEME,
     profile: defaultProfile(),
     household: null,
     offers: [],
@@ -152,6 +172,7 @@ export function migrateState(raw) {
     ...base,
     ...raw,
     version: 3,
+    theme: isValidTheme(raw.theme) ? raw.theme : DEFAULT_THEME,
     profile,
     household,
     offers: Array.isArray(raw.offers) ? raw.offers : [],
@@ -175,7 +196,7 @@ export function evaluateOffer(offer, profile, allOffers) {
 
   if (offer.type === 'cc' && offer.hardPull && offer.issuer && offer.issuer !== 'Other') {
     const gates = evaluateIssuerGates(profile, offer.issuer);
-    gates.blocked.forEach((g) => blockers.push(`${offer.issuer} ${g.id}: ${g.detail}`));
+    gates.blocked.forEach((g) => blockers.push(`${offer.issuer} — ${ruleLabel(g.id)}: ${g.detail}`));
     gates.results.filter((g) => g.caution).forEach((g) => warnings.push(`${offer.issuer}: ${g.detail}`));
   }
 
@@ -338,6 +359,7 @@ function entryToOffer(entry) {
     const offer = catalogEntryToOffer(card, entry.priority);
     offer.status = entry.status || 'planned';
     offer.notes = entry.notes || offer.notes;
+    if (entry.owner) offer.ownerHint = entry.owner;
     return offer;
   }
   return {
@@ -353,6 +375,7 @@ function entryToOffer(entry) {
     earliestDate: entry.earliestDate || '',
     completedDate: '',
     notes: entry.notes || '',
+    ownerHint: entry.owner || '',
   };
 }
 
