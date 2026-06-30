@@ -98,8 +98,9 @@ export function defaultProfile() {
 
 export function defaultState() {
   return {
-    version: 2,
+    version: 3,
     profile: defaultProfile(),
+    household: null,
     offers: [],
     updatedAt: new Date().toISOString(),
   };
@@ -128,11 +129,31 @@ export function migrateState(raw) {
     if (!profile.partnerLabel) profile.partnerLabel = 'Partner';
   }
 
+  const household = raw.household || {
+    enabled: true,
+    player1Label: 'You',
+    player2Label: profile.partnerLabel || 'Partner',
+    player2Profile: {
+      baselineScore: profile.baselineScore,
+      personalCards24mo: 0,
+      cards24mo: 0,
+      inquiries6mo: 0,
+      inquiries12mo: 0,
+      chaseCards30d: 0,
+      amexCards90d: 0,
+      amexCardsTotal: 0,
+      existingPoints: { chase_ur: 0, amex_mr: 0, citi_ty: 0, capone: 0 },
+    },
+    sharedLoyalty: { hyatt: '', united: '', marriott: '', delta: '', southwest: '' },
+    offerOwner: {},
+  };
+
   return {
     ...base,
     ...raw,
-    version: 2,
+    version: 3,
     profile,
+    household,
     offers: Array.isArray(raw.offers) ? raw.offers : [],
   };
 }

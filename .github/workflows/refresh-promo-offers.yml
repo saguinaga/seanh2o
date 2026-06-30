@@ -1,0 +1,34 @@
+name: Refresh promo offers feed
+
+on:
+  schedule:
+    - cron: '0 14 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch and build offers feed
+        run: node promo-tracker/scripts/refresh-offers.mjs
+
+      - name: Commit feed if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add promo-tracker/data/offers-feed.json
+          if git diff --staged --quiet; then
+            echo "No feed changes"
+          else
+            git commit -m "chore: refresh promo offers feed [automated]"
+            git push
+          fi

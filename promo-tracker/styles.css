@@ -1312,6 +1312,139 @@ a { color: var(--accent); }
 
 .principles-list strong { color: var(--text); }
 
+.tab-badge {
+  font-size: 0.62rem;
+  background: var(--rose);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 999px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.panel--inbox-hero h2 { margin: 0; }
+
+.inbox-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inbox-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  border: 1px solid var(--panel2);
+}
+
+.inbox-card--queued { opacity: 0.75; }
+
+.inbox-card header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.inbox-card__type {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.inbox-card__val {
+  margin-left: auto;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.inbox-card__desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 6px 0;
+}
+
+.inbox-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.compare-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px;
+  border: 1px solid var(--panel2);
+  text-align: center;
+}
+
+.compare-card strong {
+  display: block;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.compare-card span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.compare-card--up strong { color: var(--green); }
+.compare-card--warn strong { color: var(--amber); }
+
+.tag--live {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--green);
+}
+
+.pooling-matrix {
+  display: grid;
+  gap: 10px;
+}
+
+.pooling-row {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px;
+  border: 1px solid var(--panel2);
+}
+
+.pooling-row h4 { margin: 0 0 6px; font-size: 0.88rem; color: var(--accent); }
+.pooling-row p { margin: 0 0 8px; font-size: 0.78rem; color: var(--muted); }
+
+.pooling-flags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.split-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.offer-owner-select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--panel2);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.75rem;
+}
+
 @media (max-width: 900px) {
   .scenery-card {
     opacity: 0.12;

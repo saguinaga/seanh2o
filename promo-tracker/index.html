@@ -53,9 +53,10 @@
 
     <nav class="tabs" role="tablist">
       <button type="button" class="tab tab--active" data-tab="dashboard" role="tab">Dashboard</button>
+      <button type="button" class="tab" data-tab="inbox" role="tab">Deal inbox <span class="tab-badge" id="feedBadge" hidden>NEW</span></button>
       <button type="button" class="tab" data-tab="plan" role="tab">Offer queue</button>
       <button type="button" class="tab" data-tab="catalog" role="tab">Catalog</button>
-      <button type="button" class="tab" data-tab="transfers" role="tab">Points</button>
+      <button type="button" class="tab" data-tab="transfers" role="tab">Household &amp; points</button>
       <button type="button" class="tab" data-tab="baseline" role="tab">Credit profile</button>
       <button type="button" class="tab" data-tab="gates" role="tab">Issuer rules</button>
       <button type="button" class="tab" data-tab="simulation" role="tab">Score sim</button>
@@ -99,6 +100,48 @@
       </details>
     </section>
 
+    <!-- DEAL INBOX -->
+    <section class="tab-panel" id="panel-inbox" role="tabpanel" hidden>
+      <div class="panel panel--inbox-hero">
+        <div class="catalog-toolbar">
+          <div>
+            <h2>Live deal inbox</h2>
+            <p class="hint" id="feedMeta">Loading feed…</p>
+          </div>
+          <button type="button" class="btn" id="refreshFeed">Check for updates</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <h2>Compare vs your queue</h2>
+        <div id="feedCompare"></div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="catalog-toolbar">
+          <h2>All deals</h2>
+          <div class="inbox-filters">
+            <label class="catalog-filter">Type
+              <select id="inboxType">
+                <option value="all">All</option>
+                <option value="cc">Credit cards</option>
+                <option value="bank">Bank bonuses</option>
+                <option value="shopping">Shopping / portals</option>
+                <option value="transfer_bonus">Transfer bonuses</option>
+              </select>
+            </label>
+            <label class="catalog-filter">Issuer
+              <select id="inboxIssuer"><option value="all">All</option></select>
+            </label>
+            <label class="catalog-filter">Search
+              <input type="search" id="inboxSearch" placeholder="Chase, SUB, Rakuten…">
+            </label>
+          </div>
+        </div>
+        <div class="inbox-list" id="dealInbox"></div>
+      </div>
+    </section>
+
     <!-- TRANSFERS -->
     <section class="tab-panel" id="panel-transfers" role="tabpanel" hidden>
       <div class="panel panel--transfer-hero">
@@ -121,12 +164,35 @@
           </details>
         </div>
         <div class="panel">
-          <h2>Book a dream trip (transfer playbook)</h2>
-          <label class="catalog-filter">Trip
+          <h2>Household split &amp; trip plan</h2>
+          <div id="householdSplit"></div>
+          <label class="catalog-filter" style="margin-top:12px">Trip target
             <select id="playbookTrip"></select>
           </label>
           <div id="tripPlaybook" style="margin-top:12px"></div>
         </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h2>Player 2 profile</h2>
+        <p class="hint">Separate 5/24, inquiries, and points — for two-person households.</p>
+        <div class="profile-grid" id="player2Grid"></div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h2>Shared loyalty accounts</h2>
+        <p class="hint">Where both players transfer points to book one trip.</p>
+        <div class="profile-grid" id="sharedLoyaltyGrid"></div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h2>Issuer pooling rules</h2>
+        <div class="pooling-matrix" id="poolingMatrix"></div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h2>Active transfer bonuses</h2>
+        <div id="transferBonusFeed"></div>
       </div>
 
       <div class="panel" style="margin-top:20px">

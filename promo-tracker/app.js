@@ -16,8 +16,16 @@ import {
   pointsWallet, transferPartnersFor, crossProgramSummary,
   tripTransferPlan, bestTripsForWallet, defaultPointsBalances,
 } from './transfers.js';
+import {
+  loadOffersFeed, feedHasUpdates, markFeedSeen, allFeedDeals, filterFeedDeals,
+  compareFeedToQueue, feedEntryToOffer, formatFeedAge,
+} from './feed.js';
+import {
+  defaultHousehold, householdWallet, optimalHouseholdSplit, tripSplitPlan,
+  poolingMatrixRows, activeTransferBonuses, getOfferOwner, setOfferOwner,
+} from './household.js';
 
-const STORAGE_KEY = 'promo_tracker_v2';
+const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
 
 const COUNTER_FIELDS = [
@@ -39,17 +47,27 @@ const COUNTER_FIELDS = [
 
 let state = load();
 let scoreChart = null;
+let offersFeed = null;
 
 function load() {
   try {
     let raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      const legacy = localStorage.getItem(LEGACY_KEY);
-      if (legacy) raw = legacy;
+    if (!raw) raw = localStorage.getItem('promo_tracker_v2');
+    if (!raw) raw = localStorage.getItem(LEGACY_KEY);
+    if (raw) {
+      const s = migrateState(JSON.parse(raw));
+      if (!s.household) s.household = defaultHousehold();
+      return s;
     }
-    if (raw) return migrateState(JSON.parse(raw));
   } catch { /* noop */ }
-  return defaultState();
+  const s = defaultState();
+  s.household = defaultHousehold();
+  return s;
+}
+
+function ensureHousehold() {
+  if (!state.household) state.household = defaultHousehold();
+  return state.household;
 }
 
 function save() {
@@ -294,8 +312,251 @@ function loadPlan(planId) {
   switchTab('plan');
 }
 
+function updateFeedBadge() {
+  const badge = $('#feedBadge');
+  if (!badge || !offersFeed) return;
+  badge.hidden = !feedHasUpdates(offersFeed);
+}
+
+async function refreshFeedNow() {
+  const btn = $('#refreshFeed');
+  if (btn) btn.disabled = true;
+  try {
+    offersFeed = await loadOffersFeed(true);
+    updateFeedBadge();
+    renderDealInbox();
+    renderCatalog();
+  } catch (e) {
+    alert(`Could not refresh feed: ${e.message}`);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function addFromFeed(deal) {
+  if (deal.catalogId) {
+    const card = CARD_CATALOG.find((c) => c.id === deal.catalogId);
+    if (!card) return;
+    const offer = catalogEntryToOffer(card, state.offers.length + 1);
+    offer.feedId = deal.feedId;
+    offer.valueUsd = deal.valueUsd ?? offer.valueUsd;
+    offer.subPoints = deal.subPoints ?? offer.subPoints;
+    offer.notes = `Feed ${formatFeedAge(deal.updatedAt)}${deal.sourceUrl ? ` · ${deal.sourceUrl}` : ''}`;
+    state.offers.push(offer);
+  } else {
+    const offer = feedEntryToOffer(deal, state.offers.length + 1);
+    if (offer) state.offers.push(offer);
+  }
+  save();
+  renderAll();
+}
+
+function renderFeedCompare() {
+  const el = $('#feedCompare');
+  if (!el || !offersFeed) {
+    if (el) el.innerHTML = '<p class="empty">Load feed to compare live deals with your queue.</p>';
+    return;
+  }
+  const cmp = compareFeedToQueue(offersFeed, state.offers);
+  el.innerHTML = `
+    <div class="compare-grid">
+      <div class="compare-card compare-card--up">
+        <strong>${cmp.upgraded.length}</strong>
+        <span>Better SUB than queued</span>
+        ${cmp.upgraded.slice(0, 3).map((u) => `<p class="hint">${escapeHtml(u.feed.name)} +${fmtMoney(u.delta)}</p>`).join('') || '<p class="hint">—</p>'}
+      </div>
+      <div class="compare-card">
+        <strong>${cmp.available.length}</strong>
+        <span>New in feed</span>
+      </div>
+      <div class="compare-card">
+        <strong>${cmp.inQueue.length}</strong>
+        <span>Matches queue</span>
+      </div>
+      <div class="compare-card compare-card--warn">
+        <strong>${cmp.staleQueued.length}</strong>
+        <span>Queued, not in feed — verify</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderDealInbox() {
+  const meta = $('#feedMeta');
+  if (meta) {
+    if (!offersFeed) {
+      meta.textContent = 'Feed not loaded — click Check for updates.';
+    } else {
+      const changed = offersFeed.meta?.previousHash && offersFeed.meta.hash !== offersFeed.meta.previousHash;
+      meta.textContent = `Updated ${formatFeedAge(offersFeed.meta?.generatedAt)} · hash ${offersFeed.meta?.hash || '—'}${changed ? ' · content changed this refresh' : ''}`;
+    }
+  }
+
+  renderFeedCompare();
+
+  const list = $('#dealInbox');
+  if (!list) return;
+  if (!offersFeed) {
+    list.innerHTML = '<p class="empty">Click <strong>Check for updates</strong> to load the latest deals.</p>';
+    return;
+  }
+
+  const type = $('#inboxType')?.value || 'all';
+  const issuer = $('#inboxIssuer')?.value || 'all';
+  const search = $('#inboxSearch')?.value || '';
+  const deals = filterFeedDeals(allFeedDeals(offersFeed), { type, issuer, search });
+  const queuedFeedIds = new Set(state.offers.map((o) => o.feedId).filter(Boolean));
+  const queuedCatalog = new Set(state.offers.map((o) => o.catalogId).filter(Boolean));
+
+  if (!deals.length) {
+    list.innerHTML = '<p class="empty">No deals match filters.</p>';
+    return;
+  }
+
+  list.innerHTML = deals.map((d) => {
+    const inQ = queuedFeedIds.has(d.feedId) || (d.catalogId && queuedCatalog.has(d.catalogId));
+    const val = d.valueUsd ? fmtMoney(d.valueUsd) : d.bonusPct ? `${d.bonusPct}% bonus` : 'See link';
+    const src = d.source === 'doctor_of_credit' ? 'DOC' : d.source === 'catalog' ? 'Catalog' : d.source || '';
+    return `
+      <article class="inbox-card ${inQ ? 'inbox-card--queued' : ''}">
+        <header>
+          <span class="inbox-card__type">${escapeHtml(d.type)}</span>
+          <strong>${escapeHtml(d.title || d.name)}</strong>
+          <span class="inbox-card__val">${val}</span>
+        </header>
+        <p class="hint">${escapeHtml(d.issuer || '')} · ${src}${d.pubDate ? ` · ${d.pubDate.slice(0, 16)}` : ''}</p>
+        ${d.description ? `<p class="inbox-card__desc">${escapeHtml(d.description)}</p>` : ''}
+        <div class="inbox-card__actions">
+          ${d.sourceUrl ? `<a href="${escapeHtml(d.sourceUrl)}" target="_blank" rel="noopener" class="btn-sm btn-ghost">Source</a>` : ''}
+          <button type="button" class="btn-sm ${inQ ? 'btn-ghost' : 'btn'}" data-feed-add="${d.feedId}" ${inQ ? 'disabled' : ''}>
+            ${inQ ? 'In queue' : '+ Add to queue'}
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  const dealMap = Object.fromEntries(allFeedDeals(offersFeed).map((d) => [d.feedId, d]));
+  list.querySelectorAll('[data-feed-add]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const deal = dealMap[btn.dataset.feedAdd];
+      if (deal) addFromFeed(deal);
+    });
+  });
+}
+
+function renderHouseholdUI() {
+  const hh = ensureHousehold();
+  const p2g = $('#player2Grid');
+  if (p2g && !p2g.dataset.bound) {
+    const p2 = hh.player2Profile;
+    p2g.innerHTML = `
+      <label>${escapeHtml(hh.player2Label)} label
+        <input type="text" id="hh_player2Label" data-household value="${escapeHtml(hh.player2Label)}">
+      </label>
+      <label>5/24 (personal cards, 24mo)
+        <input type="number" id="hh_p2_524" data-household min="0" value="${p2.personalCards24mo ?? 0}">
+      </label>
+      <label>Inquiries (6mo)
+        <input type="number" id="hh_p2_inq6" data-household min="0" value="${p2.inquiries6mo ?? 0}">
+      </label>
+      <label>Chase cards (30d)
+        <input type="number" id="hh_p2_chase30" data-household min="0" value="${p2.chaseCards30d ?? 0}">
+      </label>
+      <label>Amex cards (90d)
+        <input type="number" id="hh_p2_amex90" data-household min="0" value="${p2.amexCards90d ?? 0}">
+      </label>
+    `;
+    p2g.dataset.bound = '1';
+  }
+
+  const loyalty = $('#sharedLoyaltyGrid');
+  if (loyalty && !loyalty.dataset.bound) {
+    loyalty.innerHTML = ['hyatt', 'united', 'marriott', 'delta', 'southwest'].map((k) => `
+      <label>${PARTNERS[k]?.emoji || ''} ${PARTNERS[k]?.name || k} member #
+        <input type="text" id="hh_loyalty_${k}" data-household value="${escapeHtml(hh.sharedLoyalty?.[k] || '')}" placeholder="Shared account ID">
+      </label>
+    `).join('');
+    loyalty.dataset.bound = '1';
+  }
+
+  readHouseholdFromDom();
+
+  const split = $('#householdSplit');
+  if (split) {
+    const opt = optimalHouseholdSplit(state.profile, hh, state.offers);
+    split.innerHTML = `
+      <p class="hint">${escapeHtml(hh.player1Label)} est. <strong>${fmtMoney(opt.p1Val)}</strong> · ${escapeHtml(hh.player2Label)} est. <strong>${fmtMoney(opt.p2Val)}</strong></p>
+      <ul class="split-list">${opt.assignments.slice(0, 6).map((a) => `
+        <li><strong>${escapeHtml(a.title)}</strong> → ${a.suggestedOwner === 'player2' ? escapeHtml(hh.player2Label) : escapeHtml(hh.player1Label)}
+          <span class="hint">${escapeHtml(a.reason)}</span></li>
+      `).join('') || '<li class="hint">Queue offers to see split suggestions.</li>'}</ul>
+    `;
+  }
+
+  const matrix = $('#poolingMatrix');
+  if (matrix) {
+    matrix.innerHTML = poolingMatrixRows().map((r) => `
+      <article class="pooling-row">
+        <h4>${PROGRAMS[r.program]?.short || r.program}</h4>
+        <p>${escapeHtml(r.summary)}</p>
+        <div class="pooling-flags">
+          <span class="tag">${r.poolsSamePersonCards ? 'Pools own cards' : 'No pool'}</span>
+          <span class="tag">${r.authorizedUserEarns ? 'AU earns' : 'AU no earn'}</span>
+          <span class="tag">${r.canTransferToPartnerLoyalty ? '→ shared loyalty OK' : ''}</span>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  const xfer = $('#transferBonusFeed');
+  if (xfer) {
+    const bonuses = activeTransferBonuses(offersFeed);
+    xfer.innerHTML = bonuses.length
+      ? bonuses.map((b) => `
+        <div class="inbox-card">
+          <strong>${escapeHtml(b.title)}</strong>
+          <p class="hint">${escapeHtml(b.notes || b.description || '')}</p>
+          ${b.sourceUrl ? `<a href="${escapeHtml(b.sourceUrl)}" target="_blank" rel="noopener">Details</a>` : ''}
+        </div>
+      `).join('')
+      : '<p class="empty">No transfer promos in current feed.</p>';
+  }
+}
+
+function readHouseholdFromDom() {
+  const hh = ensureHousehold();
+  const label = document.getElementById('hh_player2Label');
+  if (label) hh.player2Label = label.value || 'Partner';
+  const p2 = { ...hh.player2Profile };
+  const g = (id, key) => {
+    const el = document.getElementById(id);
+    if (el) p2[key] = Number(el.value) || 0;
+  };
+  g('hh_p2_524', 'personalCards24mo');
+  g('hh_p2_inq6', 'inquiries6mo');
+  g('hh_p2_chase30', 'chaseCards30d');
+  g('hh_p2_amex90', 'amexCards90d');
+  p2.cards24mo = p2.personalCards24mo;
+  hh.player2Profile = p2;
+  hh.sharedLoyalty = hh.sharedLoyalty || {};
+  ['hyatt', 'united', 'marriott', 'delta', 'southwest'].forEach((k) => {
+    const el = document.getElementById(`hh_loyalty_${k}`);
+    if (el) hh.sharedLoyalty[k] = el.value.trim();
+  });
+  state.household = hh;
+}
+
 function renderTransfers() {
-  const wallet = pointsWallet(state.profile, state.offers);
+  renderHouseholdUI();
+  const hh = ensureHousehold();
+  const hw = householdWallet(state.profile, hh, state.offers);
+  const wallet = {
+    lines: [...hw.player1.lines, ...hw.player2.lines],
+    totalPoints: hw.player1.totalPoints + hw.player2.totalPoints,
+    totalUsd: hw.player1.totalUsd + hw.player2.totalUsd,
+    byProgram: hw.combinedByProgram,
+  };
 
   const summaryEl = $('#crossProgramSummary');
   if (summaryEl) summaryEl.textContent = crossProgramSummary(wallet);
@@ -387,17 +648,19 @@ function renderTransfers() {
 
 function renderTripPlaybook() {
   const tripId = $('#playbookTrip')?.value || DREAM_TRIPS[0]?.id;
-  const wallet = pointsWallet(state.profile, state.offers);
-  const plan = tripTransferPlan(tripId, wallet);
+  const hh = ensureHousehold();
+  const { plan, steps } = tripSplitPlan(tripId, state.profile, hh, state.offers);
   const el = $('#tripPlaybook');
   if (!el || !plan) return;
 
-  const best = bestTripsForWallet(wallet).slice(0, 3);
+  const combinedWallet = { byProgram: householdWallet(state.profile, hh, state.offers).combinedByProgram, totalPoints: 0 };
+  const best = bestTripsForWallet(combinedWallet).slice(0, 3);
+  const planSteps = steps || plan?.steps || [];
 
   el.innerHTML = `
-    <p class="playbook-caption">${escapeHtml(plan.caption)}</p>
+    <p class="playbook-caption">${escapeHtml(plan?.caption || '')}</p>
     <div class="playbook-steps">
-      ${plan.steps.map((step) => `
+      ${planSteps.map((step) => `
         <div class="playbook-step ${step.covered ? 'playbook-step--ok' : 'playbook-step--gap'}">
           <div class="playbook-step__head">
             <span>${step.partner?.emoji || '✈️'} ${escapeHtml(step.label)}</span>
@@ -405,14 +668,14 @@ function renderTripPlaybook() {
           </div>
           <p><strong>${escapeHtml(step.program?.short || '')}</strong> → <strong>${escapeHtml(step.partner?.name || '')}</strong> · ${step.ratio} · ${escapeHtml(step.time)}</p>
           <p class="playbook-step__pts">${fmtPts(step.available)} available / ${fmtPts(step.estPoints)} est. needed</p>
-          <p class="hint">${escapeHtml(step.note || '')}</p>
+          <p class="hint">${escapeHtml(step.note || '')}${step.sharedAccount ? ` · Account: ${escapeHtml(step.sharedAccount)}` : ''}</p>
         </div>
       `).join('')}
     </div>
-    <p class="playbook-verdict ${plan.feasible ? 'playbook-verdict--yes' : ''}">
-      ${plan.feasible
-    ? `✓ Your pooled points can cover this ${plan.trip.emoji} trip on paper.`
-    : `Need ~${fmtPts(Math.max(0, plan.totalNeed - plan.totalHave))} more points — add cards or wait for transfer bonuses.`}
+    <p class="playbook-verdict ${plan?.feasible ? 'playbook-verdict--yes' : ''}">
+      ${plan?.feasible
+    ? `✓ Combined household points can cover this ${plan.trip.emoji} trip on paper.`
+    : `Need ~${fmtPts(Math.max(0, (plan?.totalNeed || 0) - (plan?.totalHave || 0)))} more points — add offers or wait for transfer bonuses.`}
     </p>
     ${best.length ? `<p class="hint" style="margin-top:10px">Best fit from your wallet: ${best.map((b) => `${b.trip.emoji} ${b.trip.name} (${b.score}%)`).join(' · ')}</p>` : ''}
   `;
@@ -492,15 +755,20 @@ function renderIssuerGrid() {
 function renderCatalog() {
   const issuer = $('#catalogIssuer')?.value || 'all';
   const cards = filterCatalog(issuer);
+  const feedCards = offersFeed?.cards ? Object.fromEntries(offersFeed.cards.map((c) => [c.catalogId, c])) : {};
   const el = $('#catalogGrid');
   if (!el) return;
 
   el.innerHTML = cards.map((card) => {
+    const live = feedCards[card.id];
+    const liveVal = live?.valueUsd;
     const ev = evaluateOffer({ type: 'cc', issuer: card.issuer, hardPull: true, catalogId: card.id }, state.profile, state.offers);
     const blocked = ev.score === 'blocked';
+    const estVal = liveVal ?? (card.subCash || pointsToUsd(card.subPoints, card.program));
     const bonus = card.subPoints
-      ? `${(card.subPoints / 1000).toFixed(0)}k pts (~${fmtMoney(pointsToUsd(card.subPoints, card.program))})`
+      ? `${(card.subPoints / 1000).toFixed(0)}k pts (~${fmtMoney(estVal)})`
       : card.subCash ? `$${card.subCash} cash` : card.cashbackMatch ? 'Cashback Match' : 'Varies';
+    const liveTag = live ? '<span class="tag tag--live">Feed</span>' : '';
 
     const inPlan = state.offers.some((o) => o.catalogId === card.id && !['done', 'skip'].includes(o.status));
 
@@ -511,9 +779,11 @@ function renderCatalog() {
             <span class="catalog-card__issuer">${escapeHtml(card.issuer)}</span>
             <h3>${escapeHtml(card.name)}</h3>
           </div>
+          ${liveTag}
           ${blocked ? '<span class="gate-pill gate-pill--blocked">Gate</span>' : ''}
         </div>
         <div class="catalog-card__bonus">${bonus}</div>
+        ${live?.sourceUrl ? `<a class="hint" href="${escapeHtml(live.sourceUrl)}" target="_blank" rel="noopener">Official offer page</a>` : ''}
         <div class="catalog-card__facts">
           ${card.msr ? `<span>MSR ${fmtMoney(card.msr)} / ${card.msrMonths}mo</span>` : ''}
           <span>AF ${card.annualFee ? fmtMoney(card.annualFee) : '$0'}</span>
@@ -573,7 +843,12 @@ function offerCard(o) {
       ${ev.blockers.length ? `<ul class="offer-alerts offer-alerts--block">${ev.blockers.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
       ${ev.warnings.length ? `<ul class="offer-alerts offer-alerts--warn">${ev.warnings.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
       ${o.notes ? `<p class="offer-notes">${escapeHtml(o.notes)}</p>` : ''}
+      ${o.feedId ? `<p class="offer-notes">Feed: ${escapeHtml(o.feedId)}</p>` : ''}
       <div class="offer-card__actions">
+        <select class="offer-owner-select" data-id="${o.id}" aria-label="Household owner">
+          <option value="player1" ${getOfferOwner(ensureHousehold(), o.id) === 'player1' ? 'selected' : ''}>${escapeHtml(ensureHousehold().player1Label)}</option>
+          <option value="player2" ${getOfferOwner(ensureHousehold(), o.id) === 'player2' ? 'selected' : ''}>${escapeHtml(ensureHousehold().player2Label)}</option>
+        </select>
         <select class="offer-status-select" data-id="${o.id}" aria-label="Status">
           ${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${v.label}</option>`).join('')}
         </select>
@@ -594,6 +869,13 @@ function renderOffers() {
   const sorted = [...state.offers].sort((a, b) => (a.priority || 99) - (b.priority || 99));
   list.innerHTML = sorted.map(offerCard).join('');
 
+  list.querySelectorAll('.offer-owner-select').forEach((sel) => {
+    sel.addEventListener('change', () => {
+      state.household = setOfferOwner(ensureHousehold(), sel.dataset.id, sel.value);
+      save();
+      renderAll();
+    });
+  });
   list.querySelectorAll('.offer-status-select').forEach((sel) => {
     sel.addEventListener('change', () => {
       const o = state.offers.find((x) => x.id === sel.dataset.id);
@@ -774,6 +1056,7 @@ function renderAll() {
   const sim = renderSimulation(timeline);
   renderDashboard(sim, timeline);
   renderTransfers();
+  renderDealInbox();
 }
 
 function switchTab(name) {
@@ -785,6 +1068,10 @@ function switchTab(name) {
     p.classList.toggle('tab-panel--active', on);
     p.hidden = !on;
   });
+  if (name === 'inbox' && offersFeed) {
+    markFeedSeen(offersFeed);
+    updateFeedBadge();
+  }
 }
 
 function populateIssuerSelects() {
@@ -879,6 +1166,7 @@ function importJson(file) {
   reader.onload = () => {
     try {
       state = migrateState(JSON.parse(reader.result));
+      if (!state.household) state.household = defaultHousehold();
       save();
       renderAll();
     } catch {
@@ -888,14 +1176,40 @@ function importJson(file) {
   reader.readAsText(file);
 }
 
-function init() {
+function populateInboxIssuers() {
+  const sel = $('#inboxIssuer');
+  if (!sel || sel.dataset.bound) return;
+  ISSUERS.forEach((i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = i;
+    sel.appendChild(o);
+  });
+  sel.dataset.bound = '1';
+}
+
+async function init() {
   populateIssuerSelects();
+  populateInboxIssuers();
 
   document.addEventListener('change', (e) => {
     if (e.target.matches('[data-profile]')) readProfile();
+    if (e.target.matches('[data-household]')) {
+      readHouseholdFromDom();
+      save();
+      renderAll();
+    }
+    if (e.target.matches('#inboxType, #inboxIssuer')) renderDealInbox();
+  });
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('#inboxSearch')) renderDealInbox();
   });
   document.addEventListener('blur', (e) => {
     if (e.target.matches('[data-profile]')) readProfile();
+    if (e.target.matches('[data-household]')) {
+      readHouseholdFromDom();
+      save();
+    }
   }, true);
 
   $all('.tab').forEach((tab) => {
@@ -922,6 +1236,15 @@ function init() {
   $('#offerModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'offerModal') closeForm();
   });
+
+  $('#refreshFeed')?.addEventListener('click', refreshFeedNow);
+
+  try {
+    offersFeed = await loadOffersFeed();
+    updateFeedBadge();
+  } catch (e) {
+    console.warn('Initial feed load:', e.message);
+  }
 
   renderAll();
 }
