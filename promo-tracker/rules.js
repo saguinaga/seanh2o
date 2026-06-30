@@ -111,6 +111,7 @@ export function defaultProfile() {
     },
     partnerLabel: 'Partner',
     poolHousehold: true,
+    ownedCards: [],
     notes: '',
   };
 }
@@ -132,6 +133,7 @@ export function migrateState(raw) {
   if (!raw || typeof raw !== 'object') return base;
 
   const profile = { ...defaultProfile(), ...raw.profile };
+  profile.ownedCards = Array.isArray(profile.ownedCards) ? profile.ownedCards : [];
   if (raw.version < 2) {
     profile.personalCards24mo = profile.personalCards24mo ?? profile.cards24mo ?? 0;
     profile.baselineScore = profile.baselineScore ?? scoreBandToMid(profile.scoreBand);

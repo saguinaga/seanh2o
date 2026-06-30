@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=themes-v1">
+  <link rel="stylesheet" href="styles.css?v=wallet-v1">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -184,6 +184,23 @@
 
     <!-- TRANSFERS -->
     <section class="tab-panel" id="panel-transfers" role="tabpanel" hidden>
+      <div class="panel panel--wallet-hero">
+        <div class="catalog-toolbar">
+          <div>
+            <h2>My card stack</h2>
+            <p class="hint">Tell us what you already hold — we’ll map transfer unlockers, spend routing, and what to keep vs add.</p>
+          </div>
+          <div class="wallet-hero-actions">
+            <button type="button" class="btn-sm btn-ghost" id="loadWalletPreset">Load my 6-card stack</button>
+          </div>
+        </div>
+        <p class="wallet-summary" id="walletSummary"></p>
+        <div class="wallet-owned-grid" id="walletOwnedGrid"></div>
+        <div class="wallet-plays" id="walletPlays"></div>
+        <div class="wallet-actions" id="walletActions"></div>
+        <div class="wallet-verdicts" id="walletVerdicts"></div>
+      </div>
+
       <div class="panel panel--transfer-hero">
         <h2>Points by program</h2>
         <p class="hint">If your offers earn transferable points, see balances and partner options. Cash-value planning lives on the Dashboard.</p>
@@ -525,6 +542,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=themes-v1"></script>
+  <script type="module" src="app.js?v=wallet-v1"></script>
 </body>
 </html>

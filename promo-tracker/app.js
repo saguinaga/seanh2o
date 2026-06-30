@@ -32,6 +32,9 @@ import {
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
 } from './help.js';
 import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js';
+import {
+  analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
+} from './wallet-integration.js';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -224,6 +227,7 @@ function readProfile() {
     partnerPoints: readPointsGrid('partner'),
     poolHousehold: readVal('poolHousehold'),
     partnerLabel: p.partnerLabel || 'Partner',
+    ownedCards: readOwnedCards(),
   };
 
   if (state.profile.totalCreditLimit > 0) {
@@ -235,6 +239,108 @@ function readProfile() {
 
   save();
   renderAll();
+}
+
+function readOwnedCards() {
+  return $all('[data-owned-card]:checked').map((el) => el.value);
+}
+
+function renderWalletIntegration() {
+  const owned = state.profile.ownedCards || [];
+  const analysis = analyzeWallet(owned);
+
+  const summaryEl = $('#walletSummary');
+  if (summaryEl) summaryEl.textContent = analysis.summary;
+
+  const gridEl = $('#walletOwnedGrid');
+  if (gridEl && !gridEl.dataset.bound) {
+    const cards = walletCardsForPicker();
+    const byIssuer = {};
+    cards.forEach((c) => {
+      if (!byIssuer[c.issuer]) byIssuer[c.issuer] = [];
+      byIssuer[c.issuer].push(c);
+    });
+    gridEl.innerHTML = Object.entries(byIssuer).map(([issuer, list]) => `
+      <fieldset class="wallet-issuer-group">
+        <legend>${escapeHtml(issuer)}</legend>
+        <div class="wallet-check-grid">
+          ${list.map((c) => `
+            <label class="wallet-check">
+              <input type="checkbox" value="${c.id}" data-owned-card>
+              <span>${escapeHtml(c.name)}</span>
+            </label>
+          `).join('')}
+        </div>
+      </fieldset>
+    `).join('');
+    gridEl.dataset.bound = '1';
+    gridEl.addEventListener('change', (e) => {
+      if (e.target.matches('[data-owned-card]')) {
+        state.profile.ownedCards = readOwnedCards();
+        save();
+        renderWalletIntegration();
+      }
+    });
+  }
+
+  $all('[data-owned-card]').forEach((el) => {
+    el.checked = owned.includes(el.value);
+  });
+
+  const playsEl = $('#walletPlays');
+  if (playsEl) {
+    playsEl.innerHTML = analysis.plays.length
+      ? analysis.plays.map((p) => `
+        <article class="wallet-play">
+          <span class="wallet-play__emoji">${p.emoji}</span>
+          <div>
+            <strong>${escapeHtml(p.title)}</strong>
+            <p>${escapeHtml(p.body)}</p>
+          </div>
+        </article>
+      `).join('')
+      : '';
+  }
+
+  const actionsEl = $('#walletActions');
+  if (actionsEl) {
+    actionsEl.innerHTML = analysis.actions.length
+      ? `<h3 class="subhead">Smart moves</h3><ol class="wallet-action-list">${analysis.actions.map((a) => `
+        <li class="wallet-action wallet-action--${a.priority}">
+          <strong>${escapeHtml(a.title)}</strong>
+          <span>${escapeHtml(a.detail)}</span>
+        </li>
+      `).join('')}</ol>`
+      : '';
+  }
+
+  const verdictsEl = $('#walletVerdicts');
+  if (verdictsEl) {
+    verdictsEl.innerHTML = analysis.cardVerdicts.length
+      ? `<h3 class="subhead">Card-by-card</h3><div class="wallet-verdict-grid">${analysis.cardVerdicts.map((v) => `
+        <article class="wallet-verdict wallet-verdict--${v.verdict}">
+          <header>
+            <strong>${escapeHtml(v.name)}</strong>
+            <span class="wallet-verdict__tag">${verdictLabel(v.verdict)}</span>
+          </header>
+          <p class="wallet-verdict__earn">${escapeHtml(v.earnSummary)}</p>
+          <p class="wallet-verdict__why">${escapeHtml(v.why)}</p>
+          ${v.cancelNote ? `<p class="wallet-verdict__cancel">${escapeHtml(v.cancelNote)}</p>` : ''}
+        </article>
+      `).join('')}</div>`
+      : '<p class="empty">Check the cards you hold above.</p>';
+  }
+}
+
+function verdictLabel(v) {
+  const map = {
+    keep: 'Keep',
+    keep_if_using: 'Keep if using',
+    evaluate_fee: 'Check annual fee',
+    add_when_ready: 'Add later',
+    upgrade_path: 'Upgrade path',
+  };
+  return map[v] || 'Review';
 }
 
 function readPointsGrid(prefix, profile = state.profile) {
@@ -714,6 +820,7 @@ function readHouseholdFromDom() {
 }
 
 function renderTransfers() {
+  renderWalletIntegration();
   renderHouseholdUI();
   const hh = ensureHousehold();
   const hw = householdWallet(state.profile, hh, state.offers, transferBonusPct);
@@ -1474,6 +1581,13 @@ async function init() {
   $('#loadBalanced')?.addEventListener('click', () => loadPlan('balanced'));
   $('#loadConservative')?.addEventListener('click', () => loadPlan('conservative'));
   $('#loadCreator')?.addEventListener('click', () => loadPlan('creator-stack'));
+  $('#loadWalletPreset')?.addEventListener('click', () => {
+    const preset = WALLET_PRESETS['starter-six'];
+    if (!preset) return;
+    state.profile.ownedCards = [...preset.cards];
+    save();
+    renderWalletIntegration();
+  });
   $('#exportBtn')?.addEventListener('click', exportJson);
   $('#importBtn')?.addEventListener('click', () => $('#importFile').click());
   $('#importFile')?.addEventListener('change', (e) => {
