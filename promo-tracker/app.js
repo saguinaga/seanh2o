@@ -13,7 +13,7 @@ import {
 } from './earnings.js';
 import {
   DEFAULT_TRANSFER_BONUS_PCT, INFLUENCER_MATH, TRANSFER_PLAYS,
-} from './valuation.js';
+} from './valuation-engine.js';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
   pointsWallet, transferPartnersFor, crossProgramSummary,
@@ -30,7 +30,7 @@ import {
 import {
   helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
-} from './help.js';
+} from './help-content.js';
 import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js';
 import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
