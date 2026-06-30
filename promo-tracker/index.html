@@ -32,7 +32,7 @@
 
     <div class="stats">
       <div class="stat stat--hero"><strong id="statTripValue">$0</strong><span>Trip $ in your plan</span></div>
-      <div class="stat"><strong id="statTripsFunded">0</strong><span>Trips fully funded</span></div>
+      <div class="stat"><strong id="statTotalPts">0</strong><span>Points pooled</span></div>
       <div class="stat"><strong id="statMsr">$0</strong><span>Organized spend (MSR)</span></div>
       <div class="stat"><strong id="statMaxDrop">—</strong><span>Credit dip (est.)</span></div>
       <div class="stat"><strong id="statDoneVal">$0</strong><span>Already “booked”</span></div>
@@ -40,6 +40,7 @@
 
     <nav class="tabs" role="tablist">
       <button type="button" class="tab tab--active" data-tab="trips" role="tab">✈️ Free trips</button>
+      <button type="button" class="tab" data-tab="transfers" role="tab">🔀 Transfers</button>
       <button type="button" class="tab" data-tab="plan" role="tab">Your stack</button>
       <button type="button" class="tab" data-tab="catalog" role="tab">Card picks</button>
       <button type="button" class="tab" data-tab="baseline" role="tab">Your credit</button>
@@ -82,6 +83,68 @@
       <div class="panel panel--reality" style="margin-top:20px">
         <h2>What they say vs. what happens</h2>
         <div class="reality-grid" id="realityGrid"></div>
+      </div>
+    </section>
+
+    <!-- TRANSFERS -->
+    <section class="tab-panel" id="panel-transfers" role="tabpanel" hidden>
+      <div class="panel panel--transfer-hero">
+        <h2>Points don’t mix — until you transfer them</h2>
+        <p class="hint">Chase, Amex &amp; Citi live in separate worlds. Influencers combine them by moving both into the same airline or hotel account. That’s the real “sharing across platforms.”</p>
+        <p class="transfer-summary" id="crossProgramSummary"></p>
+      </div>
+
+      <div class="grid-2" style="margin-top:20px">
+        <div class="panel">
+          <h2>Your points wallet</h2>
+          <p class="hint">Stack bonuses + points you already have + optional partner pool.</p>
+          <div id="pointsWallet"></div>
+          <details class="wallet-details" style="margin-top:14px">
+            <summary>Add existing &amp; partner points</summary>
+            <div class="profile-grid" id="existingPointsGrid" style="margin-top:10px"></div>
+            <label class="form-row-check profile-check" style="margin-top:10px">
+              <input type="checkbox" id="poolHousehold" data-profile checked> Pool partner points into household total
+            </label>
+          </details>
+        </div>
+        <div class="panel">
+          <h2>Book a dream trip (transfer playbook)</h2>
+          <label class="catalog-filter">Trip
+            <select id="playbookTrip"></select>
+          </label>
+          <div id="tripPlaybook" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="catalog-toolbar">
+          <h2>Transfer partner map</h2>
+          <label class="catalog-filter">From program
+            <select id="transferProgram">
+              <option value="all">All transferable</option>
+            </select>
+          </label>
+        </div>
+        <div class="transfer-table-wrap">
+          <table class="transfer-table" id="transferTable">
+            <thead>
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Ratio</th>
+                <th>Speed</th>
+                <th>Why influencers use it</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h2>Household &amp; partner pooling</h2>
+        <p class="hint">How couples actually combine Chase + Amex points for one vacation.</p>
+        <div class="household-grid" id="householdGrid"></div>
       </div>
     </section>
 

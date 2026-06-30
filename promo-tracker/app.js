@@ -8,10 +8,15 @@ import {
 } from './catalog.js';
 import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js';
 import {
-  INFLUENCER_STACKS, INFLUENCER_VS_REALITY,
+  INFLUENCER_STACKS, INFLUENCER_VS_REALITY, DREAM_TRIPS,
   activeOffersValue, pipelineValue, capturedValue, outOfPocketEstimate,
   tripsFundedByValue, cardTripPitch, stackTotalValue,
 } from './trips.js';
+import {
+  PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
+  pointsWallet, transferPartnersFor, crossProgramSummary,
+  tripTransferPlan, bestTripsForWallet, defaultPointsBalances,
+} from './transfers.js';
 
 const STORAGE_KEY = 'promo_tracker_v2';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -58,6 +63,12 @@ function $all(sel) { return [...document.querySelectorAll(sel)]; }
 
 function fmtMoney(n) {
   return Number.isFinite(n) ? `$${n.toLocaleString()}` : '—';
+}
+
+function fmtPts(n) {
+  if (!Number.isFinite(n) || n <= 0) return '0';
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return String(Math.round(n));
 }
 
 function escapeHtml(s) {
@@ -144,6 +155,10 @@ function readProfile() {
     wfCards6mo: readVal('wfCards6mo') ?? p.wfCards6mo ?? 0,
     usbCards12mo: readVal('usbCards12mo') ?? p.usbCards12mo ?? 0,
     barcCards6mo: readVal('barcCards6mo') ?? p.barcCards6mo ?? 0,
+    existingPoints: readPointsGrid('existing'),
+    partnerPoints: readPointsGrid('partner'),
+    poolHousehold: readVal('poolHousehold'),
+    partnerLabel: p.partnerLabel || 'Partner',
   };
 
   if (state.profile.totalCreditLimit > 0) {
@@ -157,14 +172,24 @@ function readProfile() {
   renderAll();
 }
 
+function readPointsGrid(prefix, profile = state.profile) {
+  const src = prefix === 'existing' ? profile.existingPoints : profile.partnerPoints;
+  const base = { ...defaultPointsBalances(), ...src };
+  ['chase_ur', 'amex_mr', 'citi_ty', 'capone'].forEach((prog) => {
+    const el = document.getElementById(`${prefix}_${prog}`);
+    if (el) base[prog] = Number(el.value) || 0;
+  });
+  return base;
+}
+
 function renderStats(sim) {
   const tripVal = activeOffersValue(state.offers);
   const doneVal = capturedValue(state.offers);
   const oop = outOfPocketEstimate(state.offers);
-  const funded = tripsFundedByValue(tripVal).filter((t) => t.status === 'funded').length;
+  const wallet = pointsWallet(state.profile, state.offers);
 
   $('#statTripValue').textContent = fmtMoney(tripVal);
-  $('#statTripsFunded').textContent = String(funded);
+  $('#statTotalPts').textContent = fmtPts(wallet.totalPoints);
   $('#statMsr').textContent = fmtMoney(oop.msr);
   $('#statDoneVal').textContent = fmtMoney(doneVal);
   if (sim) {
@@ -265,7 +290,156 @@ function loadStack(stackId) {
   state.offers = seedInfluencerStack(stackId);
   save();
   renderAll();
-  switchTab('plan');
+  switchTab('transfers');
+}
+
+function renderTransfers() {
+  const wallet = pointsWallet(state.profile, state.offers);
+
+  const summaryEl = $('#crossProgramSummary');
+  if (summaryEl) summaryEl.textContent = crossProgramSummary(wallet);
+
+  const walletEl = $('#pointsWallet');
+  if (walletEl) {
+    if (!wallet.lines.length) {
+      walletEl.innerHTML = '<p class="empty">Load a card stack to see pooled points by program.</p>';
+    } else {
+      walletEl.innerHTML = wallet.lines.map((line) => `
+        <article class="wallet-card" style="border-left-color:${line.meta.color}">
+          <header class="wallet-card__head">
+            <strong>${escapeHtml(line.meta.short)}</strong>
+            <span>${fmtPts(line.total)} pts · ~${fmtMoney(line.usd)}</span>
+          </header>
+          <div class="wallet-card__breakdown">
+            ${line.stack ? `<span>Stack SUB <strong>${fmtPts(line.stack)}</strong></span>` : ''}
+            ${line.yours ? `<span>Yours <strong>${fmtPts(line.yours)}</strong></span>` : ''}
+            ${line.spouse ? `<span>${escapeHtml(state.profile.partnerLabel || 'Partner')} <strong>${fmtPts(line.spouse)}</strong></span>` : ''}
+          </div>
+          ${line.meta.transferable
+    ? `<p class="wallet-card__xfer">→ ${transferPartnersFor(line.program).slice(0, 4).map((t) => PARTNERS[t.to]?.name).filter(Boolean).join(', ')}…</p>`
+    : `<p class="wallet-card__xfer wallet-card__xfer--muted">${escapeHtml(line.meta.note)}</p>`}
+        </article>
+      `).join('');
+    }
+  }
+
+  const ptsGrid = $('#existingPointsGrid');
+  if (ptsGrid && !ptsGrid.dataset.bound) {
+    const progs = ['chase_ur', 'amex_mr', 'citi_ty', 'capone'];
+    ptsGrid.innerHTML = progs.flatMap((prog) => {
+      const m = PROGRAMS[prog];
+      return [
+        `<label>${m.short} (yours)
+          <input type="number" id="existing_${prog}" data-profile data-points min="0" step="1000" value="${state.profile.existingPoints?.[prog] ?? 0}">
+        </label>`,
+        `<label>${m.short} (${state.profile.partnerLabel || 'partner'})
+          <input type="number" id="partner_${prog}" data-profile data-points min="0" step="1000" value="${state.profile.partnerPoints?.[prog] ?? 0}">
+        </label>`,
+      ];
+    }).join('');
+    ptsGrid.dataset.bound = '1';
+  } else {
+    ['chase_ur', 'amex_mr', 'citi_ty', 'capone'].forEach((prog) => {
+      setVal(`existing_${prog}`, state.profile.existingPoints?.[prog] ?? 0);
+      setVal(`partner_${prog}`, state.profile.partnerPoints?.[prog] ?? 0);
+    });
+  }
+
+  setVal('poolHousehold', state.profile.poolHousehold !== false);
+
+  const tripSel = $('#playbookTrip');
+  if (tripSel && !tripSel.dataset.bound) {
+    DREAM_TRIPS.forEach((t) => {
+      const o = document.createElement('option');
+      o.value = t.id;
+      o.textContent = `${t.emoji} ${t.name}`;
+      tripSel.appendChild(o);
+    });
+    tripSel.dataset.bound = '1';
+    tripSel.addEventListener('change', renderTripPlaybook);
+  }
+
+  renderTripPlaybook();
+
+  const progSel = $('#transferProgram');
+  if (progSel && !progSel.dataset.bound) {
+    Object.values(PROGRAMS).filter((p) => p.transferable).forEach((p) => {
+      const o = document.createElement('option');
+      o.value = p.id;
+      o.textContent = p.name;
+      progSel.appendChild(o);
+    });
+    progSel.dataset.bound = '1';
+  }
+  renderTransferTable($('#transferProgram')?.value || 'all');
+
+  const householdEl = $('#householdGrid');
+  if (householdEl) {
+    householdEl.innerHTML = HOUSEHOLD_PLAYBOOK.map((block) => `
+      <article class="household-card">
+        <h3>${escapeHtml(block.title)}</h3>
+        <ol>${block.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+      </article>
+    `).join('');
+  }
+}
+
+function renderTripPlaybook() {
+  const tripId = $('#playbookTrip')?.value || DREAM_TRIPS[0]?.id;
+  const wallet = pointsWallet(state.profile, state.offers);
+  const plan = tripTransferPlan(tripId, wallet);
+  const el = $('#tripPlaybook');
+  if (!el || !plan) return;
+
+  const best = bestTripsForWallet(wallet).slice(0, 3);
+
+  el.innerHTML = `
+    <p class="playbook-caption">${escapeHtml(plan.caption)}</p>
+    <div class="playbook-steps">
+      ${plan.steps.map((step) => `
+        <div class="playbook-step ${step.covered ? 'playbook-step--ok' : 'playbook-step--gap'}">
+          <div class="playbook-step__head">
+            <span>${step.partner?.emoji || '✈️'} ${escapeHtml(step.label)}</span>
+            <span class="gate-pill gate-pill--${step.covered ? 'clear' : 'caution'}">${step.covered ? 'Covered' : `Need ${fmtPts(step.gap)} more`}</span>
+          </div>
+          <p><strong>${escapeHtml(step.program?.short || '')}</strong> → <strong>${escapeHtml(step.partner?.name || '')}</strong> · ${step.ratio} · ${escapeHtml(step.time)}</p>
+          <p class="playbook-step__pts">${fmtPts(step.available)} available / ${fmtPts(step.estPoints)} est. needed</p>
+          <p class="hint">${escapeHtml(step.note || '')}</p>
+        </div>
+      `).join('')}
+    </div>
+    <p class="playbook-verdict ${plan.feasible ? 'playbook-verdict--yes' : ''}">
+      ${plan.feasible
+    ? `✓ Your pooled points can cover this ${plan.trip.emoji} trip on paper.`
+    : `Need ~${fmtPts(Math.max(0, plan.totalNeed - plan.totalHave))} more points — add cards or wait for transfer bonuses.`}
+    </p>
+    ${best.length ? `<p class="hint" style="margin-top:10px">Best fit from your wallet: ${best.map((b) => `${b.trip.emoji} ${b.trip.name} (${b.score}%)`).join(' · ')}</p>` : ''}
+  `;
+}
+
+function renderTransferTable(programFilter) {
+  const tbody = $('#transferTable tbody');
+  if (!tbody) return;
+
+  let rules = TRANSFER_RULES;
+  if (programFilter && programFilter !== 'all') {
+    rules = rules.filter((r) => r.from === programFilter);
+  }
+
+  tbody.innerHTML = rules.map((r) => {
+    const from = PROGRAMS[r.from];
+    const to = PARTNERS[r.to];
+    if (!from || !to) return '';
+    return `
+      <tr>
+        <td><span class="xfer-from" style="color:${from.color}">${escapeHtml(from.short)}</span></td>
+        <td>${to.emoji} ${escapeHtml(to.name)}</td>
+        <td>${r.ratio}:1</td>
+        <td>${escapeHtml(r.time)}</td>
+        <td class="xfer-sweet">${escapeHtml(r.sweet || '')}</td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function renderQuickGates() {
@@ -345,6 +519,9 @@ function renderCatalog() {
           ${card.creditLine ? `<span>~${fmtMoney(card.creditLine)} line</span>` : card.charge ? '<span>Charge card</span>' : ''}
         </div>
         <p class="catalog-card__trip">${escapeHtml(cardTripPitch(card))}</p>
+        ${PROGRAMS[card.program]?.transferable
+    ? `<p class="catalog-card__xfer">Transfer → ${transferPartnersFor(card.program).slice(0, 3).map((t) => PARTNERS[t.to]?.name).filter(Boolean).join(', ')}</p>`
+    : ''}
         <div class="catalog-card__tags">${(card.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
         ${ev.blockers.length ? `<ul class="offer-alerts offer-alerts--block">${ev.blockers.slice(0, 2).map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
         <button type="button" class="btn-sm ${inPlan ? 'btn-ghost' : 'btn'}" data-catalog="${card.id}" ${inPlan ? 'disabled' : ''}>
@@ -587,6 +764,7 @@ function renderAll() {
   renderOffers();
   const sim = renderSimulation(timeline);
   renderTrips(sim);
+  renderTransfers();
 }
 
 function switchTab(name) {
@@ -716,6 +894,8 @@ function init() {
   });
 
   $('#catalogIssuer')?.addEventListener('change', renderCatalog);
+  $('#transferProgram')?.addEventListener('change', (e) => renderTransferTable(e.target.value));
+
 
   $('#addOffer')?.addEventListener('click', () => openForm(null));
   $('#loadSeed')?.addEventListener('click', () => loadStack('babymoon-cabo'));

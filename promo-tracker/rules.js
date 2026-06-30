@@ -83,6 +83,14 @@ export function defaultProfile() {
     wfCards6mo: 0,
     usbCards12mo: 0,
     barcCards6mo: 0,
+    existingPoints: {
+      chase_ur: 0, amex_mr: 0, citi_ty: 0, capone: 0, bofa: 0, usbank: 0, discover: 0,
+    },
+    partnerPoints: {
+      chase_ur: 0, amex_mr: 0, citi_ty: 0, capone: 0,
+    },
+    partnerLabel: 'Partner',
+    poolHousehold: true,
     notes: '',
   };
 }
@@ -113,6 +121,10 @@ export function migrateState(raw) {
     if (!profile.totalBalances && profile.utilizationPct) {
       profile.totalBalances = Math.round(profile.totalCreditLimit * profile.utilizationPct / 100);
     }
+    profile.existingPoints = { ...defaultProfile().existingPoints, ...profile.existingPoints };
+    profile.partnerPoints = { ...defaultProfile().partnerPoints, ...profile.partnerPoints };
+    if (profile.poolHousehold === undefined) profile.poolHousehold = true;
+    if (!profile.partnerLabel) profile.partnerLabel = 'Partner';
   }
 
   return {

@@ -85,7 +85,7 @@ export const INFLUENCER_STACKS = [
     hook: 'Two cards, one long weekend, 200k views',
     emoji: '🌅',
     catalogIds: ['chase-csp', 'amex-gold'],
-    caption: 'Open Sapphire Preferred + Amex Gold, hit minimum spend on stuff you already buy, transfer points to Hyatt or book through Chase Travel. Influencers call it free — you’re really swapping organized spending for ~$2k in travel value.',
+    caption: 'Chase UR → Hyatt or Southwest. Amex MR → Marriott backup. Two bank logins, one Hyatt account — that’s how couples “combine” points.',
   },
   {
     id: 'europe-reel',
@@ -133,6 +133,14 @@ export const INFLUENCER_VS_REALITY = [
   {
     reel: '“Doesn’t hurt your credit”',
     reality: 'Each app is a hard pull. Score often dips 10–30+ pts temporarily; util spikes during MSR months.',
+  },
+  {
+    reel: '“Just transfer your points”',
+    reality: 'Chase, Amex & Citi don’t share one pool — you transfer out to Hyatt/United/etc. Transfers are one-way.',
+  },
+  {
+    reel: '“My husband and I combined points”',
+    reality: 'Two bank programs don’t merge — both transfer into the same hotel/airline loyalty account. That’s the real hack.',
   },
 ];
 
