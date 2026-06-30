@@ -1,17 +1,16 @@
 import {
   OFFER_TYPES, STATUS, ISSUERS, defaultState, defaultProfile,
-  evaluateOffer, suggestTimeline, seedOffers, seedInfluencerStack, migrateState, bumpProfileOnApproval,
+  evaluateOffer, suggestTimeline, seedOffers, seedOfferPlan, migrateState, bumpProfileOnApproval,
 } from './rules.js';
 import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST } from './issuers.js';
 import {
   CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES,
 } from './catalog.js';
 import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js';
+import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js';
 import {
-  INFLUENCER_STACKS, INFLUENCER_VS_REALITY, DREAM_TRIPS,
-  activeOffersValue, pipelineValue, capturedValue, outOfPocketEstimate,
-  tripsFundedByValue, cardTripPitch, stackTotalValue,
-} from './trips.js';
+  OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
+} from './earnings.js';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
   pointsWallet, transferPartnersFor, crossProgramSummary,
@@ -182,16 +181,13 @@ function readPointsGrid(prefix, profile = state.profile) {
   return base;
 }
 
-function renderStats(sim) {
-  const tripVal = activeOffersValue(state.offers);
-  const doneVal = capturedValue(state.offers);
-  const oop = outOfPocketEstimate(state.offers);
-  const wallet = pointsWallet(state.profile, state.offers);
+function renderStats(sim, projection) {
+  const proj = projection || earningsProjection(state.offers, []);
 
-  $('#statTripValue').textContent = fmtMoney(tripVal);
-  $('#statTotalPts').textContent = fmtPts(wallet.totalPoints);
-  $('#statMsr').textContent = fmtMoney(oop.msr);
-  $('#statDoneVal').textContent = fmtMoney(doneVal);
+  $('#statPipeline').textContent = fmtMoney(proj.netPipeline);
+  $('#statCaptured').textContent = fmtMoney(proj.captured);
+  $('#statPerMonth').textContent = proj.perMonth > 0 ? fmtMoney(proj.perMonth) : '$0';
+  $('#statQueued').textContent = String(proj.queued);
   if (sim) {
     $('#statMaxDrop').textContent = sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '0';
     $('#statMaxDrop').style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
@@ -200,97 +196,102 @@ function renderStats(sim) {
   }
 }
 
-function renderTrips(sim) {
-  const tripVal = activeOffersValue(state.offers);
-  const pipeVal = pipelineValue(state.offers);
-  const oop = outOfPocketEstimate(state.offers);
-  const trips = tripsFundedByValue(tripVal);
-
-  const tripGrid = $('#tripGrid');
-  if (tripGrid) {
-    if (!state.offers.length) {
-      tripGrid.innerHTML = '<p class="empty">Load a creator stack above to see which vacations your points could cover.</p>';
-    } else {
-      tripGrid.innerHTML = trips.map((t) => `
-        <article class="trip-card trip-card--${t.status}">
-          <div class="trip-card__emoji">${t.emoji}</div>
-          <div class="trip-card__body">
-            <h3>${escapeHtml(t.name)}</h3>
-            <p class="trip-card__tagline">${escapeHtml(t.tagline)}</p>
-            <div class="trip-card__bar"><div class="trip-card__fill" style="width:${t.fundedPct}%"></div></div>
-            <p class="trip-card__meta">
-              ${t.status === 'funded'
-    ? `<span class="trip-card__badge trip-card__badge--yes">Fully funded</span> · ~${fmtMoney(t.cashPrice)} trip`
-    : `<span class="trip-card__badge">${t.fundedPct}% there</span> · need ${fmtMoney(t.gap)} more`}
-              · ${escapeHtml(t.vibe)}
-            </p>
-          </div>
-        </article>
-      `).join('');
-    }
+function renderDashboardTimeline(timeline) {
+  const el = $('#dashboardTimeline');
+  if (!el) return;
+  const pending = (timeline || []).slice(0, 4);
+  if (!pending.length) {
+    el.innerHTML = '<p class="empty">Load a plan or add offers to see pacing.</p>';
+    return;
   }
+  el.innerHTML = pending.map((row, i) => `
+    <div class="timeline-row">
+      <span class="timeline-step">${i + 1}</span>
+      <div>
+        <strong>${escapeHtml(row.title)}</strong>
+        <span class="timeline-date">${row.suggestedDate}</span>
+        <p class="timeline-reason">${escapeHtml(row.reason)}</p>
+      </div>
+    </div>
+  `).join('');
+}
 
-  const realMath = $('#realMath');
-  if (realMath) {
-    const fees = oop.fees;
-    realMath.innerHTML = `
+function renderDashboard(sim, timeline) {
+  const proj = earningsProjection(state.offers, timeline);
+  renderStats(sim, proj);
+
+  const snap = $('#earningsSnapshot');
+  if (snap) {
+    const typeRows = Object.entries(proj.byType).map(([t, v]) => {
+      const label = { cc: 'Card SUBs', bank: 'Bank bonuses', shopping: 'Shopping/stacks', travel: 'Travel promos' }[t] || t;
+      return `<div class="sim-summary__row"><span>${label}</span><strong>${fmtMoney(v)}</strong></div>`;
+    }).join('');
+
+    snap.innerHTML = `
       <div class="sim-summary">
-        <div class="sim-summary__row"><span>Travel value in stack</span><strong>${fmtMoney(tripVal)}</strong></div>
-        <div class="sim-summary__row"><span>Still to earn (pipeline)</span><strong>${fmtMoney(pipeVal)}</strong></div>
-        <div class="sim-summary__row"><span>Minimum spend to unlock</span><strong>${fmtMoney(oop.msr)}</strong></div>
-        <div class="sim-summary__row"><span>Annual fees (year 1)</span><strong>${fmtMoney(fees)}</strong></div>
+        <div class="sim-summary__row"><span>Gross pipeline</span><strong>${fmtMoney(proj.pipeline)}</strong></div>
+        <div class="sim-summary__row"><span>Less annual fees (pending)</span><strong>−${fmtMoney(proj.fees)}</strong></div>
+        <div class="sim-summary__row"><span>Net still to earn</span><strong>${fmtMoney(proj.netPipeline)}</strong></div>
+        <div class="sim-summary__row"><span>Already captured</span><strong>${fmtMoney(proj.captured)}</strong></div>
+        <div class="sim-summary__row"><span>MSR exposure (queued)</span><strong>${fmtMoney(proj.msr)}</strong></div>
+        <div class="sim-summary__row"><span>Plan horizon</span><strong>~${proj.months} mo</strong></div>
+        ${typeRows}
         ${sim ? `<div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
-          <span>Est. credit score dip</span><strong>−${sim.summary.maxDrop} pts</strong>
+          <span>Est. max score drop</span><strong>−${sim.summary.maxDrop} pts</strong>
         </div>` : ''}
       </div>
-      <p class="hint" style="margin-top:12px">${escapeHtml(oop.note)}. Taxes, resort fees &amp; seat selection still cost cash.</p>
+      <p class="hint" style="margin-top:12px">Mark offers <strong>Done</strong> when bonuses post — captured $ and gates update automatically.</p>
     `;
   }
 
-  const stackGrid = $('#stackGrid');
-  if (stackGrid) {
-    stackGrid.innerHTML = INFLUENCER_STACKS.map((s) => {
-      const val = stackTotalValue(s.catalogIds);
-      const topTrip = tripsFundedByValue(val)[0];
-      return `
-        <article class="stack-card">
-          <header class="stack-card__head">
-            <span class="stack-card__emoji">${s.emoji}</span>
-            <div>
-              <h3>${escapeHtml(s.name)}</h3>
-              <p class="stack-card__hook">${escapeHtml(s.hook)}</p>
-            </div>
-            <strong class="stack-card__val">${fmtMoney(val)}</strong>
-          </header>
-          <p class="stack-card__caption">${escapeHtml(s.caption)}</p>
-          <p class="stack-card__trip">Funds ~${topTrip?.fundedPct || 0}% of a ${escapeHtml(topTrip?.name || 'getaway')}</p>
-          <button type="button" class="btn-sm btn" data-stack="${s.id}">Load this stack</button>
-        </article>
-      `;
-    }).join('');
+  renderDashboardTimeline(timeline);
 
-    stackGrid.querySelectorAll('[data-stack]').forEach((btn) => {
-      btn.addEventListener('click', () => loadStack(btn.dataset.stack));
+  const planGrid = $('#planGrid');
+  if (planGrid) {
+    planGrid.innerHTML = OFFER_PLANS.map((p) => `
+      <article class="stack-card">
+        <header class="stack-card__head">
+          <span class="stack-card__emoji">${p.emoji}</span>
+          <div>
+            <h3>${escapeHtml(p.name)}</h3>
+            <p class="stack-card__hook">${escapeHtml(p.hook)}</p>
+          </div>
+          <strong class="stack-card__val">~${fmtMoney(p.estValue)}</strong>
+        </header>
+        <p class="stack-card__caption">${escapeHtml(p.caption)}</p>
+        <button type="button" class="btn-sm btn" data-plan="${p.id}">Load plan</button>
+      </article>
+    `).join('');
+
+    planGrid.querySelectorAll('[data-plan]').forEach((btn) => {
+      btn.addEventListener('click', () => loadPlan(btn.dataset.plan));
     });
   }
 
-  const realityGrid = $('#realityGrid');
-  if (realityGrid) {
-    realityGrid.innerHTML = INFLUENCER_VS_REALITY.map((row) => `
-      <div class="reality-row">
-        <div class="reality-row__reel">${escapeHtml(row.reel)}</div>
-        <div class="reality-row__truth">${escapeHtml(row.reality)}</div>
-      </div>
+  const tripGrid = $('#tripGrid');
+  if (tripGrid && state.offers.length) {
+    const tripVal = activeOffersValue(state.offers);
+    tripGrid.innerHTML = tripsFundedByValue(tripVal).slice(0, 5).map((t) => `
+      <article class="trip-card trip-card--${t.status} trip-card--compact">
+        <div class="trip-card__emoji">${t.emoji}</div>
+        <div class="trip-card__body">
+          <h3>${escapeHtml(t.name)}</h3>
+          <div class="trip-card__bar"><div class="trip-card__fill" style="width:${t.fundedPct}%"></div></div>
+          <p class="trip-card__meta">${t.fundedPct}% of ~${fmtMoney(t.cashPrice)} if redeemed for travel</p>
+        </div>
+      </article>
     `).join('');
+  } else if (tripGrid) {
+    tripGrid.innerHTML = '<p class="empty">Add offers to see optional travel redemption stretch goals.</p>';
   }
 }
 
-function loadStack(stackId) {
-  if (state.offers.length && !confirm('Replace your current stack with this creator example?')) return;
-  state.offers = seedInfluencerStack(stackId);
+function loadPlan(planId) {
+  if (state.offers.length && !confirm('Replace your offer queue with this plan template?')) return;
+  state.offers = seedOfferPlan(planId);
   save();
   renderAll();
-  switchTab('transfers');
+  switchTab('plan');
 }
 
 function renderTransfers() {
@@ -587,7 +588,7 @@ function renderOffers() {
   const list = $('#offerList');
   if (!list) return;
   if (!state.offers.length) {
-    list.innerHTML = '<p class="empty">No cards in your stack yet — start on Free trips or Card picks.</p>';
+    list.innerHTML = '<p class="empty">No offers queued — load a plan from the Dashboard or add from the Catalog.</p>';
     return;
   }
   const sorted = [...state.offers].sort((a, b) => (a.priority || 99) - (b.priority || 99));
@@ -645,7 +646,6 @@ function renderTimeline() {
 
 function renderSimulation(timeline) {
   const sim = simulateCreditPlan(state.profile, state.offers, timeline || []);
-  renderStats(sim);
 
   const summaryEl = $('#simSummary');
   if (summaryEl) {
@@ -657,8 +657,8 @@ function renderSimulation(timeline) {
           <span>Max drop</span><strong>−${sim.summary.maxDrop} pts</strong>
         </div>
         <div class="sim-summary__row"><span>CC applications</span><strong>${sim.summary.totalApplications}</strong></div>
-        ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Buying a house soon? This stack may ding your rate — influencers never mention that.</p>' : ''}
-        <p class="hint" style="margin-top:10px">Score usually recovers as inquiries age and MSR balances pay off — but not overnight.</p>
+        ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Mortgage/refi planned soon — consider pausing new applications.</p>' : ''}
+        <p class="hint" style="margin-top:10px">Score typically recovers as inquiries age and MSR balances clear.</p>
       </div>
     `;
   }
@@ -755,15 +755,24 @@ function updateScoreChart(sim) {
   }
 }
 
+function renderPrinciples() {
+  const el = $('#principlesList');
+  if (!el) return;
+  el.innerHTML = PLANNING_PRINCIPLES.map((p) => `
+    <li><strong>${escapeHtml(p.title)}</strong> — ${escapeHtml(p.detail)}</li>
+  `).join('');
+}
+
 function renderAll() {
   renderProfile();
   renderQuickGates();
+  renderPrinciples();
   renderIssuerGrid();
   renderCatalog();
   const timeline = renderTimeline();
   renderOffers();
   const sim = renderSimulation(timeline);
-  renderTrips(sim);
+  renderDashboard(sim, timeline);
   renderTransfers();
 }
 
@@ -898,9 +907,9 @@ function init() {
 
 
   $('#addOffer')?.addEventListener('click', () => openForm(null));
-  $('#loadSeed')?.addEventListener('click', () => loadStack('babymoon-cabo'));
-  $('#loadBabymoon')?.addEventListener('click', () => loadStack('babymoon-cabo'));
-  $('#loadEurope')?.addEventListener('click', () => loadStack('europe-reel'));
+  $('#loadSeed')?.addEventListener('click', () => loadPlan('balanced'));
+  $('#loadBalanced')?.addEventListener('click', () => loadPlan('balanced'));
+  $('#loadConservative')?.addEventListener('click', () => loadPlan('conservative'));
   $('#exportBtn')?.addEventListener('click', exportJson);
   $('#importBtn')?.addEventListener('click', () => $('#importFile').click());
   $('#importFile')?.addEventListener('change', (e) => {

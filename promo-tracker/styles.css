@@ -1280,6 +1280,38 @@ a { color: var(--accent); }
 
 .household-card li { margin-bottom: 6px; }
 
+.hero-panel--earn {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(56, 189, 248, 0.12) 50%, rgba(30, 41, 59, 0.2) 100%);
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.hero-panel--earn .hero-panel__eyebrow { color: var(--green); }
+
+.panel--goals summary {
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.trip-grid--compact .trip-card {
+  padding: 10px 12px;
+}
+
+.trip-card--compact .trip-card__emoji { font-size: 1.4rem; }
+
+.trip-card--compact h3 { font-size: 0.82rem; }
+
+.principles-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.principles-list li { margin-bottom: 8px; }
+
+.principles-list strong { color: var(--text); }
+
 @media (max-width: 900px) {
   .scenery-card {
     opacity: 0.12;

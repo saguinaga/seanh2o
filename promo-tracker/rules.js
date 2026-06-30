@@ -1,6 +1,7 @@
 /** Credit gates, profile v2, sequencing — educational, not financial advice */
 import { evaluateIssuerGates } from './issuers.js';
 import { findCatalog, catalogEntryToOffer } from './catalog.js';
+import { OFFER_PLANS } from './earnings.js';
 
 export const ISSUERS = [
   'Chase', 'Amex', 'Citi', 'Discover', 'Capital One', 'Bank of America', 'Wells Fargo', 'US Bank', 'Barclays', 'Other',
@@ -299,36 +300,43 @@ export function suggestTimeline(offers, profile) {
   return timeline;
 }
 
-const INFLUENCER_STACK_ENTRIES = {
-  'babymoon-cabo': [
-    { catalogId: 'chase-csp', priority: 1, status: 'planned', notes: 'Card 1 — book flights or Hyatt transfer. Check 5/24 first.' },
-    { catalogId: 'amex-gold', priority: 2, status: 'planned', notes: 'Card 2 — groceries & dining MSR. Wait ~90d after Chase.' },
-  ],
-  'europe-reel': [
-    { catalogId: 'chase-csp', priority: 1, status: 'planned', notes: 'Flights via Chase Travel or transfer partners.' },
-    { catalogId: 'chase-ihg', priority: 2, status: 'planned', notes: 'Hotel nights — IHG SUB is huge for Europe reels.' },
-    { catalogId: 'amex-gold', priority: 3, status: 'idea', notes: 'Dining abroad + MR stash.' },
-  ],
-  'disney-mom': [
-    { catalogId: 'chase-cfu', priority: 1, status: 'planned', notes: 'Everyday spend — pairs with Sapphire later.' },
-    { catalogId: 'chase-csp', priority: 2, status: 'planned', notes: 'Portal redemption for park hotel.' },
-    { catalogId: 'capone-venture', priority: 3, status: 'idea', notes: 'Flexible miles backup.' },
-  ],
-};
-
 export function seedOffers() {
-  return seedInfluencerStack('babymoon-cabo');
+  return seedOfferPlan('balanced');
 }
 
-/** Stacks that travel creators tease — educational examples */
-export function seedInfluencerStack(stackId) {
-  const entries = INFLUENCER_STACK_ENTRIES[stackId] || INFLUENCER_STACK_ENTRIES['babymoon-cabo'];
-  return entries.map((entry) => {
+/** Load a realistic multi-month offer plan */
+export function seedOfferPlan(planId) {
+  const plan = OFFER_PLANS.find((p) => p.id === planId) || OFFER_PLANS.find((p) => p.id === 'balanced');
+  return plan.entries.map((entry) => entryToOffer(entry)).filter(Boolean);
+}
+
+function entryToOffer(entry) {
+  if (entry.catalogId) {
     const card = findCatalog(entry.catalogId);
     if (!card) return null;
     const offer = catalogEntryToOffer(card, entry.priority);
     offer.status = entry.status || 'planned';
     offer.notes = entry.notes || offer.notes;
     return offer;
-  }).filter(Boolean);
+  }
+  return {
+    id: crypto.randomUUID(),
+    type: entry.type || 'bank',
+    title: entry.title,
+    issuer: entry.issuer || 'Other',
+    valueUsd: entry.valueUsd || 0,
+    hardPull: entry.hardPull ?? false,
+    minSpend: entry.minSpend || 0,
+    status: entry.status || 'planned',
+    priority: entry.priority || 5,
+    earliestDate: entry.earliestDate || '',
+    completedDate: '',
+    notes: entry.notes || '',
+  };
+}
+
+/** @deprecated use seedOfferPlan */
+export function seedInfluencerStack(stackId) {
+  const map = { 'babymoon-cabo': 'balanced', 'europe-reel': 'balanced', 'disney-mom': 'conservative' };
+  return seedOfferPlan(map[stackId] || 'balanced');
 }

@@ -145,10 +145,10 @@ export const HOUSEHOLD_PLAYBOOK = [
   {
     title: 'Two-player household (most common)',
     steps: [
-      'Partner A opens Chase, Partner B opens Amex — you cannot merge UR + MR in one bank account.',
-      'Each earns their SUB on normal household spend (groceries, daycare, utilities).',
-      'Transfer both currencies to the same airline/hotel loyalty number (e.g. both → Hyatt or both → United).',
-      'Book one itinerary from the shared loyalty account — looks like “free” on the reel.',
+      'Partner A opens Chase, Partner B opens Amex — UR and MR do not combine in one bank login.',
+      'Each earns SUBs on normal household spend you already have (groceries, utilities, insurance).',
+      'If redeeming for travel: transfer both to the same airline/hotel loyalty number.',
+      'Track velocity separately — each person has their own 5/24 and inquiry counts.',
     ],
   },
   {
