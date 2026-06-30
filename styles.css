@@ -2252,33 +2252,6 @@ body {
   flex-shrink: 0;
 }
 
-.easter-blossom {
-  position: fixed;
-  bottom: max(16px, env(safe-area-inset-bottom));
-  right: max(16px, env(safe-area-inset-right));
-  z-index: 10001;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  color: #9d174d;
-  background: rgba(255, 247, 237, 0.95);
-  border: 1px solid rgba(249, 168, 212, 0.7);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.easter-blossom:hover,
-.easter-blossom:focus-visible {
-  transform: scale(1.04);
-  box-shadow: 0 6px 28px rgba(236, 72, 153, 0.28);
-  outline: none;
-}
-
 .footer-blossom {
   margin-top: 10px;
   font-size: 0.82rem;
@@ -2311,10 +2284,5 @@ body {
   .blossom-nook-cta {
     width: 100%;
     padding-left: 2.4rem;
-  }
-
-  .easter-blossom {
-    font-size: 0.78rem;
-    padding: 9px 13px;
   }
 }
