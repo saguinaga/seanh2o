@@ -340,7 +340,7 @@ window.BlossomGame = (function () {
       window.BlossomAudio?.playSfx('warn');
       return;
     }
-    pickMeal(meal, BlossomDay.FOODS[meal]);
+    pickMeal(meal, BlossomDay.FOODS[meal], 'fridge');
   }
 
   function openCafe() {
@@ -350,22 +350,31 @@ window.BlossomGame = (function () {
       window.BlossomAudio?.playSfx('warn');
       return;
     }
-    pickMeal('lunch', BlossomDay.FOODS.lunch);
+    pickMeal('lunch', BlossomDay.FOODS.lunch, 'cafe');
   }
 
-  function pickMeal(mealKey, foods) {
-    const names = foods.map((f, i) => `${i + 1}. ${f.name} ($${f.price}) [${f.type}]`).join('\n');
-    const pick = prompt(`Choose ${mealKey}:\n${names}\n\nEnter 1, 2, or 3:`);
-    const idx = Number(pick) - 1;
-    if (idx < 0 || idx > 2) return;
-    const res = BlossomDay.eatMeal(state, foods[idx], mealKey);
-    onMessage(res.msg, res.ok ? 'good' : 'warn');
-    if (res.ok) {
-      fx().starBurst(player.x, player.y - 45);
-      fx().floatText(player.x, player.y - 60, '+5 ⭐', '#fda4af');
-      window.BlossomAudio?.playSfx('eat');
-      onPersist(state);
-    } else window.BlossomAudio?.playSfx('warn');
+  function pickMeal(mealKey, foods, source) {
+    window.BlossomMeal?.open({
+      mealKey,
+      foods,
+      state,
+      source: source || 'fridge',
+      onPick: (idx) => {
+        const res = BlossomDay.eatMeal(state, foods[idx], mealKey);
+        onMessage(res.msg, res.ok ? 'good' : 'warn');
+        if (res.ok) {
+          fx().starBurst(player.x, player.y - 45);
+          fx().floatText(player.x, player.y - 60, `+${window.BLOSSOM_CONFIG?.starsPerMeal ?? 5} ⭐`, '#fda4af');
+          fx().burst(player.x, player.y - 50, { color: '#fbbf24', count: 8 });
+          window.BlossomAudio?.playSfx('eat');
+          haptic(16);
+          onPersist(state);
+          updateHud();
+        } else {
+          window.BlossomAudio?.playSfx('warn');
+        }
+      },
+    });
   }
 
   function showReminder(text) {

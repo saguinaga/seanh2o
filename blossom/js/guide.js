@@ -1,12 +1,12 @@
 /** First-day coaching — how to hit your star goal */
 window.BlossomGuide = (function () {
   const STEPS = [
-    { id: 'breakfast', label: 'Breakfast', stars: 5, hint: 'Tap the green fridge · pick oatmeal ($1) for +5⭐' },
+    { id: 'breakfast', label: 'Breakfast', stars: 5, hint: 'Tap the fridge · pick your breakfast (+5⭐)' },
     { id: 'chores_home', label: 'Home chores', stars: null, hint: 'Walk to glowing objects · E or tap · 5⭐ each' },
     { id: 'explore', label: 'Outdoor chores', stars: null, hint: 'Green exit (right) → yard → street → park' },
     { id: 'lunch', label: 'Lunch', stars: 5, hint: 'Afternoon: fridge at home or café on Main street' },
     { id: 'play', label: 'Play / work (optional)', stars: null, hint: 'Kids: pretend shift at dream job · +2⭐' },
-    { id: 'dinner', label: 'Dinner', stars: 5, hint: 'Evening: tap fridge · ice cream is only $2' },
+    { id: 'dinner', label: 'Dinner', stars: 5, hint: 'Evening: tap fridge · pick dinner (+5⭐)' },
     { id: 'finish', label: 'End day', stars: null, hint: 'Tap End day when the bar is full — you keep going if you miss!' },
   ];
 
@@ -115,7 +115,7 @@ window.BlossomGuide = (function () {
       `Your first goal: ${goal} stars (full 50 unlocks on day 3 — Quinn's rule!).`,
       '',
       'Easy path for day 1 (all at home!):',
-      '1. Breakfast — tap fridge, type 1 for oatmeal ($1) → +5⭐',
+      '1. Breakfast — tap fridge, pick oatmeal ($1) → +5⭐',
       '2. Four home chores — walk to glowing objects, press E → +20⭐',
       '3. Lunch & dinner — fridge again → +10⭐',
       `That's ${goal}⭐ total!`,

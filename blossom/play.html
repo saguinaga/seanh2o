@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=11">
+  <link rel="stylesheet" href="css/blossom.css?v=12">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -227,6 +227,23 @@
     </div>
   </div>
 
+  <!-- Meal picker -->
+  <div class="modal-backdrop meal-backdrop" id="mealModal" hidden>
+    <div class="modal-card modal-card--meal meal-card-panel">
+      <div class="meal-header">
+        <span class="meal-header__emoji" id="mealModalEmoji" aria-hidden="true">🍳</span>
+        <div class="meal-header__text">
+          <h2 id="mealModalTitle">What's for breakfast?</h2>
+          <p id="mealModalSub">Tap a yummy pick · +5⭐</p>
+        </div>
+        <span class="meal-wallet" id="mealModalMoney">$10</span>
+      </div>
+      <p class="meal-already" id="mealAlreadyAte" hidden></p>
+      <div class="meal-grid" id="mealGrid" role="list"></div>
+      <button type="button" class="btn-blossom btn-secondary meal-close" id="mealClose">Not hungry right now</button>
+    </div>
+  </div>
+
   <!-- Day result modal -->
   <div class="modal-backdrop" id="dayModal" hidden>
     <div class="modal-card">
@@ -308,10 +325,11 @@
   <script src="js/auth.js?v=1"></script>
   <script src="js/boutique.js?v=1"></script>
   <script src="js/day-system.js?v=5"></script>
+  <script src="js/meal.js?v=1"></script>
   <script src="js/shift.js?v=4"></script>
   <script src="js/controls.js?v=2"></script>
   <script src="js/render.js?v=9"></script>
-  <script src="js/game.js?v=14"></script>
+  <script src="js/game.js?v=15"></script>
   <script src="js/app.js?v=10"></script>
   <script>
   (function recoverFromStaleScripts() {
