@@ -314,6 +314,41 @@ function renderWalletIntegration() {
       : '';
   }
 
+  const routingEl = $('#walletRouting');
+  if (routingEl) {
+    routingEl.innerHTML = analysis.spendRouting?.length
+      ? `<h3 class="subhead">Where to swipe (your stack)</h3>
+        <div class="wallet-routing-grid">${analysis.spendRouting.map((r) => `
+          <article class="wallet-route ${r.active ? 'wallet-route--active' : 'wallet-route--gap'}">
+            <span class="wallet-route__icon">${r.icon}</span>
+            <div>
+              <strong>${escapeHtml(r.category)}</strong>
+              <span class="wallet-route__card">${r.active ? escapeHtml(r.cardName) : 'Add a card'}</span>
+              <p>${escapeHtml(r.note)}</p>
+            </div>
+          </article>
+        `).join('')}</div>`
+      : '';
+  }
+
+  const nextEl = $('#walletNextCards');
+  if (nextEl) {
+    nextEl.innerHTML = analysis.nextCards?.length
+      ? `<h3 class="subhead">Next cards to maximize (not replacements)</h3>
+        <div class="wallet-next-grid">${analysis.nextCards.map((n) => `
+          <article class="wallet-next">
+            <strong>${escapeHtml(n.title)}</strong>
+            <p>${escapeHtml(n.why)}</p>
+            <span class="wallet-next__upside">Upside: ${escapeHtml(n.upside)}</span>
+            <button type="button" class="btn-sm btn-ghost" data-queue-catalog="${escapeHtml(n.catalogId)}">Pin to queue</button>
+          </article>
+        `).join('')}</div>`
+      : '<p class="hint">Your stack covers the main lanes — focus on welcome bonuses and transfer timing.</p>';
+    nextEl.querySelectorAll('[data-queue-catalog]').forEach((btn) => {
+      btn.addEventListener('click', () => addFromCatalog(btn.dataset.queueCatalog));
+    });
+  }
+
   const verdictsEl = $('#walletVerdicts');
   if (verdictsEl) {
     verdictsEl.innerHTML = analysis.cardVerdicts.length

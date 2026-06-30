@@ -87,9 +87,10 @@ export const WALLET_META = {
     rewardType: 'cashback',
     program: null,
     role: 'earner',
-    earnSummary: '6% groceries/streaming, 3% gas — Membership Rewards cash back, not transferable MR',
-    verdict: 'keep_if_using',
-    verdictWhy: 'Cash-back card — does not unlock or pool with transferable MR.',
+    earnSummary: '6% U.S. supermarkets (up to $6k/yr), 6% streaming, 3% gas/transit — cash back, not transferable MR',
+    verdict: 'keep',
+    verdictWhy: 'Best-in-class grocery earner. Max the $6k cap yearly — that alone often beats the $95 annual fee.',
+    groceryCap: 6000,
   },
   'amex-delta': {
     rewardType: 'airline',
@@ -152,10 +153,21 @@ export const WALLET_META = {
 export const WALLET_PRESETS = {
   'starter-six': {
     label: 'My 6-card stack',
-    hint: 'Sapphire + Freedom + Amazon + Amex + Double Cash + Costco',
-    cards: ['chase-csp', 'chase-cfu', 'chase-amazon', 'amex-gold', 'citi-double', 'citi-costco'],
+    hint: 'Sapphire + Freedom + Amazon + Blue Cash Preferred + Double Cash + Costco',
+    cards: ['chase-csp', 'chase-cfu', 'chase-amazon', 'amex-bcp', 'citi-double', 'citi-costco'],
   },
 };
+
+/** Category → card routing for a mixed cash + transferable stack */
+const ROUTING_RULES = [
+  { category: 'U.S. supermarkets', icon: '🛒', priority: ['amex-bcp', 'chase-cfu', 'citi-double'], note: 'BCP 6% up to $6k/yr — then switch to Freedom (transfer upside) or Double Cash (2%)' },
+  { category: 'Streaming', icon: '📺', priority: ['amex-bcp', 'chase-cfu'], note: 'BCP 6% on select streaming' },
+  { category: 'Gas', icon: '⛽', priority: ['citi-costco', 'amex-bcp', 'chase-cfu'], note: 'Costco 4% at eligible warehouses; BCP 3% elsewhere' },
+  { category: 'Costco warehouse', icon: '🏪', priority: ['citi-costco'], note: '2% in-store; separate from ThankYou' },
+  { category: 'Amazon & Whole Foods', icon: '📦', priority: ['chase-amazon'], note: '5% — does not pool with Chase UR' },
+  { category: 'Dining & travel', icon: '✈️', priority: ['chase-csp', 'chase-cfu', 'citi-costco'], note: 'Sapphire 3× dining/travel; pool UR for Hyatt transfers' },
+  { category: 'Everything else', icon: '💳', priority: ['chase-cfu', 'citi-double', 'chase-csp'], note: 'Freedom UR → Sapphire often beats 2% cash when you transfer (not redeem as cash)' },
+];
 
 const CHASE_UNLOCKERS = new Set(['chase-csp', 'chase-csr']);
 const CITI_UNLOCKERS_FULL = new Set(['citi-strata-premier', 'citi-strata-elite']);
@@ -261,18 +273,37 @@ export function analyzeWallet(catalogIds) {
       title: 'Amex MR is unlocked',
       body: `Top transfers: ${topPartners('amex_mr').join(', ')}. Watch for transfer bonuses (often 20–30% to airlines).`,
     });
-  } else if (amex.coBrand.length || amex.cashback.length) {
+  } else if (amex.cashback.some((r) => r.id === 'amex-bcp')) {
+    plays.push({
+      program: 'amex_cash',
+      emoji: '🛒',
+      title: 'Blue Cash Preferred = grocery king',
+      body: '6% at U.S. supermarkets (cap $6k/yr) is hard to beat. This is cash back — keep it for groceries even if you add transfer cards later.',
+    });
     actions.push({
-      priority: 'medium',
-      type: 'clarify',
-      title: 'Confirm which Amex you hold',
-      detail: 'Co-brand & Blue Cash cards earn airline/hotel miles or cash — not transferable Membership Rewards.',
+      priority: 'high',
+      type: 'route',
+      title: 'Track the $6k grocery cap',
+      detail: 'After $6k/yr on BCP, move supermarkets to Freedom (UR transfer path) or Double Cash (2%). Don’t waste 1% spend on BCP.',
+    });
+    actions.push({
+      priority: 'high',
+      type: 'add',
+      title: 'Add Blue Business Plus — don’t replace BCP',
+      detail: 'No annual fee MR card unlocks a whole Amex transfer lane. You keep BCP for 6% groceries; BBP earns 2× MR on other spend.',
     });
     actions.push({
       priority: 'medium',
+      type: 'stack',
+      title: 'Clip Amex Offers on BCP',
+      detail: 'Stack statement credits on top of 6% — check Offers tab in the Amex app before grocery runs.',
+    });
+  } else if (amex.coBrand.length || amex.cashback.length) {
+    actions.push({
+      priority: 'medium',
       type: 'add',
-      title: 'Add Blue Business Plus or Gold for MR transfers',
-      detail: 'BBP has no annual fee and unlocks transfers from all MR-earning cards.',
+      title: 'Add Blue Business Plus for MR transfers',
+      detail: 'BBP has no annual fee and unlocks transfers without replacing your cash-back Amex.',
     });
   } else if (amex.transferStatus === 'locked') {
     actions.push({
@@ -355,6 +386,9 @@ export function analyzeWallet(catalogIds) {
     .filter((e) => e.transferStatus === 'full' || e.transferStatus === 'partial')
     .map((e) => PROGRAMS[e.programId]?.short || e.programId);
 
+  const spendRouting = buildSpendRouting(rows);
+  const nextCards = buildNextCards(rows, chase, amex, citi);
+
   return {
     rows,
     ecosystems: { chase, amex, citi },
@@ -365,8 +399,62 @@ export function analyzeWallet(catalogIds) {
     }),
     cardVerdicts,
     transferablePrograms,
+    spendRouting,
+    nextCards,
     summary: buildSummary(chase, amex, citi, rows),
   };
+}
+
+function buildSpendRouting(rows) {
+  const owned = new Set(rows.map((r) => r.id));
+  const byId = Object.fromEntries(rows.map((r) => [r.id, r.card.name]));
+
+  return ROUTING_RULES.map((rule) => {
+    const pick = rule.priority.find((id) => owned.has(id));
+    const fallback = rule.priority.find((id) => findCatalog(id));
+    const cardId = pick || null;
+    const cardName = cardId ? byId[cardId] : (fallback ? findCatalog(fallback)?.name : null);
+    return {
+      category: rule.category,
+      icon: rule.icon,
+      cardId,
+      cardName: cardName || '—',
+      active: Boolean(pick),
+      note: rule.note,
+    };
+  });
+}
+
+function buildNextCards(rows, chase, amex, citi) {
+  const owned = new Set(rows.map((r) => r.id));
+  const picks = [];
+
+  if (!owned.has('amex-bbp') && !amex.unlockers.length) {
+    picks.push({
+      catalogId: 'amex-bbp',
+      title: 'Amex Blue Business Plus',
+      why: 'Opens Amex transfer partners with $0 annual fee. Pairs perfectly with BCP — keep 6% groceries, earn MR elsewhere.',
+      upside: 'Transfer bonuses to airlines; ANA via Virgin Atlantic sweet spots',
+    });
+  }
+  if (!owned.has('citi-strata-premier') && !owned.has('citi-premier') && citi.transferStatus !== 'full' && owned.has('citi-double')) {
+    picks.push({
+      catalogId: 'citi-strata-premier',
+      title: 'Citi Strata Premier',
+      why: 'Upgrades Double Cash from 70% → 100% transfer ratio. Only bank card that transfers to American Airlines.',
+      upside: 'AA domestic + international Oneworld awards',
+    });
+  }
+  if (chase.transferStatus === 'full' && !owned.has('chase-cff') && owned.has('chase-cfu')) {
+    picks.push({
+      catalogId: 'chase-cff',
+      title: 'Chase Freedom Flex',
+      why: '5% rotating categories + 3% dining/drugstores can beat 1.5% Unlimited in bonus quarters.',
+      upside: 'More UR pooled to Sapphire for Hyatt',
+    });
+  }
+
+  return picks;
 }
 
 function buildSummary(chase, amex, citi, rows) {
