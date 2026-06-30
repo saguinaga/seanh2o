@@ -506,6 +506,59 @@ window.BlossomArt = (function () {
     ctx.fillText('✂ Now hiring Lv3+', x + 10, y + 48);
   }
 
+  function drawWellness(ctx, p, anim) {
+    const { x, y, w, h } = p;
+    softShadow(ctx, () => {
+      const wg = ctx.createLinearGradient(x, y + 30, x + w, y + h);
+      wg.addColorStop(0, '#ecfdf5');
+      wg.addColorStop(1, '#a7f3d0');
+      ctx.fillStyle = wg;
+      ctx.fillRect(x, y + 30, w, h - 30);
+    });
+    drawAwning(ctx, x - 4, y + 22, w + 8, '#6ee7b7');
+    drawWindow(ctx, x + 12, y + 52, 30, 40, anim, true);
+    drawWindow(ctx, x + w - 42, y + 52, 30, 40, anim, true);
+    const calm = 0.5 + Math.sin(anim * 1.5) * 0.15;
+    const g = ctx.createRadialGradient(x + w / 2, y + 78, 4, x + w / 2, y + 90, 48);
+    g.addColorStop(0, `rgba(167, 243, 208, ${calm})`);
+    g.addColorStop(1, 'rgba(167, 243, 208, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(x + 6, y + 44, w - 12, h - 60);
+    ctx.fillStyle = '#047857';
+    ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
+    ctx.fillText('Harbor', x + 8, y + 18);
+    ctx.fillText('Wellness', x + 8, y + 32);
+    ctx.font = '9px Nunito, sans-serif';
+    ctx.fillStyle = '#065f46';
+    ctx.fillText('🌱 Life coaching', x + 8, y + 48);
+  }
+
+  function drawGym(ctx, p, anim) {
+    const { x, y, w, h } = p;
+    softShadow(ctx, () => {
+      const wg = ctx.createLinearGradient(x, y + 24, x + w, y + h);
+      wg.addColorStop(0, '#475569');
+      wg.addColorStop(1, '#1e293b');
+      ctx.fillStyle = wg;
+      ctx.fillRect(x, y + 24, w, h - 24);
+    });
+    drawAwning(ctx, x, y + 16, w, '#f97316');
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(x + 14, y + 48, w - 28, 8);
+    ctx.fillRect(x + 14, y + 64, w - 28, 8);
+    const pulse = 0.45 + Math.sin(anim * 4) * 0.2;
+    ctx.fillStyle = `rgba(251, 146, 60, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(x + w / 2, y + 42, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
+    ctx.fillText('Harbor Gym', x + 10, y + 12);
+    ctx.font = '9px Nunito, sans-serif';
+    ctx.fillStyle = '#fdba74';
+    ctx.fillText('💪 Training floor', x + 10, y + 86);
+  }
+
   function vignette(ctx, w, h, strength) {
     const g = ctx.createRadialGradient(w / 2, h / 2, h * 0.28, w / 2, h / 2, h * 0.92);
     g.addColorStop(0, 'rgba(0,0,0,0)');
@@ -557,6 +610,8 @@ window.BlossomArt = (function () {
     drawStage,
     drawStudio,
     drawSalonRich,
+    drawWellness,
+    drawGym,
     drawBoutique,
     drawShopBuilding,
     drawGrassBlades,

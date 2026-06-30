@@ -31,6 +31,12 @@ window.BlossomShift = (function () {
     if (theme === 'tiktoker') {
       return { title: 'Film shift', want: 'Shot', tools: { wash: '💡 Lights', cut: '🎬 Action', dry: '📤 Post' } };
     }
+    if (theme === 'coach') {
+      return { title: 'Coaching session', want: 'Step', tools: { wash: '👂 Listen', cut: '🎯 Goal', dry: '🌱 Encourage' } };
+    }
+    if (theme === 'trainer') {
+      return { title: 'Training shift', want: 'Set', tools: { wash: '🏃 Warm-up', cut: '💪 Rep', dry: '🧘 Cool-down' } };
+    }
     return { title: 'Salon shift', want: 'Wants', tools: { wash: '🧴 Wash', cut: '✂️ Cut', dry: '💨 Dry' } };
   }
 

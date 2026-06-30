@@ -146,8 +146,10 @@ window.BlossomGame = (function () {
     if (p.kind === 'npc' && p.id === 'bonnie') return 'bonnie';
     if (p.kind === 'shop' && p.shop === 'boutique') return 'boutique';
     if (p.kind === 'shop' && p.shop === 'salon') return 'salon-work';
+    if (p.kind === 'shop' && p.shop === 'wellness') return 'wellness-work';
     if (p.kind === 'stage') return 'stage-work';
     if (p.kind === 'studio') return 'studio-work';
+    if (p.kind === 'gym') return 'gym-work';
     return p.choreId || p.kind;
   }
 
@@ -226,6 +228,14 @@ window.BlossomGame = (function () {
       return;
     }
     if (prop.kind === 'studio' && state.careerPath === 'tiktoker') {
+      startShift(BlossomCareer.isChild(state));
+      return;
+    }
+    if (prop.kind === 'shop' && prop.shop === 'wellness' && state.careerPath === 'coach') {
+      startShift(BlossomCareer.isChild(state));
+      return;
+    }
+    if (prop.kind === 'gym' && state.careerPath === 'trainer') {
       startShift(BlossomCareer.isChild(state));
       return;
     }
@@ -423,7 +433,7 @@ window.BlossomGame = (function () {
       } else {
         const exits = loc.props.filter((p) => p.kind === 'exit');
         hint.textContent = exits.length
-          ? 'Green exits travel · E at salon/stage/studio for work'
+          ? 'Green exits travel · E at your job site for work'
           : 'E or tap to interact';
       }
     }
@@ -501,6 +511,10 @@ window.BlossomGame = (function () {
       } else if (nearInteract.kind === 'stage' && state.careerPath === 'broadway') {
         bubble.textContent = `E: ${BlossomCareer.isChild(state) ? cp.playLabel : cp.workLabel}`;
       } else if (nearInteract.kind === 'studio' && state.careerPath === 'tiktoker') {
+        bubble.textContent = `E: ${BlossomCareer.isChild(state) ? cp.playLabel : cp.workLabel}`;
+      } else if (nearInteract.kind === 'shop' && nearInteract.shop === 'wellness' && state.careerPath === 'coach') {
+        bubble.textContent = `E: ${BlossomCareer.isChild(state) ? cp.playLabel : cp.workLabel}`;
+      } else if (nearInteract.kind === 'gym' && state.careerPath === 'trainer') {
         bubble.textContent = `E: ${BlossomCareer.isChild(state) ? cp.playLabel : cp.workLabel}`;
       } else if (nearInteract.choreId) {
         const done = state.choresDone[nearInteract.choreId];

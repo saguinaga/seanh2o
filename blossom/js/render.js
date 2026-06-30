@@ -352,14 +352,17 @@ window.BlossomRender = (function () {
       || (p.kind === 'npc' && nearId === 'bonnie')
       || (p.kind === 'shop' && p.shop === 'boutique' && nearId === 'boutique')
       || (p.kind === 'shop' && p.shop === 'salon' && nearId === 'salon-work')
+      || (p.kind === 'shop' && p.shop === 'wellness' && nearId === 'wellness-work')
       || (p.kind === 'stage' && nearId === 'stage-work')
-      || (p.kind === 'studio' && nearId === 'studio-work');
+      || (p.kind === 'studio' && nearId === 'studio-work')
+      || (p.kind === 'gym' && nearId === 'gym-work');
 
     if (p.choreId && !onList && !done) ctx.globalAlpha = 0.42;
 
     const interactHighlight = p.choreId || p.kind === 'exit' || p.kind === 'fridge'
       || p.kind === 'npc' || p.kind === 'stage' || p.kind === 'studio'
-      || (p.kind === 'shop' && (p.choreId || p.shop === 'salon' || p.shop === 'boutique'));
+      || (p.kind === 'shop' && (p.choreId || p.shop === 'salon' || p.shop === 'boutique' || p.shop === 'wellness'))
+      || p.kind === 'gym';
     if (interactHighlight && near && (!p.choreId || (!done && onList))) {
       const cx = p.x + (p.w || 50) / 2;
       const cy = p.y + (p.h || 50) / 2;
@@ -575,6 +578,7 @@ window.BlossomRender = (function () {
         break;
       case 'shop':
         if (p.shop === 'salon') BlossomArt.drawSalonRich(ctx, p, anim);
+        else if (p.shop === 'wellness') BlossomArt.drawWellness(ctx, p, anim);
         else if (p.shop === 'boutique') BlossomArt.drawBoutique(ctx, p, anim);
         else if (p.shop === 'market') {
           BlossomArt.drawShopBuilding(ctx, p, anim, {
@@ -597,6 +601,9 @@ window.BlossomRender = (function () {
         break;
       case 'stage':
         BlossomArt.drawStage(ctx, p, anim);
+        break;
+      case 'gym':
+        BlossomArt.drawGym(ctx, p, anim);
         break;
       case 'studio':
         BlossomArt.drawStudio(ctx, p, anim);

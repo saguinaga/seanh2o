@@ -879,6 +879,12 @@ a { color: var(--blossom-green-dark); }
   gap: 10px;
 }
 
+@media (min-width: 520px) {
+  .career-pick {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .career-card {
   display: grid;
   grid-template-columns: auto 1fr;

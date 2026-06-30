@@ -40,6 +40,16 @@ window.BlossomChat = (function () {
       ]);
     }
 
+    if (c.near?.shop === 'wellness') {
+      if (c.career === 'coach') return 'Coach mentor: "Ready for a session? Hit E when the green zone lines up!"';
+      return 'Reception: "We offer life coaching here — pick the coach path to lead sessions."';
+    }
+
+    if (c.near?.kind === 'gym') {
+      if (c.career === 'trainer') return 'Gym lead: "Training shift on the floor — warm-up, rep, cool-down!"';
+      return 'Front desk: "Open gym hours all day — trainers work afternoon shifts."';
+    }
+
     if (c.near?.shop === 'boutique') {
       if (help) return 'Clerk: "Earn stars and cash on Main street, then try something new on!"';
       return pick([
@@ -65,7 +75,7 @@ window.BlossomChat = (function () {
         return 'Mom: "Green exit by the front door leads outside for yard chores."';
       }
       if (work) {
-        const em = { salon: '💇', broadway: '🎭', tiktoker: '📱' }[c.career] || '✨';
+        const em = { salon: '💇', broadway: '🎭', tiktoker: '📱', coach: '🌱', trainer: '💪' }[c.career] || '✨';
         return `Mom: "Follow your ${em} dream — practice at home, work on Main street."`;
       }
       if (greet) return `Mom: "Morning, ${c.name}! ${c.stars} stars so far — keep blooming."`;
@@ -90,6 +100,8 @@ window.BlossomChat = (function () {
       if (work) {
         if (c.career === 'broadway') return 'Passerby: "Harbor Stage is past the park — break a leg!"';
         if (c.career === 'tiktoker') return 'Passerby: "Film corner at home, post from the studio shift!"';
+        if (c.career === 'coach') return 'Passerby: "Harbor Wellness on Main street — great coaching path!"';
+        if (c.career === 'trainer') return 'Passerby: "Harbor Gym in the park — perfect for trainers!"';
         return 'Passerby: "Bonnie\'s Salon hires harbor talent — you\'ve got this!"';
       }
       if (help) return 'Passerby: "Shops line Main street — café for lunch, boutique for style."';

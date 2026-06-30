@@ -1,4 +1,4 @@
-/** Careers — Bonnie, salon shifts, Broadway & TikToker dreams */
+/** Careers — salon, stage, studio, life coaching & training */
 window.BlossomCareer = (function () {
   const PATHS = {
     salon: {
@@ -25,6 +25,22 @@ window.BlossomCareer = (function () {
       workLabel: 'Film shift',
       playLabel: 'Play studio',
     },
+    coach: {
+      id: 'coach',
+      label: 'Life coach',
+      emoji: '🌱',
+      tagline: 'Listen deeply, guide goals, help neighbors bloom.',
+      workLabel: 'Coaching session',
+      playLabel: 'Play coach',
+    },
+    trainer: {
+      id: 'trainer',
+      label: 'Personal trainer',
+      emoji: '💪',
+      tagline: 'Lead warm-ups, cheer reps, build harbor strength.',
+      workLabel: 'Training shift',
+      playLabel: 'Play gym',
+    },
   };
 
   const SALON_RANKS = [
@@ -33,6 +49,24 @@ window.BlossomCareer = (function () {
     { id: 'stylist', label: 'Stylist', pay: 6, stars: 6, shiftsToPromote: 99 },
   ];
 
+  const COACH_RANKS = [
+    { id: 'listener', label: 'Active listener', pay: 3, stars: 4, shiftsToPromote: 3 },
+    { id: 'guide', label: 'Session guide', pay: 5, stars: 5, shiftsToPromote: 3 },
+    { id: 'lead', label: 'Lead coach', pay: 7, stars: 6, shiftsToPromote: 99 },
+  ];
+
+  const TRAINER_RANKS = [
+    { id: 'assistant', label: 'Floor assistant', pay: 3, stars: 4, shiftsToPromote: 3 },
+    { id: 'class', label: 'Class helper', pay: 5, stars: 5, shiftsToPromote: 3 },
+    { id: 'lead', label: 'Lead trainer', pay: 7, stars: 6, shiftsToPromote: 99 },
+  ];
+
+  const CAREER_RANKS = {
+    salon: SALON_RANKS,
+    coach: COACH_RANKS,
+    trainer: TRAINER_RANKS,
+  };
+
   const BONNIE_LEVEL = 3;
 
   const QUINN = {
@@ -40,6 +74,8 @@ window.BlossomCareer = (function () {
     bonnieHire: 'You bloomed to level 3! I\'m Bonnie — I run the salon. Want to get hired?',
     bonnieBroadway: 'Bonnie: The harbor stage needs your sparkle. Ready to rehearse for real?',
     bonnieTiktok: 'Bonnie: Everyone\'s filming these days — want to get paid for your clips?',
+    bonnieCoach: 'Bonnie: Harbor Wellness is hiring warm hearts. Ready to coach for real?',
+    bonnieTrainer: 'Bonnie: The park gym needs your energy. Ready to train clients?',
     playSalon: 'Pretend shift! No bills — just play and earn a few stars.',
     needWork: 'Adults need a work shift today — head to your job in the afternoon!',
     broke: 'You\'re short on cash after bills. Work a shift or pick cheaper meals!',
@@ -57,9 +93,18 @@ window.BlossomCareer = (function () {
     return state.lifeStage === 'adult';
   }
 
+  function careerRank(state) {
+    const ranks = CAREER_RANKS[state.careerPath] || SALON_RANKS;
+    const idx = Math.min(state.jobRank || 0, ranks.length - 1);
+    return ranks[idx];
+  }
+
   function salonRank(state) {
-    const idx = Math.min(state.jobRank || 0, SALON_RANKS.length - 1);
-    return SALON_RANKS[idx];
+    return careerRank(state);
+  }
+
+  function hasRankLadder(state) {
+    return Boolean(CAREER_RANKS[state.careerPath]);
   }
 
   function isHired(state) {
@@ -82,7 +127,16 @@ window.BlossomCareer = (function () {
     if (p.id === 'broadway') {
       return { title: 'Bonnie believes in you', body: QUINN.bonnieBroadway, accept: 'Start paid rehearsals' };
     }
-    return { title: 'Bonnie has an idea', body: QUINN.bonnieTiktok, accept: 'Start paid filming' };
+    if (p.id === 'tiktoker') {
+      return { title: 'Bonnie has an idea', body: QUINN.bonnieTiktok, accept: 'Start paid filming' };
+    }
+    if (p.id === 'coach') {
+      return { title: 'Bonnie sees your gift', body: QUINN.bonnieCoach, accept: 'Start coaching sessions' };
+    }
+    if (p.id === 'trainer') {
+      return { title: 'Bonnie spots your grit', body: QUINN.bonnieTrainer, accept: 'Start training shifts' };
+    }
+    return { title: 'Bonnie at the salon', body: QUINN.bonnieHire, accept: 'Get hired' };
   }
 
   function acceptBonnieOffer(state) {
@@ -118,11 +172,14 @@ window.BlossomCareer = (function () {
     const p = path(state);
     if (p.id === 'salon') return { loc: 'street', kind: 'shop', shop: 'salon' };
     if (p.id === 'broadway') return { loc: 'park', kind: 'stage' };
-    return { loc: 'house', kind: 'studio' };
+    if (p.id === 'tiktoker') return { loc: 'house', kind: 'studio' };
+    if (p.id === 'coach') return { loc: 'street', kind: 'shop', shop: 'wellness' };
+    if (p.id === 'trainer') return { loc: 'park', kind: 'gym' };
+    return { loc: 'street', kind: 'shop', shop: 'salon' };
   }
 
   function completeShift(state, score, pretend) {
-    const rank = salonRank(state);
+    const rank = careerRank(state);
     const perfect = score >= 3;
     const pay = pretend ? 1 : rank.pay + (perfect ? 1 : 0);
     const stars = pretend ? 2 : rank.stars + (perfect ? 2 : 0);
@@ -134,13 +191,14 @@ window.BlossomCareer = (function () {
     } else {
       state.workedToday = true;
       state.shiftsAtRank = (state.shiftsAtRank || 0) + 1;
-      if (state.careerPath === 'salon' && state.shiftsAtRank >= rank.shiftsToPromote && state.jobRank < SALON_RANKS.length - 1) {
+      const ranks = CAREER_RANKS[state.careerPath];
+      if (ranks && state.shiftsAtRank >= rank.shiftsToPromote && state.jobRank < ranks.length - 1) {
         state.jobRank += 1;
         state.shiftsAtRank = 0;
         return {
           ok: true,
           promoted: true,
-          msg: `Shift done! +$${pay}, +${stars} stars. Promoted to ${salonRank(state).label}!`,
+          msg: `Shift done! +$${pay}, +${stars} stars. Promoted to ${careerRank(state).label}!`,
           pay,
           stars,
         };
@@ -190,7 +248,7 @@ window.BlossomCareer = (function () {
   }
 
   function rankLabel(state) {
-    if (state.careerPath === 'salon' && isHired(state)) return salonRank(state).label;
+    if (hasRankLadder(state) && isHired(state)) return careerRank(state).label;
     if (isHired(state)) return path(state).label;
     return isChild(state) ? 'Dreamer' : 'Looking for work';
   }
@@ -198,12 +256,17 @@ window.BlossomCareer = (function () {
   return {
     PATHS,
     SALON_RANKS,
+    COACH_RANKS,
+    TRAINER_RANKS,
+    CAREER_RANKS,
     QUINN,
     BONNIE_LEVEL,
     path,
     isChild,
     isAdult,
+    careerRank,
     salonRank,
+    hasRankLadder,
     isHired,
     shouldOfferBonnie,
     bonnieOffer,
