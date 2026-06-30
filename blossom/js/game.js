@@ -278,6 +278,7 @@ window.BlossomGame = (function () {
   }
 
   function onInteractKey(e) {
+    if (BlossomControls.isTypingTarget?.()) return;
     if (e.key !== 'e' && e.key !== 'Enter') return;
     if (document.querySelector('.modal-backdrop:not([hidden])')) return;
     if (BlossomShift.isActive()) return;

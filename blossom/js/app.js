@@ -307,7 +307,11 @@ window.BlossomApp = (function () {
     });
     document.getElementById('chatSend')?.addEventListener('click', sendChat);
     document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendChat();
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendChat();
+      }
     });
     document.getElementById('soundToggle')?.addEventListener('click', async () => {
       await window.BlossomAudio?.unlock();

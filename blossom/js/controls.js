@@ -3,16 +3,39 @@ window.BlossomControls = (function () {
   const keys = new Set();
   let joystick = { active: false, dx: 0, dy: 0, jump: false };
 
+  function isTypingTarget(el) {
+    const node = el || document.activeElement;
+    if (!node || node === document.body || node === document.documentElement) return false;
+    if (node.isContentEditable) return true;
+    const tag = node.tagName;
+    if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return false;
+    const type = (node.type || '').toLowerCase();
+    if (type === 'checkbox' || type === 'radio' || type === 'button' || type === 'submit' || type === 'file') {
+      return false;
+    }
+    return !node.readOnly && !node.disabled;
+  }
+
+  function clearMovementKeys() {
+    ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'space', ' '].forEach((k) => keys.delete(k));
+  }
+
   function init() {
     window.addEventListener('keydown', (e) => {
+      if (isTypingTarget(e.target)) return;
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
       keys.add(e.key.toLowerCase());
       if (e.key === ' ') keys.add('space');
     });
     window.addEventListener('keyup', (e) => {
+      if (isTypingTarget(e.target)) return;
       keys.delete(e.key.toLowerCase());
       if (e.key === ' ') keys.delete('space');
     });
+    document.addEventListener('focusin', (e) => {
+      if (isTypingTarget(e.target)) clearMovementKeys();
+    });
+    document.addEventListener('focusout', clearMovementKeys);
     initJoystick();
   }
 
@@ -103,5 +126,5 @@ window.BlossomControls = (function () {
     return { dx, dy, jump };
   }
 
-  return { init, getMovement };
+  return { init, getMovement, isTypingTarget };
 })();
