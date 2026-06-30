@@ -4,107 +4,245 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Promo Stack — bonus sequencer</title>
+  <title>Promo Stack — deep bonus & credit planner</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="wrap">
     <header class="topbar">
       <div>
         <h1>Promo Stack</h1>
-        <p>Plan card SUBs, bank bonuses & stacks — credit-aware, over time</p>
+        <p>Chase, Amex, Citi, Discover & more — issuer gates, SUB catalog, credit score simulation</p>
       </div>
       <div class="topbar-actions">
         <a href="../index.html" class="btn-ghost">← Home</a>
         <button type="button" class="btn-ghost" id="exportBtn">Export JSON</button>
         <button type="button" class="btn-ghost" id="importBtn">Import</button>
         <input type="file" id="importFile" accept="application/json,.json" hidden>
-        <button type="button" class="btn" id="addOffer">+ Offer</button>
+        <button type="button" class="btn" id="addOffer">+ Custom offer</button>
       </div>
     </header>
 
     <p class="disclaimer">
-      Educational planner only — not financial or credit advice. Rules (5/24, inquiry spacing, etc.) are heuristics;
-      issuers change terms. Verify before you apply.
+      Educational planner only — not financial or credit advice. SUB values, issuer rules (5/24, 2/90, 8/65, etc.)
+      and score impacts are <strong>heuristic models</strong>. Verify current offers and your real reports before applying.
     </p>
 
     <div class="stats">
-      <div class="stat"><strong id="statPlanned">0</strong><span>Queued</span></div>
-      <div class="stat"><strong id="statActive">0</strong><span>In progress</span></div>
+      <div class="stat"><strong id="statBaseline">—</strong><span>Baseline score</span></div>
+      <div class="stat"><strong id="statSimEnd">—</strong><span>Projected end</span></div>
+      <div class="stat"><strong id="statMaxDrop">—</strong><span>Max drop</span></div>
       <div class="stat"><strong id="statPipeVal">$0</strong><span>Pipeline value</span></div>
       <div class="stat"><strong id="statDoneVal">$0</strong><span>Captured</span></div>
     </div>
 
-    <div class="grid-2">
-      <section class="panel">
-        <h2>Credit profile</h2>
-        <div class="profile-grid">
-          <label>Score band
-            <select id="scoreBand" data-profile>
-              <option>680-719</option>
-              <option selected>720-759</option>
-              <option>760-799</option>
-              <option>800+</option>
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab tab--active" data-tab="baseline" role="tab">Baseline</button>
+      <button type="button" class="tab" data-tab="gates" role="tab">Issuer gates</button>
+      <button type="button" class="tab" data-tab="catalog" role="tab">Card catalog</button>
+      <button type="button" class="tab" data-tab="plan" role="tab">Your plan</button>
+      <button type="button" class="tab" data-tab="simulation" role="tab">Score simulation</button>
+    </nav>
+
+    <!-- BASELINE -->
+    <section class="tab-panel tab-panel--active" id="panel-baseline" role="tabpanel">
+      <div class="grid-2">
+        <div class="panel">
+          <h2>Identity & baseline score</h2>
+          <div class="profile-grid">
+            <label>Age
+              <input type="number" id="age" data-profile min="18" max="99" value="34">
+            </label>
+            <label>Baseline FICO (estimate)
+              <input type="number" id="baselineScore" data-profile min="300" max="850" value="745">
+            </label>
+            <label>Score band (reference)
+              <select id="scoreBand" data-profile>
+                <option>680-719</option>
+                <option selected>720-759</option>
+                <option>760-799</option>
+                <option>800+</option>
+              </select>
+            </label>
+            <label>Late payments (24 mo)
+              <input type="number" id="latePayments24mo" data-profile min="0" value="0">
+            </label>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Credit length</h2>
+          <div class="profile-grid">
+            <label>Oldest account (years)
+              <input type="number" id="oldestAccountYears" data-profile min="0" step="0.1" value="10">
+            </label>
+            <label>Credit history length (years)
+              <input type="number" id="creditHistoryYears" data-profile min="0" step="0.1" value="10">
+            </label>
+            <label>Avg age of accounts — AAoA (years)
+              <input type="number" id="aaoaYears" data-profile min="0" step="0.1" value="4.5">
+            </label>
+            <label>Cards opened (12 mo)
+              <input type="number" id="recentAccounts12mo" data-profile min="0" value="1">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:20px">
+        <div class="panel">
+          <h2>Accounts & utilization</h2>
+          <div class="profile-grid">
+            <label>Total cards open
+              <input type="number" id="cardsOpen" data-profile min="0" value="4">
+            </label>
+            <label>Personal cards (24 mo) — 5/24 input
+              <input type="number" id="personalCards24mo" data-profile min="0" value="2">
+            </label>
+            <label>Total credit limits ($)
+              <input type="number" id="totalCreditLimit" data-profile min="0" step="100" value="32000">
+            </label>
+            <label>Total balances ($)
+              <input type="number" id="totalBalances" data-profile min="0" step="100" value="3800">
+            </label>
+            <label>Utilization % (auto if limits set)
+              <input type="number" id="utilizationPct" data-profile min="0" max="100" value="12">
+            </label>
+            <label>Last hard pull
+              <input type="date" id="lastHardPull" data-profile>
+            </label>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Inquiries & mortgage</h2>
+          <div class="profile-grid">
+            <label>Inquiries — 6 mo
+              <input type="number" id="inquiries6mo" data-profile min="0" value="1">
+            </label>
+            <label>Inquiries — 12 mo
+              <input type="number" id="inquiries12mo" data-profile min="0" value="2">
+            </label>
+            <label>Inquiries — 24 mo
+              <input type="number" id="inquiries24mo" data-profile min="0" value="3">
+            </label>
+            <label class="form-row-check profile-check">
+              <input type="checkbox" id="hasMortgage" data-profile> Has mortgage
+            </label>
+            <label class="form-row-check profile-check">
+              <input type="checkbox" id="hasAutoLoan" data-profile checked> Has auto loan
+            </label>
+            <label class="form-row-check profile-check">
+              <input type="checkbox" id="mortgageSensitive" data-profile> Mortgage-sensitive mode
+            </label>
+            <label>Planned mortgage / refi date
+              <input type="date" id="mortgagePlannedDate" data-profile>
+            </label>
+            <label class="full">Notes
+              <textarea id="profileNotes" data-profile rows="2" placeholder="Frozen reports, income, 5/24 exemptions…"></textarea>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <details class="panel panel--details" style="margin-top:20px">
+        <summary>Issuer velocity counters (advanced)</summary>
+        <p class="hint">Update these to match your real velocity. Marking offers “Done” auto-increments relevant counters.</p>
+        <div class="issuer-counters" id="issuerCounters"></div>
+      </details>
+    </section>
+
+    <!-- ISSUER GATES -->
+    <section class="tab-panel" id="panel-gates" role="tabpanel" hidden>
+      <div class="panel">
+        <h2>Issuer eligibility dashboard</h2>
+        <p class="hint">Heuristic gates based on your baseline counters. Green = likely eligible; red = commonly blocked.</p>
+        <div class="issuer-grid" id="issuerGrid"></div>
+      </div>
+    </section>
+
+    <!-- CATALOG -->
+    <section class="tab-panel" id="panel-catalog" role="tabpanel" hidden>
+      <div class="panel">
+        <div class="catalog-toolbar">
+          <h2>Card & SUB catalog</h2>
+          <label class="catalog-filter">Issuer
+            <select id="catalogIssuer">
+              <option value="all">All issuers</option>
             </select>
           </label>
-          <label>Cards open
-            <input type="number" id="cardsOpen" data-profile min="0" value="4">
-          </label>
-          <label>Cards opened (24 mo) — 5/24
-            <input type="number" id="cards24mo" data-profile min="0" value="2">
-          </label>
-          <label>Avg age of accounts (years)
-            <input type="number" id="aaoaYears" data-profile min="0" step="0.1" value="4.5">
-          </label>
-          <label>Utilization %
-            <input type="number" id="utilizationPct" data-profile min="0" max="100" value="12">
-          </label>
-          <label>Inquiries — 6 mo
-            <input type="number" id="inquiries6mo" data-profile min="0" value="1">
-          </label>
-          <label>Inquiries — 12 mo
-            <input type="number" id="inquiries12mo" data-profile min="0" value="2">
-          </label>
-          <label>Inquiries — 24 mo
-            <input type="number" id="inquiries24mo" data-profile min="0" value="3">
-          </label>
-          <label>Last hard pull
-            <input type="date" id="lastHardPull" data-profile>
-          </label>
-          <label class="full">Notes
-            <textarea id="profileNotes" data-profile rows="2" placeholder="e.g. frozen reports, mortgage in 6 mo…"></textarea>
-          </label>
         </div>
-        <div class="gates">
-          <span>Chase 5/24:</span>
-          <span class="gate-pill gate-pill--clear" id="gate524">Clear</span>
-          <span>Inquiry pace:</span>
-          <span class="gate-pill gate-pill--clear" id="gateInq">Clear</span>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Suggested sequence</h2>
-        <div id="timeline"></div>
-      </section>
-    </div>
-
-    <section class="panel" style="margin-top: 20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-        <h2 style="margin:0">Offers</h2>
-        <button type="button" class="btn-ghost" id="loadSeed">Load example offers</button>
+        <p class="hint">Estimated SUBs — verify on issuer sites. Values use typical cents-per-point assumptions.</p>
+        <div class="catalog-grid" id="catalogGrid"></div>
       </div>
-      <div class="offer-list" id="offerList"></div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="tab-panel" id="panel-plan" role="tabpanel" hidden>
+      <div class="grid-2">
+        <div class="panel">
+          <h2>Suggested sequence</h2>
+          <div id="timeline"></div>
+        </div>
+        <div class="panel">
+          <h2>Quick gates</h2>
+          <div class="gates" id="quickGates"></div>
+        </div>
+      </div>
+      <section class="panel" style="margin-top:20px">
+        <div class="plan-toolbar">
+          <h2>Your plan</h2>
+          <button type="button" class="btn-ghost" id="loadSeed">Load example plan</button>
+        </div>
+        <div class="offer-list" id="offerList"></div>
+      </section>
+    </section>
+
+    <!-- SIMULATION -->
+    <section class="tab-panel" id="panel-simulation" role="tabpanel" hidden>
+      <div class="grid-2">
+        <div class="panel">
+          <h2>Score trajectory</h2>
+          <div class="chart-wrap">
+            <canvas id="scoreChart" aria-label="Credit score simulation chart"></canvas>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Simulation summary</h2>
+          <div id="simSummary"></div>
+          <h3 class="subhead">FICO factor weights (model)</h3>
+          <div class="factor-bars" id="factorWeights"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        <h2>Step-by-step impact</h2>
+        <div class="sim-table-wrap">
+          <table class="sim-table" id="simTable">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Score</th>
+                <th>Δ</th>
+                <th>Util %</th>
+                <th>Inq 6mo</th>
+                <th>AAoA</th>
+                <th>Events</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </section>
   </div>
 
   <div class="modal" id="offerModal" hidden>
-    <div class="modal-card">
+    <div class="modal-card modal-card--wide">
       <h2 id="offerModalTitle">Add offer</h2>
       <form id="offerForm" class="form-grid">
         <input type="hidden" id="offerId">
+        <input type="hidden" id="offerCatalogId">
         <label>Title
-          <input type="text" id="offerTitle" required placeholder="e.g. Sapphire SUB 60k">
+          <input type="text" id="offerTitle" required placeholder="e.g. Sapphire SUB 75k">
         </label>
         <label>Type
           <select id="offerType">
@@ -115,22 +253,19 @@
           </select>
         </label>
         <label>Issuer / brand
-          <select id="offerIssuer">
-            <option>Chase</option>
-            <option>Amex</option>
-            <option>Citi</option>
-            <option>Capital One</option>
-            <option>Bank of America</option>
-            <option>Wells Fargo</option>
-            <option>US Bank</option>
-            <option>Other</option>
-          </select>
+          <select id="offerIssuer"></select>
         </label>
         <label>Est. value ($)
           <input type="number" id="offerValue" min="0" step="1" placeholder="900">
         </label>
-        <label>Min spend / requirement ($)
+        <label>Min spend / MSR ($)
           <input type="number" id="offerMinSpend" min="0" step="1" placeholder="4000">
+        </label>
+        <label>MSR months
+          <input type="number" id="offerMsrMonths" min="0" max="24" value="3">
+        </label>
+        <label>Est. credit line ($)
+          <input type="number" id="offerCreditLine" min="0" step="500" placeholder="10000">
         </label>
         <label>Priority (1 = first)
           <input type="number" id="offerPriority" min="1" max="99" value="5">
@@ -141,7 +276,7 @@
         <label class="form-row-check">
           <input type="checkbox" id="offerHardPull" checked> Hard credit pull
         </label>
-        <label>Notes
+        <label class="full">Notes
           <textarea id="offerNotes" rows="2"></textarea>
         </label>
         <div class="form-actions">

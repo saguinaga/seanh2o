@@ -1,6 +1,9 @@
-/** Credit gates & sequencing heuristics — educational, not financial advice */
+/** Credit gates, profile v2, sequencing — educational, not financial advice */
+import { evaluateIssuerGates } from './issuers.js';
+import { findCatalog } from './catalog.js';
+
 export const ISSUERS = [
-  'Chase', 'Amex', 'Citi', 'Capital One', 'Bank of America', 'Wells Fargo', 'US Bank', 'Other',
+  'Chase', 'Amex', 'Citi', 'Discover', 'Capital One', 'Bank of America', 'Wells Fargo', 'US Bank', 'Barclays', 'Other',
 ];
 
 export const OFFER_TYPES = {
@@ -43,32 +46,104 @@ export function addDays(dateStr, days) {
 
 export function defaultProfile() {
   return {
+    age: 34,
+    baselineScore: 745,
     scoreBand: '720-759',
-    cardsOpen: 4,
-    cards24mo: 2,
+    oldestAccountYears: 10,
+    creditHistoryYears: 10,
     aaoaYears: 4.5,
+    cardsOpen: 4,
+    personalCards24mo: 2,
+    cards24mo: 2,
+    totalCreditLimit: 32000,
+    totalBalances: 3800,
     utilizationPct: 12,
     inquiries6mo: 1,
     inquiries12mo: 2,
     inquiries24mo: 3,
+    recentAccounts12mo: 1,
+    latePayments24mo: 0,
+    hasMortgage: false,
+    hasAutoLoan: true,
+    hasStudentLoan: false,
+    mortgageSensitive: false,
+    mortgagePlannedDate: '',
     lastHardPull: '',
+    chaseCards30d: 0,
+    amexCards90d: 0,
+    amexCardsTotal: 1,
+    citiCards8d: 0,
+    citiCards65d: 0,
+    discoverCardsTotal: 0,
+    capOneCards6mo: 0,
+    capOneCardsTotal: 0,
+    bofaCards2mo: 0,
+    bofaCards12mo: 0,
+    bofaCards24mo: 0,
+    wfCards6mo: 0,
+    usbCards12mo: 0,
+    barcCards6mo: 0,
     notes: '',
   };
 }
 
 export function defaultState() {
   return {
-    version: 1,
+    version: 2,
     profile: defaultProfile(),
     offers: [],
     updatedAt: new Date().toISOString(),
   };
 }
 
+/** Migrate v1 localStorage / imports */
+export function migrateState(raw) {
+  const base = defaultState();
+  if (!raw || typeof raw !== 'object') return base;
+
+  const profile = { ...defaultProfile(), ...raw.profile };
+  if (raw.version < 2) {
+    profile.personalCards24mo = profile.personalCards24mo ?? profile.cards24mo ?? 0;
+    profile.baselineScore = profile.baselineScore ?? scoreBandToMid(profile.scoreBand);
+    profile.oldestAccountYears = profile.oldestAccountYears ?? profile.creditHistoryYears ?? profile.aaoaYears ?? 4;
+    profile.creditHistoryYears = profile.creditHistoryYears ?? profile.oldestAccountYears;
+    if (!profile.totalCreditLimit && profile.cardsOpen) {
+      profile.totalCreditLimit = profile.cardsOpen * 8000;
+    }
+    if (!profile.totalBalances && profile.utilizationPct) {
+      profile.totalBalances = Math.round(profile.totalCreditLimit * profile.utilizationPct / 100);
+    }
+  }
+
+  return {
+    ...base,
+    ...raw,
+    version: 2,
+    profile,
+    offers: Array.isArray(raw.offers) ? raw.offers : [],
+  };
+}
+
+function scoreBandToMid(band) {
+  const map = { '680-719': 700, '720-759': 740, '760-799': 780, '800+': 820 };
+  return map[band] ?? 740;
+}
+
 export function evaluateOffer(offer, profile, allOffers) {
   const warnings = [];
   const blockers = [];
   const today = new Date().toISOString().slice(0, 10);
+
+  if (offer.catalogId) {
+    const card = findCatalog(offer.catalogId);
+    if (card && !offer.creditLine) offer = { ...offer, creditLine: card.creditLine, msrMonths: card.msrMonths };
+  }
+
+  if (offer.type === 'cc' && offer.hardPull && offer.issuer && offer.issuer !== 'Other') {
+    const gates = evaluateIssuerGates(profile, offer.issuer);
+    gates.blocked.forEach((g) => blockers.push(`${offer.issuer} ${g.id}: ${g.detail}`));
+    gates.results.filter((g) => g.caution).forEach((g) => warnings.push(`${offer.issuer}: ${g.detail}`));
+  }
 
   if (offer.type === 'cc' && offer.hardPull) {
     if (profile.inquiries6mo >= 3) {
@@ -77,11 +152,11 @@ export function evaluateOffer(offer, profile, allOffers) {
     if (profile.inquiries12mo >= 6) {
       blockers.push('6+ inquiries in 12 months — high rejection risk.');
     }
-    if (offer.issuer === 'Chase' && profile.cards24mo >= 5) {
-      blockers.push('Chase 5/24: 5+ personal cards in 24 months.');
-    }
-    if (offer.issuer === 'Amex' && profile.cards24mo >= 2) {
-      warnings.push('Amex 2/90 style rule — max ~2 cards / 90 days (issuer discretion).');
+    if (profile.mortgageSensitive && profile.mortgagePlannedDate) {
+      const daysToMortgage = daysBetween(today, profile.mortgagePlannedDate);
+      if (daysToMortgage !== null && daysToMortgage >= 0 && daysToMortgage < 180) {
+        warnings.push(`Mortgage planned in ${daysToMortgage}d — consider pausing apps 6+ months before closing.`);
+      }
     }
     const last = parseDate(profile.lastHardPull);
     if (last) {
@@ -91,7 +166,7 @@ export function evaluateOffer(offer, profile, allOffers) {
       }
     }
     const sameIssuer = allOffers.filter(
-      (o) => o.id !== offer.id && o.status === 'done' && o.issuer === offer.issuer && o.hardPull
+      (o) => o.id !== offer.id && o.status === 'done' && o.issuer === offer.issuer && o.hardPull,
     );
     if (sameIssuer.length) {
       const recent = sameIssuer.sort((a, b) => (b.completedDate || '').localeCompare(a.completedDate || ''))[0];
@@ -104,11 +179,17 @@ export function evaluateOffer(offer, profile, allOffers) {
     }
   }
 
-  if (profile.utilizationPct > 30) {
-    warnings.push(`Utilization ${profile.utilizationPct}% — pay down before new apps if possible.`);
+  const util = profile.totalCreditLimit > 0
+    ? (profile.totalBalances / profile.totalCreditLimit) * 100
+    : profile.utilizationPct;
+  if (util > 30) {
+    warnings.push(`Utilization ${Math.round(util)}% — pay down before new apps if possible.`);
   }
   if (profile.aaoaYears < 2 && offer.type === 'cc' && offer.hardPull) {
     warnings.push('AAoA under 2y — premium cards harder; consider bank bonuses first.');
+  }
+  if (profile.baselineScore && profile.baselineScore < 680 && offer.type === 'cc' && offer.hardPull) {
+    warnings.push('Baseline under 680 — premium SUB cards may deny; start with no-AF cards.');
   }
 
   if (offer.earliestDate && offer.earliestDate > today) {
@@ -119,6 +200,53 @@ export function evaluateOffer(offer, profile, allOffers) {
   return { score, warnings, blockers };
 }
 
+/** Bump profile counters when an offer is marked done */
+export function bumpProfileOnApproval(profile, offer) {
+  const p = { ...profile };
+  if (offer.type !== 'cc' || !offer.hardPull) return p;
+
+  p.personalCards24mo = n(p.personalCards24mo ?? p.cards24mo) + 1;
+  p.cards24mo = p.personalCards24mo;
+  p.cardsOpen = n(p.cardsOpen) + 1;
+  p.recentAccounts12mo = n(p.recentAccounts12mo) + 1;
+  p.inquiries6mo = n(p.inquiries6mo) + 1;
+  p.inquiries12mo = n(p.inquiries12mo) + 1;
+  p.inquiries24mo = n(p.inquiries24mo) + 1;
+
+  const line = n(offer.creditLine) || 8000;
+  p.totalCreditLimit = n(p.totalCreditLimit) + line;
+  const prevAaoa = n(p.aaoaYears);
+  p.aaoaYears = prevAaoa * (p.cardsOpen - 1) / p.cardsOpen;
+
+  const issuer = offer.issuer;
+  if (issuer === 'Chase') p.chaseCards30d = n(p.chaseCards30d) + 1;
+  if (issuer === 'Amex') {
+    p.amexCards90d = n(p.amexCards90d) + 1;
+    p.amexCardsTotal = n(p.amexCardsTotal) + 1;
+  }
+  if (issuer === 'Citi') {
+    p.citiCards8d = n(p.citiCards8d) + 1;
+    p.citiCards65d = n(p.citiCards65d) + 1;
+  }
+  if (issuer === 'Discover') p.discoverCardsTotal = n(p.discoverCardsTotal) + 1;
+  if (issuer === 'Capital One') {
+    p.capOneCards6mo = n(p.capOneCards6mo) + 1;
+    p.capOneCardsTotal = n(p.capOneCardsTotal) + 1;
+  }
+  if (issuer === 'Bank of America') {
+    p.bofaCards2mo = n(p.bofaCards2mo) + 1;
+    p.bofaCards12mo = n(p.bofaCards12mo) + 1;
+    p.bofaCards24mo = n(p.bofaCards24mo) + 1;
+  }
+  if (issuer === 'Wells Fargo') p.wfCards6mo = n(p.wfCards6mo) + 1;
+  if (issuer === 'US Bank') p.usbCards12mo = n(p.usbCards12mo) + 1;
+  if (issuer === 'Barclays') p.barcCards6mo = n(p.barcCards6mo) + 1;
+
+  return p;
+}
+
+function n(v) { return Math.max(0, Number(v) || 0); }
+
 export function suggestTimeline(offers, profile) {
   const pending = offers
     .filter((o) => !['done', 'skip'].includes(o.status))
@@ -126,22 +254,30 @@ export function suggestTimeline(offers, profile) {
 
   const timeline = [];
   let cursor = profile.lastHardPull || new Date().toISOString().slice(0, 10);
+  const p524 = n(profile.personalCards24mo ?? profile.cards24mo);
 
   pending.forEach((o) => {
     if (o.type === 'cc' && o.hardPull) {
-      const wait = o.issuer === 'Chase' && profile.cards24mo >= 4 ? 120 : 90;
+      let wait = 90;
+      if (o.issuer === 'Chase') wait = p524 >= 4 ? 120 : 90;
+      if (o.issuer === 'Amex') wait = 45;
+      if (o.issuer === 'Citi') wait = 65;
+      if (o.issuer === 'Capital One') wait = 180;
       const earliest = addDays(cursor, wait);
+      const chosen = o.earliestDate && o.earliestDate > earliest ? o.earliestDate : earliest;
       timeline.push({
         offerId: o.id,
         title: o.title,
-        suggestedDate: o.earliestDate && o.earliestDate > earliest ? o.earliestDate : earliest,
-        reason: `${wait}d spacing after prior hard pull`,
+        issuer: o.issuer,
+        suggestedDate: chosen,
+        reason: `${wait}d spacing (${o.issuer || 'card'} velocity)`,
       });
-      cursor = o.earliestDate && o.earliestDate > earliest ? o.earliestDate : earliest;
+      cursor = chosen;
     } else {
       timeline.push({
         offerId: o.id,
         title: o.title,
+        issuer: o.issuer,
         suggestedDate: o.earliestDate || cursor,
         reason: 'No hard pull — flexible',
       });
@@ -170,13 +306,18 @@ export function seedOffers() {
     },
     {
       id: crypto.randomUUID(),
+      catalogId: 'chase-csp',
       type: 'cc',
-      title: 'Travel card SUB — 60k pts',
+      title: 'Sapphire Preferred — 75k pts',
       issuer: 'Chase',
-      valueUsd: 900,
+      valueUsd: 1125,
+      subPoints: 75000,
+      program: 'chase_ur',
       hardPull: true,
-      minSpend: 4000,
-      status: 'idea',
+      minSpend: 5000,
+      msrMonths: 3,
+      creditLine: 10000,
+      status: 'planned',
       priority: 2,
       earliestDate: '',
       completedDate: '',
@@ -184,17 +325,22 @@ export function seedOffers() {
     },
     {
       id: crypto.randomUUID(),
-      type: 'shopping',
-      title: 'Portal stack — electronics',
-      issuer: 'Other',
-      valueUsd: 45,
-      hardPull: false,
-      minSpend: 0,
-      status: 'ready',
+      catalogId: 'amex-gold',
+      type: 'cc',
+      title: 'Gold Card — 90k pts',
+      issuer: 'Amex',
+      valueUsd: 1080,
+      subPoints: 90000,
+      program: 'amex_mr',
+      hardPull: true,
+      minSpend: 6000,
+      msrMonths: 6,
+      creditLine: 0,
+      status: 'idea',
       priority: 3,
-      earliestDate: y,
+      earliestDate: '',
       completedDate: '',
-      notes: 'Rakuten + card category bonus',
+      notes: 'Wait 90d after Chase app',
     },
   ];
 }
