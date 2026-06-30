@@ -39,7 +39,7 @@ window.BlossomGame = (function () {
     BlossomAvatar.migrate(state);
     onMessage = callbacks.onMessage;
     onPersist = callbacks.onPersist;
-    player.x = state.position?.x ?? 400;
+    player.x = state.position?.x ?? 360;
     player.y = state.position?.y ?? getLoc().floorY - 20;
     if (!started) {
       started = true;

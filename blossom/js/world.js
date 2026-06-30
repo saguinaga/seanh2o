@@ -12,18 +12,33 @@ window.BlossomWorld = (function () {
       sky: ['#e8f4fc', '#fef3c7', '#fde68a'],
       ground: '#b8956b',
       groundAccent: '#9a7b55',
+      rooms: [
+        { id: 'bedroom', label: 'Bedroom', x: 0, w: 252, wall: '#ede9fe', floor: '#c9b896', trim: '#a78bfa' },
+        { id: 'living', label: 'Living room', x: 252, w: 260, wall: '#fef9c3', floor: '#b8956b', trim: '#f59e0b' },
+        { id: 'kitchen', label: 'Kitchen', x: 512, w: 172, wall: '#fff1f2', floor: '#d6d3d1', trim: '#f472b6' },
+        { id: 'bath', label: 'Bathroom', x: 684, w: 116, wall: '#e0f2fe', floor: '#93c5fd', trim: '#38bdf8' },
+      ],
+      walls: [
+        { x: 252, doorY: 308, doorH: 88 },
+        { x: 512, doorY: 308, doorH: 88 },
+      ],
       props: [
-        { kind: 'rug', x: 280, y: 340, w: 200, h: 60 },
-        { kind: 'bed', x: 90, y: 130, w: 150, h: 88, choreId: 'bed', label: 'Make bed' },
-        { kind: 'desk', x: 200, y: 228, w: 95, h: 62, choreId: 'homework', label: 'Homework' },
-        { kind: 'sink', x: 500, y: 168, w: 95, h: 72, choreId: 'dishes', label: 'Dishes' },
-        { kind: 'fridge', x: 710, y: 175, w: 72, h: 92, label: 'Fridge' },
-        { kind: 'couch', x: 340, y: 298, w: 170, h: 72 },
-        { kind: 'plant', x: 42, y: 288, w: 52, h: 58, choreId: 'plants', label: 'Water plants' },
-        { kind: 'bath', x: 590, y: 138, w: 70, h: 55, choreId: 'teeth', label: 'Brush teeth' },
-        { kind: 'broom', x: 300, y: 368, w: 110, h: 42, choreId: 'sweep', label: 'Sweep floor' },
-        { kind: 'studio', x: 560, y: 248, w: 100, h: 90, label: 'Film corner' },
-        { kind: 'exit', x: 748, y: 300, w: 52, h: 100, to: 'yard', spawn: { x: 90, y: 360 }, label: 'Go outside →' },
+        /* Bedroom — back wall */
+        { kind: 'bed', x: 38, y: 298, w: 148, h: 90, choreId: 'bed', label: 'Make bed', room: 'bedroom' },
+        { kind: 'desk', x: 148, y: 322, w: 88, h: 58, choreId: 'homework', label: 'Homework', room: 'bedroom' },
+        { kind: 'plant', x: 18, y: 328, w: 46, h: 54, choreId: 'plants', label: 'Water plants', room: 'bedroom' },
+        /* Living room */
+        { kind: 'couch', x: 288, y: 312, w: 168, h: 76, room: 'living' },
+        { kind: 'rug', x: 318, y: 358, w: 128, h: 36, room: 'living' },
+        { kind: 'broom', x: 418, y: 348, w: 92, h: 40, choreId: 'sweep', label: 'Sweep floor', room: 'living' },
+        { kind: 'studio', x: 262, y: 272, w: 86, h: 78, label: 'Film corner', room: 'living' },
+        /* Kitchen — counters along back wall */
+        { kind: 'sink', x: 524, y: 286, w: 90, h: 70, choreId: 'dishes', label: 'Dishes', room: 'kitchen' },
+        { kind: 'fridge', x: 612, y: 274, w: 64, h: 92, label: 'Fridge', room: 'kitchen' },
+        /* Bathroom */
+        { kind: 'bath', x: 702, y: 296, w: 64, h: 54, choreId: 'teeth', label: 'Brush teeth', room: 'bath' },
+        /* Front door */
+        { kind: 'exit', x: 728, y: 308, w: 58, h: 92, to: 'yard', spawn: { x: 90, y: 360 }, label: 'Go outside →', room: 'bath' },
       ],
     },
     yard: {
@@ -42,7 +57,7 @@ window.BlossomWorld = (function () {
         { kind: 'mailbox', x: 250, y: 340, w: 48, h: 60, choreId: 'mailbox', label: 'Check mail' },
         { kind: 'tree', x: 500, y: 200, scale: 1 },
         { kind: 'tree', x: 680, y: 220, scale: 0.85 },
-        { kind: 'exit', x: 0, y: 280, w: 55, h: 120, to: 'house', spawn: { x: 700, y: 360 }, label: '← Home' },
+        { kind: 'exit', x: 0, y: 280, w: 55, h: 120, to: 'house', spawn: { x: 360, y: 360 }, label: '← Home' },
         { kind: 'exit', x: 745, y: 300, w: 55, h: 100, to: 'street', spawn: { x: 80, y: 360 }, label: 'Main street →' },
       ],
     },

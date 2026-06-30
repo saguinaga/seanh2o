@@ -43,7 +43,7 @@ window.BlossomSave = (function () {
       wardrobe: BlossomAvatar?.defaultWardrobe?.() || { owned: [], equipped: {} },
       house: 'small',
       currentLocation: 'house',
-      position: { x: 400, y: 360 },
+      position: { x: 360, y: 360 },
       timeOfDay: 'morning',
       dayPhaseIndex: 0,
       alive: true,
