@@ -2,15 +2,18 @@ import {
   OFFER_TYPES, STATUS, ISSUERS, defaultState, defaultProfile,
   evaluateOffer, suggestTimeline, seedOffers, seedOfferPlan, migrateState, bumpProfileOnApproval,
 } from './rules.js';
-import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST } from './issuers.js';
+import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js';
 import {
-  CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES,
+  CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES, CATALOG_CATEGORIES,
 } from './catalog.js';
 import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js';
 import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js';
 import {
   OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
 } from './earnings.js';
+import {
+  DEFAULT_TRANSFER_BONUS_PCT, INFLUENCER_MATH, TRANSFER_PLAYS,
+} from './valuation.js';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
   pointsWallet, transferPartnersFor, crossProgramSummary,
@@ -24,30 +27,54 @@ import {
   defaultHousehold, householdWallet, optimalHouseholdSplit, tripSplitPlan,
   poolingMatrixRows, activeTransferBonuses, getOfferOwner, setOfferOwner,
 } from './household.js';
+import {
+  helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
+  glossaryHtml, formatWelcomeBonus, formatSpendReq,
+} from './help.js';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
 
 const COUNTER_FIELDS = [
-  { id: 'chaseCards30d', label: 'Chase cards (30d)' },
-  { id: 'amexCards90d', label: 'Amex cards (90d)' },
-  { id: 'amexCardsTotal', label: 'Amex cards total' },
-  { id: 'citiCards8d', label: 'Citi cards (8d)' },
-  { id: 'citiCards65d', label: 'Citi cards (65d)' },
-  { id: 'discoverCardsTotal', label: 'Discover cards' },
-  { id: 'capOneCards6mo', label: 'Cap One (6mo)' },
-  { id: 'capOneCardsTotal', label: 'Cap One total' },
-  { id: 'bofaCards2mo', label: 'BofA (2mo)' },
-  { id: 'bofaCards12mo', label: 'BofA (12mo)' },
-  { id: 'bofaCards24mo', label: 'BofA (24mo)' },
-  { id: 'wfCards6mo', label: 'Wells Fargo (6mo)' },
-  { id: 'usbCards12mo', label: 'US Bank (12mo)' },
-  { id: 'barcCards6mo', label: 'Barclays (6mo)' },
+  { id: 'chaseCards30d', label: 'Chase cards opened (last 30 days)', tip: '2/30' },
+  { id: 'amexCards90d', label: 'Amex cards opened (last 90 days)', tip: '2/90' },
+  { id: 'amexCardsTotal', label: 'Amex credit cards total', tip: '5-card' },
+  { id: 'citiCards8d', label: 'Citi cards opened (last 8 days)', tip: '8/65' },
+  { id: 'citiCards65d', label: 'Citi cards opened (last 65 days)', tip: '2/65' },
+  { id: 'discoverCardsTotal', label: 'Discover cards you hold', tip: '1card' },
+  { id: 'capOneCards6mo', label: 'Capital One cards (last 6 months)', tip: '1/6' },
+  { id: 'capOneCardsTotal', label: 'Capital One personal cards total', tip: '2/3' },
+  { id: 'bofaCards2mo', label: 'BofA cards (last 2 months)', tip: '2/3/4' },
+  { id: 'bofaCards12mo', label: 'BofA cards (last 12 months)', tip: 'bofa12' },
+  { id: 'bofaCards24mo', label: 'BofA cards (last 24 months)', tip: 'bofa24' },
+  { id: 'wfCards6mo', label: 'Wells Fargo cards (last 6 months)', tip: '1/6wf' },
+  { id: 'usbCards12mo', label: 'US Bank cards (last 12 months)', tip: 'usbank1' },
+  { id: 'barcCards6mo', label: 'Barclays cards (last 6 months)', tip: 'barc6' },
+  { id: 'pncCards6mo', label: 'PNC cards (last 6 months)', tip: 'pnc6' },
+  { id: 'tdCards6mo', label: 'TD Bank cards (last 6 months)', tip: 'td6' },
+  { id: 'truistCards6mo', label: 'Truist cards (last 6 months)', tip: 'truist6' },
+  { id: 'regionsCards6mo', label: 'Regions cards (last 6 months)', tip: 'regions6' },
+  { id: 'fifthThirdCards12mo', label: 'Fifth Third cards (last 12 months)', tip: '53_12' },
+  { id: 'huntingtonCards6mo', label: 'Huntington cards (last 6 months)', tip: 'hunt6' },
+  { id: 'bmoCards6mo', label: 'BMO cards (last 6 months)', tip: 'bmo6' },
+  { id: 'nfcuCards90d', label: 'Navy Federal cards (last 90 days)', tip: 'nfcu90' },
+  { id: 'penfedCards6mo', label: 'PenFed cards (last 6 months)', tip: 'penfed6' },
+  { id: 'dcuCards6mo', label: 'DCU cards (last 6 months)', tip: 'dcu6' },
+  { id: 'alliantCards6mo', label: 'Alliant cards (last 6 months)', tip: 'alliant6' },
+  { id: 'andrewsCards6mo', label: 'Andrews FCU cards (last 6 months)', tip: 'andrews6' },
+  { id: 'goldmanCardsTotal', label: 'Goldman / Apple cards you hold', tip: 'apple1' },
+  { id: 'sofiCards6mo', label: 'SoFi cards (last 6 months)', tip: 'sofi6' },
+  { id: 'syncCards6mo', label: 'Synchrony cards (last 6 months)', tip: 'sync6' },
+  { id: 'breadCards6mo', label: 'Bread Financial cards (last 6 months)', tip: 'bread6' },
+  { id: 'elanCards6mo', label: 'Elan-brand cards (last 6 months)', tip: 'elan6' },
+  { id: 'fnboCards6mo', label: 'FNBO cards (last 6 months)', tip: 'fnbo6' },
+  { id: 'firstTechCards6mo', label: 'First Tech cards (last 6 months)', tip: 'ftfcu6' },
 ];
 
 let state = load();
 let scoreChart = null;
 let offersFeed = null;
+let transferBonusPct = DEFAULT_TRANSFER_BONUS_PCT;
 
 function load() {
   try {
@@ -122,8 +149,8 @@ function renderProfile() {
 
   const counterEl = $('#issuerCounters');
   if (counterEl) {
-    counterEl.innerHTML = COUNTER_FIELDS.map(({ id, label }) => `
-      <label>${label}
+    counterEl.innerHTML = COUNTER_FIELDS.map(({ id, label, tip }) => `
+      <label><span class="label-with-tip">${label}${tip ? helpTip(tip) : ''}</span>
         <input type="number" id="${id}" data-profile data-counter min="0" value="${p[id] ?? 0}">
       </label>
     `).join('');
@@ -172,6 +199,25 @@ function readProfile() {
     wfCards6mo: readVal('wfCards6mo') ?? p.wfCards6mo ?? 0,
     usbCards12mo: readVal('usbCards12mo') ?? p.usbCards12mo ?? 0,
     barcCards6mo: readVal('barcCards6mo') ?? p.barcCards6mo ?? 0,
+    pncCards6mo: readVal('pncCards6mo') ?? p.pncCards6mo ?? 0,
+    tdCards6mo: readVal('tdCards6mo') ?? p.tdCards6mo ?? 0,
+    truistCards6mo: readVal('truistCards6mo') ?? p.truistCards6mo ?? 0,
+    regionsCards6mo: readVal('regionsCards6mo') ?? p.regionsCards6mo ?? 0,
+    fifthThirdCards12mo: readVal('fifthThirdCards12mo') ?? p.fifthThirdCards12mo ?? 0,
+    huntingtonCards6mo: readVal('huntingtonCards6mo') ?? p.huntingtonCards6mo ?? 0,
+    bmoCards6mo: readVal('bmoCards6mo') ?? p.bmoCards6mo ?? 0,
+    nfcuCards90d: readVal('nfcuCards90d') ?? p.nfcuCards90d ?? 0,
+    penfedCards6mo: readVal('penfedCards6mo') ?? p.penfedCards6mo ?? 0,
+    dcuCards6mo: readVal('dcuCards6mo') ?? p.dcuCards6mo ?? 0,
+    alliantCards6mo: readVal('alliantCards6mo') ?? p.alliantCards6mo ?? 0,
+    andrewsCards6mo: readVal('andrewsCards6mo') ?? p.andrewsCards6mo ?? 0,
+    goldmanCardsTotal: readVal('goldmanCardsTotal') ?? p.goldmanCardsTotal ?? 0,
+    sofiCards6mo: readVal('sofiCards6mo') ?? p.sofiCards6mo ?? 0,
+    syncCards6mo: readVal('syncCards6mo') ?? p.syncCards6mo ?? 0,
+    breadCards6mo: readVal('breadCards6mo') ?? p.breadCards6mo ?? 0,
+    elanCards6mo: readVal('elanCards6mo') ?? p.elanCards6mo ?? 0,
+    fnboCards6mo: readVal('fnboCards6mo') ?? p.fnboCards6mo ?? 0,
+    firstTechCards6mo: readVal('firstTechCards6mo') ?? p.firstTechCards6mo ?? 0,
     existingPoints: readPointsGrid('existing'),
     partnerPoints: readPointsGrid('partner'),
     poolHousehold: readVal('poolHousehold'),
@@ -200,12 +246,20 @@ function readPointsGrid(prefix, profile = state.profile) {
 }
 
 function renderStats(sim, projection) {
-  const proj = projection || earningsProjection(state.offers, []);
+  const proj = projection || earningsProjection(state.offers, [], { transferBonusPct });
 
-  $('#statPipeline').textContent = fmtMoney(proj.netPipeline);
+  const heroEl = $('#statPipeline');
+  const cashEl = $('#statCashFloor');
+  if (heroEl) {
+    heroEl.textContent = fmtMoney(proj.netTravelPipeline || proj.netPipeline);
+    heroEl.title = `Cash floor: ${fmtMoney(proj.netPipeline)}`;
+  }
+  if (cashEl) cashEl.textContent = fmtMoney(proj.netPipeline);
   $('#statCaptured').textContent = fmtMoney(proj.captured);
-  $('#statPerMonth').textContent = proj.perMonth > 0 ? fmtMoney(proj.perMonth) : '$0';
+  $('#statPerMonth').textContent = proj.travelPerMonth > 0 ? fmtMoney(proj.travelPerMonth) : '$0';
   $('#statQueued').textContent = String(proj.queued);
+  const ptsEl = $('#statPoints');
+  if (ptsEl) ptsEl.textContent = proj.pointsQueued ? fmtPts(proj.pointsQueued) : '0';
   if (sim) {
     $('#statMaxDrop').textContent = sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '0';
     $('#statMaxDrop').style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
@@ -235,46 +289,70 @@ function renderDashboardTimeline(timeline) {
 }
 
 function renderDashboard(sim, timeline) {
-  const proj = earningsProjection(state.offers, timeline);
+  const proj = earningsProjection(state.offers, timeline, { transferBonusPct });
   renderStats(sim, proj);
 
   const snap = $('#earningsSnapshot');
   if (snap) {
     const typeRows = Object.entries(proj.byType).map(([t, v]) => {
-      const label = { cc: 'Card SUBs', bank: 'Bank bonuses', shopping: 'Shopping/stacks', travel: 'Travel promos' }[t] || t;
-      return `<div class="sim-summary__row"><span>${label}</span><strong>${fmtMoney(v)}</strong></div>`;
+      const label = {
+        cc: 'Card welcome bonuses', bank: 'Bank bonuses', shopping: 'Shopping/stacks', travel: 'Travel promos',
+      }[t] || t;
+      return `<div class="sim-summary__row"><span>${label}</span><strong>${fmtMoney(v)} cash</strong></div>`;
     }).join('');
+
+    const bonusNote = transferBonusPct > 0
+      ? `Includes +${transferBonusPct}% transfer bonus assumption on airline/hotel moves.`
+      : 'Transfer partner value without a promo bonus.';
 
     snap.innerHTML = `
       <div class="sim-summary">
-        <div class="sim-summary__row"><span>Gross pipeline</span><strong>${fmtMoney(proj.pipeline)}</strong></div>
-        <div class="sim-summary__row"><span>Less annual fees (pending)</span><strong>−${fmtMoney(proj.fees)}</strong></div>
-        <div class="sim-summary__row"><span>Net still to earn</span><strong>${fmtMoney(proj.netPipeline)}</strong></div>
-        <div class="sim-summary__row"><span>Already captured</span><strong>${fmtMoney(proj.captured)}</strong></div>
-        <div class="sim-summary__row"><span>MSR exposure (queued)</span><strong>${fmtMoney(proj.msr)}</strong></div>
+        <div class="sim-summary__row sim-summary__row--highlight">
+          <span>${labelWithTip('Travel upside (transfer partners)', 'travel_upside')}</span>
+          <strong>${fmtMoney(proj.netTravelPipeline)}</strong>
+        </div>
+        <div class="sim-summary__row">
+          <span>${labelWithTip('Cash floor (portal / cash)', 'cash_floor')}</span>
+          <strong>${fmtMoney(proj.netPipeline)}</strong>
+        </div>
+        <div class="sim-summary__row sim-summary__row--up">
+          <span>Transfer uplift</span>
+          <strong>+${fmtMoney(proj.travelUplift)}</strong>
+        </div>
+        <div class="sim-summary__row"><span>${labelWithTip('Less annual fees (pending)', 'af')}</span><strong>−${fmtMoney(proj.fees)}</strong></div>
+        <div class="sim-summary__row"><span>${labelWithTip('Already captured', 'captured')}</span><strong>${fmtMoney(proj.captured)}</strong></div>
+        <div class="sim-summary__row"><span>Points in queue</span><strong>${fmtPts(proj.pointsQueued)}</strong></div>
+        <div class="sim-summary__row"><span>${labelWithTip('Spending required (queued)', 'msr')}</span><strong>${fmtMoney(proj.msr)}</strong></div>
         <div class="sim-summary__row"><span>Plan horizon</span><strong>~${proj.months} mo</strong></div>
         ${typeRows}
         ${sim ? `<div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
           <span>Est. max score drop</span><strong>−${sim.summary.maxDrop} pts</strong>
         </div>` : ''}
       </div>
-      <p class="hint" style="margin-top:12px">Mark offers <strong>Done</strong> when bonuses post — captured $ and gates update automatically.</p>
+      <p class="hint" style="margin-top:10px">${bonusNote}</p>
+      <p class="hint">Mark offers <strong>Done</strong> when bonuses post — captured value and gates update automatically.</p>
     `;
   }
+
+  renderTransferUpside(proj);
 
   renderDashboardTimeline(timeline);
 
   const planGrid = $('#planGrid');
   if (planGrid) {
     planGrid.innerHTML = OFFER_PLANS.map((p) => `
-      <article class="stack-card">
+      <article class="stack-card ${p.id === 'creator-stack' ? 'stack-card--creator' : ''}">
         <header class="stack-card__head">
           <span class="stack-card__emoji">${p.emoji}</span>
           <div>
             <h3>${escapeHtml(p.name)}</h3>
             <p class="stack-card__hook">${escapeHtml(p.hook)}</p>
           </div>
-          <strong class="stack-card__val">~${fmtMoney(p.estValue)}</strong>
+          <div class="stack-card__vals">
+            <strong class="stack-card__val">~${fmtMoney(p.estTravelValue || p.estValue)}</strong>
+            <span class="stack-card__val-sub">trip value</span>
+            <span class="stack-card__val-floor">${fmtMoney(p.estValue)} cash</span>
+          </div>
         </header>
         <p class="stack-card__caption">${escapeHtml(p.caption)}</p>
         <button type="button" class="btn-sm btn" data-plan="${p.id}">Load plan</button>
@@ -306,10 +384,96 @@ function renderDashboard(sim, timeline) {
 
 function loadPlan(planId) {
   if (state.offers.length && !confirm('Replace your offer queue with this plan template?')) return;
+  const plan = OFFER_PLANS.find((p) => p.id === planId);
   state.offers = seedOfferPlan(planId);
+  const hh = ensureHousehold();
+  hh.offerOwner = {};
+  state.offers.forEach((o) => {
+    if (o.ownerHint) {
+      state.household = setOfferOwner(hh, o.id, o.ownerHint);
+    }
+  });
+  if (planId === 'creator-stack') {
+    transferBonusPct = DEFAULT_TRANSFER_BONUS_PCT;
+    const bonusEl = $('#transferBonusToggle');
+    if (bonusEl) bonusEl.checked = true;
+  }
   save();
   renderAll();
   switchTab('plan');
+}
+
+function renderTransferUpside(proj) {
+  const el = $('#transferUpside');
+  if (!el) return;
+
+  const hh = ensureHousehold();
+  const hw = householdWallet(state.profile, hh, state.offers, transferBonusPct);
+  const combinedTravel = (hw.player1.totalTravelUsd || hw.player1.totalUsd)
+    + (hw.player2.totalTravelUsd || hw.player2.totalUsd);
+
+  const programRows = hw.player1.lines.length || hw.player2.lines.length
+    ? [...hw.player1.lines, ...hw.player2.lines]
+      .reduce((acc, line) => {
+        const existing = acc.find((x) => x.program === line.program);
+        if (existing) {
+          existing.total += line.total;
+          existing.portalUsd += line.portalUsd || line.usd;
+          existing.transferUsd += line.transferUsd || line.usd;
+        } else {
+          acc.push({ ...line });
+        }
+        return acc;
+      }, [])
+      .sort((a, b) => (b.transferUsd || 0) - (a.transferUsd || 0))
+      .map((line) => `
+        <div class="upside-row">
+          <div>
+            <strong style="color:${line.meta.color}">${escapeHtml(line.meta.short)}</strong>
+            <span class="hint">${fmtPts(line.total)} pts queued</span>
+          </div>
+          <div class="upside-row__vals">
+            <span>${fmtMoney(line.portalUsd || line.usd)} cash</span>
+            <span class="upside-row__arrow">→</span>
+            <strong>${fmtMoney(line.transferUsd || line.usd)}</strong>
+            ${line.bestPartner ? `<span class="hint">via ${escapeHtml(line.bestPartner.name)}</span>` : ''}
+          </div>
+        </div>
+      `).join('')
+    : '<p class="empty">Load a plan to see how transfers change the math.</p>';
+
+  const plays = TRANSFER_PLAYS.slice(0, 4).map((p) => `
+    <article class="play-card">
+      <h4>${escapeHtml(p.name)}</h4>
+      <p class="hint">${escapeHtml(p.pitch)}</p>
+    </article>
+  `).join('');
+
+  el.innerHTML = `
+    <div class="upside-hero">
+      <div>
+        <p class="upside-hero__label">Household travel value (transfer partners)</p>
+        <p class="upside-hero__val">~${fmtMoney(combinedTravel)}</p>
+        <p class="hint">Cash floor ~${fmtMoney(hw.player1.totalUsd + hw.player2.totalUsd)} · +${fmtMoney(Math.max(0, combinedTravel - (hw.player1.totalUsd + hw.player2.totalUsd)))} from smart transfers</p>
+      </div>
+      <label class="upside-toggle form-row-check">
+        <input type="checkbox" id="transferBonusToggle" ${transferBonusPct > 0 ? 'checked' : ''}>
+        Assume +${DEFAULT_TRANSFER_BONUS_PCT}% transfer bonus on airline moves
+      </label>
+    </div>
+    <div class="upside-programs">${programRows}</div>
+    <h3 class="subhead">How creators get to “big” numbers</h3>
+    <div class="play-grid">${plays}</div>
+  `;
+
+  const toggle = $('#transferBonusToggle');
+  if (toggle && !toggle.dataset.bound) {
+    toggle.dataset.bound = '1';
+    toggle.addEventListener('change', (e) => {
+      transferBonusPct = e.target.checked ? DEFAULT_TRANSFER_BONUS_PCT : 0;
+      renderAll();
+    });
+  }
 }
 
 function updateFeedBadge() {
@@ -362,7 +526,7 @@ function renderFeedCompare() {
     <div class="compare-grid">
       <div class="compare-card compare-card--up">
         <strong>${cmp.upgraded.length}</strong>
-        <span>Better SUB than queued</span>
+        <span>Better welcome bonus than queued</span>
         ${cmp.upgraded.slice(0, 3).map((u) => `<p class="hint">${escapeHtml(u.feed.name)} +${fmtMoney(u.delta)}</p>`).join('') || '<p class="hint">—</p>'}
       </div>
       <div class="compare-card">
@@ -454,16 +618,16 @@ function renderHouseholdUI() {
       <label>${escapeHtml(hh.player2Label)} label
         <input type="text" id="hh_player2Label" data-household value="${escapeHtml(hh.player2Label)}">
       </label>
-      <label>5/24 (personal cards, 24mo)
+      <label><span class="label-with-tip">Personal cards opened (24 mo)${helpTip('five24')}</span>
         <input type="number" id="hh_p2_524" data-household min="0" value="${p2.personalCards24mo ?? 0}">
       </label>
-      <label>Inquiries (6mo)
+      <label><span class="label-with-tip">Hard inquiries (6 mo)${helpTip('inquiries')}</span>
         <input type="number" id="hh_p2_inq6" data-household min="0" value="${p2.inquiries6mo ?? 0}">
       </label>
-      <label>Chase cards (30d)
+      <label><span class="label-with-tip">Chase cards opened (30 days)${helpTip('2/30')}</span>
         <input type="number" id="hh_p2_chase30" data-household min="0" value="${p2.chaseCards30d ?? 0}">
       </label>
-      <label>Amex cards (90d)
+      <label><span class="label-with-tip">Amex cards opened (90 days)${helpTip('2/90')}</span>
         <input type="number" id="hh_p2_amex90" data-household min="0" value="${p2.amexCards90d ?? 0}">
       </label>
     `;
@@ -550,7 +714,7 @@ function readHouseholdFromDom() {
 function renderTransfers() {
   renderHouseholdUI();
   const hh = ensureHousehold();
-  const hw = householdWallet(state.profile, hh, state.offers);
+  const hw = householdWallet(state.profile, hh, state.offers, transferBonusPct);
   const wallet = {
     lines: [...hw.player1.lines, ...hw.player2.lines],
     totalPoints: hw.player1.totalPoints + hw.player2.totalPoints,
@@ -570,15 +734,21 @@ function renderTransfers() {
         <article class="wallet-card" style="border-left-color:${line.meta.color}">
           <header class="wallet-card__head">
             <strong>${escapeHtml(line.meta.short)}</strong>
-            <span>${fmtPts(line.total)} pts · ~${fmtMoney(line.usd)}</span>
+            <span>${fmtPts(line.total)} pts</span>
           </header>
+          <div class="wallet-card__value-row">
+            <span>${fmtMoney(line.portalUsd || line.usd)} cash</span>
+            <span class="wallet-card__arrow">→</span>
+            <strong>${fmtMoney(line.transferUsd || line.usd)} trip</strong>
+            ${line.bestPartner ? `<span class="hint">best: ${escapeHtml(line.bestPartner.name)}</span>` : ''}
+          </div>
           <div class="wallet-card__breakdown">
-            ${line.stack ? `<span>Stack SUB <strong>${fmtPts(line.stack)}</strong></span>` : ''}
+            ${line.stack ? `<span>Planned bonus <strong>${fmtPts(line.stack)}</strong></span>` : ''}
             ${line.yours ? `<span>Yours <strong>${fmtPts(line.yours)}</strong></span>` : ''}
             ${line.spouse ? `<span>${escapeHtml(state.profile.partnerLabel || 'Partner')} <strong>${fmtPts(line.spouse)}</strong></span>` : ''}
           </div>
           ${line.meta.transferable
-    ? `<p class="wallet-card__xfer">→ ${transferPartnersFor(line.program).slice(0, 4).map((t) => PARTNERS[t.to]?.name).filter(Boolean).join(', ')}…</p>`
+    ? `<p class="wallet-card__xfer">Transfer → ${transferPartnersFor(line.program).slice(0, 4).map((t) => PARTNERS[t.to]?.name).filter(Boolean).join(', ')}… · pool both players into one loyalty #</p>`
     : `<p class="wallet-card__xfer wallet-card__xfer--muted">${escapeHtml(line.meta.note)}</p>`}
         </article>
       `).join('');
@@ -642,6 +812,16 @@ function renderTransfers() {
         <h3>${escapeHtml(block.title)}</h3>
         <ol>${block.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
       </article>
+    `).join('');
+  }
+
+  const mathEl = $('#influencerMath');
+  if (mathEl) {
+    mathEl.innerHTML = INFLUENCER_MATH.map((row) => `
+      <div class="math-row">
+        <strong>${escapeHtml(row.label)}</strong>
+        <p class="hint">${escapeHtml(row.detail)}</p>
+      </div>
     `).join('');
   }
 }
@@ -712,14 +892,14 @@ function renderQuickGates() {
   const el = $('#quickGates');
   if (!el) return;
   el.innerHTML = `
-    <span>Chase 5/24:</span>
-    <span class="gate-pill gate-pill--${p524 >= 5 ? 'blocked' : p524 >= 4 ? 'caution' : 'clear'}">${p524}/5</span>
-    <span>Inquiries (6mo):</span>
+    <span class="quick-gate__label">${labelWithTip('Chase new cards (24 mo)', 'five24')}</span>
+    <span class="gate-pill gate-pill--${p524 >= 5 ? 'blocked' : p524 >= 4 ? 'caution' : 'clear'}" title="${p524} of 5 allowed">${p524} of 5</span>
+    <span class="quick-gate__label">${labelWithTip('Hard inquiries (6 mo)', 'inquiries')}</span>
     <span class="gate-pill gate-pill--${p.inquiries6mo >= 3 ? 'caution' : 'clear'}">${p.inquiries6mo}</span>
-    <span>Utilization:</span>
+    <span class="quick-gate__label">${labelWithTip('Utilization', 'utilization')}</span>
     <span class="gate-pill gate-pill--${p.utilizationPct > 30 ? 'caution' : 'clear'}">${p.utilizationPct}%</span>
-    <span>AAoA:</span>
-    <span class="gate-pill gate-pill--${p.aaoaYears < 2 ? 'caution' : 'clear'}">${p.aaoaYears}y</span>
+    <span class="quick-gate__label">${labelWithTip('Avg account age', 'aaoa')}</span>
+    <span class="gate-pill gate-pill--${p.aaoaYears < 2 ? 'caution' : 'clear'}">${p.aaoaYears} yrs</span>
   `;
 }
 
@@ -731,22 +911,31 @@ function renderIssuerGrid() {
 
   el.innerHTML = dash.map((d) => {
     const m = meta[d.issuer] || {};
-    const rules = d.results.length
+    const refRules = (m.rules || []).map((r) => `
+      <li class="issuer-card__ref">
+        <span class="issuer-card__ref-name">${escapeHtml(r.name)}</span>
+        <span class="issuer-card__ref-desc">${escapeHtml(r.desc)}</span>
+      </li>
+    `).join('');
+
+    const checks = d.results.length
       ? d.results.map((r) => `
-        <li>
-          <span>${r.id}</span>
-          <span class="gate-pill gate-pill--${r.pass ? 'clear' : 'blocked'}">${r.detail}</span>
+        <li class="issuer-card__check">
+          <span class="issuer-card__check-label">${ruleLabelHtml(r.id)}</span>
+          <span class="gate-pill gate-pill--${r.pass ? 'clear' : 'blocked'}" title="${escapeHtml(r.detail)}">${gatePassLabel(r.pass)}</span>
+          <p class="issuer-card__check-detail">${escapeHtml(r.detail)}</p>
         </li>
       `).join('')
-      : '<li><span>No velocity rules modeled</span></li>';
+      : '';
 
     return `
       <article class="issuer-card issuer-card--${d.status}">
         <header class="issuer-card__head">
           <h3 style="color:${m.color || 'inherit'}">${escapeHtml(d.issuer)}</h3>
-          <span class="gate-pill gate-pill--${d.status === 'blocked' ? 'blocked' : d.status === 'caution' ? 'caution' : 'clear'}">${d.status}</span>
+          <span class="gate-pill gate-pill--${d.status === 'blocked' ? 'blocked' : d.status === 'caution' ? 'caution' : 'clear'}">${issuerStatusLabel(d.status)}</span>
         </header>
-        <ul class="issuer-card__rules">${rules}</ul>
+        ${checks ? `<p class="issuer-card__section">Your profile</p><ul class="issuer-card__rules">${checks}</ul>` : ''}
+        ${refRules ? `<p class="issuer-card__section">What they watch for</p><ul class="issuer-card__rules issuer-card__rules--ref">${refRules}</ul>` : '<p class="hint">No velocity rules modeled for this issuer.</p>'}
       </article>
     `;
   }).join('');
@@ -754,7 +943,8 @@ function renderIssuerGrid() {
 
 function renderCatalog() {
   const issuer = $('#catalogIssuer')?.value || 'all';
-  const cards = filterCatalog(issuer);
+  const category = $('#catalogCategory')?.value || 'all';
+  const cards = filterCatalog(issuer, category);
   const feedCards = offersFeed?.cards ? Object.fromEntries(offersFeed.cards.map((c) => [c.catalogId, c])) : {};
   const el = $('#catalogGrid');
   if (!el) return;
@@ -765,9 +955,7 @@ function renderCatalog() {
     const ev = evaluateOffer({ type: 'cc', issuer: card.issuer, hardPull: true, catalogId: card.id }, state.profile, state.offers);
     const blocked = ev.score === 'blocked';
     const estVal = liveVal ?? (card.subCash || pointsToUsd(card.subPoints, card.program));
-    const bonus = card.subPoints
-      ? `${(card.subPoints / 1000).toFixed(0)}k pts (~${fmtMoney(estVal)})`
-      : card.subCash ? `$${card.subCash} cash` : card.cashbackMatch ? 'Cashback Match' : 'Varies';
+    const bonus = formatWelcomeBonus(card, estVal, fmtMoney);
     const liveTag = live ? '<span class="tag tag--live">Feed</span>' : '';
 
     const inPlan = state.offers.some((o) => o.catalogId === card.id && !['done', 'skip'].includes(o.status));
@@ -780,20 +968,20 @@ function renderCatalog() {
             <h3>${escapeHtml(card.name)}</h3>
           </div>
           ${liveTag}
-          ${blocked ? '<span class="gate-pill gate-pill--blocked">Gate</span>' : ''}
+          ${blocked ? `<span class="gate-pill gate-pill--blocked" title="Issuer rule suggests waiting">${labelWithTip('Wait', 'gate')}</span>` : ''}
         </div>
         <div class="catalog-card__bonus">${bonus}</div>
         ${live?.sourceUrl ? `<a class="hint" href="${escapeHtml(live.sourceUrl)}" target="_blank" rel="noopener">Official offer page</a>` : ''}
         <div class="catalog-card__facts">
-          ${card.msr ? `<span>MSR ${fmtMoney(card.msr)} / ${card.msrMonths}mo</span>` : ''}
-          <span>AF ${card.annualFee ? fmtMoney(card.annualFee) : '$0'}</span>
+          <span>${formatSpendReq(card.msr, card.msrMonths)}</span>
+          <span>Annual fee ${card.annualFee ? fmtMoney(card.annualFee) : '$0'}</span>
           ${card.creditLine ? `<span>~${fmtMoney(card.creditLine)} line</span>` : card.charge ? '<span>Charge card</span>' : ''}
         </div>
         <p class="catalog-card__trip">${escapeHtml(cardTripPitch(card))}</p>
         ${PROGRAMS[card.program]?.transferable
     ? `<p class="catalog-card__xfer">Transfer → ${transferPartnersFor(card.program).slice(0, 3).map((t) => PARTNERS[t.to]?.name).filter(Boolean).join(', ')}</p>`
     : ''}
-        <div class="catalog-card__tags">${(card.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="catalog-card__tags">${card.category && card.category !== 'national' ? `<span class="tag tag--cat">${escapeHtml(CATALOG_CATEGORIES[card.category] || card.category)}</span>` : ''}${(card.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
         ${ev.blockers.length ? `<ul class="offer-alerts offer-alerts--block">${ev.blockers.slice(0, 2).map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
         <button type="button" class="btn-sm ${inPlan ? 'btn-ghost' : 'btn'}" data-catalog="${card.id}" ${inPlan ? 'disabled' : ''}>
           ${inPlan ? 'In plan' : '+ Add to plan'}
@@ -829,13 +1017,13 @@ function offerCard(o) {
         <span class="offer-card__icon">${meta.icon}</span>
         <div>
           <h3>${escapeHtml(o.title)}</h3>
-          <p class="offer-card__meta">${meta.label} · ${escapeHtml(o.issuer)} · ${fmtMoney(o.valueUsd)}</p>
+          <p class="offer-card__meta">${meta.shortLabel || meta.label} · ${escapeHtml(o.issuer)} · ${fmtMoney(o.valueUsd)} est.</p>
         </div>
         <span class="offer-card__status">${st.label}</span>
       </header>
       <dl class="offer-card__facts">
-        ${o.hardPull ? '<div><dt>Credit</dt><dd>Hard pull</dd></div>' : '<div><dt>Credit</dt><dd>Soft / none</dd></div>'}
-        ${o.minSpend ? `<div><dt>MSR</dt><dd>${fmtMoney(o.minSpend)}${o.msrMonths ? ` / ${o.msrMonths}mo` : ''}</dd></div>` : ''}
+        ${o.hardPull ? `<div><dt>${labelWithTip('Credit check', 'hard_pull')}</dt><dd>Hard pull on apply</dd></div>` : '<div><dt>Credit check</dt><dd>Soft / none</dd></div>'}
+        ${o.minSpend ? `<div><dt>${labelWithTip('Spend to earn bonus', 'msr')}</dt><dd>${fmtMoney(o.minSpend)}${o.msrMonths ? ` in ${o.msrMonths} mo` : ''}</dd></div>` : ''}
         ${o.creditLine ? `<div><dt>Est. line</dt><dd>${fmtMoney(o.creditLine)}</dd></div>` : ''}
         ${o.earliestDate ? `<div><dt>Earliest</dt><dd>${o.earliestDate}</dd></div>` : ''}
         ${o.completedDate ? `<div><dt>Done</dt><dd>${o.completedDate}</dd></div>` : ''}
@@ -940,7 +1128,7 @@ function renderSimulation(timeline) {
         </div>
         <div class="sim-summary__row"><span>CC applications</span><strong>${sim.summary.totalApplications}</strong></div>
         ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Mortgage/refi planned soon — consider pausing new applications.</p>' : ''}
-        <p class="hint" style="margin-top:10px">Score typically recovers as inquiries age and MSR balances clear.</p>
+        <p class="hint" style="margin-top:10px">Score typically recovers as inquiries age and bonus spending balances clear.</p>
       </div>
     `;
   }
@@ -991,12 +1179,12 @@ function updateScoreChart(sim) {
     datasets: [{
       label: 'Projected score',
       data,
-      borderColor: '#38bdf8',
-      backgroundColor: 'rgba(56, 189, 248, 0.15)',
+      borderColor: '#e60023',
+      backgroundColor: 'rgba(230, 0, 35, 0.08)',
       fill: true,
       tension: 0.3,
       pointRadius: 4,
-      pointBackgroundColor: data.map((v, i) => (i === 0 ? '#4ade80' : v === Math.min(...data) ? '#fb7185' : '#38bdf8')),
+      pointBackgroundColor: data.map((v, i) => (i === 0 ? '#2d8a5e' : v === Math.min(...data) ? '#d64562' : '#e60023')),
     }],
   };
 
@@ -1018,12 +1206,12 @@ function updateScoreChart(sim) {
       y: {
         min: Math.max(300, Math.min(...data) - 25),
         max: Math.min(850, Math.max(...data) + 15),
-        grid: { color: 'rgba(255,255,255,0.06)' },
-        ticks: { color: '#94a3b8' },
+        grid: { color: 'rgba(62, 39, 35, 0.08)' },
+        ticks: { color: '#8a7a72' },
       },
       x: {
         grid: { display: false },
-        ticks: { color: '#94a3b8', maxRotation: 45 },
+        ticks: { color: '#8a7a72', maxRotation: 45 },
       },
     },
   };
@@ -1074,26 +1262,62 @@ function switchTab(name) {
   }
 }
 
-function populateIssuerSelects() {
-  const offerIssuer = $('#offerIssuer');
-  const catalogIssuer = $('#catalogIssuer');
-  if (offerIssuer && !offerIssuer.options.length) {
-    ISSUERS.forEach((i) => {
-      const o = document.createElement('option');
-      o.value = o.textContent = i;
-      offerIssuer.appendChild(o);
-    });
+function fillIssuerOptions(select, { includeAll = false, grouped = false } = {}) {
+  if (!select) return;
+  const current = select.value;
+  select.innerHTML = '';
+  if (includeAll) {
+    const all = document.createElement('option');
+    all.value = 'all';
+    all.textContent = 'All issuers';
+    select.appendChild(all);
   }
-  if (catalogIssuer) {
-    const current = catalogIssuer.value;
-    catalogIssuer.innerHTML = '<option value="all">All issuers</option>';
-    ISSUER_LIST.filter((i) => i !== 'Other').forEach((i) => {
+  if (grouped) {
+    ISSUER_GROUPS.forEach(({ label, issuers }) => {
+      const og = document.createElement('optgroup');
+      og.label = label;
+      issuers.forEach((i) => {
+        const o = document.createElement('option');
+        o.value = i;
+        o.textContent = i;
+        og.appendChild(o);
+      });
+      select.appendChild(og);
+    });
+    const other = document.createElement('option');
+    other.value = 'Other';
+    other.textContent = 'Other';
+    select.appendChild(other);
+  } else {
+    ISSUERS.forEach((i) => {
       const o = document.createElement('option');
       o.value = i;
       o.textContent = i;
-      catalogIssuer.appendChild(o);
+      select.appendChild(o);
     });
-    catalogIssuer.value = current || 'all';
+  }
+  if (current) select.value = current;
+}
+
+function populateIssuerSelects() {
+  const offerIssuer = $('#offerIssuer');
+  const catalogIssuer = $('#catalogIssuer');
+  const catalogCategory = $('#catalogCategory');
+  if (offerIssuer && !offerIssuer.dataset.bound) {
+    fillIssuerOptions(offerIssuer, { grouped: true });
+    offerIssuer.dataset.bound = '1';
+  }
+  if (catalogIssuer) {
+    fillIssuerOptions(catalogIssuer, { includeAll: true, grouped: true });
+  }
+  if (catalogCategory && !catalogCategory.dataset.bound) {
+    Object.entries(CATALOG_CATEGORIES).forEach(([value, label]) => {
+      const o = document.createElement('option');
+      o.value = value;
+      o.textContent = label;
+      catalogCategory.appendChild(o);
+    });
+    catalogCategory.dataset.bound = '1';
   }
 }
 
@@ -1179,16 +1403,14 @@ function importJson(file) {
 function populateInboxIssuers() {
   const sel = $('#inboxIssuer');
   if (!sel || sel.dataset.bound) return;
-  ISSUERS.forEach((i) => {
-    const o = document.createElement('option');
-    o.value = i;
-    o.textContent = i;
-    sel.appendChild(o);
-  });
+  fillIssuerOptions(sel, { includeAll: true, grouped: true });
   sel.dataset.bound = '1';
 }
 
 async function init() {
+  const glossaryEl = $('#glossaryPanel');
+  if (glossaryEl) glossaryEl.innerHTML = glossaryHtml();
+
   populateIssuerSelects();
   populateInboxIssuers();
 
@@ -1217,6 +1439,7 @@ async function init() {
   });
 
   $('#catalogIssuer')?.addEventListener('change', renderCatalog);
+  $('#catalogCategory')?.addEventListener('change', renderCatalog);
   $('#transferProgram')?.addEventListener('change', (e) => renderTransferTable(e.target.value));
 
 
@@ -1224,6 +1447,7 @@ async function init() {
   $('#loadSeed')?.addEventListener('click', () => loadPlan('balanced'));
   $('#loadBalanced')?.addEventListener('click', () => loadPlan('balanced'));
   $('#loadConservative')?.addEventListener('click', () => loadPlan('conservative'));
+  $('#loadCreator')?.addEventListener('click', () => loadPlan('creator-stack'));
   $('#exportBtn')?.addEventListener('click', exportJson);
   $('#importBtn')?.addEventListener('click', () => $('#importFile').click());
   $('#importFile')?.addEventListener('change', (e) => {
