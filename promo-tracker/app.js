@@ -30,7 +30,7 @@ import {
 import {
   helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
-} from './help-content.js';
+} from './plain-labels.js';
 import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js';
 import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
