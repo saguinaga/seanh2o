@@ -1,41 +1,41 @@
 import {
   OFFER_TYPES, STATUS, ISSUERS, defaultState, defaultProfile,
   evaluateOffer, suggestTimeline, seedOffers, seedOfferPlan, migrateState, bumpProfileOnApproval,
-} from './rules.js?v=20260701c';
-import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js?v=20260701c';
+} from './rules.js?v=20260701d';
+import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js?v=20260701d';
 import {
   CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES, CATALOG_CATEGORIES,
-} from './catalog.js?v=20260701c';
-import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js?v=20260701c';
-import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js?v=20260701c';
+} from './catalog.js?v=20260701d';
+import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js?v=20260701d';
+import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js?v=20260701d';
 import {
   OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
-} from './earnings.js?v=20260701c';
+} from './earnings.js?v=20260701d';
 import {
   DEFAULT_TRANSFER_BONUS_PCT, HOUSEHOLD_VALUE_MATH, TRANSFER_PLAYS,
-} from './bb-value.js?v=20260701c';
+} from './bb-value.js?v=20260701d';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
-  CHASE_UR_PLAYBOOK, chaseUrPlaybookContext,
+  chaseUrPlaybookContext,
   pointsWallet, transferPartnersFor, crossProgramSummary,
   tripTransferPlan, bestTripsForWallet, defaultPointsBalances,
-} from './transfers.js?v=20260701c';
+} from './transfers.js?v=20260701d';
 import {
   loadOffersFeed, feedHasUpdates, markFeedSeen, allFeedDeals, filterFeedDeals,
   compareFeedToQueue, feedEntryToOffer, formatFeedAge,
-} from './feed.js?v=20260701c';
+} from './feed.js?v=20260701d';
 import {
   defaultHousehold, householdWallet, optimalHouseholdSplit, tripSplitPlan,
   poolingMatrixRows, activeTransferBonuses, getOfferOwner, setOfferOwner,
-} from './household.js?v=20260701c';
+} from './household.js?v=20260701d';
 import {
   helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
-} from './bb-labels.js?v=20260701c';
-import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js?v=20260701c';
+} from './bb-labels.js?v=20260701d';
+import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js?v=20260701d';
 import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
-} from './wallet-integration.js?v=20260701c';
+} from './wallet-integration.js?v=20260701d';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -971,7 +971,62 @@ function renderChaseUrPlaybook() {
   const hasReserve = (state.profile.ownedCards || []).includes('chase-csr');
   const effectivePortalCpp = hasReserve ? reserveCpp : (ctx.unlocked ? preferredCpp : 0.01);
 
-  const pb = CHASE_UR_PLAYBOOK;
+  const pb = {
+    headline: 'Chase UR decision tool',
+    subhead: 'Portal vs transfer comparison (using local fallback data)',
+    portalVsTransfer: [
+      { points: 50000, partners: [
+        { id: 'portal_csp', label: 'Chase portal (Preferred)', cpp: 0.0125 },
+        { id: 'portal_csr', label: 'Chase portal (Reserve)', cpp: 0.015 },
+        { id: 'hyatt', label: 'World of Hyatt', cpp: 0.02 },
+        { id: 'southwest', label: 'Southwest', cpp: 0.015 },
+        { id: 'united', label: 'United', cpp: 0.014 },
+      ]},
+    ],
+    topPlays: [
+      {
+        partner: 'hyatt',
+        title: 'Hyatt — the usual crown jewel',
+        why: 'Category 1–4 hotels are often 12k–25k/night. A long weekend can beat portal value by 30–60%.',
+        family: 'City hotels in San Francisco or Germany, or nice stays in Italy.',
+        how: 'Chase → Ultimate Rewards → Transfer to World of Hyatt (instant, 1:1). Book at hyatt.com with your Hyatt account.',
+      },
+      {
+        partner: 'southwest',
+        title: 'Southwest — easy family flights',
+        why: 'Domestic & Mexico hops; no change fees; bags often free. Strong when cash fares are high.',
+        family: 'Beach week, visiting grandparents, or city trips like San Francisco or Norway.',
+        how: 'Transfer UR → Southwest (instant). Book on southwest.com; taxes still on your card (~$5.60/domestic segment).',
+      },
+      {
+        partner: 'united',
+        title: 'United — Star Alliance & Hawaii',
+        why: 'Saver awards to Hawaii or Europe when you find space; partners into United’s network.',
+        family: 'Multi-city trips, lie-flat is aspirational — focus on economy saver for the household.',
+        how: 'Transfer UR → United MileagePlus (instant). Search united.com; transfer only after you see award seats.',
+      },
+    ],
+    steps: [
+      'Earn on Freedom (or Sapphire categories) — all UR pools in one Chase login when cards are linked.',
+      'Log in at chase.com → Ultimate Rewards → “Transfer points to partners”.',
+      'Pick the partner (Hyatt / Southwest / United). Transfers are instant and one-way — no undo.',
+      'Create a free loyalty account if needed; you can transfer to a spouse’s Hyatt/United number for one booking.',
+      'Find award space first, then transfer the exact amount you need (never transfer “just because”).',
+      'Book on the partner site/app. Pay taxes/fees on your card; points cover the room or fare.',
+    ],
+    portalOk: [
+      'Small trips where award space is ugly and cash portal price is fine.',
+      'You need simplicity more than max value (one login, done).',
+      'Reserve travel credit / pay-yourself-back style redemptions on CSR.',
+      'San Francisco or Germany city stays when portal price beats hunting awards.',
+    ],
+    avoid: [
+      'Redeeming Freedom points as cash (1¢) while Sapphire is open — pool and transfer instead.',
+      'Transferring before confirming hotel nights or flights exist — points are stuck on the partner side.',
+      'Using Chase Travel for Hyatt-branded hotels — you’re paying portal rates when Hyatt points would be cheaper.',
+      'Ignoring your Freedom pile — that 1.5% everyday spend is UR waiting for a Hyatt transfer.',
+    ],
+  };
 
   // Build comparison using user's actual points
   const portalUsd = Math.round(userChasePts * effectivePortalCpp);
