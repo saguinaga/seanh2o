@@ -1,4 +1,6 @@
-/** Cash floor vs transfer-optimized travel value — household trip stretch */
+/** Cash floor vs transfer-optimized travel value — household trip stretch
+ * Updated for deploy consistency 20260701
+ */
 
 import { findCatalog, POINT_VALUES, pointsToUsd } from './catalog.js';
 import { PROGRAMS, PARTNERS, TRANSFER_RULES } from './transfers.js';
