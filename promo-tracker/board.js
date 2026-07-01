@@ -1,41 +1,41 @@
 import {
   OFFER_TYPES, STATUS, ISSUERS, defaultState, defaultProfile,
   evaluateOffer, suggestTimeline, seedOffers, seedOfferPlan, migrateState, bumpProfileOnApproval,
-} from './rules.js?v=20260701d';
-import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js?v=20260701d';
+} from './rules.js?v=20260701e';
+import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js?v=20260701e';
 import {
   CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES, CATALOG_CATEGORIES,
-} from './catalog.js?v=20260701d';
-import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js?v=20260701d';
-import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js?v=20260701d';
+} from './catalog.js?v=20260701e';
+import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js?v=20260701e';
+import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js?v=20260701e';
 import {
   OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
-} from './earnings.js?v=20260701d';
+} from './earnings.js?v=20260701e';
 import {
   DEFAULT_TRANSFER_BONUS_PCT, HOUSEHOLD_VALUE_MATH, TRANSFER_PLAYS,
-} from './bb-value.js?v=20260701d';
+} from './bb-value.js?v=20260701e';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
   chaseUrPlaybookContext,
   pointsWallet, transferPartnersFor, crossProgramSummary,
   tripTransferPlan, bestTripsForWallet, defaultPointsBalances,
-} from './transfers.js?v=20260701d';
+} from './transfers.js?v=20260701e';
 import {
   loadOffersFeed, feedHasUpdates, markFeedSeen, allFeedDeals, filterFeedDeals,
   compareFeedToQueue, feedEntryToOffer, formatFeedAge,
-} from './feed.js?v=20260701d';
+} from './feed.js?v=20260701e';
 import {
   defaultHousehold, householdWallet, optimalHouseholdSplit, tripSplitPlan,
   poolingMatrixRows, activeTransferBonuses, getOfferOwner, setOfferOwner,
-} from './household.js?v=20260701d';
+} from './household.js?v=20260701e';
 import {
   helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
-} from './bb-labels.js?v=20260701d';
-import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js?v=20260701d';
+} from './bb-labels.js?v=20260701e';
+import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js?v=20260701e';
 import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
-} from './wallet-integration.js?v=20260701d';
+} from './wallet-integration.js?v=20260701e';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
