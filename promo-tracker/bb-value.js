@@ -1,43 +1,43 @@
-/** Cash floor vs transfer-optimized travel value — the influencer spread */
+/** Cash floor vs transfer-optimized travel value — household trip stretch */
 
 import { findCatalog, POINT_VALUES, pointsToUsd } from './catalog.js';
 import { PROGRAMS, PARTNERS, TRANSFER_RULES } from './transfers.js';
 
 export const DEFAULT_TRANSFER_BONUS_PCT = 25;
 
-/** Named plays creators actually show on camera */
+/** Named transfer plays families actually use */
 export const TRANSFER_PLAYS = [
   {
     id: 'hyatt-lux',
-    name: 'Chase → Hyatt luxury night',
+    name: 'Chase → Hyatt nice hotel night',
     programs: ['chase_ur'],
     partner: 'hyatt',
     cpp: 0.02,
-    pitch: '60k–100k UR → Park Hyatt / Andaz. This is where “free $800/night hotel” reels come from.',
+    pitch: '60k–100k UR → Hyatt Regency or Andaz. Great for a kid-free anniversary night or splurge hotel on a family trip.',
   },
   {
     id: 'southwest-cabo',
-    name: 'Chase → Southwest to Cabo',
+    name: 'Chase → Southwest beach hop',
     programs: ['chase_ur'],
     partner: 'southwest',
     cpp: 0.015,
-    pitch: 'Domestic & Mexico hops — pair with a Hyatt Ziva/Zilara transfer for the full reel.',
+    pitch: 'Domestic & Mexico flights for the whole crew — pair with Hyatt points for the hotel side of beach week.',
   },
   {
     id: 'flyingblue-europe',
-    name: 'Amex → Flying Blue Europe',
+    name: 'Amex → Flying Blue to visit family',
     programs: ['amex_mr', 'chase_ur', 'citi_ty'],
     partner: 'flyingblue',
     cpp: 0.014,
-    pitch: 'Promo awards to Paris/CDG. Wait for a 20–30% transfer bonus to stretch MR further.',
+    pitch: 'Promo awards to Europe when you’re visiting relatives abroad. A transfer bonus stretches grocery-earned MR further.',
   },
   {
     id: 'mr-hilton',
-    name: 'Amex → Hilton 5th night',
+    name: 'Amex → Hilton long stay',
     programs: ['amex_mr'],
     partner: 'hilton',
     cpp: 0.005,
-    pitch: 'Hilton SUB points + MR top-off. Fifth night free on awards stretches long stays.',
+    pitch: 'Hilton welcome-bonus points + MR top-off. Fifth night free on awards helps multi-night stays on trips like Italy or Germany.',
   },
   {
     id: 'household-pool',
@@ -45,25 +45,28 @@ export const TRANSFER_PLAYS = [
     programs: ['chase_ur', 'amex_mr', 'citi_ty', 'capone'],
     partner: null,
     cpp: null,
-    pitch: 'You + partner earn in separate bank programs, then both transfer into the same Hyatt / United / Marriott number. That’s the household “hack” influencers mean.',
+    pitch: 'You earn on one set of cards, partner earns on another, then both transfer into the same Hyatt / United / Marriott account for one family booking.',
   },
   {
     id: 'transfer-bonus',
-    name: 'Transfer bonus timing',
+    name: 'Wait for transfer bonuses',
     programs: ['amex_mr', 'citi_ty', 'capone'],
     partner: null,
     cpp: null,
-    pitch: 'Periodic +25–30% bonuses turn 100k MR into 125k airline miles. Worth holding big transfers until a promo hits.',
+    pitch: 'Periodic +25–30% bonuses turn 100k MR into 125k airline miles — worth holding big transfers until a promo hits.',
   },
 ];
 
-export const INFLUENCER_MATH = [
-  { label: 'Cash floor (portal / statement credit)', detail: 'What we show as “$900 SUB” — honest, spendable dollars at ~1¢/pt.' },
-  { label: 'Transfer upside (smart partners)', detail: 'Same points moved to Hyatt, United, Flying Blue, etc. Often 1.4–2.5¢/pt on trips you were already planning.' },
-  { label: 'Two-player household', detail: 'Separate 5/24 windows + Chase on one person, Amex on the other ≈ 2× card throughput over 18 months.' },
-  { label: 'Business cards', detail: 'Ink, Amex Biz — extra SUBs that don’t always count toward 5/24 (verify your profile).' },
-  { label: 'What’s not included', detail: 'Taxes on awards, annual fees, failed apps, and “4¢ business class” cherry-picked redemptions.' },
+export const HOUSEHOLD_VALUE_MATH = [
+  { label: 'Cash floor (portal / statement credit)', detail: 'What we show as “$900 SUB” — honest, spendable dollars at ~1¢/pt if you cashed out simply.' },
+  { label: 'Trip stretch (smart partners)', detail: 'Same points moved to Hyatt, Southwest, United, etc. Often 1.4–2.5¢/pt on San Francisco, Norway, Kenya, Germany or Italy.' },
+  { label: 'Two-player household', detail: 'Separate 5/24 windows — Chase on one person, Amex on the other — roughly doubles card throughput over 18 months without rushing.' },
+  { label: 'Everyday spend categories', detail: 'Groceries, Amazon, utilities, and school costs can fund MSRs when you pace one welcome bonus at a time.' },
+  { label: 'What’s not included', detail: 'Taxes on awards, annual fees, failed apps, and cherry-picked luxury redemptions you see in social media.' },
 ];
+
+/** @deprecated use HOUSEHOLD_VALUE_MATH */
+export const INFLUENCER_MATH = HOUSEHOLD_VALUE_MATH;
 
 export function bestPartnerForProgram(programId) {
   const rules = TRANSFER_RULES.filter((r) => r.from === programId);

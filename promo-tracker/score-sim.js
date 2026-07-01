@@ -174,7 +174,7 @@ function applyApproval(state, offer, events) {
   return state;
 }
 
-/** Advance sim by one month — age inquiries, process MSR, recover util */
+/** Advance sim by one month — age inquiries, process spend for bonus, recover util */
 function advanceMonth(state, events) {
   if (state._monthsSinceStart === undefined) state._monthsSinceStart = 0;
   state._monthsSinceStart += 1;
@@ -204,7 +204,7 @@ function advanceMonth(state, events) {
         if (m.months === 1) {
           events.push({
             type: 'msr',
-            label: 'MSR spend peak',
+            label: 'Bonus spend peak',
             detail: `${m.title}: ~$${m.amount.toLocaleString()} on new line`,
           });
         }
@@ -213,7 +213,7 @@ function advanceMonth(state, events) {
       if (!m.paid) {
         state.totalBalances = Math.max(0, state.totalBalances - m.amount);
         m.paid = true;
-        events.push({ type: 'msr', label: 'MSR paid off', detail: `${m.title}: balance cleared` });
+        events.push({ type: 'msr', label: 'Spend target met', detail: `${m.title}: balance cleared` });
       }
       return m;
     }).filter((m) => !m.paid || m.months > 0);

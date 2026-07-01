@@ -5,7 +5,7 @@ export const TERMS = {
     tip: 'Welcome bonus (often called SUB): extra points or cash the bank gives you for opening a card and hitting a spending target. Amounts change — always verify the live offer.',
   },
   msr: {
-    tip: 'Minimum spend requirement: how much you must charge on the new card in the first few months to earn the welcome bonus. Only count spend you were going to make anyway.',
+    tip: 'MSR = Minimum Spend Requirement (NOT "merchant sales rewards" or similar). This is the dollar amount you must charge on the NEW card in the first X months (using money you were already going to spend on groceries/gas/etc.) to unlock the welcome bonus. Miss it and you get nothing extra.',
   },
   af: {
     tip: 'Annual fee: what the card costs per year after the first year (some cards waive year one). Subtract this from the bonus when judging value.',
@@ -47,7 +47,7 @@ export const TERMS = {
     tip: 'Cash floor: conservative value if you redeemed as statement credit or through a bank portal (~1¢ per point). This is the “honest dollars” number.',
   },
   travel_upside: {
-    tip: 'Travel upside: estimated trip value if you transfer points to airline/hotel partners (Hyatt, United, Flying Blue, etc.) — often 1.4–2.5¢ per point. This is what creators mean by “free vacation.”',
+    tip: 'Travel upside: estimated trip value if you transfer points to airline/hotel partners (Hyatt, United, Flying Blue, etc.) — often 1.4–2.5¢ per point. Same grocery spend, bigger family trip.',
   },
 };
 
@@ -169,7 +169,7 @@ export function ruleLabelHtml(ruleId) {
 export function glossaryHtml() {
   const rows = [
     ['Welcome bonus', 'SUB', TERMS.sub.tip],
-    ['Spending requirement', 'MSR', TERMS.msr.tip],
+    ['Minimum Spend Requirement', 'MSR (NOT merchant sales or anything like that)', TERMS.msr.tip],
     ['Annual fee', 'AF', TERMS.af.tip],
     ['Hard inquiry', 'Hard pull', TERMS.hard_pull.tip],
     ['Chase 5/24', '5/24', TERMS.five24.tip],

@@ -47,7 +47,7 @@ export const TERMS = {
     tip: 'Cash floor: conservative value if you redeemed as statement credit or through a bank portal (~1¢ per point). This is the “honest dollars” number.',
   },
   travel_upside: {
-    tip: 'Travel upside: estimated trip value if you transfer points to airline/hotel partners (Hyatt, United, Flying Blue, etc.) — often 1.4–2.5¢ per point. This is what creators mean by “free vacation.”',
+    tip: 'Travel upside: estimated trip value if you transfer points to airline/hotel partners (Hyatt, United, Flying Blue, etc.) — often 1.4–2.5¢ per point. Same grocery spend, bigger family trip.',
   },
 };
 
@@ -169,7 +169,7 @@ export function ruleLabelHtml(ruleId) {
 export function glossaryHtml() {
   const rows = [
     ['Welcome bonus', 'SUB', TERMS.sub.tip],
-    ['Spending requirement', 'MSR', TERMS.msr.tip],
+    ['Spend needed for bonus', 'MSR (minimum spend requirement)', TERMS.msr.tip],
     ['Annual fee', 'AF', TERMS.af.tip],
     ['Hard inquiry', 'Hard pull', TERMS.hard_pull.tip],
     ['Chase 5/24', '5/24', TERMS.five24.tip],

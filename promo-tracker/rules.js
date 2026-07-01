@@ -48,8 +48,8 @@ export function addDays(dateStr, days) {
 export function defaultProfile() {
   return {
     age: 34,
-    baselineScore: 745,
-    scoreBand: '720-759',
+    baselineScore: 840,
+    scoreBand: '800+',
     oldestAccountYears: 10,
     creditHistoryYears: 10,
     aaoaYears: 4.5,
@@ -182,7 +182,7 @@ export function migrateState(raw) {
 }
 
 function scoreBandToMid(band) {
-  const map = { '680-719': 700, '720-759': 740, '760-799': 780, '800+': 820 };
+  const map = { '680-719': 700, '720-759': 740, '760-799': 780, '800+': 840 };
   return map[band] ?? 740;
 }
 
@@ -350,7 +350,9 @@ export function seedOffers() {
 
 /** Load a realistic multi-month offer plan */
 export function seedOfferPlan(planId) {
-  const plan = OFFER_PLANS.find((p) => p.id === planId) || OFFER_PLANS.find((p) => p.id === 'balanced');
+  const aliases = { 'creator-stack': 'household-stretch', 'bank-heavy': 'everyday-cash' };
+  const resolved = aliases[planId] || planId;
+  const plan = OFFER_PLANS.find((p) => p.id === resolved) || OFFER_PLANS.find((p) => p.id === 'balanced');
   return plan.entries.map((entry) => entryToOffer(entry)).filter(Boolean);
 }
 
@@ -383,6 +385,11 @@ function entryToOffer(entry) {
 
 /** @deprecated use seedOfferPlan */
 export function seedInfluencerStack(stackId) {
-  const map = { 'babymoon-cabo': 'balanced', 'europe-reel': 'balanced', 'disney-mom': 'conservative' };
+  const map = {
+    'babymoon-cabo': 'balanced',
+    'europe-reel': 'balanced',
+    'creator-stack': 'household-stretch',
+    'bank-heavy': 'everyday-cash',
+  };
   return seedOfferPlan(map[stackId] || 'balanced');
 }

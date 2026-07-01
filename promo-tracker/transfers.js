@@ -27,10 +27,10 @@ export const PROGRAMS = {
     short: 'Chase UR',
     issuer: 'Chase',
     color: '#1174CC',
-    portalCpp: 0.015,
+    portalCpp: 0.0125, // Preferred baseline. Reserve upgrades to 1.5¢ via the playbook context.
     transferable: true,
     poolable: false,
-    note: 'Freedom + Sapphire points pool in one Chase login when cards are linked.',
+    note: 'Freedom + Sapphire points pool in one Chase login when cards are linked. Portal is 1.25¢ (Preferred) or 1.5¢ (Reserve).',
   },
   amex_mr: {
     id: 'amex_mr',
@@ -185,29 +185,29 @@ export const HOUSEHOLD_PLAYBOOK = [
     ],
   },
   {
-    title: 'What influencers skip',
+    title: 'What easy to overlook',
     steps: [
       'Transfers are one-way — you cannot move Hyatt points back to Chase.',
       'Marriott, Hilton, IHG SUB points are already in hotel currency (no transfer needed).',
       'Taxes/fees on awards still hit your card (~$5–$150 domestic, more international).',
-      'Transfer bonuses (20–30% extra) are periodic — worth waiting for big trips.',
+      'Transfer bonuses (20–30% extra) are periodic — worth waiting before booking a big family trip.',
     ],
   },
 ];
 
-/** Trip-specific booking paths creators use */
+/** Trip-specific booking paths households use */
 export const TRIP_PLAYBOOKS = {
   cabo: {
     flight: { partner: 'southwest', program: 'chase_ur', estPoints: 28000, note: 'UR → Southwest or book via Chase portal' },
     hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 60000, note: 'UR → Hyatt all-inclusive or HR properties' },
     altHotel: { partner: 'marriott', program: 'amex_mr', estPoints: 70000, note: 'MR → Marriott if Hyatt unavailable' },
-    caption: 'The Cabo reel is usually Southwest flights + Hyatt/Ziva on points.',
+    caption: 'Beach week = Southwest flights + Hyatt or Ziva/Zilara on points.',
   },
   paris: {
     flight: { partner: 'flyingblue', program: 'chase_ur', estPoints: 55000, note: 'UR or MR → Flying Blue promo awards' },
     hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 80000, note: 'UR → Hyatt Paris properties' },
     altFlight: { partner: 'virgin', program: 'amex_mr', estPoints: 50000, note: 'MR → Virgin → Delta to CDG' },
-    caption: 'Europe content = Flying Blue or Virgin transfers + Hyatt/Marriott night.',
+    caption: 'Europe with kids = Flying Blue or Virgin flights + Hyatt/Marriott for the hotel nights.',
   },
   hawaii: {
     flight: { partner: 'united', program: 'chase_ur', estPoints: 45000, note: 'UR → United Saver to HNL/OGG' },
@@ -215,12 +215,7 @@ export const TRIP_PLAYBOOKS = {
     altHotel: { partner: 'marriott', program: 'amex_mr', estPoints: 100000, note: 'MR → Marriott Wailea / Waikiki' },
     caption: 'Hawaii week = United flights + Hyatt/Marriott beach resort.',
   },
-  disney: {
-    flight: { partner: 'southwest', program: 'chase_ur', estPoints: 25000, note: 'Southwest Companion Pass is the holy grail' },
-    hotel: { partner: 'ihg', program: 'chase_ur', estPoints: 80000, note: 'IHG SUB + UR for off-property or Swan/Dolphin strategy' },
-    altHotel: { partner: 'marriott', program: 'amex_mr', estPoints: 85000, note: 'Marriott Springs / Swan adjacent' },
-    caption: 'Disney moms stack portal tickets + nearby hotel on points.',
-  },
+
   caribbean: {
     flight: { partner: 'jetblue', program: 'amex_mr', estPoints: 30000, note: 'MR → JetBlue to Caribbean' },
     hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 50000, note: 'UR → Hyatt Zilara/Ziva' },
@@ -236,6 +231,32 @@ export const TRIP_PLAYBOOKS = {
     flight: { partner: 'jetblue', program: 'citi_ty', estPoints: 15000, note: 'Short hop — TY → JetBlue or portal' },
     hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 45000, note: 'UR → Hyatt Manhattan' },
     caption: 'NYC weekend is a smaller points target — great first redemption.',
+  },
+  'san-francisco': {
+    flight: { partner: 'southwest', program: 'chase_ur', estPoints: 20000, note: 'UR → Southwest or portal' },
+    hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 50000, note: 'UR → Hyatt Regency SF or Fishermans Wharf' },
+    caption: 'San Francisco = domestic flight + city hotel on points.',
+  },
+  norway: {
+    flight: { partner: 'united', program: 'chase_ur', estPoints: 55000, note: 'UR → United or Star Alliance to Oslo' },
+    hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 70000, note: 'UR → Hyatt in Oslo or Bergen' },
+    altFlight: { partner: 'flyingblue', program: 'chase_ur', estPoints: 50000, note: 'Flying Blue to Scandinavia' },
+    caption: 'Norway fjords = United/Star Alliance flights + Hyatt city stays.',
+  },
+  kenya: {
+    flight: { partner: 'united', program: 'chase_ur', estPoints: 65000, note: 'UR → United to Nairobi via Europe or US' },
+    hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 80000, note: 'UR → Hyatt or partner lodges' },
+    caption: 'Kenya safari = long-haul flights + lodge stays (mix points + cash).',
+  },
+  germany: {
+    flight: { partner: 'united', program: 'chase_ur', estPoints: 45000, note: 'UR → United to FRA/MUC' },
+    hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 55000, note: 'UR → Hyatt in Berlin or Munich' },
+    caption: 'Germany = Star Alliance flights + Hyatt city or castle hotels.',
+  },
+  italy: {
+    flight: { partner: 'flyingblue', program: 'chase_ur', estPoints: 48000, note: 'UR → Flying Blue to Rome or Venice' },
+    hotel: { partner: 'hyatt', program: 'chase_ur', estPoints: 65000, note: 'UR → Hyatt Rome, Florence or Venice' },
+    caption: 'Italy escape = Flying Blue or United + Hyatt in major cities.',
   },
   cruise: {
     flight: { partner: 'southwest', program: 'chase_ur', estPoints: 20000, note: 'Fly to port city' },
@@ -421,6 +442,94 @@ export function bestTripsForWallet(wallet) {
     const score = Math.round((flightPct + hotelPct) / 2);
     return { trip, plan, score, flightPct, hotelPct };
   }).sort((a, b) => b.score - a.score);
+}
+
+/** Sapphire portal rates vs partner transfer upside */
+export const CHASE_SAPPHIRE_PORTAL = {
+  'chase-csp': { label: 'Sapphire Preferred', cpp: 0.0125, portalLabel: '1.25¢/pt' },
+  'chase-csr': { label: 'Sapphire Reserve', cpp: 0.015, portalLabel: '1.5¢/pt' },
+};
+
+/** Chase UR → partner playbook for household travel (not portal-only) */
+export const CHASE_UR_PLAYBOOK = {
+  headline: 'Your Sapphire unlocks partner transfers — the portal is the floor, not the finish line.',
+  subhead: 'Chase Travel pays a fixed cents-per-point rate. Transferring 1:1 to Hyatt, Southwest, or United often stretches the same points into a bigger family trip.',
+  portalVsTransfer: [
+    { points: 50000, partners: [
+      { id: 'portal_csp', label: 'Chase portal (Preferred)', cpp: 0.0125 },
+      { id: 'portal_csr', label: 'Chase portal (Reserve)', cpp: 0.015 },
+      { id: 'hyatt', label: 'World of Hyatt', cpp: 0.02 },
+      { id: 'southwest', label: 'Southwest', cpp: 0.015 },
+      { id: 'united', label: 'United', cpp: 0.014 },
+    ]},
+  ],
+  topPlays: [
+    {
+      partner: 'hyatt',
+      title: 'Hyatt — the usual crown jewel',
+      why: 'Category 1–4 hotels are often 12k–25k/night. A long weekend can beat portal value by 30–60%.',
+      family: 'City hotels in San Francisco or Germany, or nice stays in Italy.',
+      how: 'Chase → Ultimate Rewards → Transfer to World of Hyatt (instant, 1:1). Book at hyatt.com with your Hyatt account.',
+    },
+    {
+      partner: 'southwest',
+      title: 'Southwest — easy family flights',
+      why: 'Domestic & Mexico hops; no change fees; bags often free. Strong when cash fares are high.',
+      family: 'Beach week, visiting grandparents, or city trips like San Francisco or Norway.',
+      how: 'Transfer UR → Southwest (instant). Book on southwest.com; taxes still on your card (~$5.60/domestic segment).',
+    },
+    {
+      partner: 'united',
+      title: 'United — Star Alliance & Hawaii',
+      why: 'Saver awards to Hawaii or Europe when you find space; partners into United’s network.',
+      family: 'Multi-city trips, lie-flat is aspirational — focus on economy saver for the household.',
+      how: 'Transfer UR → United MileagePlus (instant). Search united.com; transfer only after you see award seats.',
+    },
+  ],
+  steps: [
+    'Earn on Freedom (or Sapphire categories) — all UR pools in one Chase login when cards are linked.',
+    'Log in at chase.com → Ultimate Rewards → “Transfer points to partners”.',
+    'Pick the partner (Hyatt / Southwest / United). Transfers are instant and one-way — no undo.',
+    'Create a free loyalty account if needed; you can transfer to a spouse’s Hyatt/United number for one booking.',
+    'Find award space first, then transfer the exact amount you need (never transfer “just because”).',
+    'Book on the partner site/app. Pay taxes/fees on your card; points cover the room or fare.',
+  ],
+  portalOk: [
+    'Small trips where award space is ugly and cash portal price is fine.',
+    'You need simplicity more than max value (one login, done).',
+    'Reserve travel credit / pay-yourself-back style redemptions on CSR.',
+    'San Francisco or Germany city stays when portal price beats hunting awards.',
+  ],
+  avoid: [
+    'Redeeming Freedom points as cash (1¢) while Sapphire is open — pool and transfer instead.',
+    'Transferring before confirming hotel nights or flights exist — points are stuck on the partner side.',
+    'Using Chase Travel for Hyatt-branded hotels — you’re paying portal rates when Hyatt points would be cheaper.',
+    'Ignoring your Freedom pile — that 1.5% everyday spend is UR waiting for a Hyatt transfer.',
+  ],
+};
+
+/** Build personalized Chase UR playbook context from owned catalog ids */
+export function chaseUrPlaybookContext(ownedCards = []) {
+  const ids = Array.isArray(ownedCards) ? ownedCards : [];
+  const sapphire = ids.includes('chase-csr') ? 'chase-csr' : ids.includes('chase-csp') ? 'chase-csp' : null;
+  const portal = sapphire ? CHASE_SAPPHIRE_PORTAL[sapphire] : { label: 'Sapphire (Preferred or Reserve)', cpp: 0.0125, portalLabel: '1.25–1.5¢/pt' };
+  const hasFreedom = ids.some((id) => ['chase-cfu', 'chase-cff'].includes(id));
+  const chaseRules = TRANSFER_RULES.filter((r) => r.from === 'chase_ur');
+  const pts = 75000;
+  const portalUsd = Math.round(pts * portal.cpp);
+  const hyattUsd = Math.round(pts * (PARTNERS.hyatt?.cpp || 0.02));
+  const uplift = hyattUsd - portalUsd;
+  return {
+    sapphire,
+    portal,
+    hasFreedom,
+    chaseRules,
+    examplePoints: pts,
+    portalUsd,
+    hyattUsd,
+    uplift,
+    unlocked: !!sapphire,
+  };
 }
 
 export function crossProgramSummary(wallet) {
