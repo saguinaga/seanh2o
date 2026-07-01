@@ -1,41 +1,41 @@
 import {
   OFFER_TYPES, STATUS, ISSUERS, defaultState, defaultProfile,
   evaluateOffer, suggestTimeline, seedOffers, seedOfferPlan, migrateState, bumpProfileOnApproval,
-} from './rules.js';
-import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js';
+} from './rules.js?v=20260701c';
+import { allIssuerDashboard, issuerRulesMeta, ISSUER_LIST, ISSUER_GROUPS } from './issuers.js?v=20260701c';
 import {
   CARD_CATALOG, catalogEntryToOffer, filterCatalog, pointsToUsd, POINT_VALUES, CATALOG_CATEGORIES,
-} from './catalog.js';
-import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js';
-import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js';
+} from './catalog.js?v=20260701c';
+import { simulateCreditPlan, WEIGHTS, FACTOR_LABELS } from './score-sim.js?v=20260701c';
+import { DREAM_TRIPS, activeOffersValue, tripsFundedByValue, cardTripPitch } from './trips.js?v=20260701c';
 import {
   OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
-} from './earnings.js';
+} from './earnings.js?v=20260701c';
 import {
   DEFAULT_TRANSFER_BONUS_PCT, HOUSEHOLD_VALUE_MATH, TRANSFER_PLAYS,
-} from './bb-value.js';
+} from './bb-value.js?v=20260701c';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
   CHASE_UR_PLAYBOOK, chaseUrPlaybookContext,
   pointsWallet, transferPartnersFor, crossProgramSummary,
   tripTransferPlan, bestTripsForWallet, defaultPointsBalances,
-} from './transfers.js';
+} from './transfers.js?v=20260701c';
 import {
   loadOffersFeed, feedHasUpdates, markFeedSeen, allFeedDeals, filterFeedDeals,
   compareFeedToQueue, feedEntryToOffer, formatFeedAge,
-} from './feed.js';
+} from './feed.js?v=20260701c';
 import {
   defaultHousehold, householdWallet, optimalHouseholdSplit, tripSplitPlan,
   poolingMatrixRows, activeTransferBonuses, getOfferOwner, setOfferOwner,
-} from './household.js';
+} from './household.js?v=20260701c';
 import {
   helpTip, labelWithTip, ruleLabelHtml, issuerStatusLabel, gatePassLabel,
   glossaryHtml, formatWelcomeBonus, formatSpendReq,
-} from './bb-labels.js';
-import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js';
+} from './bb-labels.js?v=20260701c';
+import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js?v=20260701c';
 import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
-} from './wallet-integration.js';
+} from './wallet-integration.js?v=20260701c';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
