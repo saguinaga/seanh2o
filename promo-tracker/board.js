@@ -12,7 +12,7 @@ import {
   OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
 } from './earnings.js';
 import {
-  DEFAULT_TRANSFER_BONUS_PCT, HOUSEHOLD_VALUE_MATH, TRANSFER_PLAYS,
+  DEFAULT_TRANSFER_BONUS_PCT, INFLUENCER_MATH, TRANSFER_PLAYS,
 } from './bb-value.js';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
@@ -1297,7 +1297,7 @@ function renderTransfers() {
 
   const mathEl = $('#householdMath');
   if (mathEl) {
-    mathEl.innerHTML = HOUSEHOLD_VALUE_MATH.map((row) => `
+    mathEl.innerHTML = INFLUENCER_MATH.map((row) => `
       <div class="math-row">
         <strong>${escapeHtml(row.label)}</strong>
         <p class="hint">${escapeHtml(row.detail)}</p>
