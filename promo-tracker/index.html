@@ -18,7 +18,9 @@
       document.documentElement.dataset.theme = theme;
     })();
   </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#fffdfb">
@@ -26,8 +28,8 @@
   <title>Bonus Board — cozy offer & travel planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=board-20260630">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=board-20260701c">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -51,7 +53,7 @@
         <span class="topbar__pin" aria-hidden="true">📌</span>
         <div>
           <h1>Bonus Board</h1>
-          <p>Your cozy corner for pacing bank bonuses & card offers — pin a plan, track what posts, dream about where the points might take you.</p>
+          <p>Your cozy corner for pacing card offers as the household helper — pin a plan, keep credit healthy, and stretch groceries &amp; bills into family trips.</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -65,6 +67,7 @@
         <button type="button" class="btn-ghost" id="exportBtn">Save backup</button>
         <button type="button" class="btn-ghost" id="importBtn">Restore</button>
         <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <button type="button" class="btn-ghost" id="guideBtn" title="Open the step-by-step guide">Guide</button>
         <button type="button" class="btn" id="addOffer">+ Pin an offer</button>
       </div>
     </header>
@@ -72,47 +75,71 @@
     <p class="disclaimer">
       Just a friendly planner — not financial advice. Numbers are estimates; bank rules are our best guess.
       Tap the <span class="help-tip help-tip--inline" tabindex="0" aria-label="Help icons explain jargon" data-tip="Look for ? icons throughout the app — they explain welcome bonuses, spending requirements, and rules like Chase’s 5/24 in plain English.">?</span> icons when jargon pops up, and double-check live offers before you apply.
+      <br><small style="opacity:0.7">Console spam about “VAULT sync” or “background-redux” is from a browser extension (password vault etc), not this app. Try Incognito for a clean view.</small>
     </p>
 
     <div class="stats">
-      <div class="stat stat--hero"><strong id="statPipeline">$0</strong><span>Trip value (transfers)</span></div>
-      <div class="stat"><strong id="statCashFloor">$0</strong><span>Cash floor</span></div>
+      <div class="stat stat--hero" title="Estimated vacation value if you transfer points to airline/hotel partners (often 1.5–2.5¢ per point)"><strong id="statPipeline">$0</strong><span>Trip value (if transferred)</span></div>
+      <div class="stat" title="Conservative cash value (statement credit or bank portal, roughly 1¢ per point)"><strong id="statCashFloor">$0</strong><span>Cash floor</span></div>
       <div class="stat"><strong id="statCaptured">$0</strong><span>Already received</span></div>
       <div class="stat"><strong id="statPerMonth">$0</strong><span>Trip $/month</span></div>
       <div class="stat"><strong id="statPoints">0</strong><span>Points queued</span></div>
       <div class="stat"><strong id="statQueued">0</strong><span>Offers</span></div>
-      <div class="stat"><strong id="statMaxDrop">—</strong><span>Score dip</span></div>
+      <div class="stat"><strong id="statMaxDrop">—</strong><span>Max score dip</span></div>
     </div>
 
-    <nav class="tabs" role="tablist">
-      <button type="button" class="tab tab--active" data-tab="dashboard" role="tab">Dashboard</button>
-      <button type="button" class="tab" data-tab="inbox" role="tab">Deal inbox <span class="tab-badge" id="feedBadge" hidden>NEW</span></button>
-      <button type="button" class="tab" data-tab="plan" role="tab">Offer queue</button>
-      <button type="button" class="tab" data-tab="catalog" role="tab">Catalog</button>
-      <button type="button" class="tab" data-tab="transfers" role="tab">Household &amp; points</button>
-      <button type="button" class="tab" data-tab="baseline" role="tab">Credit profile</button>
-      <button type="button" class="tab" data-tab="gates" role="tab">Can I apply?</button>
-      <button type="button" class="tab" data-tab="simulation" role="tab">Score sim</button>
-    </nav>
+    <!-- Prominent credit score impact for household visibility -->
+    <div class="panel credit-impact" id="dashboardCreditImpact" style="margin-top: 12px;">
+      <div class="credit-impact__head">
+        <h2>📉 Credit score through this plan</h2>
+        <span class="credit-impact__badge">I've modeled this responsibly</span>
+      </div>
+      <div class="credit-impact__numbers" id="creditImpactNumbers">
+        <!-- Populated by JS: baseline / lowest / end + dip -->
+      </div>
+      <p class="credit-impact__note" id="creditImpactNote">
+        Hard pulls and temporary spending cause short-term dips. We space applications and only use everyday household spend so the score recovers.
+      </p>
+      <div class="credit-impact__actions">
+        <button type="button" class="btn-sm btn-ghost" data-tab-jump="roadmap">See full roadmap + score path →</button>
+        <button type="button" class="btn-sm btn-ghost" data-tab-jump="simulation">Detailed score simulation →</button>
+      </div>
+    </div>
+
+    <div class="tabs-wrap" id="tabsWrap">
+      <nav class="tabs" role="tablist" id="mainTabs">
+        <button type="button" class="tab tab--active" data-tab="dashboard" role="tab">Dashboard</button>
+        <button type="button" class="tab" data-tab="roadmap" role="tab">Roadmap</button>
+        <button type="button" class="tab" data-tab="inbox" role="tab">Deal inbox <span class="tab-badge" id="feedBadge" hidden>NEW</span></button>
+        <button type="button" class="tab" data-tab="plan" role="tab">Offer queue</button>
+        <button type="button" class="tab" data-tab="catalog" role="tab">Catalog</button>
+        <button type="button" class="tab" data-tab="transfers" role="tab">Household &amp; points</button>
+        <button type="button" class="tab" data-tab="baseline" role="tab">Credit profile</button>
+        <button type="button" class="tab" data-tab="gates" role="tab">Can I apply?</button>
+        <button type="button" class="tab" data-tab="simulation" role="tab">Score sim</button>
+      </nav>
+    </div>
 
     <!-- DASHBOARD -->
     <section class="tab-panel tab-panel--active" id="panel-dashboard" role="tabpanel">
       <div class="hero-panel hero-panel--earn">
         <div class="hero-panel__copy">
-          <p class="hero-panel__eyebrow">✨ Start with a mood board</p>
-          <h2>Line up offers, give your credit a breather, celebrate every bonus that lands</h2>
-          <p>Think of it like planning a trip pin-by-pin — steady pacing beats a rushed application spree, and the totals still add up beautifully.</p>
+          <p class="hero-panel__eyebrow">✨ Household helper mode</p>
+          <h2>Pace the cards, protect the score, fund the family adventures</h2>
+          <p>A responsible, well-paced plan using only the spending you already do (groceries, bills, Amazon). Clear timeline + modeled credit impact so everything stays healthy.</p>
+          <p class="hint" style="margin-top:6px">First time or want a refresher? Use “Walk me through it” for a simple guided setup.</p>
         </div>
         <div class="hero-panel__cta">
-          <button type="button" class="btn" id="loadCreator">Creator stack (18 mo)</button>
+          <button type="button" class="btn" id="startWizard" style="font-size:1.05rem;padding:10px 18px;">✨ Start the guided wizard (highly recommended)</button>
+          <button type="button" class="btn-ghost" id="loadHousehold">Household stretch (18 mo)</button>
           <button type="button" class="btn-ghost" id="loadBalanced">12-month plan</button>
           <button type="button" class="btn-ghost" id="loadConservative">Gentle & slow</button>
         </div>
       </div>
 
       <div class="panel panel--upside" style="margin-top:20px">
-        <h2>Transfer upside — where the big numbers come from</h2>
-        <p class="hint">Influencers quote trip value, not portal cash. Same points, higher value when you transfer + pool as a household.</p>
+        <h2>Transfer upside — where family trips stretch further</h2>
+        <p class="hint">Portal cash is the honest floor. Transfer partners (Hyatt, Southwest, United) often stretch the same points into a bigger vacation — especially when you pool as a household.</p>
         <div id="transferUpside"></div>
       </div>
 
@@ -138,6 +165,38 @@
         <p class="hint">If you redeem for travel, see how far your total plan value could stretch — not a booking tool.</p>
         <div class="trip-grid trip-grid--compact" id="tripGrid"></div>
       </details>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="tab-panel" id="panel-roadmap" role="tabpanel" hidden>
+      <div class="panel panel--roadmap-hero">
+        <div class="roadmap-hero">
+          <div class="roadmap-hero__score">
+            <label class="roadmap-baseline-label">
+              <span>Your baseline FICO® score</span>
+              <input type="number" id="roadmapBaselineScore" data-profile min="300" max="850" value="840" aria-describedby="roadmapFicoHint">
+            </label>
+            <p class="hint" id="roadmapFicoHint">Real lender FICO range (300–850). Not VantageScore from Credit Karma, Borrowell, etc. — those often run 20–50 pts higher.</p>
+            <button type="button" class="btn-sm btn-ghost roadmap-profile-link" data-tab-jump="baseline">Full credit profile →</button>
+          </div>
+          <div class="roadmap-hero__summary" id="roadmapSummary"></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:20px">
+        <div class="panel">
+          <h2>When to apply</h2>
+          <p class="hint">Suggested dates from issuer spacing and your last hard pull. Gates reflect your current profile.</p>
+          <div class="roadmap-list" id="roadmap"></div>
+        </div>
+        <div class="panel">
+          <h2>Score impact</h2>
+          <p class="hint">FICO-style model — new inquiries, the extra balance from hitting spend targets, and how old your accounts are.</p>
+          <div class="chart-wrap chart-wrap--roadmap">
+            <canvas id="roadmapScoreChart" aria-label="Roadmap credit score chart"></canvas>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- DEAL INBOX -->
@@ -201,6 +260,10 @@
         <div class="wallet-actions" id="walletActions"></div>
         <div class="wallet-next" id="walletNextCards"></div>
         <div class="wallet-verdicts" id="walletVerdicts"></div>
+      </div>
+
+      <div class="panel panel--chase-playbook" id="chaseUrPlaybookPanel">
+        <div id="chaseUrPlaybook"></div>
       </div>
 
       <div class="panel panel--transfer-hero">
@@ -271,7 +334,7 @@
                 <th>To</th>
                 <th>Ratio</th>
                 <th>Speed</th>
-                <th>Why influencers use it</th>
+                <th>Why households use it</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -286,9 +349,9 @@
       </div>
 
       <div class="panel" style="margin-top:20px">
-        <h2>Cash floor vs “creator math”</h2>
-        <p class="hint">Why your queue might show ~$1k cash but ~$3k–$20k trip value on the same plan.</p>
-        <div id="influencerMath"></div>
+        <h2>Cash floor vs trip stretch</h2>
+        <p class="hint">Why your queue might show ~$1k cash but ~$3k+ trip value on the same plan — handy when you’re planning San Francisco, Norway, Kenya, Germany or Italy.</p>
+        <div id="householdMath"></div>
       </div>
     </section>
 
@@ -301,15 +364,16 @@
             <label>Age
               <input type="number" id="age" data-profile min="18" max="99" value="34">
             </label>
-            <label>Baseline FICO (estimate)
-              <input type="number" id="baselineScore" data-profile min="300" max="850" value="745">
+            <label>Baseline FICO® (estimate)
+              <input type="number" id="baselineScore" data-profile min="300" max="850" value="840">
             </label>
+            <p class="hint" style="grid-column:1/-1;margin:-4px 0 0">300–850 lender FICO — not VantageScore (Credit Karma, etc.).</p>
             <label>Score band (reference)
               <select id="scoreBand" data-profile>
                 <option>680-719</option>
-                <option selected>720-759</option>
+                <option>720-759</option>
                 <option>760-799</option>
-                <option>800+</option>
+                <option selected>800+</option>
               </select>
             </label>
             <label>Late payments (24 mo)
@@ -415,7 +479,10 @@
     <section class="tab-panel" id="panel-catalog" role="tabpanel" hidden>
       <div class="panel">
         <div class="catalog-toolbar">
-          <h2>Offer catalog</h2>
+          <div>
+            <h2>Offer catalog</h2>
+            <span id="catalogQueueHint" class="hint" style="margin-left:8px;"></span>
+          </div>
           <label class="catalog-filter">Category
             <select id="catalogCategory"></select>
           </label>
@@ -492,58 +559,122 @@
     </section>
   </div>
 
+  <!-- Guided Setup Wizard -->
+  <div class="modal wizard-modal" id="wizardModal" hidden>
+    <div class="modal__scrim" data-wizard-close tabindex="-1" aria-hidden="true"></div>
+    <div class="modal__sheet wizard-sheet" role="dialog" aria-modal="true" aria-labelledby="wizardTitle">
+      <div class="modal__handle" aria-hidden="true"></div>
+      <header class="modal__header wizard-header">
+        <div class="modal__header-copy">
+          <p class="modal__eyebrow">Bonus Board guided setup</p>
+          <h2 id="wizardTitle">Let’s set this up together</h2>
+        </div>
+        <button type="button" class="modal__close" id="wizardClose" aria-label="Close wizard">×</button>
+      </header>
+
+      <div class="wizard-progress" id="wizardProgress" aria-hidden="true">
+        <div class="wizard-dots"></div>
+        <div class="wizard-step-label" id="wizardStepLabel">Step 1 of 5</div>
+      </div>
+
+      <div class="modal__body wizard-body" id="wizardBody">
+        <!-- JS populates current step content -->
+      </div>
+
+      <footer class="modal__footer wizard-footer">
+        <button type="button" class="btn-ghost" id="wizardBack">Back</button>
+        <div class="wizard-footer-right">
+          <button type="button" class="btn-ghost" id="wizardSkip">Skip for now</button>
+          <button type="button" class="btn" id="wizardNext">Next</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
   <div class="modal" id="offerModal" hidden>
-    <div class="modal-card modal-card--wide">
-      <h2 id="offerModalTitle">Add offer</h2>
-      <form id="offerForm" class="form-grid">
+    <div class="modal__scrim" data-modal-close tabindex="-1" aria-hidden="true"></div>
+    <div class="modal__sheet" role="dialog" aria-modal="true" aria-labelledby="offerModalTitle">
+      <div class="modal__handle" aria-hidden="true"></div>
+      <header class="modal__header">
+        <div class="modal__header-copy">
+          <p class="modal__eyebrow" id="offerModalEyebrow">Pin to your board</p>
+          <h2 id="offerModalTitle">Add offer</h2>
+        </div>
+        <button type="button" class="modal__close" id="offerModalClose" aria-label="Close dialog">×</button>
+      </header>
+      <form id="offerForm" class="modal__form">
         <input type="hidden" id="offerId">
         <input type="hidden" id="offerCatalogId">
-        <label>Title
-          <input type="text" id="offerTitle" required placeholder="e.g. Sapphire Preferred 75k bonus">
-        </label>
-        <label>Type
-          <select id="offerType">
-            <option value="cc">Credit card welcome bonus</option>
-            <option value="bank">Bank bonus</option>
-            <option value="shopping">Portal / stack</option>
-            <option value="travel">Travel promo</option>
-          </select>
-        </label>
-        <label>Issuer / brand
-          <select id="offerIssuer"></select>
-        </label>
-        <label>Est. value ($)
-          <input type="number" id="offerValue" min="0" step="1" placeholder="900">
-        </label>
-        <label>Spending required for bonus ($)
-          <input type="number" id="offerMinSpend" min="0" step="1" placeholder="4000" title="How much you must spend in the opening months to earn the welcome bonus">
-        </label>
-        <label>Months to hit spending goal
-          <input type="number" id="offerMsrMonths" min="0" max="24" value="3">
-        </label>
-        <label>Est. credit line ($)
-          <input type="number" id="offerCreditLine" min="0" step="500" placeholder="10000">
-        </label>
-        <label>Priority (1 = first)
-          <input type="number" id="offerPriority" min="1" max="99" value="5">
-        </label>
-        <label>Earliest date (optional)
-          <input type="date" id="offerEarliest">
-        </label>
-        <label class="form-row-check">
-          <input type="checkbox" id="offerHardPull" checked> Hard credit pull on application
-        </label>
-        <label class="full">Notes
-          <textarea id="offerNotes" rows="2"></textarea>
-        </label>
-        <div class="form-actions">
-          <button type="button" class="btn-ghost" id="offerCancel">Cancel</button>
-          <button type="submit" class="btn">Save</button>
+        <div class="modal__body">
+          <section class="modal__section">
+            <h3 class="modal__section-title">Basics</h3>
+            <div class="form-grid form-grid--modal">
+              <label class="full">Title
+                <input type="text" id="offerTitle" required placeholder="e.g. Sapphire Preferred 75k bonus">
+              </label>
+              <label>Type
+                <select id="offerType">
+                  <option value="cc">Credit card welcome bonus</option>
+                  <option value="bank">Bank bonus</option>
+                  <option value="shopping">Portal / stack</option>
+                  <option value="travel">Travel promo</option>
+                </select>
+              </label>
+              <label>Issuer / brand
+                <select id="offerIssuer"></select>
+              </label>
+              <label>Priority <span class="label-hint">1 = first</span>
+                <input type="number" id="offerPriority" min="1" max="99" value="5">
+              </label>
+            </div>
+          </section>
+          <section class="modal__section">
+            <h3 class="modal__section-title">Value &amp; spend</h3>
+            <p class="hint" style="margin:-4px 0 8px;font-size:0.8rem;">MSR = <strong>Minimum Spend Requirement</strong>. Use spending you were already planning (groceries, bills, etc.).</p>
+            <div class="form-grid form-grid--modal">
+              <label>Est. value ($)
+                <input type="number" id="offerValue" min="0" step="1" placeholder="900">
+              </label>
+              <label>Minimum Spend Requirement (MSR) — amount to spend ($)
+                <input type="number" id="offerMinSpend" min="0" step="1" placeholder="4000" title="MSR = Minimum Spend Requirement: the total you must charge on the card (usually with normal spending) within the time window to earn the welcome bonus.">
+              </label>
+              <label>Months to complete the MSR
+                <input type="number" id="offerMsrMonths" min="0" max="24" value="3">
+              </label>
+              <label>Est. credit line ($)
+                <input type="number" id="offerCreditLine" min="0" step="500" placeholder="10000">
+              </label>
+            </div>
+          </section>
+          <section class="modal__section">
+            <h3 class="modal__section-title">Timing &amp; credit</h3>
+            <div class="form-grid form-grid--modal">
+              <label>Earliest date <span class="label-hint">optional</span>
+                <input type="date" id="offerEarliest">
+              </label>
+              <label class="modal__check-card form-row-check">
+                <input type="checkbox" id="offerHardPull" checked>
+                <span>Hard credit pull on application</span>
+              </label>
+            </div>
+          </section>
+          <section class="modal__section">
+            <h3 class="modal__section-title">Notes</h3>
+            <label class="full modal__notes-label">
+              <textarea id="offerNotes" rows="3" placeholder="How you’ll hit the spend, player 2, where the points are going…"></textarea>
+            </label>
+          </section>
         </div>
+        <footer class="modal__footer">
+          <button type="button" class="btn-ghost" id="offerCancel">Cancel</button>
+          <button type="submit" class="btn modal__submit">Save offer</button>
+        </footer>
       </form>
     </div>
   </div>
 
-  <script type="module" src="board.js?v=20260630a"></script>
+  <button id="floatingGuide" style="position:fixed;bottom:20px;right:20px;z-index:999;background:#e60023;color:white;border:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 12px rgba(230,0,35,0.4);font-size:0.9rem;cursor:pointer;">✨ Guided setup</button>
+
+  <script type="module" src="board.js?v=20260701c"></script>
 </body>
 </html>

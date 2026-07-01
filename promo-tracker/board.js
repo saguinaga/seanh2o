@@ -12,10 +12,11 @@ import {
   OFFER_PLANS, PLANNING_PRINCIPLES, earningsProjection,
 } from './earnings.js';
 import {
-  DEFAULT_TRANSFER_BONUS_PCT, INFLUENCER_MATH, TRANSFER_PLAYS,
+  DEFAULT_TRANSFER_BONUS_PCT, HOUSEHOLD_VALUE_MATH, TRANSFER_PLAYS,
 } from './bb-value.js';
 import {
   PROGRAMS, PARTNERS, TRANSFER_RULES, HOUSEHOLD_PLAYBOOK,
+  CHASE_UR_PLAYBOOK, chaseUrPlaybookContext,
   pointsWallet, transferPartnersFor, crossProgramSummary,
   tripTransferPlan, bestTripsForWallet, defaultPointsBalances,
 } from './transfers.js';
@@ -78,8 +79,12 @@ const COUNTER_FIELDS = [
 let state = load();
 applyTheme(state.theme || DEFAULT_THEME);
 let scoreChart = null;
+let roadmapScoreChart = null;
 let offersFeed = null;
 let transferBonusPct = DEFAULT_TRANSFER_BONUS_PCT;
+
+let lastRemovedOffer = null;
+let undoTimer = null;
 
 function load() {
   try {
@@ -120,6 +125,22 @@ function fmtPts(n) {
   return String(Math.round(n));
 }
 
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function scoreBandForScore(score) {
+  const s = Number(score) || 0;
+  if (s >= 800) return '800+';
+  if (s >= 760) return '760-799';
+  if (s >= 720) return '720-759';
+  if (s >= 680) return '680-719';
+  return '680-719';
+}
+
 function escapeHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -151,6 +172,7 @@ function renderProfile() {
     'profileNotes',
   ];
   fields.forEach((f) => setVal(f, p[f]));
+  setVal('roadmapBaselineScore', p.baselineScore);
 
   const counterEl = $('#issuerCounters');
   if (counterEl) {
@@ -167,7 +189,7 @@ function readProfile() {
   state.profile = {
     ...p,
     age: readVal('age'),
-    baselineScore: readVal('baselineScore'),
+    baselineScore: readVal('roadmapBaselineScore') || readVal('baselineScore'),
     scoreBand: readVal('scoreBand'),
     latePayments24mo: readVal('latePayments24mo'),
     oldestAccountYears: readVal('oldestAccountYears'),
@@ -235,6 +257,13 @@ function readProfile() {
       (state.profile.totalBalances / state.profile.totalCreditLimit) * 1000,
     ) / 10;
     setVal('utilizationPct', state.profile.utilizationPct);
+  }
+
+  if (state.profile.baselineScore) {
+    state.profile.scoreBand = scoreBandForScore(state.profile.baselineScore);
+    setVal('scoreBand', state.profile.scoreBand);
+    setVal('baselineScore', state.profile.baselineScore);
+    setVal('roadmapBaselineScore', state.profile.baselineScore);
   }
 
   save();
@@ -395,7 +424,7 @@ function renderStats(sim, projection) {
   const cashEl = $('#statCashFloor');
   if (heroEl) {
     heroEl.textContent = fmtMoney(proj.netTravelPipeline || proj.netPipeline);
-    heroEl.title = `Cash floor: ${fmtMoney(proj.netPipeline)}`;
+    heroEl.title = `If redeemed for cash/portal: ${fmtMoney(proj.netPipeline)}. Transfer partners usually give higher (trip) value.`;
   }
   if (cashEl) cashEl.textContent = fmtMoney(proj.netPipeline);
   $('#statCaptured').textContent = fmtMoney(proj.captured);
@@ -404,10 +433,75 @@ function renderStats(sim, projection) {
   const ptsEl = $('#statPoints');
   if (ptsEl) ptsEl.textContent = proj.pointsQueued ? fmtPts(proj.pointsQueued) : '0';
   if (sim) {
-    $('#statMaxDrop').textContent = sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '0';
-    $('#statMaxDrop').style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
+    const el = $('#statMaxDrop');
+    el.textContent = sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '—';
+    el.style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
+    el.title = `Modeled max drop from this plan's hard pulls + spend. See the Credit score panel below or the Roadmap tab for details and recovery path.`;
   } else {
     $('#statMaxDrop').textContent = '—';
+  }
+}
+
+function renderCreditImpact(sim) {
+  const container = $('#dashboardCreditImpact');
+  const numbers = $('#creditImpactNumbers');
+  const note = $('#creditImpactNote');
+  if (!container || !numbers) return;
+
+  if (!sim || !state.offers.length) {
+    const baseline = state.profile?.baselineScore || 740;
+    numbers.innerHTML = `
+      <div>
+        <span class="num">${baseline}</span>
+        <span class="label">Your current baseline • Load a plan or start the guide to model the full path</span>
+      </div>
+    `;
+    if (note) note.innerHTML = 'The model looks at hard pulls, the extra utilization while hitting spend targets, and normal inquiry aging. Spacing applications responsibly keeps the impact small and temporary.';
+    return;
+  }
+
+  const s = sim.summary;
+  const start = s.startScore;
+  const end = s.endScore;
+  const low = s.minScore;
+  const drop = s.maxDrop;
+
+  const dropHtml = drop > 0 
+    ? `<span class="dip">−${drop} at lowest</span>` 
+    : '<span class="recovery">No dip</span>';
+
+  const net = end - start;
+  const netHtml = net > 0 
+    ? `<span class="recovery">+${net} net</span>` 
+    : (net < 0 ? `<span class="dip">${net} net</span>` : '');
+
+  numbers.innerHTML = `
+    <div>
+      <span class="num">${start}</span>
+      <span class="label">Starting (your baseline)</span>
+    </div>
+    <div>
+      <span class="num">${low}</span>
+      <span class="label">Lowest during plan ${dropHtml}</span>
+    </div>
+    <div>
+      <span class="num">${end}</span>
+      <span class="label">Projected at end ${netHtml}</span>
+    </div>
+  `;
+
+  if (note) {
+    const apps = s.totalApplications || 0;
+    note.innerHTML = `Hard pulls (${apps} modeled) + short-term spend on new cards cause the dip. We deliberately space things ~3–4 months apart using only money you already spend, so inquiries age and utilization drops back down. This is a conservative FICO-style model.`;
+  }
+
+  // Color the whole card lightly based on risk
+  if (drop >= 25) {
+    container.style.borderColor = 'var(--rose)';
+  } else if (drop >= 15) {
+    container.style.borderColor = 'var(--amber, #a66b00)';
+  } else {
+    container.style.borderColor = 'var(--accent-soft)';
   }
 }
 
@@ -419,7 +513,7 @@ function renderDashboardTimeline(timeline) {
     el.innerHTML = '<p class="empty">Load a plan or add offers to see pacing.</p>';
     return;
   }
-  el.innerHTML = pending.map((row, i) => `
+  el.innerHTML = `${pending.map((row, i) => `
     <div class="timeline-row">
       <span class="timeline-step">${i + 1}</span>
       <div>
@@ -428,12 +522,14 @@ function renderDashboardTimeline(timeline) {
         <p class="timeline-reason">${escapeHtml(row.reason)}</p>
       </div>
     </div>
-  `).join('');
+  `).join('')}
+    <p style="margin-top:10px"><button type="button" class="btn-sm btn-ghost" data-tab-jump="roadmap">Full roadmap &amp; score impact →</button></p>`;
 }
 
 function renderDashboard(sim, timeline) {
   const proj = earningsProjection(state.offers, timeline, { transferBonusPct });
   renderStats(sim, proj);
+  renderCreditImpact(sim);
 
   const snap = $('#earningsSnapshot');
   if (snap) {
@@ -465,12 +561,9 @@ function renderDashboard(sim, timeline) {
         <div class="sim-summary__row"><span>${labelWithTip('Less annual fees (pending)', 'af')}</span><strong>−${fmtMoney(proj.fees)}</strong></div>
         <div class="sim-summary__row"><span>${labelWithTip('Already captured', 'captured')}</span><strong>${fmtMoney(proj.captured)}</strong></div>
         <div class="sim-summary__row"><span>Points in queue</span><strong>${fmtPts(proj.pointsQueued)}</strong></div>
-        <div class="sim-summary__row"><span>${labelWithTip('Spending required (queued)', 'msr')}</span><strong>${fmtMoney(proj.msr)}</strong></div>
+        <div class="sim-summary__row"><span>${labelWithTip('Total MSR spend needed (Minimum Spend Requirement)', 'msr')}</span><strong>${fmtMoney(proj.msr)}</strong></div>
         <div class="sim-summary__row"><span>Plan horizon</span><strong>~${proj.months} mo</strong></div>
         ${typeRows}
-        ${sim ? `<div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
-          <span>Est. max score drop</span><strong>−${sim.summary.maxDrop} pts</strong>
-        </div>` : ''}
       </div>
       <p class="hint" style="margin-top:10px">${bonusNote}</p>
       <p class="hint">Mark offers <strong>Done</strong> when bonuses post — captured value and gates update automatically.</p>
@@ -484,7 +577,7 @@ function renderDashboard(sim, timeline) {
   const planGrid = $('#planGrid');
   if (planGrid) {
     planGrid.innerHTML = OFFER_PLANS.map((p) => `
-      <article class="stack-card ${p.id === 'creator-stack' ? 'stack-card--creator' : ''}">
+      <article class="stack-card ${p.id === 'household-stretch' ? 'stack-card--household' : ''}">
         <header class="stack-card__head">
           <span class="stack-card__emoji">${p.emoji}</span>
           <div>
@@ -526,7 +619,7 @@ function renderDashboard(sim, timeline) {
 }
 
 function loadPlan(planId) {
-  if (state.offers.length && !confirm('Replace your offer queue with this plan template?')) return;
+  const hadOffers = state.offers.length > 0;
   const plan = OFFER_PLANS.find((p) => p.id === planId);
   state.offers = seedOfferPlan(planId);
   const hh = ensureHousehold();
@@ -536,13 +629,16 @@ function loadPlan(planId) {
       state.household = setOfferOwner(hh, o.id, o.ownerHint);
     }
   });
-  if (planId === 'creator-stack') {
+  if (planId === 'household-stretch' || planId === 'creator-stack') {
     transferBonusPct = DEFAULT_TRANSFER_BONUS_PCT;
     const bonusEl = $('#transferBonusToggle');
     if (bonusEl) bonusEl.checked = true;
   }
   save();
   renderAll();
+  if (hadOffers) {
+    showToast('Replaced previous plan with template.');
+  }
   switchTab('plan');
 }
 
@@ -605,7 +701,7 @@ function renderTransferUpside(proj) {
       </label>
     </div>
     <div class="upside-programs">${programRows}</div>
-    <h3 class="subhead">How creators get to “big” numbers</h3>
+    <h3 class="subhead">How the same points stretch into bigger trips</h3>
     <div class="play-grid">${plays}</div>
   `;
 
@@ -634,7 +730,8 @@ async function refreshFeedNow() {
     renderDealInbox();
     renderCatalog();
   } catch (e) {
-    alert(`Could not refresh feed: ${e.message}`);
+    showToast(`Could not refresh feed: ${e.message}`);
+    console.warn('Feed refresh issue (likely network or local file):', e);
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -854,8 +951,192 @@ function readHouseholdFromDom() {
   state.household = hh;
 }
 
+function renderChaseUrPlaybook() {
+  const el = $('#chaseUrPlaybook');
+  if (!el) return;
+
+  const ctx = chaseUrPlaybookContext(state.profile.ownedCards || []);
+
+  // Pull the user's actual Chase UR balance if available
+  const hh = ensureHousehold();
+  const hw = householdWallet(state.profile, hh, state.offers, transferBonusPct);
+  const chaseLine = (hw.player1.lines || []).concat(hw.player2.lines || [])
+    .find(l => l.program === 'chase_ur');
+  const userChasePts = chaseLine ? chaseLine.total : ctx.examplePoints;
+
+  const preferredCpp = 0.0125;
+  const reserveCpp = 0.015;
+
+  // Determine effective portal cpp from owned cards
+  const hasReserve = (state.profile.ownedCards || []).includes('chase-csr');
+  const effectivePortalCpp = hasReserve ? reserveCpp : (ctx.unlocked ? preferredCpp : 0.01);
+
+  const pb = CHASE_UR_PLAYBOOK;
+
+  // Build comparison using user's actual points
+  const portalUsd = Math.round(userChasePts * effectivePortalCpp);
+  const hyattCpp = PARTNERS.hyatt?.cpp || 0.02;
+  const hyattUsd = Math.round(userChasePts * hyattCpp);
+  const swCpp = PARTNERS.southwest?.cpp || 0.015;
+  const swUsd = Math.round(userChasePts * swCpp);
+  const upliftHyatt = hyattUsd - portalUsd;
+
+  const plays = pb.topPlays.map((play) => {
+    const partner = PARTNERS[play.partner];
+    return `
+      <article class="chase-play">
+        <header class="chase-play__head">
+          <span class="chase-play__emoji">${partner?.emoji || '✈️'}</span>
+          <strong>${escapeHtml(play.title)}</strong>
+        </header>
+        <p>${escapeHtml(play.why)}</p>
+        <p class="chase-play__family"><strong>Household angle:</strong> ${escapeHtml(play.family)}</p>
+        <p class="chase-play__how"><strong>How:</strong> ${escapeHtml(play.how)}</p>
+      </article>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <h2>Chase UR: Portal vs Transfer — which actually makes sense?</h2>
+    <p class="hint chase-playbook__sub">${escapeHtml(pb.subhead)}</p>
+
+    ${ctx.unlocked
+    ? `<p class="chase-playbook__unlock">✅ You have a <strong>${hasReserve ? 'Sapphire Reserve' : 'Sapphire Preferred / equivalent'}</strong> — transfers are unlocked at ${ (effectivePortalCpp*100).toFixed(2) }¢/pt on the portal.</p>`
+    : `<p class="chase-playbook__warn">⚠️ Add a Sapphire (Preferred or Reserve) in "My card stack" above to unlock transfers. Freedom points alone are stuck at 1¢.</p>`}
+
+    <div class="chase-cmp" style="margin: 12px 0;">
+      <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+        <div>
+          <label style="font-size:0.8rem; display:block;">Your Chase UR points</label>
+          <input type="number" id="chaseUrTestPoints" value="${userChasePts}" style="width:140px; font-size:1.1rem; padding:4px 8px;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem; display:block;">Sapphire level</label>
+          <select id="chaseUrSapphireLevel" style="padding:4px 8px;">
+            <option value="0.0125" ${!hasReserve ? 'selected' : ''}>Preferred (1.25¢ portal)</option>
+            <option value="0.015" ${hasReserve ? 'selected' : ''}>Reserve (1.5¢ portal)</option>
+          </select>
+        </div>
+        <button type="button" class="btn-sm" id="recalcChaseUr">Recalculate</button>
+      </div>
+
+      <div class="chase-cmp__table-wrap" style="margin-top:10px;">
+        <table class="chase-cmp__table">
+          <thead><tr><th>Path</th><th>¢/pt</th><th>Value of your points</th><th>Uplift vs Portal</th></tr></thead>
+          <tbody id="chaseUrCmpBody">
+            <tr class="chase-cmp__row--portal">
+              <td>Chase Travel Portal</td>
+              <td>${(effectivePortalCpp*100).toFixed(2)}¢</td>
+              <td><strong>${fmtMoney(portalUsd)}</strong></td>
+              <td>—</td>
+            </tr>
+            <tr class="chase-cmp__row--best">
+              <td>→ Transfer to Hyatt (best for most people)</td>
+              <td>2.0¢</td>
+              <td><strong>${fmtMoney(hyattUsd)}</strong></td>
+              <td style="color:var(--green); font-weight:600;">+${fmtMoney(upliftHyatt)} (${Math.round((upliftHyatt / Math.max(1,portalUsd)) * 100)}%)</td>
+            </tr>
+            <tr>
+              <td>Southwest</td>
+              <td>1.5¢</td>
+              <td><strong>${fmtMoney(swUsd)}</strong></td>
+              <td>${swUsd > portalUsd ? '+' + fmtMoney(swUsd - portalUsd) : 'Similar to portal'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="hint" style="margin-top:6px;">
+        <strong>Rule of thumb:</strong> Transfer usually wins if you can beat ~1.6–1.7¢/pt (Hyatt frequently does). Portal wins on pure simplicity or when award space is poor.
+      </p>
+    </div>
+
+    <h3 class="subhead">When to transfer vs stay in portal</h3>
+    <div class="grid-2 chase-playbook__cols" style="margin-top:6px;">
+      <div>
+        <strong>Transfer (usually bigger win)</strong>
+        <ul class="chase-bullets">
+          <li>Hyatt award nights (often the highest value)</li>
+          <li>International business class or good Star Alliance space</li>
+          <li>You have a specific high-value trip in mind</li>
+          <li>Transfer bonuses are running (extra 20-30%)</li>
+        </ul>
+      </div>
+      <div>
+        <strong>Portal is perfectly fine</strong>
+        <ul class="chase-bullets">
+          <li>Domestic trips where cash prices are reasonable</li>
+          <li>You want zero hassle / one login</li>
+          <li>Using the CSR $300 travel credit</li>
+          <li>No good award space on the dates you need</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="subhead">Top household plays (skip the portal)</h3>
+    <div class="chase-play-grid">${plays}</div>
+
+    <details style="margin-top:10px;">
+      <summary>How to actually transfer (and common mistakes)</summary>
+      <div class="grid-2 chase-playbook__cols">
+        <div>
+          <ol class="chase-steps">${pb.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+        </div>
+        <div>
+          <strong>Common mistakes</strong>
+          <ul class="chase-bullets chase-bullets--warn">${pb.avoid.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </details>
+  `;
+
+  // Wire up the interactive calculator
+  setTimeout(() => {
+    const ptsInput = $('#chaseUrTestPoints');
+    const levelSel = $('#chaseUrSapphireLevel');
+    const recalcBtn = $('#recalcChaseUr');
+    const tbody = $('#chaseUrCmpBody');
+
+    function recalc() {
+      if (!ptsInput || !levelSel || !tbody) return;
+      const pts = Math.max(0, parseInt(ptsInput.value, 10) || userChasePts);
+      const cpp = parseFloat(levelSel.value) || effectivePortalCpp;
+
+      const pUsd = Math.round(pts * cpp);
+      const hUsd = Math.round(pts * 0.02);
+      const sUsd = Math.round(pts * 0.015);
+
+      tbody.innerHTML = `
+        <tr class="chase-cmp__row--portal">
+          <td>Chase Travel Portal</td>
+          <td>${(cpp*100).toFixed(2)}¢</td>
+          <td><strong>${fmtMoney(pUsd)}</strong></td>
+          <td>—</td>
+        </tr>
+        <tr class="chase-cmp__row--best">
+          <td>→ Transfer to Hyatt (best for most)</td>
+          <td>2.0¢</td>
+          <td><strong>${fmtMoney(hUsd)}</strong></td>
+          <td style="color:var(--green);font-weight:600;">+${fmtMoney(hUsd - pUsd)} (${Math.round(((hUsd - pUsd) / Math.max(1,pUsd)) * 100)}%)</td>
+        </tr>
+        <tr>
+          <td>Southwest</td>
+          <td>1.5¢</td>
+          <td><strong>${fmtMoney(sUsd)}</strong></td>
+          <td>${sUsd > pUsd ? '+' + fmtMoney(sUsd - pUsd) : 'About the same'}</td>
+        </tr>
+      `;
+    }
+
+    if (recalcBtn) recalcBtn.onclick = recalc;
+    if (ptsInput) ptsInput.oninput = recalc;
+    if (levelSel) levelSel.onchange = recalc;
+  }, 50);
+}
+
 function renderTransfers() {
   renderWalletIntegration();
+  renderChaseUrPlaybook();
   renderHouseholdUI();
   const hh = ensureHousehold();
   const hw = householdWallet(state.profile, hh, state.offers, transferBonusPct);
@@ -959,9 +1240,9 @@ function renderTransfers() {
     `).join('');
   }
 
-  const mathEl = $('#influencerMath');
+  const mathEl = $('#householdMath');
   if (mathEl) {
-    mathEl.innerHTML = INFLUENCER_MATH.map((row) => `
+    mathEl.innerHTML = HOUSEHOLD_VALUE_MATH.map((row) => `
       <div class="math-row">
         <strong>${escapeHtml(row.label)}</strong>
         <p class="hint">${escapeHtml(row.detail)}</p>
@@ -1093,6 +1374,13 @@ function renderCatalog() {
   const el = $('#catalogGrid');
   if (!el) return;
 
+  // Continuity hint: show current queue count right in catalog
+  const hint = $('#catalogQueueHint');
+  if (hint) {
+    const activeCount = state.offers.filter(o => !['done','skip'].includes(o.status)).length;
+    hint.textContent = activeCount ? `${activeCount} in your plan — you can add or remove from here` : 'Browse and pin offers to build your plan';
+  }
+
   el.innerHTML = cards.map((card) => {
     const live = feedCards[card.id];
     const liveVal = live?.valueUsd;
@@ -1100,9 +1388,16 @@ function renderCatalog() {
     const blocked = ev.score === 'blocked';
     const estVal = liveVal ?? (card.subCash || pointsToUsd(card.subPoints, card.program));
     const bonus = formatWelcomeBonus(card, estVal, fmtMoney);
-    const liveTag = live ? '<span class="tag tag--live">Feed</span>' : '';
+    const liveTag = live 
+      ? `<span class="tag tag--live" data-go-inbox title="This deal is in the Live Deal Inbox — click to view latest">Live in Inbox</span>` 
+      : '';
 
-    const inPlan = state.offers.some((o) => o.catalogId === card.id && !['done', 'skip'].includes(o.status));
+    const queued = state.offers.find((o) => o.catalogId === card.id && !['done', 'skip'].includes(o.status));
+    const inPlan = !!queued;
+
+    const actionHtml = inPlan
+      ? `<button type="button" class="btn-sm btn-ghost" data-remove-catalog="${card.id}">Remove from plan</button>`
+      : `<button type="button" class="btn-sm btn" data-catalog="${card.id}">+ Add to plan</button>`;
 
     return `
       <article class="catalog-card ${blocked ? 'catalog-card--blocked' : ''}">
@@ -1127,26 +1422,117 @@ function renderCatalog() {
     : ''}
         <div class="catalog-card__tags">${card.category && card.category !== 'national' ? `<span class="tag tag--cat">${escapeHtml(CATALOG_CATEGORIES[card.category] || card.category)}</span>` : ''}${(card.tags || []).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
         ${ev.blockers.length ? `<ul class="offer-alerts offer-alerts--block">${ev.blockers.slice(0, 2).map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
-        <button type="button" class="btn-sm ${inPlan ? 'btn-ghost' : 'btn'}" data-catalog="${card.id}" ${inPlan ? 'disabled' : ''}>
-          ${inPlan ? 'In plan' : '+ Add to plan'}
-        </button>
+        ${actionHtml}
       </article>
     `;
   }).join('');
 
+  // Add handlers
   el.querySelectorAll('[data-catalog]').forEach((btn) => {
     btn.addEventListener('click', () => addFromCatalog(btn.dataset.catalog));
+  });
+  el.querySelectorAll('[data-remove-catalog]').forEach((btn) => {
+    btn.addEventListener('click', () => removeOffer(btn.dataset.removeCatalog));
+  });
+  el.querySelectorAll('[data-go-inbox]').forEach((tag) => {
+    tag.addEventListener('click', (e) => {
+      e.stopPropagation();
+      switchTab('inbox');
+    });
   });
 }
 
 function addFromCatalog(catalogId) {
   const card = CARD_CATALOG.find((c) => c.id === catalogId);
   if (!card) return;
+
+  // Prevent duplicates
+  const already = state.offers.some((o) => o.catalogId === catalogId && !['done', 'skip'].includes(o.status));
+  if (already) return;
+
   const offer = catalogEntryToOffer(card, state.offers.length + 1);
   state.offers.push(offer);
   save();
   renderAll();
-  switchTab('plan');
+
+  // Better continuity: stay where you are (Catalog), just update UI + gentle feedback
+  showToast(`Added "${card.name}" to your plan.`);
+  // Optional: gently pulse the tab
+  const planTab = document.querySelector('.tab[data-tab="plan"]');
+  if (planTab) {
+    planTab.classList.add('tab--pulse');
+    setTimeout(() => planTab.classList.remove('tab--pulse'), 1200);
+  }
+}
+
+function removeOffer(idOrCatalogId, showUndo = true) {
+  const idx = state.offers.findIndex((o) => o.id === idOrCatalogId || o.catalogId === idOrCatalogId);
+  if (idx === -1) return;
+
+  lastRemovedOffer = state.offers[idx];
+  state.offers.splice(idx, 1);
+  save();
+  renderAll();
+
+  if (showUndo) {
+    clearTimeout(undoTimer);
+    showToastWithUndo(`Removed "${lastRemovedOffer.title}".`, () => {
+      if (lastRemovedOffer) {
+        state.offers.push(lastRemovedOffer);
+        save();
+        renderAll();
+        lastRemovedOffer = null;
+      }
+    });
+    undoTimer = setTimeout(() => { lastRemovedOffer = null; }, 6000);
+  }
+}
+
+function showToastWithUndo(message, onUndo) {
+  let host = $('#toastHost');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'toastHost';
+    host.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center;';
+    document.body.appendChild(host);
+  }
+  const t = document.createElement('div');
+  t.innerHTML = `${message} <button style="background:#fff;color:#2b2222;border:none;padding:2px 8px;border-radius:99px;margin-left:8px;cursor:pointer;font-size:0.85rem;">Undo</button>`;
+  t.style.cssText = 'background:#2b2222;color:#fff;padding:10px 14px;border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.9rem;display:flex;align-items:center;';
+  host.appendChild(t);
+
+  const undoBtn = t.querySelector('button');
+  if (undoBtn) undoBtn.onclick = () => {
+    t.remove();
+    if (onUndo) onUndo();
+  };
+
+  setTimeout(() => {
+    if (t.parentNode) {
+      t.style.transition = 'opacity .2s';
+      t.style.opacity = '0';
+      setTimeout(() => t.remove(), 200);
+    }
+  }, 5500);
+}
+
+function showToast(message, ms = 2200) {
+  let host = $('#toastHost');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'toastHost';
+    host.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;';
+    document.body.appendChild(host);
+  }
+  const t = document.createElement('div');
+  t.textContent = message;
+  t.style.cssText = 'background:#2b2222;color:#fff;padding:10px 16px;border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.9rem;';
+  host.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'opacity .2s ease';
+    t.style.opacity = '0';
+    setTimeout(() => t.remove(), 200);
+  }, ms);
 }
 
 function offerCard(o) {
@@ -1167,7 +1553,7 @@ function offerCard(o) {
       </header>
       <dl class="offer-card__facts">
         ${o.hardPull ? `<div><dt>${labelWithTip('Credit check', 'hard_pull')}</dt><dd>Hard pull on apply</dd></div>` : '<div><dt>Credit check</dt><dd>Soft / none</dd></div>'}
-        ${o.minSpend ? `<div><dt>${labelWithTip('Spend to earn bonus', 'msr')}</dt><dd>${fmtMoney(o.minSpend)}${o.msrMonths ? ` in ${o.msrMonths} mo` : ''}</dd></div>` : ''}
+        ${o.minSpend ? `<div><dt>${labelWithTip('Minimum Spend Requirement (MSR)', 'msr')}</dt><dd>${fmtMoney(o.minSpend)}${o.msrMonths ? ` in ${o.msrMonths} mo` : ''}</dd></div>` : ''}
         ${o.creditLine ? `<div><dt>Est. line</dt><dd>${fmtMoney(o.creditLine)}</dd></div>` : ''}
         ${o.earliestDate ? `<div><dt>Earliest</dt><dd>${o.earliestDate}</dd></div>` : ''}
         ${o.completedDate ? `<div><dt>Done</dt><dd>${o.completedDate}</dd></div>` : ''}
@@ -1185,7 +1571,7 @@ function offerCard(o) {
           ${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${v.label}</option>`).join('')}
         </select>
         <button type="button" class="btn-ghost offer-edit" data-id="${o.id}">Edit</button>
-        <button type="button" class="btn-ghost offer-del" data-id="${o.id}">Remove</button>
+        <button type="button" class="btn-ghost offer-del" data-id="${o.id}" style="color:#c73e5a">✕ Remove</button>
       </div>
     </article>
   `;
@@ -1195,7 +1581,7 @@ function renderOffers() {
   const list = $('#offerList');
   if (!list) return;
   if (!state.offers.length) {
-    list.innerHTML = '<p class="empty">No offers queued — load a plan from the Dashboard or add from the Catalog.</p>';
+    list.innerHTML = '<p class="empty">No offers queued yet. Go to <strong>Catalog</strong> or <button type="button" class="btn-sm" data-tab-jump="dashboard">Dashboard</button> to start. Or use the guided wizard.</p>';
     return;
   }
   const sorted = [...state.offers].sort((a, b) => (a.priority || 99) - (b.priority || 99));
@@ -1230,20 +1616,17 @@ function renderOffers() {
   });
   list.querySelectorAll('.offer-edit').forEach((btn) => btn.addEventListener('click', () => openForm(btn.dataset.id)));
   list.querySelectorAll('.offer-del').forEach((btn) => btn.addEventListener('click', () => {
-    if (!confirm('Remove this offer?')) return;
-    state.offers = state.offers.filter((x) => x.id !== btn.dataset.id);
-    save();
-    renderAll();
+    removeOffer(btn.dataset.id);
   }));
 }
 
 function renderTimeline() {
   const tl = suggestTimeline(state.offers, state.profile);
   const el = $('#timeline');
-  if (!el) return;
+  if (!el) return tl;
   if (!tl.length) {
     el.innerHTML = '<p class="empty">Add planned offers to see issuer-aware spacing.</p>';
-    return;
+    return tl;
   }
   el.innerHTML = tl.map((row, i) => `
     <div class="timeline-row">
@@ -1258,23 +1641,128 @@ function renderTimeline() {
   return tl;
 }
 
+function renderRoadmap(timeline, sim) {
+  const listEl = $('#roadmap');
+  const summaryEl = $('#roadmapSummary');
+  if (!listEl && !summaryEl) return;
+
+  const tl = timeline || [];
+  const offerById = Object.fromEntries(state.offers.map((o) => [o.id, o]));
+  const scoreByOffer = {};
+  (sim?.steps || []).forEach((step) => {
+    if (step.kind === 'application' && step.offerId) {
+      scoreByOffer[step.offerId] = step;
+    }
+  });
+
+  if (summaryEl) {
+    if (!sim || !tl.length) {
+      summaryEl.innerHTML = `
+        <p class="empty">Load a plan or pin offers to see your application roadmap and score path.</p>
+      `;
+    } else {
+      const delta = sim.summary.endScore - sim.summary.startScore;
+      const deltaCls = delta < 0 ? 'sim-summary__row--warn' : delta > 0 ? 'sim-summary__row--up' : '';
+      summaryEl.innerHTML = `
+        <div class="sim-summary roadmap-summary">
+          <div class="sim-summary__row"><span>Starting FICO</span><strong>${sim.summary.startScore}</strong></div>
+          <div class="sim-summary__row"><span>After full plan</span><strong>${sim.summary.endScore}</strong></div>
+          <div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
+            <span>Max dip</span><strong>−${sim.summary.maxDrop} pts</strong>
+          </div>
+          <div class="sim-summary__row ${deltaCls}">
+            <span>Net change</span><strong>${delta > 0 ? '+' : ''}${delta} pts</strong>
+          </div>
+          <div class="sim-summary__row"><span>Card apps in plan</span><strong>${sim.summary.totalApplications}</strong></div>
+        </div>
+      `;
+    }
+  }
+
+  if (!listEl) return;
+
+  if (!tl.length) {
+    listEl.innerHTML = '<p class="empty">No queued offers — load a starter plan from the Dashboard or add from Catalog.</p>';
+    return;
+  }
+
+  listEl.innerHTML = tl.map((row, i) => {
+    const offer = offerById[row.offerId];
+    const ev = offer ? evaluateOffer(offer, state.profile, state.offers) : { score: 'clear', blockers: [], warnings: [] };
+    const gateLabel = issuerStatusLabel(ev.score);
+    const scoreStep = scoreByOffer[row.offerId];
+    const hasScore = !!scoreStep;
+    const deltaCls = scoreStep?.delta < 0 ? 'delta-neg' : scoreStep?.delta > 0 ? 'delta-pos' : '';
+    const value = offer?.valueUsd ? fmtMoney(offer.valueUsd) : '—';
+    const pullNote = offer?.hardPull ? 'Hard pull' : 'No pull';
+
+    return `
+      <article class="roadmap-row roadmap-row--${ev.score}">
+        <div class="roadmap-row__step">
+          <span class="roadmap-step">${i + 1}</span>
+          <time class="roadmap-date" datetime="${row.suggestedDate}">${fmtDate(row.suggestedDate)}</time>
+        </div>
+        <div class="roadmap-row__body">
+          <div class="roadmap-row__head">
+            <strong>${escapeHtml(row.title)}</strong>
+            <span class="roadmap-gate roadmap-gate--${ev.score}">${gateLabel}</span>
+          </div>
+          <p class="roadmap-meta">${escapeHtml(row.issuer || 'Offer')} · ${escapeHtml(row.reason)} · ${value} · ${pullNote}</p>
+          ${ev.blockers[0] ? `<p class="roadmap-alert roadmap-alert--block">${escapeHtml(ev.blockers[0])}</p>` : ''}
+          ${!ev.blockers[0] && ev.warnings[0] ? `<p class="roadmap-alert roadmap-alert--warn">${escapeHtml(ev.warnings[0])}</p>` : ''}
+        </div>
+        <div class="roadmap-row__score" title="${hasScore ? 'Projected score right after approval' : 'No hard-pull score impact modeled'}">
+          ${hasScore
+    ? `<span class="roadmap-score">${scoreStep.score}</span>
+               <span class="roadmap-delta ${deltaCls}">${scoreStep.delta > 0 ? '+' : ''}${scoreStep.delta}</span>`
+    : '<span class="roadmap-score roadmap-score--na">—</span>'}
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  if (sim) updateScoreChart(sim, '#roadmapScoreChart', 'roadmap');
+}
+
 function renderSimulation(timeline) {
   const sim = simulateCreditPlan(state.profile, state.offers, timeline || []);
 
   const summaryEl = $('#simSummary');
   if (summaryEl) {
     summaryEl.innerHTML = `
-      <div class="sim-summary">
-        <div class="sim-summary__row"><span>Baseline</span><strong>${sim.summary.startScore}</strong></div>
-        <div class="sim-summary__row"><span>After plan</span><strong>${sim.summary.endScore}</strong></div>
-        <div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
-          <span>Max drop</span><strong>−${sim.summary.maxDrop} pts</strong>
+      <div>
+        <div style="margin-bottom:8px;">
+          <label style="font-size:0.8rem;">Your current FICO (edit here to update sim)
+            <input type="number" id="simBaselineInput" value="${state.profile.baselineScore || 740}" min="300" max="850" style="width:90px; margin-left:6px; padding:2px 6px;">
+          </label>
         </div>
-        <div class="sim-summary__row"><span>CC applications</span><strong>${sim.summary.totalApplications}</strong></div>
-        ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Mortgage/refi planned soon — consider pausing new applications.</p>' : ''}
-        <p class="hint" style="margin-top:10px">Score typically recovers as inquiries age and bonus spending balances clear.</p>
+        <div class="sim-summary">
+          <div class="sim-summary__row"><span>Baseline</span><strong>${sim.summary.startScore}</strong></div>
+          <div class="sim-summary__row"><span>After plan</span><strong>${sim.summary.endScore}</strong></div>
+          <div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
+            <span>Max drop</span><strong>−${sim.summary.maxDrop} pts</strong>
+          </div>
+          <div class="sim-summary__row"><span>CC applications</span><strong>${sim.summary.totalApplications}</strong></div>
+          ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Mortgage/refi planned soon — consider pausing new applications.</p>' : ''}
+          <p class="hint" style="margin-top:10px">Score typically recovers as inquiries age and bonus spending balances clear. Full profile editing is in the Credit profile tab.</p>
+        </div>
       </div>
     `;
+
+    // Wire direct FICO edit in sim for better flow
+    setTimeout(() => {
+      const input = $('#simBaselineInput');
+      if (input) {
+        input.onchange = input.onblur = () => {
+          const val = parseInt(input.value, 10);
+          if (val >= 300 && val <= 850) {
+            state.profile.baselineScore = val;
+            save();
+            renderAll(); // re-renders sim + other places
+          }
+        };
+      }
+    }, 10);
   }
 
   const weightsEl = $('#factorWeights');
@@ -1307,12 +1795,12 @@ function renderSimulation(timeline) {
     }).join('');
   }
 
-  updateScoreChart(sim);
+  updateScoreChart(sim, '#scoreChart', 'main');
   return sim;
 }
 
-function updateScoreChart(sim) {
-  const canvas = $('#scoreChart');
+function updateScoreChart(sim, canvasSel = '#scoreChart', chartKey = 'main') {
+  const canvas = $(canvasSel);
   if (!canvas || typeof Chart === 'undefined') return;
 
   const labels = sim.steps.map((s) => s.label.length > 22 ? `${s.label.slice(0, 20)}…` : s.label);
@@ -1365,12 +1853,17 @@ function updateScoreChart(sim) {
     },
   };
 
-  if (scoreChart) {
-    scoreChart.data = chartData;
-    scoreChart.options = opts;
-    scoreChart.update('active');
+  const isRoadmap = chartKey === 'roadmap';
+  const existing = isRoadmap ? roadmapScoreChart : scoreChart;
+
+  if (existing) {
+    existing.data = chartData;
+    existing.options = opts;
+    existing.update('active');
   } else {
-    scoreChart = new Chart(canvas, { type: 'line', data: chartData, options: opts });
+    const chart = new Chart(canvas, { type: 'line', data: chartData, options: opts });
+    if (isRoadmap) roadmapScoreChart = chart;
+    else scoreChart = chart;
   }
 }
 
@@ -1391,6 +1884,7 @@ function renderAll() {
   const timeline = renderTimeline();
   renderOffers();
   const sim = renderSimulation(timeline);
+  renderRoadmap(timeline, sim);
   renderDashboard(sim, timeline);
   renderTransfers();
   renderDealInbox();
@@ -1398,7 +1892,11 @@ function renderAll() {
 
 function switchTab(name) {
   $all('.tab').forEach((t) => {
-    t.classList.toggle('tab--active', t.dataset.tab === name);
+    const on = t.dataset.tab === name;
+    t.classList.toggle('tab--active', on);
+    if (on) {
+      t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
   });
   $all('.tab-panel').forEach((p) => {
     const on = p.id === `panel-${name}`;
@@ -1409,6 +1907,38 @@ function switchTab(name) {
     markFeedSeen(offersFeed);
     updateFeedBadge();
   }
+}
+
+function initMobileUx() {
+  const tabs = $('#mainTabs');
+  const wrap = $('#tabsWrap');
+
+  const updateTabScrollHint = () => {
+    if (!tabs || !wrap) return;
+    wrap.classList.toggle('tabs-wrap--scrollable', tabs.scrollWidth > tabs.clientWidth + 4);
+  };
+
+  updateTabScrollHint();
+  window.addEventListener('resize', updateTabScrollHint, { passive: true });
+
+  document.addEventListener('click', (e) => {
+    const tip = e.target.closest('.help-tip');
+    if (tip) {
+      e.preventDefault();
+      e.stopPropagation();
+      const wasOpen = tip.classList.contains('help-tip--open');
+      $all('.help-tip--open').forEach((t) => t.classList.remove('help-tip--open'));
+      if (!wasOpen) tip.classList.add('help-tip--open');
+      return;
+    }
+    $all('.help-tip--open').forEach((t) => t.classList.remove('help-tip--open'));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      $all('.help-tip--open').forEach((t) => t.classList.remove('help-tip--open'));
+    }
+  });
 }
 
 function fillIssuerOptions(select, { includeAll = false, grouped = false } = {}) {
@@ -1473,7 +2003,10 @@ function populateIssuerSelects() {
 function openForm(id) {
   const modal = $('#offerModal');
   const o = id ? state.offers.find((x) => x.id === id) : null;
-  $('#offerModalTitle').textContent = o ? 'Edit offer' : 'Add offer';
+  const editing = !!o;
+  $('#offerModalTitle').textContent = editing ? 'Edit offer' : 'Add offer';
+  const eyebrow = $('#offerModalEyebrow');
+  if (eyebrow) eyebrow.textContent = editing ? 'Update your pin' : 'Pin to your board';
   $('#offerId').value = o?.id || '';
   $('#offerCatalogId').value = o?.catalogId || '';
   $('#offerTitle').value = o?.title || '';
@@ -1488,10 +2021,19 @@ function openForm(id) {
   $('#offerEarliest').value = o?.earliestDate || '';
   $('#offerNotes').value = o?.notes || '';
   modal.hidden = false;
+  document.body.classList.add('modal-open');
+  requestAnimationFrame(() => {
+    const titleInput = $('#offerTitle');
+    if (titleInput && !editing) titleInput.focus();
+    else $('#offerModalClose')?.focus();
+  });
 }
 
 function closeForm() {
-  $('#offerModal').hidden = true;
+  const modal = $('#offerModal');
+  if (!modal || modal.hidden) return;
+  modal.hidden = true;
+  document.body.classList.remove('modal-open');
 }
 
 function saveOffer(e) {
@@ -1574,13 +2116,325 @@ function initThemePicker() {
   });
 }
 
+/* ===================== Guided Wizard ===================== */
+let wizardStep = 1;
+const WIZARD_TOTAL = 5;
+
+function openWizard() {
+  const modal = $('#wizardModal');
+  if (!modal) return;
+  wizardStep = 1;
+  modal.hidden = false;
+  document.body.classList.add('modal-open');
+  renderWizardStep();
+}
+
+function closeWizard() {
+  const modal = $('#wizardModal');
+  if (!modal) return;
+  modal.hidden = true;
+  document.body.classList.remove('modal-open');
+}
+
+function updateWizardProgress() {
+  const label = $('#wizardStepLabel');
+  const dotsWrap = $('#wizardModal .wizard-dots');
+  if (!label || !dotsWrap) return;
+  label.textContent = `Step ${wizardStep} of ${WIZARD_TOTAL}`;
+  dotsWrap.innerHTML = Array.from({ length: WIZARD_TOTAL }, (_, i) => {
+    const n = i + 1;
+    const cls = n < wizardStep ? 'complete' : (n === wizardStep ? 'active' : '');
+    return `<span class="wizard-dot ${cls}"></span>`;
+  }).join('');
+}
+
+function renderWizardStep() {
+  const body = $('#wizardBody');
+  const titleEl = $('#wizardTitle');
+  const nextBtn = $('#wizardNext');
+  const backBtn = $('#wizardBack');
+  if (!body || !nextBtn || !backBtn) return;
+
+  updateWizardProgress();
+  backBtn.style.visibility = wizardStep > 1 ? 'visible' : 'hidden';
+
+  if (wizardStep === 1) {
+    if (titleEl) titleEl.textContent = 'Welcome — this is your trip-planning board';
+    body.innerHTML = `
+      <div class="wizard-step">
+        <p>Think of offers like pins on a map. You line them up at a sensible pace so the welcome bonuses actually post, your credit score gets a breather between pulls, and the points add up toward real trips.</p>
+        
+        <div class="wizard-explain">
+          <strong>Why the score impact matters here:</strong><br>
+          Hard pulls and the temporary spending to hit bonuses can cause a short dip. This plan deliberately spaces things out (and only uses money you’re already spending) so the model shows a manageable, temporary impact that recovers.
+        </div>
+
+        <p class="hint">Everything is saved in your browser. You can change any number later. The goal is a clear, responsible plan you can show and stand behind.</p>
+      </div>
+    `;
+    nextBtn.textContent = 'Next: Your credit basics';
+  }
+
+  else if (wizardStep === 2) {
+    if (titleEl) titleEl.textContent = 'Your credit basics (the parts that matter most here)';
+    const p = state.profile;
+    body.innerHTML = `
+      <div class="wizard-step">
+        <div class="wizard-simple-grid">
+          <label>Baseline FICO estimate
+            <input type="number" id="wizScore" min="580" max="850" value="${p.baselineScore || 740}">
+            <span class="hint">Rough idea from your last statement or app. 720+ is strong for most premium cards.</span>
+          </label>
+          <label>Cards opened in last 24 months (all banks)
+            <input type="number" id="wizCards24" min="0" max="20" value="${p.personalCards24mo || p.cards24mo || 2}">
+            <span class="hint">Chase cares about this (the famous 5/24). Count every personal card, not just theirs.</span>
+          </label>
+          <label>Months since last hard pull (approx)
+            <input type="number" id="wizLastPull" min="0" max="36" value="${p.lastHardPull ? Math.round((Date.now() - new Date(p.lastHardPull).getTime())/ (1000*60*60*24*30)) : 4}">
+            <span class="hint">New applications usually add a hard pull. Spacing them helps approvals.</span>
+          </label>
+          <label>Planning a mortgage or refi soon?
+            <select id="wizMortgage">
+              <option value="false" ${!p.mortgageSensitive ? 'selected' : ''}>No — go for it</option>
+              <option value="true" ${p.mortgageSensitive ? 'selected' : ''}>Yes — be extra gentle</option>
+            </select>
+            <span class="hint">Mortgage lenders hate recent inquiries and new accounts.</span>
+          </label>
+        </div>
+        <p class="hint">We’re keeping it simple. You can fill the full “Credit profile” tab later for every bank’s velocity rule.</p>
+      </div>
+    `;
+    nextBtn.textContent = 'Next: Cards you already hold';
+  }
+
+  else if (wizardStep === 3) {
+    if (titleEl) titleEl.textContent = 'Cards you already have (helps us give smart advice)';
+    body.innerHTML = `
+      <div class="wizard-step">
+        <p>Tell us roughly what you carry so the app can suggest good next cards and warn about issuer rules.</p>
+        <button type="button" class="btn" id="wizLoadSix" style="margin-bottom:8px">Load common 6-card starter stack</button>
+        <div id="wizCardsNote" class="hint">You can refine this anytime in the “Household &amp; points” tab.</div>
+        <div class="wizard-explain" style="margin-top:12px">
+          Knowing your stack lets us show: which everyday spending categories you’re already earning well on, and which transfer programs you can already unlock.
+        </div>
+      </div>
+    `;
+    nextBtn.textContent = 'Next: Pick a realistic plan';
+
+    // Bind load preset inside this step render (after DOM update)
+    setTimeout(() => {
+      const btn = $('#wizLoadSix');
+      if (btn) btn.onclick = () => {
+        const preset = WALLET_PRESETS && WALLET_PRESETS['starter-six'];
+        if (preset) {
+          state.profile.ownedCards = [...preset.cards];
+          save();
+          btn.textContent = 'Loaded ✓';
+          btn.disabled = true;
+          $('#wizCardsNote').textContent = 'Starter cards loaded. You can edit the full list in Household & points tab.';
+        }
+      };
+    }, 0);
+  }
+
+  else if (wizardStep === 4) {
+    if (titleEl) titleEl.textContent = 'Choose a starter plan';
+    body.innerHTML = `
+      <div class="wizard-step">
+        <p>Pick one to load. You can always edit dates, add more, or change order on the Roadmap and Offer queue tabs.</p>
+        <div class="wizard-cards">
+          <div class="wizard-card" data-plan="gentle">
+            <strong>🛡️ Gentle & slow (~6 mo)</strong>
+            <div class="meta">Low spend targets, easy pace</div>
+            <div class="value">Safe starting point</div>
+          </div>
+          <div class="wizard-card" data-plan="balanced">
+            <strong>⚖️ 12-month balanced</strong>
+            <div class="meta">Chase Sapphire → Amex Gold pace</div>
+            <div class="value">Most popular starter</div>
+          </div>
+          <div class="wizard-card" data-plan="household">
+            <strong>🏡 Household stretch (18 mo)</strong>
+            <div class="meta">You + partner, bigger trip goals</div>
+            <div class="value">Max realistic upside</div>
+          </div>
+        </div>
+        <p class="hint">Don’t overthink — any of these is a fine place to start. We’ll show you the sequence and score effect right after.</p>
+      </div>
+    `;
+    nextBtn.textContent = 'Load plan & preview results';
+
+    setTimeout(() => {
+      body.querySelectorAll('.wizard-card').forEach(card => {
+        card.onclick = () => {
+          body.querySelectorAll('.wizard-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          const plan = card.dataset.plan;
+          let planKey = 'balanced';
+          if (plan === 'gentle') planKey = 'conservative';
+          if (plan === 'household') planKey = 'household-stretch';
+          loadPlan(planKey); // re-uses existing loader
+          card.dataset.loaded = '1';
+        };
+      });
+    }, 0);
+  }
+
+  else if (wizardStep === 5) {
+    if (titleEl) titleEl.textContent = 'You’re set — here’s the picture so far';
+    const stats = computeQuickStats();
+    const sim = (typeof simulateCreditPlan === 'function') ? simulateCreditPlan(state.profile, state.offers, []) : null;
+    const s = sim && sim.summary ? sim.summary : null;
+
+    let scoreHtml = '';
+    if (s) {
+      scoreHtml = `
+        <div style="margin-top:14px; padding:12px 14px; background:var(--panel-soft); border-radius:12px; border:1px solid var(--accent-soft);">
+          <strong style="display:block;margin-bottom:6px;">Credit score impact (modeled)</strong>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:1.05rem;">
+            <div>Start: <strong>${s.startScore}</strong></div>
+            <div>Lowest: <strong>${s.minScore}</strong> <span style="color:var(--rose);font-size:0.95rem;">(−${s.maxDrop})</span></div>
+            <div>End: <strong>${s.endScore}</strong></div>
+          </div>
+          <p style="margin:8px 0 0;font-size:0.85rem;color:var(--text-soft);">We space pulls and use real household spending — the model shows a temporary dip that recovers as balances clear and inquiries age.</p>
+        </div>
+      `;
+    }
+
+    body.innerHTML = `
+      <div class="wizard-step">
+        <div class="wizard-complete">
+          <h3>🎉 Your board is ready.</h3>
+          <p>Loaded plan + your profile details are saved. This is a thoughtful, paced approach — exactly the kind of plan you can show and explain.</p>
+        </div>
+
+        <div class="grid-2" style="margin-top:8px">
+          <div>
+            <strong>Plan snapshot</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;font-size:0.95rem;line-height:1.45">
+              <li>${state.offers.length} offers in queue</li>
+              <li>Est. cash floor ~ ${stats.cash}</li>
+              <li>Est. trip value (transfers) ~ ${stats.trip}</li>
+            </ul>
+          </div>
+          <div class="wizard-explain">
+            Next: Go to <strong>Roadmap</strong> tab to see the suggested order and full score path. Check “Can I apply?” before real apps.
+          </div>
+        </div>
+
+        ${scoreHtml}
+      </div>
+    `;
+    nextBtn.textContent = 'Finish & go to board';
+  }
+}
+
+function computeQuickStats() {
+  // lightweight snapshot using existing helpers if present
+  try {
+    const proj = (typeof earningsProjection === 'function') ? earningsProjection(state.offers) : null;
+    const cash = fmtMoney((proj && (proj.netPipeline || proj.total || 0)) || 0);
+    const trip = fmtMoney((proj && (proj.travelTotal || proj.netTravelPipeline || proj.travelPipeline || 0)) || 0);
+    return { cash, trip };
+  } catch {
+    return { cash: '$—', trip: '$—' };
+  }
+}
+
+function wizardNext() {
+  const body = $('#wizardBody');
+
+  // Capture data from step 2 (profile)
+  if (wizardStep === 2 && body) {
+    const score = Number($('#wizScore')?.value) || state.profile.baselineScore;
+    const cards24 = Number($('#wizCards24')?.value) || 0;
+    const monthsSince = Number($('#wizLastPull')?.value) || 0;
+    const mort = $('#wizMortgage')?.value === 'true';
+
+    state.profile.baselineScore = score;
+    state.profile.personalCards24mo = cards24;
+    state.profile.cards24mo = cards24;
+    if (monthsSince > 0) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - monthsSince);
+      state.profile.lastHardPull = d.toISOString().slice(0, 10);
+    }
+    state.profile.mortgageSensitive = mort;
+    save();
+  }
+
+  if (wizardStep < WIZARD_TOTAL) {
+    wizardStep++;
+    renderWizardStep();
+  } else {
+    // Finish
+    closeWizard();
+    renderAll();
+    // Jump to a useful tab
+    setTimeout(() => {
+      switchTab('roadmap');
+    }, 120);
+    // Gentle toast-like hint
+    const dash = $('#panel-dashboard');
+    if (dash) {
+      const note = document.createElement('div');
+      note.className = 'hint';
+      note.style.margin = '12px 0';
+      note.textContent = 'Tip: You can reopen the guided setup anytime from the top of the Dashboard.';
+      dash.prepend(note);
+      setTimeout(() => note.remove(), 6500);
+    }
+  }
+}
+
+function wizardBack() {
+  if (wizardStep > 1) {
+    wizardStep--;
+    renderWizardStep();
+  }
+}
+
+function bindWizard() {
+  const startBtn = $('#startWizard');
+  if (startBtn) startBtn.addEventListener('click', openWizard);
+  const guideBtn = $('#guideBtn');
+  if (guideBtn) guideBtn.addEventListener('click', openWizard);
+
+  const floatGuide = $('#floatingGuide');
+  if (floatGuide) floatGuide.addEventListener('click', openWizard);
+
+  const closeBtn = $('#wizardClose');
+  if (closeBtn) closeBtn.addEventListener('click', closeWizard);
+
+  const scrim = $('#wizardModal .modal__scrim');
+  if (scrim) scrim.addEventListener('click', closeWizard);
+
+  $('#wizardNext')?.addEventListener('click', wizardNext);
+  $('#wizardBack')?.addEventListener('click', wizardBack);
+  $('#wizardSkip')?.addEventListener('click', () => {
+    closeWizard();
+    // Still render in case they loaded something
+    renderAll();
+  });
+
+  // Keyboard escape
+  document.addEventListener('keydown', (e) => {
+    const m = $('#wizardModal');
+    if (e.key === 'Escape' && m && !m.hidden) {
+      closeWizard();
+    }
+  });
+}
+
 async function init() {
   const glossaryEl = $('#glossaryPanel');
   if (glossaryEl) glossaryEl.innerHTML = glossaryHtml();
 
   initThemePicker();
+  initMobileUx();
   populateIssuerSelects();
   populateInboxIssuers();
+  bindWizard();
 
   document.addEventListener('change', (e) => {
     if (e.target.matches('[data-profile]')) readProfile();
@@ -1606,6 +2460,11 @@ async function init() {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
   });
 
+  document.addEventListener('click', (e) => {
+    const jump = e.target.closest('[data-tab-jump]');
+    if (jump?.dataset.tabJump) switchTab(jump.dataset.tabJump);
+  });
+
   $('#catalogIssuer')?.addEventListener('change', renderCatalog);
   $('#catalogCategory')?.addEventListener('change', renderCatalog);
   $('#transferProgram')?.addEventListener('change', (e) => renderTransferTable(e.target.value));
@@ -1615,7 +2474,10 @@ async function init() {
   $('#loadSeed')?.addEventListener('click', () => loadPlan('balanced'));
   $('#loadBalanced')?.addEventListener('click', () => loadPlan('balanced'));
   $('#loadConservative')?.addEventListener('click', () => loadPlan('conservative'));
-  $('#loadCreator')?.addEventListener('click', () => loadPlan('creator-stack'));
+  $('#loadHousehold')?.addEventListener('click', () => loadPlan('household-stretch'));
+  // Also support reopening wizard from other places if needed
+  $('#guideBtn')?.addEventListener('click', openWizard); // idempotent
+
   $('#loadWalletPreset')?.addEventListener('click', () => {
     const preset = WALLET_PRESETS['starter-six'];
     if (!preset) return;
@@ -1632,8 +2494,13 @@ async function init() {
   });
   $('#offerForm')?.addEventListener('submit', saveOffer);
   $('#offerCancel')?.addEventListener('click', closeForm);
+  $('#offerModalClose')?.addEventListener('click', closeForm);
   $('#offerModal')?.addEventListener('click', (e) => {
-    if (e.target.id === 'offerModal') closeForm();
+    if (e.target.closest('[data-modal-close]')) closeForm();
+  });
+  document.addEventListener('keydown', (e) => {
+    const modal = $('#offerModal');
+    if (e.key === 'Escape' && modal && !modal.hidden) closeForm();
   });
 
   $('#refreshFeed')?.addEventListener('click', refreshFeedNow);
@@ -1646,6 +2513,26 @@ async function init() {
   }
 
   renderAll();
+
+  // Aggressively surface wizard for users who haven't seen it or have empty plan
+  try {
+    const hasSeen = localStorage.getItem('promo_wizard_seen');
+    const active = (state.offers || []).filter(o => !['done','skip'].includes(o.status)).length;
+
+    if (active === 0) {
+      setTimeout(() => {
+        if (!hasSeen) {
+          // Auto-launch the wizard for brand new / empty users so they can't miss it
+          openWizard();
+          localStorage.setItem('promo_wizard_seen', '1');
+        } else {
+          // Still show strong nudge
+          const cta = $('#startWizard');
+          if (cta) cta.style.boxShadow = '0 0 0 4px rgba(230,0,35,0.3)';
+        }
+      }, 1200);
+    }
+  } catch (e) {}
 }
 
 init();

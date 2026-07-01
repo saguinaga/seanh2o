@@ -4,11 +4,11 @@ import { findCatalog, pointsToUsd } from './catalog.js';
 import { offerCashValue, offerTravelValue } from './bb-value.js';
 
 export const DREAM_TRIPS = [
-  { id: 'cabo', emoji: '🌅', name: 'Cabo weekend', cashPrice: 2200 },
-  { id: 'disney', emoji: '🏰', name: 'Disney trip', cashPrice: 3200 },
-  { id: 'hawaii', emoji: '🌺', name: 'Hawaii week', cashPrice: 4800 },
-  { id: 'paris', emoji: '🗼', name: 'Paris weekend', cashPrice: 3600 },
-  { id: 'japan', emoji: '🗾', name: 'Japan adventure', cashPrice: 5500 },
+  { id: 'san-francisco', emoji: '🌉', name: 'San Francisco', cashPrice: 2800 },
+  { id: 'norway', emoji: '🏔️', name: 'Norway fjords', cashPrice: 5200 },
+  { id: 'kenya', emoji: '🦒', name: 'Kenya safari', cashPrice: 4200 },
+  { id: 'germany', emoji: '🍻', name: 'Germany trip', cashPrice: 3600 },
+  { id: 'italy', emoji: '🍝', name: 'Italy escape', cashPrice: 3900 },
 ];
 
 export function activeOffersValue(offers) {
