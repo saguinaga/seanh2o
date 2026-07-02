@@ -25,11 +25,13 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#fffdfb">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8C%3C/text%3E%3C/svg%3E">
   <title>Bonus Board — cozy offer & travel planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=board-20260702b">
+  <link rel="stylesheet" href="styles.css?v=board-20260702q">
+  <link rel="stylesheet" href="vanity.css?v=20260702q">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -59,14 +61,14 @@
       <div class="topbar-actions">
         <label class="theme-picker">
           <span class="theme-picker__icon" aria-hidden="true">🎨</span>
-          <select id="themeSelect" aria-label="Choose theme">
+          <select id="themeSelect" aria-label="Choose theme" data-lpignore="true" autocomplete="off">
             <option value="cozy">🌸 Cozy</option>
           </select>
         </label>
         <a href="../index.html" class="btn-ghost">← Home</a>
         <button type="button" class="btn-ghost" id="exportBtn">Save backup</button>
         <button type="button" class="btn-ghost" id="importBtn">Restore</button>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <input type="file" id="importFile" accept="application/json,.json" hidden data-lpignore="true" autocomplete="off">
         <button type="button" class="btn-ghost" id="guideBtn" title="Open the step-by-step guide">Guide</button>
         <button type="button" class="btn" id="addOffer">+ Pin an offer</button>
       </div>
@@ -75,7 +77,7 @@
     <p class="disclaimer">
       Just a friendly planner — not financial advice. Numbers are estimates; bank rules are our best guess.
       Tap the <span class="help-tip help-tip--inline" tabindex="0" aria-label="Help icons explain jargon" data-tip="Look for ? icons throughout the app — they explain welcome bonuses, spending requirements, and rules like Chase’s 5/24 in plain English.">?</span> icons when jargon pops up, and double-check live offers before you apply.
-      <br><small style="opacity:0.7">Console spam about “VAULT sync” or “background-redux” is from a browser extension (password vault etc), not this app. Try Incognito for a clean view.</small>
+      <br><small style="opacity:0.7">Console spam about “VAULT sync” / “duplicate id LastPass” / “Invalid frameId” / “No tab with id” is from browser extensions (LastPass etc) injecting on every page — not this app. Use Incognito (no extensions) or disable the vault extension for this site for a clean console. We tag inputs with data-lpignore to reduce interference.</small>
     </p>
 
     <div class="stats">
@@ -206,6 +208,7 @@
           <div>
             <h2>Live deal inbox</h2>
             <p class="hint" id="feedMeta">Loading feed…</p>
+            <p class="hint">Deals come from a server-side feed (catalog + Doctor of Credit RSS). <strong>Check for updates</strong> re-fetches the latest deployed copy — not a live scrape from your browser.</p>
           </div>
           <button type="button" class="btn" id="refreshFeed">Check for updates</button>
         </div>
@@ -221,7 +224,7 @@
           <h2>All deals</h2>
           <div class="inbox-filters">
             <label class="catalog-filter">Type
-              <select id="inboxType">
+              <select id="inboxType" data-lpignore="true" autocomplete="off">
                 <option value="all">All</option>
                 <option value="cc">Credit cards</option>
                 <option value="bank">Bank bonuses</option>
@@ -230,10 +233,10 @@
               </select>
             </label>
             <label class="catalog-filter">Issuer
-              <select id="inboxIssuer"><option value="all">All</option></select>
+              <select id="inboxIssuer" data-lpignore="true" autocomplete="off"><option value="all">All</option></select>
             </label>
             <label class="catalog-filter">Search
-              <input type="search" id="inboxSearch" placeholder="Chase, welcome bonus, Rakuten…">
+              <input type="search" id="inboxSearch" placeholder="Chase, welcome bonus, Rakuten…" data-lpignore="true" autocomplete="off">
             </label>
           </div>
         </div>
@@ -675,6 +678,6 @@
 
   <button id="floatingGuide" style="position:fixed;bottom:20px;right:20px;z-index:999;background:#e60023;color:white;border:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 12px rgba(230,0,35,0.4);font-size:0.9rem;cursor:pointer;">✨ Guided setup</button>
 
-  <script type="module" src="board.js?v=board-20260702b"></script>
+  <script type="module" src="board.js?v=board-20260702r"></script>
 </body>
 </html>
