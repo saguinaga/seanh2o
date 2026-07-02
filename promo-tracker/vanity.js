@@ -87,6 +87,11 @@ let welcomeBound = false;
 
 function ensureWelcomeSplash() {
   let splash = $('#vanitySplash');
+  // Replace legacy static HTML splash (no dismiss button wiring / wrong layer)
+  if (splash && !splash.querySelector('#vanitySplashGo')) {
+    splash.remove();
+    splash = null;
+  }
   if (splash) return splash;
   splash = document.createElement('div');
   splash.id = 'vanitySplash';
