@@ -37,7 +37,7 @@ import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
 } from './wallet-integration.js';
 import {
-  initVanity, showToast, showToastWithUndo,
+  initVanity, dismissWelcomeSplash, showToast, showToastWithUndo,
   celebrateOfferDone, celebratePin, celebratePlanLoad, celebrateThemeChange,
   animateStats, checkMilestones, tabSwitchSparkle,
   updateCfoLevel, animateCreditScores, flairCreditPanel,
@@ -2105,7 +2105,7 @@ function openForm(id) {
   // dismiss any vanity overlays so main modal isn't stuck behind
   const ach = $('#vanityAchievement'); if (ach) ach.hidden = true;
   const lvl = $('#vanityLevelUp'); if (lvl) lvl.hidden = true;
-  const spl = $('#vanitySplash'); if (spl) spl.hidden = true;
+  dismissWelcomeSplash();
   modal.hidden = false;
   document.body.classList.add('modal-open');
   requestAnimationFrame(() => {
@@ -2216,7 +2216,7 @@ function openWizard() {
   // dismiss any vanity overlays so main modal isn't stuck behind
   const ach = $('#vanityAchievement'); if (ach) ach.hidden = true;
   const lvl = $('#vanityLevelUp'); if (lvl) lvl.hidden = true;
-  const spl = $('#vanitySplash'); if (spl) spl.hidden = true;
+  dismissWelcomeSplash();
   wizardStep = 1;
   modal.hidden = false;
   document.body.classList.add('modal-open');
@@ -2629,6 +2629,7 @@ async function init() {
 
     if (active === 0) {
       setTimeout(() => {
+        dismissWelcomeSplash();
         if (!hasSeen) {
           // Auto-launch the wizard for brand new / empty users so they can't miss it
           openWizard();

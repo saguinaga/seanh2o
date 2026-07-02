@@ -496,7 +496,7 @@ body.modal-open .vanity-layer {
   background: rgba(0,0,0,0.2);
 }
 
-/* Welcome splash */
+/* Welcome splash — direct child of body, above modals */
 .vanity-splash {
   position: fixed;
   inset: 0;
@@ -506,9 +506,14 @@ body.modal-open .vanity-layer {
   background: rgba(43, 34, 34, 0.35);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 180;
+  z-index: 9999;
   pointer-events: auto;
+  touch-action: manipulation;
   animation: splashIn 0.5s ease;
+}
+
+body.welcome-splash-open {
+  overflow: hidden;
 }
 
 .vanity-splash--out {
@@ -547,6 +552,38 @@ body.modal-open .vanity-layer {
   font-size: 0.85rem;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.vanity-splash__go {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent, #e60023);
+  color: #fff;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(230, 0, 35, 0.35);
+}
+
+.vanity-splash__go:hover {
+  filter: brightness(1.05);
+}
+
+.vanity-splash__go:focus-visible {
+  outline: 3px solid rgba(17, 116, 204, 0.55);
+  outline-offset: 2px;
+}
+
+.vanity-splash__hint {
+  display: block;
+  margin-top: 10px;
+  opacity: 0.55;
+  font-size: 0.7rem;
 }
 
 @keyframes splashIn {

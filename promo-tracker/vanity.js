@@ -64,15 +64,6 @@ function ensureLayer() {
       </div>
     </div>
     <div class="vanity-sparkle-field" id="vanitySparkleField" aria-hidden="true"></div>
-    <div class="vanity-splash" id="vanitySplash" hidden>
-      <div class="vanity-splash__card">
-        <button type="button" class="vanity-splash__close" id="vanitySplashClose" aria-label="Dismiss welcome">×</button>
-        <span class="vanity-splash__emoji">✨</span>
-        <strong>Household CFO mode</strong>
-        <p>Your cozy bonus board is ready. Pin a plan and watch the trip math sparkle.</p>
-        <small style="opacity:0.6; font-size:0.7rem; display:block; margin-top:8px;">click anywhere to continue</small>
-      </div>
-    </div>
     <div class="vanity-levelup" id="vanityLevelUp" hidden aria-live="polite"></div>
   `;
   document.body.appendChild(layer);
@@ -89,6 +80,97 @@ function ensureLayer() {
 }
 
 function $(sel) { return document.querySelector(sel); }
+
+const WELCOME_KEY = 'promo_vanity_welcomed';
+let welcomeDismissed = false;
+let welcomeBound = false;
+
+function ensureWelcomeSplash() {
+  let splash = $('#vanitySplash');
+  if (splash) return splash;
+  splash = document.createElement('div');
+  splash.id = 'vanitySplash';
+  splash.className = 'vanity-splash';
+  splash.hidden = true;
+  splash.setAttribute('role', 'dialog');
+  splash.setAttribute('aria-modal', 'true');
+  splash.setAttribute('aria-labelledby', 'vanitySplashTitle');
+  splash.innerHTML = `
+    <div class="vanity-splash__card">
+      <button type="button" class="vanity-splash__close" id="vanitySplashClose" aria-label="Dismiss welcome">×</button>
+      <span class="vanity-splash__emoji" aria-hidden="true">✨</span>
+      <strong id="vanitySplashTitle">Household CFO mode</strong>
+      <p>Your cozy bonus board is ready. Pin a plan and watch the trip math sparkle.</p>
+      <button type="button" class="vanity-splash__go" id="vanitySplashGo">Let's go →</button>
+      <small class="vanity-splash__hint">tap outside, press Esc, or use the button</small>
+    </div>
+  `;
+  document.body.appendChild(splash);
+  return splash;
+}
+
+/** Dismiss the one-time Household CFO welcome overlay — safe to call repeatedly. */
+export function dismissWelcomeSplash({ persist = true } = {}) {
+  const splash = $('#vanitySplash');
+  if (!splash || splash.hidden) {
+    welcomeDismissed = true;
+    document.body.classList.remove('welcome-splash-open');
+    if (persist) {
+      try { localStorage.setItem(WELCOME_KEY, '1'); } catch { /* noop */ }
+    }
+    return;
+  }
+  if (welcomeDismissed || splash.classList.contains('vanity-splash--out')) return;
+  welcomeDismissed = true;
+
+  const focused = document.activeElement;
+  if (focused && splash.contains(focused)) focused.blur();
+
+  splash.classList.add('vanity-splash--out');
+  document.body.classList.remove('welcome-splash-open');
+
+  window.setTimeout(() => {
+    splash.hidden = true;
+    splash.setAttribute('aria-hidden', 'true');
+    splash.classList.remove('vanity-splash--out');
+  }, prefersReducedMotion() ? 0 : 400);
+
+  if (persist) {
+    try { localStorage.setItem(WELCOME_KEY, '1'); } catch { /* noop */ }
+  }
+}
+
+function bindWelcomeSplash() {
+  if (welcomeBound) return;
+  welcomeBound = true;
+  const splash = ensureWelcomeSplash();
+
+  splash.addEventListener('click', (e) => {
+    if (e.target === splash) dismissWelcomeSplash();
+  });
+  splash.querySelector('#vanitySplashGo')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dismissWelcomeSplash();
+  });
+  splash.querySelector('#vanitySplashClose')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dismissWelcomeSplash();
+  });
+  splash.querySelector('.vanity-splash__card')?.addEventListener('click', (e) => e.stopPropagation());
+
+  document.addEventListener('keydown', (e) => {
+    const el = $('#vanitySplash');
+    if (e.key === 'Escape' && el && !el.hidden) dismissWelcomeSplash();
+  });
+
+  // Mobile: touchend on backdrop (click can be flaky inside fixed overlays)
+  splash.addEventListener('touchend', (e) => {
+    if (e.target === splash) {
+      e.preventDefault();
+      dismissWelcomeSplash();
+    }
+  }, { passive: false });
+}
 
 function resizeConfetti() {
   if (!confettiCanvas) return;
@@ -119,52 +201,23 @@ function bumpVisitCount() {
 
 export function welcomeVanitySplash() {
   if (navigator.webdriver) return;
-  const key = 'promo_vanity_welcomed';
-  if (localStorage.getItem(key)) return;
-  localStorage.setItem(key, '1');
-  ensureLayer();
-  const splash = $('#vanitySplash');
-  if (!splash) return;
+  try {
+    if (localStorage.getItem(WELCOME_KEY)) return;
+  } catch { /* show anyway if storage blocked */ }
+
+  welcomeDismissed = false;
+  bindWelcomeSplash();
+  const splash = ensureWelcomeSplash();
   splash.hidden = false;
   splash.removeAttribute('aria-hidden');
+  document.body.classList.add('welcome-splash-open');
   burstConfetti({ count: 140 });
-  showToast('Welcome to Bonus Board — let\'s plan something delicious.', { type: 'gold', emoji: '🎀', duration: 6000 });
+  showToast('Welcome to Bonus Board — let\'s plan something delicious.', { type: 'gold', emoji: '🎀', duration: 4500 });
 
-  const dismissSplash = () => {
-    if (splash.hidden || splash.classList.contains('vanity-splash--out')) return;
-
-    // Fix focus/aria-hidden issue: blur any focused descendant before hiding
-    const focused = document.activeElement;
-    if (focused && splash.contains(focused)) {
-      focused.blur();
-    }
-
-    splash.classList.add('vanity-splash--out');
-
-    // Delay aria-hidden + hidden to let focus release and avoid the blocked aria-hidden warning
-    setTimeout(() => {
-      splash.setAttribute('aria-hidden', 'true');
-      setTimeout(() => {
-        splash.hidden = true;
-      }, 650);
-    }, 10);
-  };
-
-  // Click anywhere on splash or the explicit close to dismiss
-  splash.addEventListener('click', dismissSplash, { once: true });
-  const closeBtn = $('#vanitySplashClose');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dismissSplash();
-    }, { once: true });
-  }
-
-  setTimeout(() => {
-    if (!splash.hidden && !splash.classList.contains('vanity-splash--out')) {
-      dismissSplash();
-    }
-  }, 2800);
+  window.setTimeout(() => {
+    const el = $('#vanitySplash');
+    if (el && !el.hidden) dismissWelcomeSplash();
+  }, 8000);
 }
 
 function bindVanityClicks() {

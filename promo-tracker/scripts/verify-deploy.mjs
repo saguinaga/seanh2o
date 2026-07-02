@@ -28,14 +28,14 @@ for (const path of REQUIRED) {
 }
 
 const index = await (await fetch(`${BASE}/index.html`)).text();
-if (!index.includes('board.js?v=board-20260702p')) {
+if (!index.includes('board.js?v=board-20260702q')) {
   console.log('FAIL index.html missing board.js entry');
   failed += 1;
 } else {
   console.log('OK index.html loads board.js');
 }
 
-const board = await (await fetch(`${BASE}/board.js?v=board-20260702p`)).text();
+const board = await (await fetch(`${BASE}/board.js?v=board-20260702q`)).text();
 if (!board.includes('bb-labels.js') || !board.includes('bb-value.js')) {
   console.log('FAIL board.js missing bb-labels/bb-value imports');
   failed += 1;
