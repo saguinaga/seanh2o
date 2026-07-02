@@ -7,11 +7,13 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Sean Aguinaga | Product Leader in Real Estate Tech</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
     <meta name="description" content="Sean Aguinaga: Product leader in real estate transaction systems. Built Auction.com from in-person foreclosure auctions to the nation's leading online auction platform. Investor calculators and PM case studies.">
     
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=37">
+    <link rel="stylesheet" href="styles.css?v=38">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -23,34 +25,7 @@
     </script>
 
     <!-- Microsoft Clarity placeholder - add after signing up (see instructions below) -->
-    <!-- Tailwind via CDN (playground) - scoped for calculator section only to help with viewport/responsive work as parallel priority.
-         We will use Tailwind utilities primarily inside #buy-hold-calculator for toolbar, modal, grids, etc.
-         Existing custom .calc-* CSS remains authoritative for core calculator visuals. -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      // Minimal Tailwind config for our calculator viewports. Only affects elements we explicitly class inside the calc.
-      function initTailwindCalc() {
-        if (window.tailwind && tailwind.config) {
-          tailwind.config = {
-            corePlugins: { preflight: false }, // don't reset our existing styles
-            theme: {
-              extend: {
-                screens: {
-                  'xs': '380px',
-                  'tablet': '701px',
-                }
-              }
-            }
-          };
-        }
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTailwindCalc);
-      } else {
-        initTailwindCalc();
-      }
-    </script>
-    <!-- <link rel="stylesheet" href="files/theme/files/custom.css"> <!-- if you have one, otherwise ignore -->
+    <!-- Note: Tailwind CDN removed for production (was only for the config modal). The modal is now styled with inline styles + .calc-* classes below. -->
     
     <style>
         /* Artistic voxel Game of Life hero - isometric 3D cybernetic background */
@@ -401,7 +376,7 @@
             <div class="projects-header">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Calculators, experiments, and one family game</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Calculators, experiments (Bonus Board), and one family game</p>
                 </div>
                 <a href="#tools" class="projects-header-link">View all tools →</a>
             </div>
@@ -469,6 +444,10 @@
                 </span>
                 <span class="blossom-nook-cta">Play →</span>
             </a>
+
+            <p style="text-align:center; margin:12px 0 0; font-size:0.8rem; opacity:0.6;">
+                <a href="promo-tracker/" style="color:#64748b; text-decoration:none;" data-plausible-event="Launch - Promo Tracker">Bonus Board — credit card offer planner</a>
+            </p>
         </div>
     </section>
 
@@ -512,12 +491,12 @@
            Toggles highlight and can reorder metrics in main results and comparison cards.
            Questions: cash flow priority, risk tolerance, management effort (as discussed).
            No changes to calculations. -->
-      <div class="guidance-bar mt-2 text-sm flex items-center gap-2 flex-wrap">
-        <span class="font-medium text-[#334155]">What matters most?</span>
-        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="cashflow">Cash Flow Priority</button>
-        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="risk">Low Risk / Downside</button>
-        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="management">Low Management Effort</button>
-        <button type="button" class="priority-btn px-2 py-1 text-xs rounded border border-[#cbd5e1]" data-priority="horizon">Long Time Horizon</button>
+      <div style="margin-top:8px; font-size:0.875rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-weight:500; color:#334155;">What matters most?</span>
+        <button type="button" class="priority-btn" data-priority="cashflow" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Cash Flow Priority</button>
+        <button type="button" class="priority-btn" data-priority="risk" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Low Risk / Downside</button>
+        <button type="button" class="priority-btn" data-priority="management" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Low Management Effort</button>
+        <button type="button" class="priority-btn" data-priority="horizon" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Long Time Horizon</button>
       </div>
     </div>
 
@@ -526,50 +505,95 @@
          Centered overlay. Auto-apply live in future wiring. Reset button inside.
          Indiana Focus as prominent switch.
          This is local phase work only for now. -->
-    <div id="analysisConfigModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 shadow-xl">
-        <div class="flex justify-between items-center mb-4">
-          <h4 class="text-xl font-semibold text-[#0e4361]">Analysis Configuration</h4>
-          <button type="button" id="closeConfigModal" class="text-2xl leading-none">&times;</button>
+    <style>
+      #analysisConfigModal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+      #analysisConfigModal .modal-content {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 420px;
+        width: 100%;
+        margin: 0 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      }
+      .config-toggle {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background: white;
+        cursor: pointer;
+      }
+      .config-toggle.active {
+        background: #1e3a8a;
+        color: white;
+        border-color: #1e3a8a;
+      }
+      #analysisConfigModal label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: #334155;
+      }
+      .priority-btn.active {
+        background: #1e3a8a;
+        color: white;
+        border-color: #1e3a8a;
+      }
+    </style>
+    <div id="analysisConfigModal">
+      <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h4 style="font-size:1.25rem; font-weight:600; color:#0e4361;">Analysis Configuration</h4>
+          <button type="button" id="closeConfigModal" style="font-size:1.5rem; line-height:1; border:none; background:none; cursor:pointer;">&times;</button>
         </div>
 
         <!-- Property Category -->
-        <div class="mb-4">
-          <div class="text-sm font-medium text-[#334155] mb-1">Property Category</div>
-          <div class="flex gap-2">
-            <button type="button" class="config-toggle active px-3 py-1.5 text-sm rounded-lg border border-[#1e3a8a] bg-[#1e3a8a] text-white" data-config="propertyCategory" data-value="single-family">Single Family</button>
-            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="propertyCategory" data-value="multi-family-commercial">Multi-Family / Commercial</button>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.875rem; font-weight:500; color:#334155; margin-bottom:4px;">Property Category</div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="config-toggle active" data-config="propertyCategory" data-value="single-family">Single Family</button>
+            <button type="button" class="config-toggle" data-config="propertyCategory" data-value="multi-family-commercial">Multi-Family / Commercial</button>
           </div>
         </div>
 
         <!-- Rental Strategy -->
-        <div class="mb-4">
-          <div class="text-sm font-medium text-[#334155] mb-1">Rental Strategy</div>
-          <div class="flex gap-2 flex-wrap">
-            <button type="button" class="config-toggle active px-3 py-1.5 text-sm rounded-lg border border-[#1e3a8a] bg-[#1e3a8a] text-white" data-config="rentalStrategy" data-value="long-term">Long-Term</button>
-            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="rentalStrategy" data-value="short-term">Short-Term</button>
-            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="rentalStrategy" data-value="padsplit">PadSplit</button>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.875rem; font-weight:500; color:#334155; margin-bottom:4px;">Rental Strategy</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="config-toggle active" data-config="rentalStrategy" data-value="long-term">Long-Term</button>
+            <button type="button" class="config-toggle" data-config="rentalStrategy" data-value="short-term">Short-Term</button>
+            <button type="button" class="config-toggle" data-config="rentalStrategy" data-value="padsplit">PadSplit</button>
           </div>
         </div>
 
         <!-- Analysis Type -->
-        <div class="mb-4">
-          <div class="text-sm font-medium text-[#334155] mb-1">Analysis Type</div>
-          <div class="flex gap-2">
-            <button type="button" class="config-toggle active px-3 py-1.5 text-sm rounded-lg border border-[#1e3a8a] bg-[#1e3a8a] text-white" data-config="analysisType" data-value="new-purchase">New Purchase</button>
-            <button type="button" class="config-toggle px-3 py-1.5 text-sm rounded-lg border border-[#cbd5e1]" data-config="analysisType" data-value="existing-investment">Existing Investment</button>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.875rem; font-weight:500; color:#334155; margin-bottom:4px;">Analysis Type</div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="config-toggle active" data-config="analysisType" data-value="new-purchase">New Purchase</button>
+            <button type="button" class="config-toggle" data-config="analysisType" data-value="existing-investment">Existing Investment</button>
           </div>
         </div>
 
         <!-- Indiana Focus -->
-        <div class="mb-6">
-          <label class="flex items-center gap-2 text-sm font-medium text-[#334155]">
-            <input type="checkbox" id="indianaFocusToggle" class="accent-[#1e3a8a]" checked>
+        <div style="margin-bottom:24px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:0.875rem; color:#334155;">
+            <input type="checkbox" id="indianaFocusToggle" checked>
             <span>Indiana Focus (realistic local tax/insurance defaults)</span>
           </label>
         </div>
 
-        <div class="flex justify-end gap-2">
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
           <button type="button" id="resetConfigModal" class="calc-btn ghost">Reset to Defaults</button>
           <button type="button" id="applyConfigModal" class="calc-btn primary">Done</button>
         </div>
@@ -1104,7 +1128,7 @@
 
     <footer style="text-align:center; padding:48px 20px; background:#0f172a; color:#64748b; font-size:0.9rem;">
         <p>© <span id="copyrightYear"></span> Sean Aguinaga — Systems that remember people.</p>
-        <p class="footer-blossom"><a href="blossom/" data-plausible-event="Easter Egg - Blossom Footer">🌸 Blossom Life</a> · built with Quinn</p>
+        <p class="footer-blossom"><a href="blossom/" data-plausible-event="Easter Egg - Blossom Footer">🌸 Blossom Life</a> · <a href="promo-tracker/" style="color: inherit; opacity: 0.65; text-decoration: none;">Bonus Board</a></p>
     </footer>
 
     <!--  <script src="calculator.js?v=16"></script> -->

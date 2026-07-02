@@ -165,6 +165,14 @@ html[data-theme="midnight"] .scenery-glow {
   display: none;
 }
 
+/* Clean up floating scenery on phones to avoid visual garbage / overlap */
+@media (max-width: 700px) {
+  .scenery,
+  .scenery-glow {
+    display: none !important;
+  }
+}
+
 .scenery-glow {
   position: fixed;
   inset: 0;
@@ -409,6 +417,48 @@ html[data-theme="midnight"] .scenery-glow {
   align-items: center;
 }
 
+@media (max-width: 480px) {
+  .topbar {
+    padding: 14px 14px;
+    gap: 10px;
+  }
+  .topbar h1 {
+    font-size: 1.4rem;
+  }
+  .topbar p {
+    font-size: 0.78rem;
+    max-width: 100%;
+  }
+  .topbar-actions {
+    gap: 6px;
+  }
+  .topbar-actions .btn,
+  .topbar-actions .btn-ghost {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+  }
+
+  /* Make primary add button easy to hit and not lost in wrap */
+  #addOffer {
+    order: -1;
+    flex: 1 1 100%;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar p {
+    display: none; /* hide long tagline on tiniest to prevent cutoff */
+  }
+  .topbar {
+    padding: 10px 10px;
+  }
+  .topbar-actions {
+    gap: 4px;
+  }
+}
+
 .theme-picker {
   display: inline-flex;
   align-items: center;
@@ -496,13 +546,13 @@ html[data-theme="midnight"] .scenery-glow {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 10px;
   margin-bottom: 20px;
 }
 
 @media (max-width: 1000px) {
-  .stats { grid-template-columns: repeat(3, 1fr); }
+  .stats { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (max-width: 540px) {
@@ -516,6 +566,8 @@ html[data-theme="midnight"] .scenery-glow {
   border: 1px solid var(--panel2);
   text-align: center;
   box-shadow: var(--shadow-sm);
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .stat strong {
@@ -539,6 +591,8 @@ html[data-theme="midnight"] .scenery-glow {
 .stat span {
   font-size: 0.72rem;
   color: var(--muted);
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .tabs {
@@ -551,6 +605,22 @@ html[data-theme="midnight"] .scenery-glow {
   border: 1px solid var(--panel2);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
+}
+
+/* Mobile: prefer horizontal scroll for tabs (prevents multi-line garbage) */
+@media (max-width: 640px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 6px;
+  }
+  .tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
 }
 
 .tab {
@@ -627,6 +697,10 @@ html[data-theme="midnight"] .scenery-glow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .profile-grid { grid-template-columns: 1fr; }
 }
 
 .profile-grid label {
@@ -842,6 +916,7 @@ input:focus, select:focus, textarea:focus {
   vertical-align: middle;
   position: relative;
   flex-shrink: 0;
+  touch-action: manipulation;
 }
 
 .help-tip--inline {
@@ -1541,6 +1616,8 @@ input:focus, select:focus, textarea:focus {
 
 .sim-table-wrap {
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .sim-table {
@@ -1581,7 +1658,7 @@ input:focus, select:focus, textarea:focus {
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1913,6 +1990,17 @@ body.modal-open {
   gap: 8px;
 }
 
+@media (max-width: 480px) {
+  .hero-panel__cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero-panel__cta .btn,
+  .hero-panel__cta .btn-ghost {
+    width: 100%;
+  }
+}
+
 .trip-grid {
   display: flex;
   flex-direction: column;
@@ -2143,7 +2231,11 @@ body.modal-open {
   color: var(--text);
 }
 
-.chase-cmp__table-wrap { overflow-x: auto; }
+.chase-cmp__table-wrap { 
+  overflow-x: auto; 
+  width: 100%;
+  max-width: 100%;
+}
 
 .chase-cmp__table {
   width: 100%;
@@ -2591,7 +2683,11 @@ body.modal-open {
 
 .playbook-verdict--yes { color: var(--green); }
 
-.transfer-table-wrap { overflow-x: auto; }
+.transfer-table-wrap { 
+  overflow-x: auto; 
+  width: 100%;
+  max-width: 100%;
+}
 
 .transfer-table {
   width: 100%;
@@ -3254,6 +3350,60 @@ body.modal-open {
     margin-left: 0;
     margin-top: 2px;
   }
+
+  /* Extra mobile polish */
+  .topbar-actions .btn,
+  .topbar-actions .btn-ghost,
+  .btn,
+  .btn-ghost {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .help-tip {
+    width: 1.6em;
+    height: 1.6em;
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .offer-card,
+  .stack-card,
+  .panel {
+    padding: 14px;
+  }
+}
+
+/* Ultra-small screens (iPhone SE etc): force single column stats to avoid cutoff/cramped text */
+@media (max-width: 420px) {
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .stat {
+    padding: 10px 8px;
+  }
+  .stat strong {
+    font-size: 1.1rem;
+  }
+  .stat span {
+    font-size: 0.65rem;
+  }
+  .wrap {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .panel {
+    padding: 12px;
+  }
+
+  .catalog-grid,
+  .issuer-grid,
+  .wallet-owned-grid,
+  .household-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Light themes — keep forms and panels bright */
@@ -3432,6 +3582,7 @@ html[data-theme="midnight"] .tabs {
   padding: 0 4px 12px;
   border-bottom: 1px solid var(--panel2);
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 .wizard-dots {
   display: flex;
@@ -3458,7 +3609,8 @@ html[data-theme="midnight"] .tabs {
   font-weight: 600;
 }
 .wizard-body {
-  min-height: 240px;
+  min-height: 0;
+  flex: 1;
 }
 .wizard-step {
   display: flex;
@@ -3545,4 +3697,104 @@ html[data-theme="midnight"] .tabs {
 }
 .wizard-complete h3 {
   color: var(--green);
+}
+
+body.modal-open #startWizard,
+body.modal-open #guideBtn {
+  display: none !important;
+}
+
+body.modal-open .hero-panel__copy p.hint,
+body.modal-open .hero-panel__cta {
+  display: none !important;
+}
+
+/* Mobile fixes for wizard being cut off on small screens */
+@media (max-width: 640px) {
+  .wizard-modal .wizard-sheet {
+    width: 100%;
+    max-width: none;
+    max-height: 92vh;
+  }
+
+  .wizard-modal .modal__header {
+    padding: 6px 16px 8px !important;
+  }
+
+  .wizard-progress {
+    padding: 0 4px 6px;
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+
+  .wizard-progress .wizard-dots {
+    gap: 4px;
+  }
+
+  .wizard-body {
+    min-height: 0;
+    padding-bottom: 4px;
+    max-height: calc(92vh - 100px);
+    overflow-y: auto;
+  }
+
+  .wizard-step {
+    gap: 8px;
+  }
+
+  .wizard-step h3 {
+    font-size: 1rem;
+  }
+
+  .wizard-cards,
+  .wizard-simple-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .wizard-card {
+    padding: 10px;
+  }
+
+  .wizard-card strong {
+    font-size: 0.95rem;
+  }
+
+  .wizard-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .wizard-step-label {
+    font-size: 0.75rem;
+  }
+
+  .wizard-explain {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+
+  /* Fix wizard footer buttons cut off on right on mobile: full vertical stack, all buttons visible full width */
+  .modal__footer.wizard-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 8px 12px 8px;
+  }
+
+  .wizard-footer-right {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .wizard-footer .btn-ghost,
+  .wizard-footer .btn {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    white-space: normal;
+  }
 }
