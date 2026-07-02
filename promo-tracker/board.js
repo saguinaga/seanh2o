@@ -36,6 +36,12 @@ import { THEMES, DEFAULT_THEME, applyTheme, chartColors } from './themes.js';
 import {
   analyzeWallet, walletCardsForPicker, WALLET_PRESETS,
 } from './wallet-integration.js';
+import {
+  initVanity, showToast, showToastWithUndo,
+  celebrateOfferDone, celebratePin, celebratePlanLoad, celebrateThemeChange,
+  animateStats, checkMilestones, tabSwitchSparkle,
+  updateCfoLevel, animateCreditScores, flairCreditPanel,
+} from './vanity.js';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -420,25 +426,42 @@ function readPointsGrid(prefix, profile = state.profile) {
 function renderStats(sim, projection) {
   const proj = projection || earningsProjection(state.offers, [], { transferBonusPct });
 
+  const tripVal = fmtMoney(proj.netTravelPipeline || proj.netPipeline);
+  const cashVal = fmtMoney(proj.netPipeline);
+  const capturedVal = fmtMoney(proj.captured);
+  const perMo = proj.travelPerMonth > 0 ? fmtMoney(proj.travelPerMonth) : '$0';
+  const ptsVal = proj.pointsQueued ? fmtPts(proj.pointsQueued) : '0';
+  const dropVal = sim && sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '—';
+
+  const dip = sim && sim.summary.maxDrop > 0 ? sim.summary.maxDrop : 0;
+  const tripForDip = proj.netTravelPipeline || proj.netPipeline || 0;
+  const valPerDip = dip > 0 ? fmtMoney(Math.round(tripForDip / dip)) + '/pt' : '—';
+
+  animateStats([
+    { id: 'statPipeline', text: tripVal, pulse: true },
+    { id: 'statCashFloor', text: cashVal },
+    { id: 'statCaptured', text: capturedVal, pulse: proj.captured > 0 },
+    { id: 'statPerMonth', text: perMo },
+    { id: 'statPoints', text: ptsVal },
+    { id: 'statQueued', text: String(proj.queued) },
+    { id: 'statMaxDrop', text: dropVal },
+    { id: 'statValuePerDip', text: valPerDip },
+  ]);
+
   const heroEl = $('#statPipeline');
-  const cashEl = $('#statCashFloor');
   if (heroEl) {
-    heroEl.textContent = fmtMoney(proj.netTravelPipeline || proj.netPipeline);
-    heroEl.title = `If redeemed for cash/portal: ${fmtMoney(proj.netPipeline)}. Transfer partners usually give higher (trip) value.`;
+    heroEl.title = `If redeemed for cash/portal: ${cashVal}. Transfer partners usually give higher (trip) value.`;
   }
-  if (cashEl) cashEl.textContent = fmtMoney(proj.netPipeline);
-  $('#statCaptured').textContent = fmtMoney(proj.captured);
-  $('#statPerMonth').textContent = proj.travelPerMonth > 0 ? fmtMoney(proj.travelPerMonth) : '$0';
-  $('#statQueued').textContent = String(proj.queued);
-  const ptsEl = $('#statPoints');
-  if (ptsEl) ptsEl.textContent = proj.pointsQueued ? fmtPts(proj.pointsQueued) : '0';
   if (sim) {
     const el = $('#statMaxDrop');
-    el.textContent = sim.summary.maxDrop > 0 ? `−${sim.summary.maxDrop}` : '—';
-    el.style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
-    el.title = `Modeled max drop from this plan's hard pulls + spend. See the Credit score panel below or the Roadmap tab for details and recovery path.`;
-  } else {
-    $('#statMaxDrop').textContent = '—';
+    if (el) {
+      el.style.color = sim.summary.maxDrop >= 20 ? 'var(--rose)' : 'var(--green)';
+      el.title = `Modeled max drop from this plan's hard pulls + spend. See the Credit score panel below or the Roadmap tab for details and recovery path.`;
+    }
+    const vpd = $('#statValuePerDip');
+    if (vpd && dip > 0) {
+      vpd.title = `${fmtMoney(Math.round(tripForDip / dip))} trip value per point of score dip. Higher is better (more upside per credit point degraded).`;
+    }
   }
 }
 
@@ -503,6 +526,9 @@ function renderCreditImpact(sim) {
   } else {
     container.style.borderColor = 'var(--accent-soft)';
   }
+
+  flairCreditPanel(sim);
+  animateCreditScores();
 }
 
 function renderDashboardTimeline(timeline) {
@@ -530,6 +556,8 @@ function renderDashboard(sim, timeline) {
   const proj = earningsProjection(state.offers, timeline, { transferBonusPct });
   renderStats(sim, proj);
   renderCreditImpact(sim);
+  checkMilestones(proj, sim);
+  updateCfoLevel(proj);
 
   const snap = $('#earningsSnapshot');
   if (snap) {
@@ -636,9 +664,7 @@ function loadPlan(planId) {
   }
   save();
   renderAll();
-  if (hadOffers) {
-    showToast('Replaced previous plan with template.');
-  }
+  celebratePlanLoad(plan?.name || 'Starter plan', { replaced: hadOffers });
   switchTab('plan');
 }
 
@@ -1543,52 +1569,7 @@ function removeOffer(idOrCatalogId, showUndo = true) {
   }
 }
 
-function showToastWithUndo(message, onUndo) {
-  let host = $('#toastHost');
-  if (!host) {
-    host = document.createElement('div');
-    host.id = 'toastHost';
-    host.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center;';
-    document.body.appendChild(host);
-  }
-  const t = document.createElement('div');
-  t.innerHTML = `${message} <button style="background:#fff;color:#2b2222;border:none;padding:2px 8px;border-radius:99px;margin-left:8px;cursor:pointer;font-size:0.85rem;">Undo</button>`;
-  t.style.cssText = 'background:#2b2222;color:#fff;padding:10px 14px;border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.9rem;display:flex;align-items:center;';
-  host.appendChild(t);
 
-  const undoBtn = t.querySelector('button');
-  if (undoBtn) undoBtn.onclick = () => {
-    t.remove();
-    if (onUndo) onUndo();
-  };
-
-  setTimeout(() => {
-    if (t.parentNode) {
-      t.style.transition = 'opacity .2s';
-      t.style.opacity = '0';
-      setTimeout(() => t.remove(), 200);
-    }
-  }, 5500);
-}
-
-function showToast(message, ms = 2200) {
-  let host = $('#toastHost');
-  if (!host) {
-    host = document.createElement('div');
-    host.id = 'toastHost';
-    host.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;';
-    document.body.appendChild(host);
-  }
-  const t = document.createElement('div');
-  t.textContent = message;
-  t.style.cssText = 'background:#2b2222;color:#fff;padding:10px 16px;border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.9rem;';
-  host.appendChild(t);
-  setTimeout(() => {
-    t.style.transition = 'opacity .2s ease';
-    t.style.opacity = '0';
-    setTimeout(() => t.remove(), 200);
-  }, ms);
-}
 
 function offerCard(o) {
   const meta = OFFER_TYPES[o.type] || OFFER_TYPES.cc;
@@ -1665,6 +1646,9 @@ function renderOffers() {
       if (wasDone && o.status !== 'done') {
         o.completedDate = '';
       }
+      if (!wasDone && o.status === 'done') {
+        celebrateOfferDone(o);
+      }
       save();
       renderAll();
     });
@@ -1718,6 +1702,10 @@ function renderRoadmap(timeline, sim) {
     } else {
       const delta = sim.summary.endScore - sim.summary.startScore;
       const deltaCls = delta < 0 ? 'sim-summary__row--warn' : delta > 0 ? 'sim-summary__row--up' : '';
+      const proj = earningsProjection(state.offers, [], { transferBonusPct });
+      const dip = sim.summary.maxDrop || 0;
+      const tripV = proj.netTravelPipeline || proj.netPipeline || 0;
+      const vpd = dip > 0 ? fmtMoney(Math.round(tripV / dip)) + '/pt' : '—';
       summaryEl.innerHTML = `
         <div class="sim-summary roadmap-summary">
           <div class="sim-summary__row"><span>Starting FICO</span><strong>${sim.summary.startScore}</strong></div>
@@ -1728,6 +1716,7 @@ function renderRoadmap(timeline, sim) {
           <div class="sim-summary__row ${deltaCls}">
             <span>Net change</span><strong>${delta > 0 ? '+' : ''}${delta} pts</strong>
           </div>
+          <div class="sim-summary__row"><span>$ per pt dip</span><strong>${vpd}</strong></div>
           <div class="sim-summary__row"><span>Card apps in plan</span><strong>${sim.summary.totalApplications}</strong></div>
         </div>
       `;
@@ -1797,6 +1786,13 @@ function renderSimulation(timeline) {
           <div class="sim-summary__row ${sim.summary.maxDrop >= 15 ? 'sim-summary__row--warn' : ''}">
             <span>Max drop</span><strong>−${sim.summary.maxDrop} pts</strong>
           </div>
+          ${(() => {
+            const p = earningsProjection(state.offers, [], { transferBonusPct });
+            const d = sim.summary.maxDrop || 0;
+            const tv = p.netTravelPipeline || p.netPipeline || 0;
+            const v = d > 0 ? fmtMoney(Math.round(tv / d)) + '/pt' : '—';
+            return `<div class="sim-summary__row"><span>$ per pt dip</span><strong>${v}</strong></div>`;
+          })()}
           <div class="sim-summary__row"><span>CC applications</span><strong>${sim.summary.totalApplications}</strong></div>
           ${sim.summary.mortgageRisk ? '<p class="offer-alerts offer-alerts--warn">Mortgage/refi planned soon — consider pausing new applications.</p>' : ''}
           <p class="hint" style="margin-top:10px">Score typically recovers as inquiries age and bonus spending balances clear. Full profile editing is in the Credit profile tab.</p>
@@ -1946,6 +1942,7 @@ function renderAll() {
 }
 
 function switchTab(name) {
+  tabSwitchSparkle(name);
   $all('.tab').forEach((t) => {
     const on = t.dataset.tab === name;
     t.classList.toggle('tab--active', on);
@@ -1962,6 +1959,15 @@ function switchTab(name) {
     markFeedSeen(offersFeed);
     updateFeedBadge();
   }
+  // Ensure charts size correctly when their tab is revealed (fixes 0-size on narrow/mobile)
+  if (name === 'simulation' || name === 'roadmap') {
+    requestAnimationFrame(() => {
+      try {
+        if (scoreChart && name === 'simulation') scoreChart.resize();
+        if (roadmapScoreChart && name === 'roadmap') roadmapScoreChart.resize();
+      } catch (_) {}
+    });
+  }
 }
 
 function initMobileUx() {
@@ -1976,6 +1982,14 @@ function initMobileUx() {
   updateTabScrollHint();
   window.addEventListener('resize', updateTabScrollHint, { passive: true });
 
+  // Keep charts sized on viewport changes (important for mobile rotate + tab views)
+  window.addEventListener('resize', () => {
+    try {
+      if (scoreChart) scoreChart.resize();
+      if (roadmapScoreChart) roadmapScoreChart.resize();
+    } catch (_) {}
+  }, { passive: true });
+
   document.addEventListener('click', (e) => {
     const tip = e.target.closest('.help-tip');
     if (tip) {
@@ -1988,6 +2002,19 @@ function initMobileUx() {
     }
     $all('.help-tip--open').forEach((t) => t.classList.remove('help-tip--open'));
   });
+
+  // Touch support for help tips on mobile (ensures tap opens even if click timing varies)
+  document.addEventListener('touchend', (e) => {
+    const tip = e.target.closest('.help-tip');
+    if (tip) {
+      e.preventDefault();
+      const wasOpen = tip.classList.contains('help-tip--open');
+      $all('.help-tip--open').forEach((t) => t.classList.remove('help-tip--open'));
+      if (!wasOpen) tip.classList.add('help-tip--open');
+    } else {
+      $all('.help-tip--open').forEach((t) => t.classList.remove('help-tip--open'));
+    }
+  }, { passive: false });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -2075,6 +2102,10 @@ function openForm(id) {
   $('#offerPriority').value = o?.priority ?? 5;
   $('#offerEarliest').value = o?.earliestDate || '';
   $('#offerNotes').value = o?.notes || '';
+  // dismiss any vanity overlays so main modal isn't stuck behind
+  const ach = $('#vanityAchievement'); if (ach) ach.hidden = true;
+  const lvl = $('#vanityLevelUp'); if (lvl) lvl.hidden = true;
+  const spl = $('#vanitySplash'); if (spl) spl.hidden = true;
   modal.hidden = false;
   document.body.classList.add('modal-open');
   requestAnimationFrame(() => {
@@ -2115,10 +2146,12 @@ function saveOffer(e) {
     program: existing?.program,
   };
   if (!payload.title) return;
+  const isEdit = !!existing;
   if (existing) Object.assign(existing, payload);
   else state.offers.push(payload);
   save();
   closeForm();
+  celebratePin(isEdit);
   renderAll();
 }
 
@@ -2166,6 +2199,8 @@ function initThemePicker() {
   sel.addEventListener('change', () => {
     state.theme = applyTheme(sel.value);
     sel.title = THEMES[state.theme]?.hint || '';
+    const t = THEMES[state.theme];
+    celebrateThemeChange(t ? `${t.emoji} ${t.label}` : sel.value);
     save();
     renderAll();
   });
@@ -2178,9 +2213,18 @@ const WIZARD_TOTAL = 5;
 function openWizard() {
   const modal = $('#wizardModal');
   if (!modal) return;
+  // dismiss any vanity overlays so main modal isn't stuck behind
+  const ach = $('#vanityAchievement'); if (ach) ach.hidden = true;
+  const lvl = $('#vanityLevelUp'); if (lvl) lvl.hidden = true;
+  const spl = $('#vanitySplash'); if (spl) spl.hidden = true;
   wizardStep = 1;
   modal.hidden = false;
   document.body.classList.add('modal-open');
+  // explicitly hide launchers while in wizard (CSS may be cached or not apply)
+  const start = $('#startWizard');
+  if (start) start.style.display = 'none';
+  const guide = $('#guideBtn');
+  if (guide) guide.style.display = 'none';
   renderWizardStep();
 }
 
@@ -2189,6 +2233,11 @@ function closeWizard() {
   if (!modal) return;
   modal.hidden = true;
   document.body.classList.remove('modal-open');
+  // restore launchers
+  const start = $('#startWizard');
+  if (start) start.style.display = '';
+  const guide = $('#guideBtn');
+  if (guide) guide.style.display = '';
 }
 
 function updateWizardProgress() {
@@ -2343,6 +2392,10 @@ function renderWizardStep() {
 
     let scoreHtml = '';
     if (s) {
+      const p = (typeof earningsProjection === 'function') ? earningsProjection(state.offers, [], { transferBonusPct }) : null;
+      const d = s.maxDrop || 0;
+      const tv = (p && (p.netTravelPipeline || p.netPipeline)) || 0;
+      const vpd = d > 0 ? fmtMoney(Math.round(tv / d)) + '/pt' : '—';
       scoreHtml = `
         <div style="margin-top:14px; padding:12px 14px; background:var(--panel-soft); border-radius:12px; border:1px solid var(--accent-soft);">
           <strong style="display:block;margin-bottom:6px;">Credit score impact (modeled)</strong>
@@ -2350,6 +2403,7 @@ function renderWizardStep() {
             <div>Start: <strong>${s.startScore}</strong></div>
             <div>Lowest: <strong>${s.minScore}</strong> <span style="color:var(--rose);font-size:0.95rem;">(−${s.maxDrop})</span></div>
             <div>End: <strong>${s.endScore}</strong></div>
+            <div>$/pt: <strong>${vpd}</strong></div>
           </div>
           <p style="margin:8px 0 0;font-size:0.85rem;color:var(--text-soft);">We space pulls and use real household spending — the model shows a temporary dip that recovers as balances clear and inquiries age.</p>
         </div>
@@ -2455,9 +2509,6 @@ function bindWizard() {
   const guideBtn = $('#guideBtn');
   if (guideBtn) guideBtn.addEventListener('click', openWizard);
 
-  const floatGuide = $('#floatingGuide');
-  if (floatGuide) floatGuide.addEventListener('click', openWizard);
-
   const closeBtn = $('#wizardClose');
   if (closeBtn) closeBtn.addEventListener('click', closeWizard);
 
@@ -2486,6 +2537,7 @@ async function init() {
   if (glossaryEl) glossaryEl.innerHTML = glossaryHtml();
 
   initThemePicker();
+  initVanity();
   initMobileUx();
   populateIssuerSelects();
   populateInboxIssuers();
@@ -2518,20 +2570,21 @@ async function init() {
   document.addEventListener('click', (e) => {
     const jump = e.target.closest('[data-tab-jump]');
     if (jump?.dataset.tabJump) switchTab(jump.dataset.tabJump);
+
+    // Delegated handlers (more reliable on mobile / after any dynamic changes)
+    if (e.target.closest('#addOffer')) { openForm(null); return; }
+    if (e.target.closest('#loadHousehold')) { loadPlan('household-stretch'); return; }
+    if (e.target.closest('#loadBalanced')) { loadPlan('balanced'); return; }
+    if (e.target.closest('#loadConservative')) { loadPlan('conservative'); return; }
+    if (e.target.closest('#loadSeed')) { loadPlan('balanced'); return; }
+    if (e.target.closest('#guideBtn')) { openWizard(); return; }
   });
 
   $('#catalogIssuer')?.addEventListener('change', renderCatalog);
   $('#catalogCategory')?.addEventListener('change', renderCatalog);
   $('#transferProgram')?.addEventListener('change', (e) => renderTransferTable(e.target.value));
 
-
-  $('#addOffer')?.addEventListener('click', () => openForm(null));
-  $('#loadSeed')?.addEventListener('click', () => loadPlan('balanced'));
-  $('#loadBalanced')?.addEventListener('click', () => loadPlan('balanced'));
-  $('#loadConservative')?.addEventListener('click', () => loadPlan('conservative'));
-  $('#loadHousehold')?.addEventListener('click', () => loadPlan('household-stretch'));
-  // Also support reopening wizard from other places if needed
-  $('#guideBtn')?.addEventListener('click', openWizard); // idempotent
+  // Direct attaches removed in favor of delegated (more reliable under mobile emulation + dynamic re-renders)
 
   $('#loadWalletPreset')?.addEventListener('click', () => {
     const preset = WALLET_PRESETS['starter-six'];

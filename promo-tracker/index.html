@@ -29,7 +29,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=board-20260702b">
+  <link rel="stylesheet" href="styles.css?v=board-20260702p">
+  <link rel="stylesheet" href="vanity.css?v=20260702p">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -52,6 +53,11 @@
       <div class="topbar__brand">
         <span class="topbar__pin" aria-hidden="true">📌</span>
         <div>
+          <p class="vanity-ribbon" aria-hidden="true" data-level="Bonus board curator">
+            ✨ Household CFO mode
+            <span class="vanity-ribbon__badge" id="vanityCfoBadge">📋 Bonus board curator</span>
+            <span class="vanity-ribbon__visit" id="vanityVisitCount">Visit #5</span>
+          </p>
           <h1>Bonus Board</h1>
           <p>Your cozy corner for pacing card offers as the household helper — pin a plan, keep credit healthy, and stretch groceries &amp; bills into family trips.</p>
         </div>
@@ -59,8 +65,11 @@
       <div class="topbar-actions">
         <label class="theme-picker">
           <span class="theme-picker__icon" aria-hidden="true">🎨</span>
-          <select id="themeSelect" aria-label="Choose theme">
-            <option value="cozy">🌸 Cozy</option>
+          <select id="themeSelect" aria-label="Choose theme" title="Clean white board">
+            <option value="cozy" title="Warm &amp; inviting — our default">🌸 Cozy</option>
+            <option value="paper" title="Clean white board">📋 Paper</option>
+            <option value="bloom" title="Soft pink mood board">💗 Bloom</option>
+            <option value="midnight" title="Easy on the eyes at night">🌙 Midnight</option>
           </select>
         </label>
         <a href="../index.html" class="btn-ghost">← Home</a>
@@ -86,6 +95,7 @@
       <div class="stat"><strong id="statPoints">0</strong><span>Points queued</span></div>
       <div class="stat"><strong id="statQueued">0</strong><span>Offers</span></div>
       <div class="stat"><strong id="statMaxDrop">—</strong><span>Max score dip</span></div>
+      <div class="stat" title="Trip value (if transferred) earned per 1 point of modeled max score dip. Higher = cooler efficiency: more dollars of upside per point of credit score degradation."><strong id="statValuePerDip">—</strong><span>$ per pt dip</span></div>
     </div>
 
     <!-- Prominent credit score impact for household visibility -->
@@ -557,6 +567,8 @@
         </div>
       </div>
     </section>
+
+    <p class="vanity-watermark" aria-hidden="true">✨ Bonus Board · household helper edition · made with confetti</p>
   </div>
 
   <!-- Guided Setup Wizard -->
@@ -673,8 +685,6 @@
     </div>
   </div>
 
-  <button id="floatingGuide" style="position:fixed;bottom:20px;right:20px;z-index:999;background:#e60023;color:white;border:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 12px rgba(230,0,35,0.4);font-size:0.9rem;cursor:pointer;">✨ Guided setup</button>
-
-  <script type="module" src="board.js?v=board-20260702b"></script>
+  <script type="module" src="board.js?v=board-20260702p"></script>
 </body>
 </html>
