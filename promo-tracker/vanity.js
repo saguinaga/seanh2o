@@ -185,10 +185,6 @@ function resizeConfetti() {
 
 export function initVanity() {
   ensureLayer();
-  if (!prefersReducedMotion() && !isAutomated() && !sparklesBound) {
-    spawnSparkles();
-    sparklesBound = true;
-  }
   document.body.classList.add('vanity-on');
   bumpVisitCount();
   welcomeVanitySplash();
@@ -286,6 +282,7 @@ function confettiLoop() {
 }
 
 export function burstConfetti({ count = 120, origin } = {}) {
+  return;
   if (prefersReducedMotion() || isAutomated()) return;
   ensureLayer();
   if (!confettiCtx) return;

@@ -41,7 +41,7 @@ import {
   celebrateOfferDone, celebratePin, celebratePlanLoad, celebrateThemeChange,
   animateStats, checkMilestones, tabSwitchSparkle,
   updateCfoLevel, animateCreditScores, flairCreditPanel,
-} from './vanity.js';
+} from './vanity.js?v=20260702r';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
