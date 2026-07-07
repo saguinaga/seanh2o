@@ -10,28 +10,7 @@ body.vanity-on .topbar {
 }
 
 body.vanity-on .topbar::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: calc(var(--radius) + 4px);
-  padding: 2px;
-  background: linear-gradient(
-    120deg,
-    #e60023,
-    #f4a261,
-    #d45d7a,
-    #1f7a4f,
-    #1174CC,
-    #e60023
-  );
-  background-size: 300% 300%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: vanityBorderSpin 8s ease infinite;
-  pointer-events: none;
-  opacity: 0.85;
+  display: none;
 }
 
 .vanity-ribbon {
@@ -47,9 +26,8 @@ body.vanity-on .topbar::before {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #fff;
-  background: linear-gradient(135deg, #e60023 0%, #d45d7a 50%, #f4a261 100%);
-  box-shadow: 0 4px 16px rgba(230, 0, 35, 0.35);
-  animation: vanityRibbonPulse 3s ease-in-out infinite;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(230, 0, 35, 0.2);
 }
 
 .vanity-ribbon__badge {
@@ -96,21 +74,9 @@ body.vanity-on .topbar::before {
   50% { box-shadow: 0 6px 24px rgba(230, 0, 35, 0.5); transform: scale(1.02); }
 }
 
-/* Hero stat — holographic shimmer */
+/* Hero stat — accent only (no rainbow shimmer) */
 .stat--hero strong {
-  background: linear-gradient(
-    110deg,
-    var(--accent) 0%,
-    #f4a261 25%,
-    var(--accent2) 50%,
-    var(--green) 75%,
-    var(--accent) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: holoText 6s linear infinite;
+  color: var(--accent);
 }
 
 .stat--hero-shimmer::after {
@@ -159,15 +125,7 @@ body.vanity-on .topbar::before {
 }
 
 .credit-impact::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: conic-gradient(from 0deg, #e60023, #1f7a4f, #1174CC, #f4a261, #e60023);
-  opacity: 0.35;
-  animation: creditAura 12s linear infinite;
-  z-index: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .credit-impact > * {
@@ -214,11 +172,7 @@ body.vanity-on .topbar::before {
 }
 
 .credit-impact--elite .credit-impact__numbers .num {
-  background: linear-gradient(135deg, #f4a261 0%, var(--accent) 50%, var(--green) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: holoText 4s linear infinite;
+  color: var(--green);
 }
 
 .num--pulse {
@@ -678,13 +632,9 @@ body.welcome-splash-open {
   50% { transform: translateX(100%); }
 }
 
-/* Floating sparkles */
+/* Floating sparkles — off by default */
 .vanity-sparkle-field {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
+  display: none;
 }
 
 .vanity-sparkle {

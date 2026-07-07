@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=board-20260702q">
-  <link rel="stylesheet" href="vanity.css?v=20260702q">
+  <link rel="stylesheet" href="vanity.css?v=20260702r">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -67,7 +67,7 @@
       <div class="topbar-actions">
         <label class="theme-picker">
           <span class="theme-picker__icon" aria-hidden="true">🎨</span>
-          <select id="themeSelect" aria-label="Choose theme" title="Clean white board">
+          <select id="themeSelect" aria-label="Choose theme" title="Clean white board" data-lpignore="true" autocomplete="off">
             <option value="cozy" title="Warm &amp; inviting — our default">🌸 Cozy</option>
             <option value="paper" title="Clean white board">📋 Paper</option>
             <option value="bloom" title="Soft pink mood board">💗 Bloom</option>
@@ -77,7 +77,7 @@
         <a href="../index.html" class="btn-ghost">← Home</a>
         <button type="button" class="btn-ghost" id="exportBtn">Save backup</button>
         <button type="button" class="btn-ghost" id="importBtn">Restore</button>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <input type="file" id="importFile" accept="application/json,.json" hidden data-lpignore="true" autocomplete="off">
         <button type="button" class="btn-ghost" id="guideBtn" title="Open the step-by-step guide">Guide</button>
         <button type="button" class="btn" id="addOffer">+ Pin an offer</button>
       </div>
@@ -218,6 +218,7 @@
           <div>
             <h2>Live deal inbox</h2>
             <p class="hint" id="feedMeta">Loading feed…</p>
+            <p class="hint">Deals come from a server-side feed (catalog + Doctor of Credit RSS). <strong>Check for updates</strong> re-fetches the latest deployed copy — not a live scrape from your browser.</p>
           </div>
           <button type="button" class="btn" id="refreshFeed">Check for updates</button>
         </div>
@@ -233,7 +234,7 @@
           <h2>All deals</h2>
           <div class="inbox-filters">
             <label class="catalog-filter">Type
-              <select id="inboxType">
+              <select id="inboxType" data-lpignore="true" autocomplete="off">
                 <option value="all">All</option>
                 <option value="cc">Credit cards</option>
                 <option value="bank">Bank bonuses</option>
@@ -242,10 +243,10 @@
               </select>
             </label>
             <label class="catalog-filter">Issuer
-              <select id="inboxIssuer"><option value="all">All</option></select>
+              <select id="inboxIssuer" data-lpignore="true" autocomplete="off"><option value="all">All</option></select>
             </label>
             <label class="catalog-filter">Search
-              <input type="search" id="inboxSearch" placeholder="Chase, welcome bonus, Rakuten…">
+              <input type="search" id="inboxSearch" placeholder="Chase, welcome bonus, Rakuten…" data-lpignore="true" autocomplete="off">
             </label>
           </div>
         </div>
@@ -570,7 +571,7 @@
       </div>
     </section>
 
-    <p class="vanity-watermark" aria-hidden="true">✨ Bonus Board · household helper edition · made with confetti</p>
+    <p class="vanity-watermark" aria-hidden="true">Bonus Board · household helper edition</p>
   </div>
 
   <!-- Guided Setup Wizard -->
@@ -687,6 +688,6 @@
     </div>
   </div>
 
-  <script type="module" src="board.js?v=board-20260702q"></script>
+  <script type="module" src="board.js?v=board-20260702s"></script>
 </body>
 </html>

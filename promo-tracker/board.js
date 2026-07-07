@@ -41,7 +41,7 @@ import {
   celebrateOfferDone, celebratePin, celebratePlanLoad, celebrateThemeChange,
   animateStats, checkMilestones, tabSwitchSparkle,
   updateCfoLevel, animateCreditScores, flairCreditPanel,
-} from './vanity.js';
+} from './vanity.js?v=20260702r';
 
 const STORAGE_KEY = 'promo_tracker_v3';
 const LEGACY_KEY = 'promo_tracker_v1';
@@ -750,11 +750,19 @@ function updateFeedBadge() {
 async function refreshFeedNow() {
   const btn = $('#refreshFeed');
   if (btn) btn.disabled = true;
+  const prevHash = offersFeed?.meta?.hash;
   try {
     offersFeed = await loadOffersFeed(true);
     updateFeedBadge();
     renderDealInbox();
     renderCatalog();
+    const nextHash = offersFeed?.meta?.hash;
+    const built = formatFeedAge(offersFeed?.meta?.generatedAt);
+    if (prevHash && nextHash && prevHash !== nextHash) {
+      showToast(`Feed updated — new deals (built ${built})`);
+    } else {
+      showToast(`Feed checked — same content on server (built ${built})`);
+    }
   } catch (e) {
     showToast(`Could not refresh feed: ${e.message}`);
     console.warn('Feed refresh issue (likely network or local file):', e);
@@ -817,8 +825,12 @@ function renderDealInbox() {
     if (!offersFeed) {
       meta.textContent = 'Feed not loaded — click Check for updates.';
     } else {
-      const changed = offersFeed.meta?.previousHash && offersFeed.meta.hash !== offersFeed.meta.previousHash;
-      meta.textContent = `Updated ${formatFeedAge(offersFeed.meta?.generatedAt)} · hash ${offersFeed.meta?.hash || '—'}${changed ? ' · content changed this refresh' : ''}`;
+      const built = formatFeedAge(offersFeed.meta?.generatedAt);
+      const unseen = feedHasUpdates(offersFeed);
+      const ageMs = offersFeed.meta?.generatedAt ? Date.now() - new Date(offersFeed.meta.generatedAt).getTime() : 0;
+      const stale = ageMs > 7 * 24 * 60 * 60 * 1000;
+      const status = unseen ? 'new deals since your last visit' : "you're up to date";
+      meta.textContent = `Built ${built} · ${status}${stale ? ' · server feed may be stale — weekly auto-refresh pending' : ''}`;
     }
   }
 
