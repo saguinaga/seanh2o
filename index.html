@@ -20,6 +20,7 @@
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
       plausible.init()
     </script>
+    <script src="plausible-events.js?v=1"></script>
 
     <!-- Microsoft Clarity placeholder - add after signing up (see instructions below) -->
     <!-- Note: Tailwind CDN removed for production (was only for the config modal). The modal is now styled with inline styles + .calc-* classes below. -->
@@ -291,7 +292,7 @@
             <div class="logo">
                 <strong>Sean Aguinaga</strong>
             </div>
-            <button type="button" class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+            <button type="button" class="nav-toggle" id="navToggle" data-plausible-event="Nav - Mobile Menu" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
                 <span></span><span></span><span></span>
             </button>
             <div class="nav-links" id="navMenu">
@@ -456,7 +457,7 @@
 
     <footer style="text-align:center; padding:48px 20px; background:#0f172a; color:#64748b; font-size:0.9rem;">
         <p>© <span id="copyrightYear"></span> Sean Aguinaga</p>
-        <p class="footer-side-links"><a href="blossom/" style="color:#64748b;text-decoration:none;opacity:0.65;">Blossom Life · family project with Quinn</a> · <a href="promo-tracker/" style="color:#64748b;text-decoration:none;opacity:0.65;">Bonus Board</a></p>
+        <p class="footer-side-links"><a href="blossom/" style="color:#64748b;text-decoration:none;opacity:0.65;" data-plausible-event="Launch - Blossom Life">Blossom Life · family project with Quinn</a> · <a href="promo-tracker/" style="color:#64748b;text-decoration:none;opacity:0.65;" data-plausible-event="Launch - Promo Tracker Footer">Bonus Board</a></p>
     </footer>
     <script>
       (function () {
@@ -478,6 +479,13 @@
         });
         window.addEventListener('resize', function () {
           if (window.innerWidth > 768) closeMenu();
+        });
+      })();
+            (function () {
+        var form = document.querySelector('#contact form');
+        if (!form) return;
+        form.addEventListener('submit', function () {
+          if (window.trackPlausible) window.trackPlausible('Contact - Form Submit');
         });
       })();
       (function () {

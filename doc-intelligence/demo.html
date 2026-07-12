@@ -8,11 +8,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=4">
+    <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init()
+    </script>
+    <script src="../plausible-events.js?v=1"></script>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <a href="../index.html#projects" class="back-portfolio">← Portfolio</a>
+      <a href="../index.html#projects" class="back-portfolio" data-plausible-event="Nav - Back to Portfolio">← Portfolio</a>
       <div class="brand">
         <div class="brand-mark">SA</div>
         <div>
@@ -35,14 +41,14 @@
           </select>
         </div>
         <p class="persona-pain" id="personaPain"></p>
-        <a href="../index.html#projects" class="portfolio-link">Back to portfolio</a>
+        <a href="../index.html#projects" class="portfolio-link" data-plausible-event="Nav - Back to Portfolio">Back to portfolio</a>
       </div>
     </aside>
 
     <main class="main">
       <div class="iteration-banner">
         <strong>Vibe coding lab</strong> — upload a real PDF, walk the workflow, export to Excel or Word.
-        <a href="index.html">PM roadmap</a> lives separately if you want the strategy write-up.
+        <a href="index.html" data-plausible-event="DocIntel - PM Roadmap">PM roadmap</a> lives separately if you want the strategy write-up.
       </div>
       <header class="topbar">
         <p class="eyebrow" id="stepEyebrow">Workflow lab</p>
@@ -129,8 +135,8 @@
             <h3>Upload a PDF</h3>
             <p>Drag &amp; drop or choose a PDF — UPB, DSCR, LTV, NOI, occupancy parsed client-side.</p>
             <div class="upload-actions">
-              <button type="button" class="btn btn-primary btn-sm" id="choosePdfBtn">Choose PDF</button>
-              <button type="button" class="btn btn-ghost btn-sm" id="simulateUploadBtn">Load demo package</button>
+              <button type="button" class="btn btn-primary btn-sm" id="choosePdfBtn" data-plausible-event="DocIntel - Choose PDF">Choose PDF</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="simulateUploadBtn" data-plausible-event="DocIntel - Load Demo Package">Load demo package</button>
             </div>
             <p class="upload-status" id="uploadStatus"></p>
             <input type="file" id="fileInput" hidden accept=".pdf,application/pdf">
@@ -183,7 +189,7 @@
           <div class="confidence-summary" id="confidenceSummary"></div>
           <div class="review-actions">
             <button type="button" class="btn btn-ghost" id="flagLowConfBtn">Flag low confidence</button>
-            <button type="button" class="btn btn-primary" id="approveAllBtn">Approve all fields</button>
+            <button type="button" class="btn btn-primary" id="approveAllBtn" data-plausible-event="DocIntel - Approve All">Approve all fields</button>
           </div>
         </div>
 
@@ -239,7 +245,7 @@
         <div class="card table-card">
           <div class="table-header">
             <h3>Rent roll — normalized schema</h3>
-            <button type="button" class="btn btn-ghost btn-sm" id="exportTableBtn">Export CSV</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="exportTableBtn" data-plausible-event="DocIntel - Export CSV">Export CSV</button>
           </div>
           <div class="table-scroll">
             <table class="data-table" id="rentRollTable">
@@ -262,10 +268,10 @@
         </p>
 
         <div class="deliver-tabs">
-          <button type="button" class="deliver-tab active" data-tab="browser">Browser</button>
-          <button type="button" class="deliver-tab" data-tab="excel">Excel Add-in</button>
-          <button type="button" class="deliver-tab" data-tab="word">Word Add-in</button>
-          <button type="button" class="deliver-tab" data-tab="api">Developer API</button>
+          <button type="button" class="deliver-tab active" data-tab="browser" data-plausible-event="DocIntel - Delivery Tab" data-plausible-event-props="{""tab"":""browser""}">Browser</button>
+          <button type="button" class="deliver-tab" data-tab="excel" data-plausible-event="DocIntel - Delivery Tab" data-plausible-event-props="{""tab"":""excel""}">Excel Add-in</button>
+          <button type="button" class="deliver-tab" data-tab="word" data-plausible-event="DocIntel - Delivery Tab" data-plausible-event-props="{""tab"":""word""}">Word Add-in</button>
+          <button type="button" class="deliver-tab" data-tab="api" data-plausible-event="DocIntel - Delivery Tab" data-plausible-event-props="{""tab"":""api""}">Developer API</button>
         </div>
 
         <div class="deliver-panels">
@@ -275,8 +281,8 @@
                 <h3>Export &amp; dashboards</h3>
                 <p>Browser is the review layer. Export and dashboard push are secondary to in-workflow delivery.</p>
                 <div class="export-buttons">
-                  <button type="button" class="btn btn-primary" id="dlJsonBtn">Download JSON</button>
-                  <button type="button" class="btn btn-ghost" id="dlCsvBtn">Download CSV</button>
+                  <button type="button" class="btn btn-primary" id="dlJsonBtn" data-plausible-event="DocIntel - Download JSON">Download JSON</button>
+                  <button type="button" class="btn btn-ghost" id="dlCsvBtn" data-plausible-event="DocIntel - Download CSV">Download CSV</button>
                   <button type="button" class="btn btn-ghost" id="pushDashBtn">Push to dashboard</button>
                 </div>
                 <div class="toast" id="browserToast" hidden></div>

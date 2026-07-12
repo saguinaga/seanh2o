@@ -271,7 +271,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       show();
     });
     if (closeBtn) closeBtn.addEventListener('click', hide);
-    if (applyBtn) applyBtn.addEventListener('click', () => { applyConfigToDOM(); hide(); });
+    if (applyBtn) applyBtn.addEventListener('click', () => { trackEvent('BuyHold - Apply Config'); applyConfigToDOM(); hide(); });
 
     // Toggle buttons
     modal.querySelectorAll('.config-toggle').forEach(tog => {
@@ -725,6 +725,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const btn = $('resetScenario');
     if (!btn) return;
     btn.addEventListener('click', () => {
+      trackEvent('BuyHold - Reset Defaults');
       applyPreset('marion-default', true);
       // ensure cash off for default
       const cb = $('cashPurchase');
@@ -922,6 +923,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       if (isHYSA) {
         const remBtn = col.querySelector('.remove-btn');
         if (remBtn) remBtn.addEventListener('click', () => {
+          trackEvent('BuyHold - Compare Remove');
           comparisonScenarios.splice(idx, 1);
           renderComparison();
         });
@@ -939,6 +941,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         // Load
         const loadBtn = col.querySelector('.load-btn');
         if (loadBtn) loadBtn.addEventListener('click', () => {
+          trackEvent('BuyHold - Compare Load');
           activeScenario = JSON.parse(JSON.stringify(sc));
           applyConfigToDOM();
           fullCalc();
@@ -948,6 +951,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         // Remove
         const remBtn = col.querySelector('.remove-btn');
         if (remBtn) remBtn.addEventListener('click', () => {
+          trackEvent('BuyHold - Compare Remove');
           comparisonScenarios.splice(idx, 1);
           renderComparison();
         });
@@ -1112,6 +1116,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     if (saveBtn && nameInput) {
       saveBtn.addEventListener('click', () => {
+        trackEvent('BuyHold - Save Scenario');
         const nm = (nameInput.value || 'Indy Deal ' + new Date().toLocaleDateString()).trim();
         const data = collectCurrentInputs();
         data.cashPurchase = $('cashPurchase')?.checked || false;
@@ -1125,6 +1130,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     if (loadBtn && select) {
       loadBtn.addEventListener('click', () => {
+        trackEvent('BuyHold - Load Scenario');
         const key = select.value;
         if (!key) return;
         try {
@@ -1146,6 +1152,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     if (delBtn && select) {
       delBtn.addEventListener('click', () => {
+        trackEvent('BuyHold - Delete Scenario');
         const key = select.value;
         if (key) {
           localStorage.removeItem(key);
@@ -1208,6 +1215,12 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     wireAllInputsForCalc();
 
     // Phase 1: wire config modal (more aggressive but safe)
+    document.querySelectorAll('#buy-hold-calculator .priority-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var p = btn.getAttribute('data-priority') || 'unknown';
+        trackEvent('BuyHold - Priority ' + p);
+      });
+    });
     setupAnalysisConfigModal();
 
     // Bind new Existing fields (safe additive)
