@@ -31,8 +31,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=board-20260702q">
-  <link rel="stylesheet" href="vanity.css?v=30260702r">
+  <link rel="stylesheet" href="styles.css?v=board-20260712a">
+  <link rel="stylesheet" href="vanity.css?v=20260712a">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bonus-board">
@@ -55,11 +55,12 @@
       <div class="topbar__brand">
         <span class="topbar__pin" aria-hidden="true">📌</span>
         <div>
-          <p class="vanity-ribbon" aria-hidden="true" data-level="Bonus board curator">
-            ✨ Household CFO mode
-            <span class="vanity-ribbon__badge" id="vanityCfoBadge">📋 Bonus board curator</span>
-            <span class="vanity-ribbon__visit" id="vanityVisitCount">Visit #5</span>
-          </p>
+          <div class="vanity-meta" aria-live="polite">
+            <p class="vanity-ribbon" id="vanityCfoRibbon" data-level="Bonus board curator">
+              <span class="vanity-ribbon__level" id="vanityCfoBadge">📋 Bonus board curator</span>
+            </p>
+            <p class="vanity-ribbon__visit" id="vanityVisitCount">Visit #5</p>
+          </div>
           <h1>Bonus Board</h1>
           <p>Your cozy corner for pacing card offers as the household helper — pin a plan, keep credit healthy, and stretch groceries &amp; bills into family trips.</p>
         </div>
@@ -86,7 +87,7 @@
     <p class="disclaimer">
       Just a friendly planner — not financial advice. Numbers are estimates; bank rules are our best guess.
       Tap the <span class="help-tip help-tip--inline" tabindex="0" aria-label="Help icons explain jargon" data-tip="Look for ? icons throughout the app — they explain welcome bonuses, spending requirements, and rules like Chase’s 5/24 in plain English.">?</span> icons when jargon pops up, and double-check live offers before you apply.
-      <br><small style="opacity:0.7">Console noise like <code>content.js</code>, “Could not establish connection”, “VAULT sync”, or “background-redux” is from browser extensions — not Bonus Board. Incognito (extensions off) gives a clean console.</small>
+      <details class="disclaimer-dev"><summary>Developer note</summary>Console noise like <code>content.js</code>, “Could not establish connection”, “VAULT sync”, or “background-redux” is from browser extensions — not Bonus Board. Incognito (extensions off) gives a clean console.</details>
     </p>
 
     <div class="stats">
@@ -94,10 +95,15 @@
       <div class="stat" title="Conservative cash value (statement credit or bank portal, roughly 1¢ per point)"><strong id="statCashFloor">$0</strong><span>Cash floor</span></div>
       <div class="stat"><strong id="statCaptured">$0</strong><span>Already received</span></div>
       <div class="stat"><strong id="statPerMonth">$0</strong><span>Trip $/month</span></div>
-      <div class="stat"><strong id="statPoints">0</strong><span>Points queued</span></div>
-      <div class="stat"><strong id="statQueued">0</strong><span>Offers</span></div>
-      <div class="stat"><strong id="statMaxDrop">—</strong><span>Max score dip</span></div>
-      <div class="stat" title="Trip value (if transferred) earned per 1 point of modeled max score dip. Higher = cooler efficiency: more dollars of upside per point of credit score degradation."><strong id="statValuePerDip">—</strong><span>$ per pt dip</span></div>
+      <details class="stats-more">
+        <summary>More plan stats</summary>
+        <div class="stats-more__grid">
+          <div class="stat"><strong id="statPoints">0</strong><span>Points queued</span></div>
+          <div class="stat"><strong id="statQueued">0</strong><span>Offers</span></div>
+          <div class="stat" title="Also shown in the credit impact panel below"><strong id="statMaxDrop">—</strong><span>Max score dip</span></div>
+          <div class="stat" title="Trip value (if transferred) earned per 1 point of modeled max score dip. Higher = cooler efficiency: more dollars of upside per point of credit score degradation."><strong id="statValuePerDip">—</strong><span>$ per pt dip</span></div>
+        </div>
+      </details>
     </div>
 
     <!-- Prominent credit score impact for household visibility -->
@@ -118,6 +124,7 @@
       </div>
     </div>
 
+    <p class="tabs-hint">New here? Start on <strong>Dashboard</strong>, then open <strong>Roadmap</strong> for timing and score impact.</p>
     <div class="tabs-wrap" id="tabsWrap">
       <nav class="tabs" role="tablist" id="mainTabs">
         <button type="button" class="tab tab--active" data-tab="dashboard" role="tab">Dashboard</button>
@@ -136,7 +143,7 @@
     <section class="tab-panel tab-panel--active" id="panel-dashboard" role="tabpanel">
       <div class="hero-panel hero-panel--earn">
         <div class="hero-panel__copy">
-          <p class="hero-panel__eyebrow">✨ Household helper mode</p>
+          <p class="hero-panel__eyebrow">Your plan at a glance</p>
           <h2>Pace the cards, protect the score, fund the family adventures</h2>
           <p>A responsible, well-paced plan using only the spending you already do (groceries, bills, Amazon). Clear timeline + modeled credit impact so everything stays healthy.</p>
           <p class="hint" style="margin-top:6px">First time or want a refresher? Use “Walk me through it” for a simple guided setup.</p>

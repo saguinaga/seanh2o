@@ -405,7 +405,7 @@ let prevCfoLevel = '';
 
 export function updateCfoLevel(projection) {
   const level = cfoLevelFor(projection);
-  const ribbon = document.querySelector('.vanity-ribbon');
+  const ribbon = document.getElementById('vanityCfoRibbon');
   const badge = document.getElementById('vanityCfoBadge');
   const label = `${level.emoji} ${level.title}`;
 

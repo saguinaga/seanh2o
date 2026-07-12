@@ -2286,3 +2286,37 @@ body {
     padding-left: 2.4rem;
   }
 }
+
+.personal-tools {
+  margin-top: 48px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.personal-tools-header {
+  margin-bottom: 24px;
+}
+
+.personal-tools-title {
+  margin: 0 0 6px;
+  font-size: 1.35rem;
+  color: #f1f5f9;
+  font-weight: 700;
+}
+
+.personal-tools-sub {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.personal-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 520px;
+}
+
+.project-card-visual--cozy {
+  background: linear-gradient(135deg, #fb7185 0%, #f472b6 45%, #fda4af 100%);
+}
