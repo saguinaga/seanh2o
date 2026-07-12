@@ -19,8 +19,5 @@
     <circle cx="40" cy="24" r="1.4"/>
   </g>
   <circle cx="28" cy="24" r="1.8" fill="#f59e0b" opacity="0.9"/>
-  <g fill="#e0f2fe">
-    <path d="M11 21c0-7 6-11 13-11s13 4 13 11c0 4-3 6-8 7.5-6 1.5-8 3.5-8 7 0 6-5 10-12 10s-13-4-13-10h5.5c0 3 3 5 6.5 5s6.5-2 6.5-5c0-3-2-4.5-6.5-5.5-6-1.5-8.5-4-8.5-9z"/>
-    <path fill-rule="evenodd" d="M29 42L37 12L45 42H40.5L38.8 34H31.2L29 42ZM31.5 32H40.5L37 18L31.5 32Z"/>
-  </g>
+  <text x="32" y="42" font-size="30" font-weight="700" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,Segoe UI,sans-serif" letter-spacing="-2">SA</text>
 </svg>
