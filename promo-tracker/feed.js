@@ -110,3 +110,35 @@ export function formatFeedAge(iso) {
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 }
+
+/** Next scheduled server rebuild — matches refresh-promo-offers.yml cron (Mon 14:00 UTC). */
+export function nextFeedRefreshAt(from = new Date()) {
+  const REFRESH_DAY = 1;
+  const REFRESH_HOUR_UTC = 14;
+  const d = new Date(from);
+  const candidate = new Date(Date.UTC(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+    REFRESH_HOUR_UTC,
+    0,
+    0,
+    0,
+  ));
+  const day = d.getUTCDay();
+  const daysUntilMonday = (REFRESH_DAY - day + 7) % 7;
+  candidate.setUTCDate(candidate.getUTCDate() + daysUntilMonday);
+  if (candidate.getTime() <= from.getTime()) {
+    candidate.setUTCDate(candidate.getUTCDate() + 7);
+  }
+  return candidate;
+}
+
+export function formatNextRefresh(at = nextFeedRefreshAt()) {
+  return at.toLocaleString(undefined, {
+    weekday: 'short',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZoneName: 'short',
+  });
+}

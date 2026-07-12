@@ -22,7 +22,7 @@ import {
 } from './transfers.js';
 import {
   loadOffersFeed, feedHasUpdates, markFeedSeen, allFeedDeals, filterFeedDeals,
-  compareFeedToQueue, feedEntryToOffer, formatFeedAge,
+  compareFeedToQueue, feedEntryToOffer, formatFeedAge, formatNextRefresh,
 } from './feed.js';
 import {
   defaultHousehold, householdWallet, optimalHouseholdSplit, tripSplitPlan,
@@ -822,15 +822,14 @@ function renderFeedCompare() {
 function renderDealInbox() {
   const meta = $('#feedMeta');
   if (meta) {
+    const nextRefresh = formatNextRefresh();
     if (!offersFeed) {
-      meta.textContent = 'Feed not loaded — click Check for updates.';
+      meta.textContent = `Feed not loaded — click Check for updates. · Next server refresh: ${nextRefresh}`;
     } else {
       const built = formatFeedAge(offersFeed.meta?.generatedAt);
       const unseen = feedHasUpdates(offersFeed);
-      const ageMs = offersFeed.meta?.generatedAt ? Date.now() - new Date(offersFeed.meta.generatedAt).getTime() : 0;
-      const stale = ageMs > 7 * 24 * 60 * 60 * 1000;
       const status = unseen ? 'new deals since your last visit' : "you're up to date";
-      meta.textContent = `Built ${built} · ${status}${stale ? ' · server feed may be stale — weekly auto-refresh pending' : ''}`;
+      meta.textContent = `Built ${built} · ${status} · Next server refresh: ${nextRefresh}`;
     }
   }
 
