@@ -192,6 +192,17 @@
         .nav-links a:hover {
             color: #67e8f9;
         }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
         .logo strong {
             color: #f1f5f9;
             font-size: 1.1rem;
@@ -290,6 +301,7 @@
     <nav>
         <div class="nav-container">
             <div class="logo">
+                <img src="/logo-mark.svg" alt="" width="28" height="28" aria-hidden="true">
                 <strong>Sean Aguinaga</strong>
             </div>
             <button type="button" class="nav-toggle" id="navToggle" data-plausible-event="Nav - Mobile Menu" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
