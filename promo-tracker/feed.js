@@ -135,10 +135,16 @@ export function nextFeedRefreshAt(from = new Date()) {
 }
 
 export function formatNextRefresh(at = nextFeedRefreshAt()) {
-  return at.toLocaleString(undefined, {
+  const datePart = at.toLocaleDateString(undefined, {
     weekday: 'short',
-    dateStyle: 'medium',
-    timeStyle: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const timePart = at.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
     timeZoneName: 'short',
   });
+  return `${datePart}, ${timePart}`;
 }
