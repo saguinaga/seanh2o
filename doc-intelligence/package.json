@@ -1,0 +1,13 @@
+{
+  "name": "lightbox-doc-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "LightBox Document Intelligence — end-to-end workflow prototype",
+  "scripts": {
+    "dev": "browser-sync start --server --files \"**/*\" --port 3100 --no-notify --no-ui --open local",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.2"
+  }
+}

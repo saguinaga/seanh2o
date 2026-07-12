@@ -1,0 +1,78 @@
+Serving C:\Users\seanr\seanh2o\promo-tracker at http://127.0.0.1:63407
+Chrome: C:\Program Files\Google\Chrome\Application\chrome.exe
+OK [iPhone SE] no horizontal overflow on load
+OK [iPhone SE] all tabs switch
+OK [iPhone SE] load conservative plan ΓÇö 3 offers
+OK [iPhone SE] roadmap baseline score sync
+OK [iPhone SE] credit profile edit
+OK [iPhone SE] catalog renders ΓÇö 70 cards
+OK [iPhone SE] inbox search
+OK [iPhone SE] transfers / wallet panel
+OK [iPhone SE] issuer gates grid
+FAIL [iPhone SE] score sim chart ΓÇö score chart has zero size
+FAIL [iPhone SE] offer modal open/close ΓÇö Waiting for selector `#offerModal:not([hidden]) .modal__sheet` failed: Waiting failed: 5000ms exceeded
+FAIL [iPhone SE] help tip tap toggle ΓÇö help tip did not open on tap
+OK [iPhone SE] tab bar scrollable ΓÇö yes
+FAIL [iPhone SE] load household stretch plan ΓÇö Node is either not clickable or not an Element
+OK [iPhone SE] theme picker
+FAIL [iPhone SE] dashboard roadmap jump link ΓÇö Node is either not clickable or not an Element
+OK [iPhone SE] no horizontal overflow after use
+OK [iPhone 14] no horizontal overflow on load
+OK [iPhone 14] all tabs switch
+OK [iPhone 14] load conservative plan ΓÇö 3 offers
+OK [iPhone 14] roadmap baseline score sync
+OK [iPhone 14] credit profile edit
+OK [iPhone 14] catalog renders ΓÇö 70 cards
+OK [iPhone 14] inbox search
+OK [iPhone 14] transfers / wallet panel
+OK [iPhone 14] issuer gates grid
+OK [iPhone 14] score sim chart
+FAIL [iPhone 14] offer modal open/close ΓÇö Node is either not clickable or not an Element
+FAIL [iPhone 14] help tip tap toggle ΓÇö help tip did not open on tap
+OK [iPhone 14] tab bar scrollable ΓÇö yes
+OK [iPhone 14] load household stretch plan ΓÇö 11 offers
+OK [iPhone 14] theme picker
+OK [iPhone 14] dashboard roadmap jump link
+OK [iPhone 14] no horizontal overflow after use
+OK [Pixel 7] no horizontal overflow on load
+OK [Pixel 7] all tabs switch
+OK [Pixel 7] load conservative plan ΓÇö 3 offers
+OK [Pixel 7] roadmap baseline score sync
+OK [Pixel 7] credit profile edit
+OK [Pixel 7] catalog renders ΓÇö 70 cards
+OK [Pixel 7] inbox search
+OK [Pixel 7] transfers / wallet panel
+OK [Pixel 7] issuer gates grid
+OK [Pixel 7] score sim chart
+FAIL [Pixel 7] offer modal open/close ΓÇö Node is either not clickable or not an Element
+FAIL [Pixel 7] help tip tap toggle ΓÇö help tip did not open on tap
+OK [Pixel 7] tab bar scrollable ΓÇö yes
+OK [Pixel 7] load household stretch plan ΓÇö 11 offers
+OK [Pixel 7] theme picker
+OK [Pixel 7] dashboard roadmap jump link
+OK [Pixel 7] no horizontal overflow after use
+OK [iPhone landscape] no horizontal overflow on load
+OK [iPhone landscape] all tabs switch
+OK [iPhone landscape] load conservative plan ΓÇö 3 offers
+OK [iPhone landscape] roadmap baseline score sync
+OK [iPhone landscape] credit profile edit
+OK [iPhone landscape] catalog renders ΓÇö 70 cards
+OK [iPhone landscape] inbox search
+OK [iPhone landscape] transfers / wallet panel
+OK [iPhone landscape] issuer gates grid
+OK [iPhone landscape] score sim chart
+FAIL [iPhone landscape] offer modal open/close ΓÇö Node is either not clickable or not an Element
+FAIL [iPhone landscape] help tip tap toggle ΓÇö help tip did not open on tap
+OK [iPhone landscape] tab bar scrollable ΓÇö yes
+OK [iPhone landscape] load household stretch plan ΓÇö 11 offers
+OK [iPhone landscape] theme picker
+OK [iPhone landscape] dashboard roadmap jump link
+OK [iPhone landscape] no horizontal overflow after use
+
+ΓöÇΓöÇ Summary ΓöÇΓöÇ
+iPhone SE: 12/17 passed
+iPhone 14: 15/17 passed
+Pixel 7: 15/17 passed
+iPhone landscape: 15/17 passed
+
+11 mobile test(s) failed
