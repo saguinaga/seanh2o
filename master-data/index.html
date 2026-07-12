@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sean Aguinaga — Master Data Product (PM case study)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="roadmap.css?v=1">
+</head>
+<body>
+  <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
+  <article class="case-study">
+    <header class="cs-hero">
+      <p class="case-label">Product case study · Sean Aguinaga</p>
+      <h1>How I would approach master data product</h1>
+      <p class="platform-scope">
+        Product strategy for <strong>vendor, product, and customer master data</strong> at enterprise scale:
+        golden records, stewardship workflows, governance, and downstream sync. Built for business users
+        and ops teams first, not a new portal nobody asked for.
+      </p>
+      <p class="cs-lead">
+        I am a product leader with 15+ years in marketplace and transaction systems. Most of that at Auction.com.
+        This page is how I would think about a master data product line: where to start, what to ship, what would
+        make me trust the data enough to fund the next phase.
+      </p>
+    </header>
+    <section class="cs-section">
+      <h2>The problem</h2>
+      <p>
+        A global distributor runs on product, vendor, and customer records across ERP, commerce, CRM, and internal ops tools.
+        When those systems disagree, business users fix it by hand. Trust drops. Quotes, fulfillment, and reporting all slow down.
+      </p>
+      <p>
+        Master data work is not a one-time cleanup. It is ongoing stewardship: duplicates, stale attributes, ownership gaps,
+        and vendor feeds that were never designed for your model.
+      </p>
+    </section>
+    <section class="cs-section">
+      <h2>Where I would start</h2>
+      <p>
+        <strong>Vendor and product data first.</strong> That is the core motion for a technology distributor. I would pick one business unit,
+        define a golden record for a narrow slice of the catalog, and ship a stewardship queue people will actually open:
+        duplicate detection, clear ownership, approve or fix, audit trail.
+      </p>
+      <p>
+        External vendors will not standardize because you asked them to. The product job is ingestion rules, normalization,
+        exception handling, and clear accountability. I have seen that pattern with licensee and vendor feeds at large orgs.
+        I would expect the same in a global distributor.
+      </p>
+    </section>
+    <section class="cs-section">
+      <h2>What I would bring from prior work</h2>
+      <p>
+        At Auction.com, nationwide expansion depended on backend configuration and catalog rules that held up across states and teams.
+        Different industry, same failure mode: ops breaks when the underlying data is not trusted.
+      </p>
+      <p>
+        Salesforce was a major system there. I was the PM on a lot of those changes. We did not always use it the way Salesforce intends,
+        which was instructive. Bad upstream product and vendor data shows up as CRM rework, duplicate accounts, and workarounds.
+        MDM product should reduce that pain, not add another system to ignore.
+      </p>
+    </section>
+    <section class="cs-section roadmap-section">
+      <h2>Phased approach</h2>
+      <p class="section-intro">Sequencing by dependency and proof, not a calendar. Each phase earns the next when exit criteria are met.</p>
+      <div class="roadmap-phases">
+        <div class="phase-card phase-1">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 1 — Foundation</span>
+            <h3>Golden record and stewardship</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Trustworthy vendor/product records in one business unit, with a workflow ops will use.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>Ship</h4>
+              <ul>
+                <li>Golden record model for vendor + product (narrow catalog slice)</li>
+                <li>Stewardship queue: duplicates, ownership, approve/fix</li>
+                <li>Baseline data quality scorecard by domain</li>
+                <li>Ingestion and normalization rules for top vendor feeds</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Measurable quality lift on P0 attributes</li>
+                <li>Reduction in manual correction hours per week</li>
+                <li>Active stewards using the queue weekly</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card phase-2">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 2 — Governance</span>
+            <h3>Definitions, ownership, downstream sync</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Agreed definitions and controlled change, with key systems consuming the same truth.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>Ship</h4>
+              <ul>
+                <li>Data definitions and ownership model (RACI that ops understands)</li>
+                <li>Change workflow for attribute updates and retirements</li>
+                <li>Sync to priority downstream systems (ERP, commerce, CRM)</li>
+                <li>Conflict surfacing when systems disagree</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Cross-system match rate on golden record IDs</li>
+                <li>Fewer which-number-is-right escalations</li>
+                <li>Governance council meeting with real decisions, not theater</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card phase-3">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 3 — Scale</span>
+            <h3>Lifecycle automation and self-service</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Onboard, change, and retire records with guardrails. Less heroics, more routine.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>Ship</h4>
+              <ul>
+                <li>Automated onboarding for approved vendor/product patterns</li>
+                <li>Self-service requests for business users with policy checks</li>
+                <li>Lifecycle states with downstream propagation</li>
+                <li>Health dashboard for domain owners</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Drop in emergency data fixes and one-off scripts</li>
+                <li>Adoption of internal MDM tools across additional business units</li>
+                <li>Time savings documented with ops input</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="cs-section">
+      <h2>How I would work cross-functionally</h2>
+      <p>
+        Data engineering on pipeline reliability and idempotent ingest. Enterprise architecture on system-of-record calls
+        that need to be visible, not buried. Business operations as design partners for stewardship UX. Experience design
+        on friction reduction in the tools people already use.
+      </p>
+      <p>
+        I influence without authority by shipping something small that ops trusts, then expanding scope when pull rate proves it.
+      </p>
+    </section>
+    <section class="cs-section">
+      <h2>What I would measure</h2>
+      <ul class="bring-list">
+        <li>Data quality by domain (completeness, duplication, stale records)</li>
+        <li>Time spent on manual data correction</li>
+        <li>Stewardship task completion rate</li>
+        <li>Downstream conflict escalations</li>
+        <li>Adoption of internal MDM capabilities by business unit</li>
+      </ul>
+    </section>
+  </article>
+</body>
+</html>
