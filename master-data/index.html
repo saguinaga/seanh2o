@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="How Sean Aguinaga would approach vendor and product master data: golden records, stewardship, KPIs, and phased business value.">
+  <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
   <title>Sean Aguinaga — Master Data Product (PM case study)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="roadmap.css?v=1">
+  <link rel="stylesheet" href="roadmap.css?v=2">
     <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
     <script>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -16,27 +18,41 @@
     <script src="../plausible-events.js?v=1"></script>
 </head>
 <body>
+  <canvas id="golBg" class="gol-bg" aria-hidden="true"></canvas>
+  <div class="page-scrim" aria-hidden="true"></div>
+
   <a href="../index.html#projects" class="back-link" data-plausible-event="Nav - Back to Portfolio">← Back to portfolio</a>
   <article class="case-study">
     <header class="cs-hero">
       <p class="case-label">Product case study · Sean Aguinaga</p>
+      <div class="case-meta" aria-live="polite">
+        <span class="case-meta-badge">Vendor &amp; product MDM</span>
+        <span class="case-meta-updated">Outcomes · KPIs · phased value</span>
+      </div>
       <h1>How I would approach master data product</h1>
       <p class="platform-scope">
-        Product strategy for <strong>vendor, product, and customer master data</strong> at enterprise scale:
-        golden records, stewardship workflows, governance, and downstream sync. Built for business users
-        and ops teams first, not a new portal nobody asked for.
+        Product strategy for <strong>vendor and product master data</strong> at enterprise scale — the core motion for a
+        technology distributor. Golden records, stewardship workflows, governance, and downstream sync. Built for business users
+        and ops teams first, not a portal nobody opens.
       </p>
+      <div class="expansion-path" aria-label="MDM domain sequence">
+        <span class="path-step path-active">Vendor</span>
+        <span class="path-arrow" aria-hidden="true">→</span>
+        <span class="path-step path-active">Product</span>
+        <span class="path-arrow" aria-hidden="true">→</span>
+        <span class="path-step">Customer</span>
+      </div>
       <p class="cs-lead">
         I am a product leader with 15+ years in marketplace and transaction systems. Most of that at Auction.com.
-        This page is how I would think about a master data product line: where to start, what to ship, what would
-        make me trust the data enough to fund the next phase.
+        This page is how I would run a vendor and product MDM line: where to start, what to ship, and what I would
+        measure so leadership can see business value before we ask for the next phase.
       </p>
     </header>
     <section class="cs-section">
       <h2>The problem</h2>
       <p>
-        A global distributor runs on product, vendor, and customer records across ERP, commerce, CRM, and internal ops tools.
-        When those systems disagree, business users fix it by hand. Trust drops. Quotes, fulfillment, and reporting all slow down.
+        A global distributor runs on product and vendor records across ERP, commerce, CRM, and internal ops tools.
+        When those systems disagree, business users fix it by hand. Trust drops. Quotes, fulfillment, and reporting slow down.
       </p>
       <p>
         Master data work is not a one-time cleanup. It is ongoing stewardship: duplicates, stale attributes, ownership gaps,
@@ -52,24 +68,27 @@
       </p>
       <p>
         External vendors will not standardize because you asked them to. The product job is ingestion rules, normalization,
-        exception handling, and clear accountability. I have seen that pattern with licensee and vendor feeds at large orgs.
-        I would expect the same in a global distributor.
+        exception handling, and clear accountability. I have seen that with licensee and vendor feeds at Disney and Auction.com.
+        I would expect the same pattern here.
       </p>
     </section>
     <section class="cs-section">
       <h2>What I would bring from prior work</h2>
       <p>
         At Auction.com, nationwide expansion depended on the core internal platform: catalog rules, transaction configuration, and ops workflows that had to hold up across states and teams.
-        Different industry, same failure mode for master data work: ops breaks when the underlying records are not trusted.
+        Different industry, same failure mode: ops breaks when records are not trusted.
       </p>
       <p>
-        Salesforce sat upstream and downstream of that core system. I was the PM on much of the custom build around it.
-        Useful context for MDM because bad vendor and product data upstream still becomes rework downstream, whether the consumer is CRM, ERP, or an internal tool.
+        At Disney, partner data rarely arrived in one clean format. We normalized licensee feeds into a warehouse so analytics
+        could be trusted. That is the realistic ingestion mindset MDM needs.
+      </p>
+      <p>
+        Salesforce sat upstream and downstream of Auction.com's core platform. Useful MDM context: bad vendor and product data upstream still becomes rework downstream, whether the consumer is CRM, ERP, or an internal tool.
       </p>
     </section>
     <section class="cs-section roadmap-section">
       <h2>Phased approach</h2>
-      <p class="section-intro">Sequencing by dependency and proof, not a calendar. Each phase earns the next when exit criteria are met.</p>
+      <p class="section-intro">Sequencing by dependency and proof, not a calendar. Each phase earns the next when exit criteria and KPIs move.</p>
       <div class="roadmap-phases">
         <div class="phase-card phase-1">
           <div class="phase-header">
@@ -95,6 +114,14 @@
                 <li>Active stewards using the queue weekly</li>
               </ul>
             </div>
+            <div>
+              <h4>KPIs I'd report</h4>
+              <ul>
+                <li>P0 completeness &amp; duplication rate (baseline → monthly)</li>
+                <li>Manual correction hours / week (ops-reported)</li>
+                <li>Stewardship task completion rate</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="phase-card phase-2">
@@ -118,7 +145,15 @@
               <ul>
                 <li>Cross-system match rate on golden record IDs</li>
                 <li>Fewer which-number-is-right escalations</li>
-                <li>Governance council meeting with real decisions, not theater</li>
+                <li>Governance council with real decisions, not theater</li>
+              </ul>
+            </div>
+            <div>
+              <h4>KPIs I'd report</h4>
+              <ul>
+                <li>Golden ID match rate across ERP / commerce / CRM</li>
+                <li>Downstream conflict escalations (trend)</li>
+                <li>Time to approve governed attribute changes</li>
               </ul>
             </div>
           </div>
@@ -147,10 +182,86 @@
                 <li>Time savings documented with ops input</li>
               </ul>
             </div>
+            <div>
+              <h4>KPIs I'd report</h4>
+              <ul>
+                <li>Emergency fix volume (trend down)</li>
+                <li>Self-service request volume vs ticket backlog</li>
+                <li>BU adoption of stewardship workflows</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <section class="cs-section cs-section--value">
+      <h2>Outcomes, KPIs, and business value</h2>
+      <p class="section-intro">
+        I would not ask leadership to fund MDM on faith. Every phase ties program metrics to outcomes the business can feel.
+      </p>
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-card--outcome">
+          <h3>Business outcomes</h3>
+          <p class="kpi-card-lead">What leadership should care about</p>
+          <ul>
+            <li><strong>Quote-to-cash friction</strong> — fewer holds and rework from bad vendor or SKU data</li>
+            <li><strong>Ops cost</strong> — manual correction hours trending down</li>
+            <li><strong>Trust</strong> — fewer cross-system escalations ("which number is right?")</li>
+            <li><strong>Risk</strong> — fulfillment and reporting errors tied to master data (where measurable)</li>
+          </ul>
+        </div>
+        <div class="kpi-card">
+          <h3>Program metrics</h3>
+          <p class="kpi-card-lead">How I would prove progress</p>
+          <ul>
+            <li>Data quality by domain: completeness, duplication, stale P0 attributes</li>
+            <li>Stewardship queue completion and time-to-resolve</li>
+            <li>Adoption: corrections through MDM workflow vs email/spreadsheets</li>
+            <li>Downstream golden-record match rate and conflict count</li>
+          </ul>
+        </div>
+      </div>
+      <div class="metrics-table-wrap">
+      <table class="metrics-table" aria-label="Example KPI scorecard for vendor and product">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Phase</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>P0 attribute completeness</td>
+            <td>1</td>
+            <td>Baseline trust in vendor + product records before sync</td>
+          </tr>
+          <tr>
+            <td>Manual correction hours / week</td>
+            <td>1</td>
+            <td>Direct ops cost and pain proxy</td>
+          </tr>
+          <tr>
+            <td>Golden ID match rate (ERP, commerce, CRM)</td>
+            <td>2</td>
+            <td>Proof downstream systems share one truth</td>
+          </tr>
+          <tr>
+            <td>Cross-system conflict escalations</td>
+            <td>2</td>
+            <td>Trust metric leadership will recognize</td>
+          </tr>
+          <tr>
+            <td>Emergency data fixes &amp; one-off scripts</td>
+            <td>3</td>
+            <td>Scale without heroics</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
     <section class="cs-section">
       <h2>How I would work cross-functionally</h2>
       <p>
@@ -162,16 +273,28 @@
         I influence without authority by shipping something small that ops trusts, then expanding scope when pull rate proves it.
       </p>
     </section>
-    <section class="cs-section">
-      <h2>What I would measure</h2>
-      <ul class="bring-list">
-        <li>Data quality by domain (completeness, duplication, stale records)</li>
-        <li>Time spent on manual data correction</li>
-        <li>Stewardship task completion rate</li>
-        <li>Downstream conflict escalations</li>
-        <li>Adoption of internal MDM capabilities by business unit</li>
-      </ul>
+
+    <section class="cs-section cs-close">
+      <div class="team-close">
+        <p class="team-close-label">How I'd partner with the team</p>
+        <p class="team-close-lead">
+          Vendor and product MDM wins when value is visible early and everyone knows what we are optimizing for.
+        </p>
+        <p>
+          I would baseline quality and rework hours with ops <em>before</em> we ship Phase 1, publish a simple scorecard
+          domain owners review monthly, and tie roadmap calls to whether stewards actually use what we build.
+          If adoption or quality flatlines, we fix the workflow before we add scope.
+        </p>
+        <p>
+          That keeps engineering, architecture, and business ops aligned on outcomes — not activity.
+          Perfect data is not the goal. Directional lift on P0 vendor and product attributes, with less manual repair
+          and fewer downstream fires, is what earns the next investment.
+        </p>
+        <p class="team-close-sign">Sean Aguinaga · Product · seanaguinaga.com</p>
+      </div>
     </section>
+
   </article>
+  <script src="gol-bg.js?v=1" defer></script>
 </body>
 </html>
