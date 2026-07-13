@@ -3499,8 +3499,95 @@ html[data-theme="cozy"] .scenery-glow {
 
 html[data-theme="bloom"] .scenery-glow {
   background:
-    radial-gradient(ellipse 55% 45% at 10% 90%, rgba(251, 207, 232, 0.45), transparent 58%),
-    radial-gradient(ellipse 50% 40% at 90% 75%, rgba(233, 213, 255, 0.4), transparent 55%);
+    radial-gradient(ellipse 55% 45% at 10% 90%, rgba(251, 207, 232, 0.55), transparent 58%),
+    radial-gradient(ellipse 50% 40% at 90% 75%, rgba(233, 213, 255, 0.5), transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 40%, rgba(255, 255, 255, 0.35), transparent 70%);
+}
+
+/* Bloom: photo postcards with 3D depth (other themes keep CSS gradient art) */
+html[data-theme="bloom"] .scenery {
+  perspective: 1400px;
+  perspective-origin: 50% 42%;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease-out;
+}
+
+html[data-theme="bloom"] .scenery-card {
+  --tilt-x: 9deg;
+  transform-style: preserve-3d;
+  opacity: 0.44;
+  filter: saturate(1.08) brightness(1.04) contrast(1.06);
+  background: linear-gradient(155deg, #fff 0%, #faf2f6 55%, #f3e8f0 100%);
+  border: 7px solid #fff;
+  border-bottom-width: 30px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 2px 4px rgba(59, 31, 43, 0.06),
+    0 14px 28px rgba(190, 24, 93, 0.1),
+    0 32px 56px rgba(59, 31, 43, 0.14);
+  animation-name: scenery-float-bloom;
+}
+
+html[data-theme="bloom"] .scenery-card::before {
+  background-image:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.26) 0%, transparent 42%),
+    linear-gradient(180deg, transparent 58%, rgba(20, 10, 16, 0.12) 100%),
+    var(--scene-photo);
+  background-size: cover, cover, cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+html[data-theme="bloom"] .scenery-card::after {
+  color: #6b4a58;
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+html[data-theme="bloom"] .scenery-card--fiji { --scene-photo: url('assets/scenery/fiji.jpg'); }
+html[data-theme="bloom"] .scenery-card--japan { --scene-photo: url('assets/scenery/japan.jpg'); }
+html[data-theme="bloom"] .scenery-card--norway { --scene-photo: url('assets/scenery/norway.jpg'); }
+html[data-theme="bloom"] .scenery-card--africa { --scene-photo: url('assets/scenery/africa.jpg'); }
+html[data-theme="bloom"] .scenery-card--cabo { --scene-photo: url('assets/scenery/cabo.jpg'); }
+html[data-theme="bloom"] .scenery-card--paris { --scene-photo: url('assets/scenery/paris.jpg'); }
+html[data-theme="bloom"] .scenery-card--hawaii { --scene-photo: url('assets/scenery/hawaii.jpg'); }
+html[data-theme="bloom"] .scenery-card--iceland { --scene-photo: url('assets/scenery/iceland.jpg'); }
+html[data-theme="bloom"] .scenery-card--bali { --scene-photo: url('assets/scenery/bali.jpg'); }
+html[data-theme="bloom"] .scenery-card--santorini { --scene-photo: url('assets/scenery/santorini.jpg'); }
+
+@keyframes scenery-float-bloom {
+  0%, 100% {
+    transform:
+      translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0)
+      rotate(var(--rot))
+      rotateX(var(--tilt-x))
+      translateZ(0);
+  }
+  50% {
+    transform:
+      translate3d(var(--parallax-x, 0), calc(var(--parallax-y, 0px) - 16px), 14px)
+      rotate(var(--rot))
+      rotateX(calc(var(--tilt-x) + 2deg))
+      translateZ(14px);
+  }
+}
+
+@media (max-width: 900px) {
+  html[data-theme="bloom"] .scenery-card {
+    opacity: 0.36;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="bloom"] .scenery {
+    transition: none;
+  }
+
+  html[data-theme="bloom"] .scenery-card {
+    animation-name: scenery-float;
+    transform: rotate(var(--rot)) rotateX(var(--tilt-x));
+  }
 }
 
 html[data-theme="midnight"] .chart-wrap {
