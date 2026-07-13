@@ -15,7 +15,7 @@ You're back on the NYSE as INGM since last fall. I saw Q1 — strong top line an
 
 ## MDM push
 
-I'd start vendor and product in one BU, baseline quality and manual correction hours with ops, ship a stewardship queue people actually open, and expand when golden-record match rate and escalation trends move. Public scrutiny makes phased proof non-negotiable in this lane.
+I'd start vendor and product in one BU, baseline quality and manual correction hours with ops, ship a ops queue people actually open, and expand when golden-record match rate and escalation trends move. Public scrutiny makes phased proof non-negotiable in this lane.
 
 ## Xvantage / AI bridge
 

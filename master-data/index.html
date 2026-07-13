@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="How Sean Aguinaga would approach vendor and product master data: golden records, stewardship, KPIs, and phased business value.">
+  <meta name="description" content="How Sean Aguinaga would approach vendor and product master data: golden records, ops workflows, KPIs, and phased business value.">
   <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
   <title>Sean Aguinaga — Master Data Product (PM case study)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +32,7 @@
       <h1>How I would approach master data product</h1>
       <p class="platform-scope">
         Product strategy for <strong>vendor and product master data</strong> at enterprise scale — the core motion for a
-        technology distributor. Golden records, stewardship workflows, governance, and downstream sync. Built for business users
+        technology distributor. Golden records, ops workflows, governance, and downstream sync. Built for business users
         and ops teams first, not a portal nobody opens.
       </p>
       <div class="expansion-path" aria-label="MDM domain sequence">
@@ -60,7 +60,7 @@
         When those systems disagree, business users fix it by hand. Trust drops. Quotes, fulfillment, and reporting slow down.
       </p>
       <p>
-        Master data work is not a one-time cleanup. It is ongoing stewardship: duplicates, stale attributes, ownership gaps,
+        Master data work is not a one-time cleanup. It is ongoing ops work: duplicates, stale attributes, ownership gaps,
         and vendor feeds that were never designed for your model.
       </p>
     </section>
@@ -68,7 +68,7 @@
       <h2>Where I would start</h2>
       <p>
         <strong>Vendor and product data first.</strong> That is the core motion for a technology distributor. I would pick one business unit,
-        define a golden record for a narrow slice of the catalog, and ship a stewardship queue people will actually open:
+        define a golden record for a narrow slice of the catalog, and ship an ops queue people will actually open:
         duplicate detection, clear ownership, approve or fix, audit trail.
       </p>
       <p>
@@ -98,7 +98,7 @@
         <div class="phase-card phase-1">
           <div class="phase-header">
             <span class="phase-tag">Phase 1 — Foundation</span>
-            <h3>Golden record and stewardship</h3>
+            <h3>Golden record and ops queue</h3>
           </div>
           <p class="phase-goal"><strong>Goal:</strong> Trustworthy vendor/product records in one business unit, with a workflow ops will use.</p>
           <div class="phase-grid">
@@ -106,7 +106,7 @@
               <h4>Ship</h4>
               <ul>
                 <li>Golden record model for vendor + product (narrow catalog slice)</li>
-                <li>Stewardship queue: duplicates, ownership, approve/fix</li>
+                <li>Ops queue: duplicates, ownership, approve/fix</li>
                 <li>Baseline data quality scorecard by domain</li>
                 <li>Ingestion and normalization rules for top vendor feeds</li>
               </ul>
@@ -116,7 +116,7 @@
               <ul>
                 <li>Measurable quality lift on P0 attributes</li>
                 <li>Reduction in manual correction hours per week</li>
-                <li>Active stewards using the queue weekly</li>
+                <li>Ops using the queue weekly</li>
               </ul>
             </div>
             <div>
@@ -124,7 +124,7 @@
               <ul>
                 <li>P0 completeness &amp; duplication rate (baseline → monthly)</li>
                 <li>Manual correction hours / week (ops-reported)</li>
-                <li>Stewardship task completion rate</li>
+                <li>Ops queue completion rate</li>
               </ul>
             </div>
           </div>
@@ -192,7 +192,7 @@
               <ul>
                 <li>Emergency fix volume (trend down)</li>
                 <li>Self-service request volume vs ticket backlog</li>
-                <li>BU adoption of stewardship workflows</li>
+                <li>BU adoption of ops workflows</li>
               </ul>
             </div>
           </div>
@@ -222,7 +222,7 @@
           <p class="kpi-card-lead">How I would prove progress</p>
           <ul>
             <li>Data quality by domain: completeness, duplication, stale P0 attributes</li>
-            <li>Stewardship queue completion and time-to-resolve</li>
+            <li>Ops queue completion and time-to-resolve</li>
             <li>Adoption: corrections through MDM workflow vs email/spreadsheets</li>
             <li>Downstream golden-record match rate and conflict count</li>
           </ul>
@@ -272,7 +272,7 @@
       <h2>How I would work cross-functionally</h2>
       <p>
         Data engineering on pipeline reliability and idempotent ingest. Enterprise architecture on system-of-record calls
-        that need to be visible, not buried. Business operations as design partners for stewardship UX. Experience design
+        that need to be visible, not buried. Business operations as design partners for ops workflow UX. Experience design
         on friction reduction in the tools people already use.
       </p>
       <p>
@@ -288,7 +288,7 @@
         </p>
         <p>
           I would baseline quality and rework hours with ops <em>before</em> we ship Phase 1, publish a simple scorecard
-          domain owners review monthly, and tie roadmap calls to whether stewards actually use what we build.
+          domain owners review monthly, and tie roadmap calls to whether ops actually use what we build.
           If adoption or quality flatlines, we fix the workflow before we add scope.
         </p>
         <p>
@@ -297,7 +297,7 @@
           and fewer downstream fires, is what earns the next investment.
         </p>
         <p>
-          I would not pretend to run the whole stack. In vendor and product MDM, the job is to prove value per phase before the next investment — baseline with ops, ship what stewards use, expand when KPIs move. That is how this lane contributes to catalog trust and quote-to-cash at distributor scale.
+          I would not pretend to run the whole stack. In vendor and product MDM, the job is to prove value per phase before the next investment — baseline with ops, ship what ops use, expand when KPIs move. That is how this lane contributes to catalog trust and quote-to-cash at distributor scale.
         </p>
         <p class="team-close-sign">Sean Aguinaga · Product · seanaguinaga.com</p>
       </div>
