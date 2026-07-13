@@ -44,6 +44,24 @@
             padding: 0 28px;
             z-index: 2;
         }
+        .hero-brand {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 4px;
+        }
+        .hero-mark {
+            flex-shrink: 0;
+            width: 96px;
+            height: 96px;
+            border-radius: 14px;
+            filter: drop-shadow(0 0 28px rgba(103, 232, 249, 0.35)) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
+            animation: hero-mark-in 0.7s ease-out both;
+        }
+        @keyframes hero-mark-in {
+            from { opacity: 0; transform: translateY(8px) scale(0.94); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
         .hero h1 {
             font-size: 3.8rem;
             margin-bottom: 8px;
@@ -288,10 +306,25 @@
             }
             .nav-links a:last-child { border-bottom: none; }
         }
+        @media (max-width: 768px) {
+            .hero-brand {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .hero-mark {
+                width: 80px;
+                height: 80px;
+            }
+        }
         @media (max-width: 480px) {
             .hero h1 { font-size: 2rem; }
             .hero-lead { font-size: 1rem; }
             .hero p { font-size: 0.95rem; }
+            .hero-mark {
+                width: 72px;
+                height: 72px;
+            }
         }
     </style>
 </head>
@@ -320,7 +353,10 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
-            <h1>Sean Aguinaga</h1>
+            <div class="hero-brand">
+                <img src="/logo-mark.svg?v=3" alt="" class="hero-mark" width="96" height="96" aria-hidden="true">
+                <h1>Sean Aguinaga</h1>
+            </div>
             <span class="tag">Product · Marketplaces · 15 years</span>
 
             <p class="hero-lead">I'm a product manager. I work on marketplace and transaction systems where operations and configuration have to scale together.</p>
