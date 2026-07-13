@@ -68,8 +68,9 @@
       <h2>Where I would start</h2>
       <p>
         <strong>Vendor and product data first.</strong> That is the core motion for a technology distributor. I would pick one business unit,
-        define a golden record for a narrow slice of the catalog, and ship an ops queue people will actually open:
-        duplicate detection, clear ownership, approve or fix, audit trail.
+        agree what counts as golden for a narrow slice: which P0 attributes matter, who owns fixes, and what done looks like
+        before touching downstream sync. Then ship an ops queue people will actually open: duplicate detection, clear ownership,
+        approve or fix, audit trail.
       </p>
       <p>
         External vendors will not standardize because you asked them to. The product job is ingestion rules, normalization,
@@ -93,7 +94,8 @@
     </section>
     <section class="cs-section roadmap-section">
       <h2>Phased approach</h2>
-      <p class="section-intro">Sequencing by dependency and proof, not a calendar. Each phase earns the next when exit criteria and KPIs move.</p>
+      <p class="section-intro">Sequencing by dependency and proof, not a calendar. Each phase earns the next when exit criteria and KPIs move.
+        Each item below is a scoped increment, not a platform launch. Phase 1 is one BU, one catalog slice, P0 attributes, and 1–2 vendor feeds.</p>
       <div class="roadmap-phases">
         <div class="phase-card phase-1">
           <div class="phase-header">
@@ -103,20 +105,20 @@
           <p class="phase-goal"><strong>Goal:</strong> Trustworthy vendor/product records in one business unit, with a workflow ops will use.</p>
           <div class="phase-grid">
             <div>
-              <h4>Ship</h4>
+              <h4>First increments</h4>
               <ul>
-                <li>Golden record model for vendor + product (narrow catalog slice)</li>
-                <li>Ops queue: duplicates, ownership, approve/fix</li>
-                <li>Baseline data quality scorecard by domain</li>
-                <li>Ingestion and normalization rules for top vendor feeds</li>
+                <li>Agree golden record definition for vendor + product: P0 attributes only, one BU, one catalog slice</li>
+                <li>MVP ops queue on that slice: surface duplicates, assign owner, approve or fix, audit log</li>
+                <li>Baseline scorecard for the pilot slice (completeness, duplication) before you change anything</li>
+                <li>Normalization rules for 1–2 highest-volume vendor feeds, with a manual exception path for everything else</li>
               </ul>
             </div>
             <div>
               <h4>Exit criteria</h4>
               <ul>
-                <li>Measurable quality lift on P0 attributes</li>
-                <li>Reduction in manual correction hours per week</li>
-                <li>Ops using the queue weekly</li>
+                <li>Directional lift on P0 attributes in the pilot slice</li>
+                <li>Documented drop in manual correction hours on the pilot slice</li>
+                <li>Pilot ops team using the queue weekly without a spreadsheet workaround</li>
               </ul>
             </div>
             <div>
@@ -137,20 +139,20 @@
           <p class="phase-goal"><strong>Goal:</strong> Agreed definitions and controlled change, with key systems consuming the same truth.</p>
           <div class="phase-grid">
             <div>
-              <h4>Ship</h4>
+              <h4>First increments</h4>
               <ul>
-                <li>Data definitions and ownership model (RACI that ops understands)</li>
-                <li>Change workflow for attribute updates and retirements</li>
-                <li>Sync to priority downstream systems (ERP, commerce, CRM)</li>
-                <li>Conflict surfacing when systems disagree</li>
+                <li>Published definitions + RACI for pilot P0 attributes (expand attribute set only when Phase 1 holds)</li>
+                <li>Change workflow for governed P0 updates in the pilot slice</li>
+                <li>Pilot sync to one priority downstream system first, then add the next when match rate holds</li>
+                <li>Conflict report when two systems disagree on golden IDs in the pilot</li>
               </ul>
             </div>
             <div>
               <h4>Exit criteria</h4>
               <ul>
-                <li>Cross-system match rate on golden record IDs</li>
-                <li>Fewer which-number-is-right escalations</li>
-                <li>Governance council with real decisions, not theater</li>
+                <li>Golden ID match rate improving in the pilot (baseline → monthly)</li>
+                <li>Downward trend in which-number-is-right escalations on the pilot slice</li>
+                <li>Monthly review with domain owners that results in decisions, not status theater</li>
               </ul>
             </div>
             <div>
@@ -171,20 +173,20 @@
           <p class="phase-goal"><strong>Goal:</strong> Onboard, change, and retire records with guardrails. Less heroics, more routine.</p>
           <div class="phase-grid">
             <div>
-              <h4>Ship</h4>
+              <h4>First increments</h4>
               <ul>
-                <li>Automated onboarding for approved vendor/product patterns</li>
-                <li>Self-service requests for business users with policy checks</li>
-                <li>Lifecycle states with downstream propagation</li>
-                <li>Health dashboard for domain owners</li>
+                <li>Templated onboarding for a small set of repeat vendor/product patterns ops already handles by hand</li>
+                <li>Self-service for low-risk attribute changes, with policy checks and an ops escalation path</li>
+                <li>Lifecycle states for pilot entities, with downstream propagation tested on one consumer first</li>
+                <li>Simple health view for domain owners on the pilot slice (not enterprise-wide day one)</li>
               </ul>
             </div>
             <div>
               <h4>Exit criteria</h4>
               <ul>
-                <li>Drop in emergency data fixes and one-off scripts</li>
-                <li>Adoption of internal MDM tools across additional business units</li>
-                <li>Time savings documented with ops input</li>
+                <li>Downward trend in emergency fixes on the pilot slice</li>
+                <li>Second BU asks to use the workflow (pull, not mandate)</li>
+                <li>Time savings documented with ops input, not modeled</li>
               </ul>
             </div>
             <div>
