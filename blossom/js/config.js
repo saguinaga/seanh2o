@@ -35,8 +35,8 @@ window.BLOSSOM_CONFIG.cloudEnabled = Boolean(
   window.BLOSSOM_CONFIG.supabaseUrl && window.BLOSSOM_CONFIG.supabaseAnonKey
 );
 
-/** NPC chat — off by default; game first. Set true + aiChatBase to re-enable Grok 4.5 */
-window.BLOSSOM_CONFIG.aiChatEnabled = false;
-window.BLOSSOM_CONFIG.aiChatBase = null;
+/** NPC chat — Grok 4.5 via Cloudflare worker (key server-side only) */
+window.BLOSSOM_CONFIG.aiChatEnabled = true;
+window.BLOSSOM_CONFIG.aiChatBase = 'https://blossom-ai-proxy.smart-horse.workers.dev';
 window.BLOSSOM_CONFIG.aiChatEndpoint = null;
 window.BLOSSOM_CONFIG.aiModel = 'grok-4.5-latest';

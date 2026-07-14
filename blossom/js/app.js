@@ -200,6 +200,7 @@ window.BlossomApp = (function () {
     }
     BlossomGame.checkBonnieOffer?.();
     nudgeFirstDayGuide(state);
+    window.BlossomAI?.probe?.();
   }
 
   function nudgeFirstDayGuide(st) {
