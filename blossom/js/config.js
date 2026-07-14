@@ -23,6 +23,12 @@ window.BLOSSOM_CONFIG = {
   weeklyBill: 8,
   weeklyBillEvery: 7,
   careerUnlockLevel: 3,
+  /** 3D movement — units per second (Shift = run) */
+  walkSpeedOpen: 3.6,
+  runSpeedOpen: 6.2,
+  walkSpeedIndoor: 2.4,
+  runSpeedIndoor: 4.0,
+  walkSpeedMultiplier: 1,
 };
 
 window.BLOSSOM_CONFIG.cloudEnabled = Boolean(

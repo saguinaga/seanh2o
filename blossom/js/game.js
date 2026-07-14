@@ -24,6 +24,7 @@ window.BlossomGame = (function () {
   let transitionLock = 0;
   let nearInteract = null;
   let lastTs = 0;
+  let frameDt = 1 / 60;
   let camera = { x: 400, y: 240, zoom: 1 };
   let nav = {
     active: false, arrived: false, waypoints: [], target: null,
@@ -66,6 +67,10 @@ window.BlossomGame = (function () {
     BlossomAvatar.migrate(state);
     onMessage = callbacks.onMessage;
     onPersist = callbacks.onPersist;
+    try {
+      const mult = parseFloat(localStorage.getItem('blossom-walk-mult'));
+      if (mult >= 0.5 && mult <= 2) window.BLOSSOM_CONFIG.walkSpeedMultiplier = mult;
+    } catch (_) {}
     const loc0 = getLoc();
     player.x = state.position?.x ?? 360;
     player.y = state.position?.y ?? loc0.floorY - 20;
@@ -459,7 +464,8 @@ window.BlossomGame = (function () {
         return;
       }
       const angle = Math.atan2(tx - player.wx, tz - player.wz);
-      const spd = nav.autoSpeed * (BlossomWorld3D.isOverworld?.() ? 2.2 : 1.4);
+      const openWorld = BlossomWorld3D.isOverworld?.();
+      const spd = get3DMoveSpeed(false, openWorld) * frameDt;
       player.wx += Math.sin(angle) * spd;
       player.wz += Math.cos(angle) * spd;
       player.moveYaw = angle;
@@ -486,7 +492,15 @@ window.BlossomGame = (function () {
     state.position = { x: player.x, y: player.y };
   }
 
-  function apply3DMovement(loc, mv) {
+  function get3DMoveSpeed(run, openWorld) {
+    const cfg = window.BLOSSOM_CONFIG;
+    const mult = cfg.walkSpeedMultiplier ?? 1;
+    const walk = openWorld ? (cfg.walkSpeedOpen ?? 3.6) : (cfg.walkSpeedIndoor ?? 2.4);
+    const runSpd = openWorld ? (cfg.runSpeedOpen ?? 6.2) : (cfg.runSpeedIndoor ?? 4);
+    return (run ? runSpd : walk) * mult;
+  }
+
+  function apply3DMovement(loc, mv, dt) {
     const orbit = (mv.turnL ? 0.048 : 0) + (mv.turnR && !nearInteract ? -0.048 : 0) + (mv.camTurn || 0);
     if (orbit) BlossomScene3D.rotateCam(orbit);
 
@@ -496,7 +510,7 @@ window.BlossomGame = (function () {
 
     const basis = BlossomScene3D.getWalkBasis(player);
     const openWorld = BlossomWorld3D.isOverworld?.();
-    const speed = mv.run ? (openWorld ? 10.5 : 5.8) : (openWorld ? 6.8 : 3.5);
+    const speed = get3DMoveSpeed(mv.run, openWorld) * dt;
     let mx = basis.forwardX * (-dy) + basis.rightX * dx;
     let mz = basis.forwardZ * (-dy) + basis.rightZ * dx;
     const mlen = Math.hypot(mx, mz);
@@ -733,6 +747,7 @@ window.BlossomGame = (function () {
   function loop(ts) {
     try {
       const dt = lastTs ? (ts - lastTs) / 1000 : 0.016;
+      frameDt = Math.min(Math.max(dt, 0.001), 0.05);
       lastTs = ts;
       anim = ts / 1000;
       if (transitionLock > 0) transitionLock -= 1;
@@ -763,7 +778,7 @@ window.BlossomGame = (function () {
       } else {
         const userDriving = mv.moving || mv.camTurn || mv.turnL || mv.turnR;
         if (userDriving) clearNavigation();
-        apply3DMovement(loc, mv);
+        apply3DMovement(loc, mv, frameDt);
       }
       if (!nav.active && jump) window.BlossomAudio?.playSfx('jump');
     } else if (nav.active) {
@@ -1028,8 +1043,13 @@ window.BlossomGame = (function () {
     return result;
   }
 
+  function onSpeedMultiplier(mult) {
+    onMessage?.(`Walk speed ×${mult.toFixed(1)}  ([ slower · ] faster)`, 'info');
+  }
+
   return {
     init, updateHud, endDay, showReminder, onBonnieAccepted, checkBonnieOffer,
     getNearInteract, getChatLog, sendChatMessage, haptic, goToTask, clearNavigation,
+    onSpeedMultiplier,
   };
 })();

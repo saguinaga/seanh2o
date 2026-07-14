@@ -154,6 +154,19 @@ window.BlossomControls = (function () {
     }
     if (e.code === 'KeyQ') modKeys.add('q');
     if (e.code === 'KeyE') modKeys.add('e');
+    if (e.code === 'BracketLeft' || e.code === 'BracketRight') {
+      e.preventDefault();
+      adjustWalkMultiplier(e.code === 'BracketRight' ? 0.1 : -0.1);
+    }
+  }
+
+  function adjustWalkMultiplier(delta) {
+    const cfg = window.BLOSSOM_CONFIG;
+    if (!cfg) return;
+    const next = Math.round(Math.max(0.5, Math.min(2, (cfg.walkSpeedMultiplier || 1) + delta)) * 10) / 10;
+    cfg.walkSpeedMultiplier = next;
+    try { localStorage.setItem('blossom-walk-mult', String(next)); } catch (_) {}
+    window.BlossomGame?.onSpeedMultiplier?.(next);
   }
 
   function onKeyUp(e) {

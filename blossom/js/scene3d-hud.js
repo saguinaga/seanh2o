@@ -165,12 +165,14 @@ window.BlossomScene3DHud = (function () {
     drawQuestTracker(ctx, state);
     drawMinimap(ctx, w, h, player, loc?.id);
 
+    const mult = window.BLOSSOM_CONFIG?.walkSpeedMultiplier ?? 1;
     if (running) {
-      wowText(ctx, '>> RUN', w - 78, 22, 12, '#40c040');
+      wowText(ctx, mult !== 1 ? `>> RUN ×${mult.toFixed(1)}` : '>> RUN', w - 88, 22, 12, '#40c040');
     } else {
       ctx.fillStyle = '#a09070';
       ctx.font = '10px Arial, sans-serif';
-      ctx.fillText('Shift — run', w - 78, 22);
+      const hint = mult !== 1 ? `Shift run · ×${mult.toFixed(1)}` : 'Shift — run';
+      ctx.fillText(hint, w - 88, 22);
     }
 
     if (phaseFade > 0) {
