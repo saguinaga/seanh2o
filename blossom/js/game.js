@@ -731,14 +731,18 @@ window.BlossomGame = (function () {
   }
 
   function loop(ts) {
-    const dt = lastTs ? (ts - lastTs) / 1000 : 0.016;
-    lastTs = ts;
-    anim = ts / 1000;
-    if (transitionLock > 0) transitionLock -= 1;
-    if (phaseFade > 0) phaseFade = Math.max(0, phaseFade - 0.018);
-    fx().update(dt);
-    update();
-    draw();
+    try {
+      const dt = lastTs ? (ts - lastTs) / 1000 : 0.016;
+      lastTs = ts;
+      anim = ts / 1000;
+      if (transitionLock > 0) transitionLock -= 1;
+      if (phaseFade > 0) phaseFade = Math.max(0, phaseFade - 0.018);
+      fx().update(dt);
+      update();
+      draw();
+    } catch (err) {
+      console.error('Blossom loop error:', err);
+    }
     requestAnimationFrame(loop);
   }
 

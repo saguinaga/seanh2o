@@ -11,6 +11,7 @@
     "blossom:dev": "node blossom/dev-server.mjs",
     "blossom:deploy-ai": "supabase secrets set XAI_API_KEY --project-ref mtqezgchhggmlrfzfyjb && supabase functions deploy blossom-ai --no-verify-jwt --project-ref mtqezgchhggmlrfzfyjb",
     "blossom:test-ai": "node blossom/test-ai.mjs",
+    "blossom:stability": "node blossom/stability-check.mjs",
     "blossom:deploy-worker": "pwsh -File workers/blossom-ai/deploy.ps1",
     "check": "node --check calculator.js && node --check flip-calculator.js && echo 'JS syntax OK'",
     "refresh-offers": "node promo-tracker/scripts/refresh-offers.mjs",

@@ -4,6 +4,7 @@ window.BlossomApp = (function () {
   let userId = null;
 
   async function boot() {
+    try {
     await BlossomAuth.init();
     BlossomAuth.onChange(async (session) => {
       const prevUser = userId;
@@ -35,6 +36,11 @@ window.BlossomApp = (function () {
       state = saved;
       startGame();
     } else {
+      showScreen('create');
+    }
+    } catch (err) {
+      console.error('Blossom boot failed:', err);
+      window.BlossomBoot?.hideLoad?.();
       showScreen('create');
     }
   }
@@ -186,6 +192,7 @@ window.BlossomApp = (function () {
     );
     BlossomGame.updateHud();
     window.BlossomAI?.probe?.();
+    window.setInterval(() => window.BlossomAI?.probe?.(), 120000);
     const bubble = document.getElementById('npcBubble');
     if (bubble) {
       const cp = BlossomCareer.path(state);
@@ -204,9 +211,7 @@ window.BlossomApp = (function () {
     if (!BlossomGuide.isMobileGuide?.()) st.guideExpanded = true;
     BlossomGuide.updatePanel(st);
     BlossomSave.persist(st, BlossomAuth.getUserId());
-    window.setTimeout(() => {
-      showToast('Day 1: tap 📖 for your star checklist', 'info');
-    }, 2000);
+
   }
 
   function shareGame() {

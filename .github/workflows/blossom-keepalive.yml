@@ -1,0 +1,40 @@
+name: Blossom keepalive
+
+on:
+  schedule:
+    - cron: '15,45 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check game + AI endpoints
+        run: |
+          curl -sf "https://seanaguinaga.com/blossom/play.html" | grep -q 'blossom-build'
+          curl -sf "https://seanaguinaga.com/blossom/js/config.js" | grep -q 'blossom-ai-proxy'
+          curl -sf "https://blossom-ai-proxy.smart-horse.workers.dev/health" | grep -q '"ai":true'
+          echo "Blossom prod OK"
+
+  redeploy-worker:
+    runs-on: ubuntu-latest
+    needs: health
+    if: failure()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Redeploy worker if secrets present
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$XAI_API_KEY" ]; then
+            echo "::warning::AI health failed — add CLOUDFLARE_API_TOKEN to auto-redeploy"
+            exit 1
+          fi
+          npm install -g wrangler
+          cd workers/blossom-ai
+          echo "$XAI_API_KEY" | wrangler secret put XAI_API_KEY --name blossom-ai-proxy
+          wrangler deploy --name blossom-ai-proxy

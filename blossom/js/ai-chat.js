@@ -180,7 +180,8 @@ window.BlossomAI = (function () {
         return false;
       }
       apiLive = Boolean(data?.ai) && (!data?.model || String(data.model).startsWith('grok-4.5'));
-      streaming = data?.stream !== false;
+      // Sync chat only — more stable on mobile/slow networks than SSE stream
+      streaming = false;
       setChatUi(apiLive);
       return apiLive;
     } catch {
