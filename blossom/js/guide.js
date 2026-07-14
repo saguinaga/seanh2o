@@ -122,28 +122,6 @@ window.BlossomGuide = (function () {
     return state.day <= 3 || state.level <= 2 || !state.guideDismissed;
   }
 
-  function welcomeBody(state) {
-    const goal = starsGoal(state);
-    const isChild = state.lifeStage === 'child';
-    return [
-      `Your first goal: ${goal} stars (full 50 unlocks on day 3 — Quinn's rule!).`,
-      '',
-      'Easy path for day 1 (all at home!):',
-      '1. Breakfast — tap fridge, pick oatmeal ($1) → +5⭐',
-      '2. Four home chores — walk to glowing objects, press E → +20⭐',
-      '3. Lunch & dinner — fridge again → +10⭐',
-      `That's ${goal}⭐ total!`,
-      '',
-      isChild ? 'Bonus: pretend shift at your dream job → +2⭐' : '',
-      '',
-      'WASD to move · E to interact · green exits on the right = travel outside',
-      '',
-      'Earn money from chores & shifts → Sugar Shack, Jan\'s, No Ka Oi, Wahoo\'s on Main, then the pier!',
-      '',
-      'Take your time. Tap End day when ready. Miss the goal? You bloom again tomorrow!',
-    ].filter(Boolean).join('\n');
-  }
-
   function isMobileGuide() {
     return window.matchMedia('(max-width: 768px)').matches;
   }
@@ -232,7 +210,6 @@ window.BlossomGuide = (function () {
     buildChecklist,
     phaseHint,
     shouldShowPanel,
-    welcomeBody,
     updatePanel,
     togglePanel,
     setGuideExpanded,

@@ -6,6 +6,12 @@
     var p = location.pathname.replace(/\/$/, '');
     if (p.endsWith('/blossom/play')) {
       location.replace('/blossom/play.html' + location.search);
+      return;
+    }
+    // Bust stale cached play.html (v25 had three.min.js + broken health probe)
+    if (!document.querySelector('script[type="importmap"]') && !/\b_refresh=/.test(location.search)) {
+      var q = location.search ? location.search + '&' : '?';
+      location.replace(location.pathname + q + '_refresh=' + Date.now());
     }
   })();
   </script>
@@ -220,15 +226,6 @@
 
   <div class="game-toast" id="gameToast" hidden></div>
 
-  <!-- First-day welcome -->
-  <div class="modal-backdrop" id="welcomeGuideModal" hidden>
-    <div class="modal-card modal-card--welcome">
-      <h2>How to get your first stars ✨</h2>
-      <p id="welcomeGuideBody" class="welcome-guide-body"></p>
-      <button type="button" class="btn-blossom btn-primary" id="welcomeGuideClose" style="width:100%;">Let's bloom!</button>
-    </div>
-  </div>
-
   <!-- Bonnie job offer -->
   <div class="modal-backdrop" id="bonnieModal" hidden>
     <div class="modal-card modal-card--bonnie">
@@ -355,38 +352,38 @@
   window.THREE = THREE;
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script defer src="js/boot.js?v=28"></script>
-  <script defer src="js/config.js?v=28"></script>
-  <script defer src="js/hb-local.js?v=28"></script>
-  <script defer src="js/world.js?v=28"></script>
-  <script defer src="js/world3d.js?v=28"></script>
-  <script defer src="js/hb-env.js?v=28"></script>
-  <script defer src="js/scene3d-juice.js?v=28"></script>
-  <script defer src="js/scene3d-hud.js?v=28"></script>
-  <script defer src="js/art.js?v=28"></script>
-  <script defer src="js/gfx.js?v=28"></script>
-  <script defer src="js/navigator.js?v=28"></script>
-  <script defer src="js/weather.js?v=28"></script>
-  <script defer src="js/pet.js?v=28"></script>
-  <script defer src="js/chat.js?v=28"></script>
-  <script defer src="js/photo.js?v=28"></script>
-  <script defer src="js/avatar.js?v=28"></script>
-  <script defer src="js/career.js?v=28"></script>
-  <script defer src="js/effects.js?v=28"></script>
-  <script defer src="js/audio.js?v=28"></script>
-  <script defer src="js/save.js?v=28"></script>
-  <script defer src="js/ai-chat.js?v=28"></script>
-  <script defer src="js/guide.js?v=28"></script>
-  <script defer src="js/auth.js?v=28"></script>
-  <script defer src="js/boutique.js?v=28"></script>
-  <script defer src="js/day-system.js?v=28"></script>
-  <script defer src="js/meal.js?v=28"></script>
-  <script defer src="js/shift.js?v=28"></script>
-  <script defer src="js/controls.js?v=28"></script>
-  <script defer src="js/render.js?v=28"></script>
-  <script defer src="js/scene3d.js?v=28"></script>
-  <script defer src="js/game.js?v=28"></script>
-  <script defer src="js/app.js?v=28"></script>
+  <script defer src="js/boot.js?v=29"></script>
+  <script defer src="js/config.js?v=29"></script>
+  <script defer src="js/hb-local.js?v=29"></script>
+  <script defer src="js/world.js?v=29"></script>
+  <script defer src="js/world3d.js?v=29"></script>
+  <script defer src="js/hb-env.js?v=29"></script>
+  <script defer src="js/scene3d-juice.js?v=29"></script>
+  <script defer src="js/scene3d-hud.js?v=29"></script>
+  <script defer src="js/art.js?v=29"></script>
+  <script defer src="js/gfx.js?v=29"></script>
+  <script defer src="js/navigator.js?v=29"></script>
+  <script defer src="js/weather.js?v=29"></script>
+  <script defer src="js/pet.js?v=29"></script>
+  <script defer src="js/chat.js?v=29"></script>
+  <script defer src="js/photo.js?v=29"></script>
+  <script defer src="js/avatar.js?v=29"></script>
+  <script defer src="js/career.js?v=29"></script>
+  <script defer src="js/effects.js?v=29"></script>
+  <script defer src="js/audio.js?v=29"></script>
+  <script defer src="js/save.js?v=29"></script>
+  <script defer src="js/ai-chat.js?v=29"></script>
+  <script defer src="js/guide.js?v=29"></script>
+  <script defer src="js/auth.js?v=29"></script>
+  <script defer src="js/boutique.js?v=29"></script>
+  <script defer src="js/day-system.js?v=29"></script>
+  <script defer src="js/meal.js?v=29"></script>
+  <script defer src="js/shift.js?v=29"></script>
+  <script defer src="js/controls.js?v=29"></script>
+  <script defer src="js/render.js?v=29"></script>
+  <script defer src="js/scene3d.js?v=29"></script>
+  <script defer src="js/game.js?v=29"></script>
+  <script defer src="js/app.js?v=29"></script>
 
 </body>
 </html>

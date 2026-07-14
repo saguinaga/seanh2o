@@ -1166,10 +1166,13 @@ a { color: var(--blossom-green-dark); }
 .modal-card {
   background: white;
   border-radius: var(--blossom-radius);
-  padding: 28px 24px;
-  max-width: 400px;
+  padding: 24px 20px;
+  max-width: min(400px, calc(100vw - 32px));
+  max-height: min(85vh, 560px);
+  overflow-y: auto;
   width: 100%;
   text-align: center;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-card h2 {
@@ -1484,20 +1487,6 @@ a { color: var(--blossom-green-dark); }
 .modal-card--bonnie {
   animation: float-card 4s ease-in-out infinite;
   box-shadow: 0 0 40px rgba(244, 114, 182, 0.3);
-}
-
-.modal-card--welcome {
-  background: linear-gradient(160deg, #ecfdf5 0%, #fff7ed 50%, #fdf4ff 100%);
-  max-width: 440px;
-}
-
-.welcome-guide-body {
-  white-space: pre-line;
-  text-align: left;
-  line-height: 1.55;
-  font-size: 0.92rem;
-  color: #334155;
-  margin-bottom: 16px;
 }
 
 .create-tip {

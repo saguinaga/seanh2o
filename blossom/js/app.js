@@ -194,18 +194,19 @@ window.BlossomApp = (function () {
         : `Level ${BlossomCareer.BONNIE_LEVEL}: Bonnie hires on Main street · ${cp.workLabel} afternoons`;
     }
     BlossomGame.checkBonnieOffer?.();
-    window.setTimeout(() => maybeShowWelcome(state), 1600);
+    nudgeFirstDayGuide(state);
   }
 
-  function maybeShowWelcome(st) {
-    if (!st || st.guideWelcomeSeen) return;
-    if (document.getElementById('gameLoad') && !document.getElementById('gameLoad').hidden) return;
+  function nudgeFirstDayGuide(st) {
+    if (!st || st.guideWelcomeSeen || st.day > 1) return;
     st.guideWelcomeSeen = true;
-    const modal = document.getElementById('welcomeGuideModal');
-    const body = document.getElementById('welcomeGuideBody');
-    if (body) body.textContent = BlossomGuide.welcomeBody(st);
-    setModalOpen(modal, true);
+    st.guideDismissed = false;
+    st.guideExpanded = true;
+    BlossomGuide.updatePanel(st);
     BlossomSave.persist(st, BlossomAuth.getUserId());
+    window.setTimeout(() => {
+      showToast('Day 1: follow the 📖 panel — meals, chores, stars', 'info');
+    }, 1200);
   }
 
   function shareGame() {
@@ -304,9 +305,6 @@ window.BlossomApp = (function () {
     });
     document.getElementById('bonnieLater')?.addEventListener('click', () => {
       setModalOpen(document.getElementById('bonnieModal'), false);
-    });
-    document.getElementById('welcomeGuideClose')?.addEventListener('click', () => {
-      setModalOpen(document.getElementById('welcomeGuideModal'), false);
     });
     document.getElementById('guideHelpBtn')?.addEventListener('click', () => showStarGuide());
     document.getElementById('guideToggle')?.addEventListener('click', () => {
@@ -462,7 +460,7 @@ window.BlossomApp = (function () {
     showBonnieModal,
     showTravelBanner,
     showToast,
-    maybeShowWelcome,
+    nudgeFirstDayGuide,
     shareGame,
     boot,
   };
