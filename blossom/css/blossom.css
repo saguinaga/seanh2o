@@ -548,6 +548,14 @@ a { color: var(--blossom-green-dark); }
   color: #fde047;
 }
 
+.chat-log__line--error .chat-log__who {
+  color: #f87171;
+}
+
+.chat-log__line--error {
+  opacity: 0.9;
+}
+
 .chat-log__cursor {
   display: inline-block;
   animation: chat-blink 0.9s step-end infinite;

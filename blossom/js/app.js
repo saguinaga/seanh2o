@@ -189,7 +189,8 @@ window.BlossomApp = (function () {
     );
     BlossomGame.updateHud();
     window.BlossomAI?.probe?.().then((on) => {
-      if (on) showToast('Grok 4.5 NPCs live — talk to locals on Main Street!', 'good');
+      if (on) showToast('Grok 4.5 live — talk to locals!', 'good');
+      else showToast('Grok 4.5 offline — set XAI_API_KEY + deploy API', 'warn');
     });
     const bubble = document.getElementById('npcBubble');
     if (bubble) {
@@ -371,8 +372,8 @@ window.BlossomApp = (function () {
     try {
       const result = await window.BlossomGame?.sendChatMessage?.(text);
       if (result) {
-        const tag = result.ai ? ' ✨ Grok' : '';
-        showToast(`${result.who}: ${result.body}${tag}`, result.ai ? 'good' : 'info');
+        if (result.error) showToast(result.body, 'warn');
+        else showToast(`${result.who}: ${result.body}`, 'good');
       }
     } finally {
       input.disabled = false;

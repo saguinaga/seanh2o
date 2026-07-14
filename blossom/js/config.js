@@ -29,7 +29,6 @@ window.BLOSSOM_CONFIG.cloudEnabled = Boolean(
   window.BLOSSOM_CONFIG.supabaseUrl && window.BLOSSOM_CONFIG.supabaseAnonKey
 );
 
-/** SpaceXAI (xAI) Grok 4.5 — local: blossom/dev-server.mjs · prod: Supabase blossom-ai function */
+/** Grok 4.5 only — local: blossom/dev-server.mjs · prod: Supabase blossom-ai function */
 window.BLOSSOM_CONFIG.aiChatEndpoint = null;
 window.BLOSSOM_CONFIG.aiModel = 'grok-4.5';
-window.BLOSSOM_CONFIG.aiProvider = 'SpaceXAI';
