@@ -1,9 +1,9 @@
 /**
  * Blossom AI smoke test — health + one chat round-trip.
  * Local:  BLOSSOM_PORT=3002 node blossom/test-ai.mjs
- * Prod:   BLOSSOM_AI_BASE=https://mtqezgchhggmlrfzfyjb.supabase.co/functions/v1/blossom-ai node blossom/test-ai.mjs
+ * Prod:   node blossom/test-ai.mjs  (defaults to Cloudflare worker)
  */
-const base = (process.env.BLOSSOM_AI_BASE || `http://localhost:${process.env.BLOSSOM_PORT || 3002}/api/blossom`).replace(/\/$/, '');
+const base = (process.env.BLOSSOM_AI_BASE || 'https://blossom-ai-proxy.smart-horse.workers.dev').replace(/\/$/, '');
 const anon = process.env.SUPABASE_ANON_KEY || '';
 
 async function get(path, headers = {}) {

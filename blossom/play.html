@@ -10,7 +10,7 @@
     }
     // Bust stale cached play.html (v25 had three.min.js + broken health probe)
     var build = document.querySelector('meta[name="blossom-build"]');
-    if ((!build || build.getAttribute('content') !== '29') && !/\b_refresh=/.test(location.search)) {
+    if ((!build || build.getAttribute('content') !== '30') && !/\b_refresh=/.test(location.search)) {
       var q = location.search ? location.search + '&' : '?';
       location.replace(location.pathname + q + '_refresh=' + Date.now());
     }
@@ -21,7 +21,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="blossom-build" content="29">
+  <meta name="blossom-build" content="30">
   <title>Play — Blossom Life · 3D Huntington Beach</title>
   <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
   <meta property="og:title" content="Blossom Life — Play Now">
@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=29">
+  <link rel="stylesheet" href="css/blossom.css?v=30">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -354,38 +354,38 @@
   window.THREE = THREE;
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script defer src="js/boot.js?v=29"></script>
-  <script defer src="js/config.js?v=29"></script>
-  <script defer src="js/hb-local.js?v=29"></script>
-  <script defer src="js/world.js?v=29"></script>
-  <script defer src="js/world3d.js?v=29"></script>
-  <script defer src="js/hb-env.js?v=29"></script>
-  <script defer src="js/scene3d-juice.js?v=29"></script>
-  <script defer src="js/scene3d-hud.js?v=29"></script>
-  <script defer src="js/art.js?v=29"></script>
-  <script defer src="js/gfx.js?v=29"></script>
-  <script defer src="js/navigator.js?v=29"></script>
-  <script defer src="js/weather.js?v=29"></script>
-  <script defer src="js/pet.js?v=29"></script>
-  <script defer src="js/chat.js?v=29"></script>
-  <script defer src="js/photo.js?v=29"></script>
-  <script defer src="js/avatar.js?v=29"></script>
-  <script defer src="js/career.js?v=29"></script>
-  <script defer src="js/effects.js?v=29"></script>
-  <script defer src="js/audio.js?v=29"></script>
-  <script defer src="js/save.js?v=29"></script>
-  <script defer src="js/ai-chat.js?v=29"></script>
-  <script defer src="js/guide.js?v=29"></script>
-  <script defer src="js/auth.js?v=29"></script>
-  <script defer src="js/boutique.js?v=29"></script>
-  <script defer src="js/day-system.js?v=29"></script>
-  <script defer src="js/meal.js?v=29"></script>
-  <script defer src="js/shift.js?v=29"></script>
-  <script defer src="js/controls.js?v=29"></script>
-  <script defer src="js/render.js?v=29"></script>
-  <script defer src="js/scene3d.js?v=29"></script>
-  <script defer src="js/game.js?v=29"></script>
-  <script defer src="js/app.js?v=29"></script>
+  <script defer src="js/boot.js?v=30"></script>
+  <script defer src="js/config.js?v=30"></script>
+  <script defer src="js/hb-local.js?v=30"></script>
+  <script defer src="js/world.js?v=30"></script>
+  <script defer src="js/world3d.js?v=30"></script>
+  <script defer src="js/hb-env.js?v=30"></script>
+  <script defer src="js/scene3d-juice.js?v=30"></script>
+  <script defer src="js/scene3d-hud.js?v=30"></script>
+  <script defer src="js/art.js?v=30"></script>
+  <script defer src="js/gfx.js?v=30"></script>
+  <script defer src="js/navigator.js?v=30"></script>
+  <script defer src="js/weather.js?v=30"></script>
+  <script defer src="js/pet.js?v=30"></script>
+  <script defer src="js/chat.js?v=30"></script>
+  <script defer src="js/photo.js?v=30"></script>
+  <script defer src="js/avatar.js?v=30"></script>
+  <script defer src="js/career.js?v=30"></script>
+  <script defer src="js/effects.js?v=30"></script>
+  <script defer src="js/audio.js?v=30"></script>
+  <script defer src="js/save.js?v=30"></script>
+  <script defer src="js/ai-chat.js?v=30"></script>
+  <script defer src="js/guide.js?v=30"></script>
+  <script defer src="js/auth.js?v=30"></script>
+  <script defer src="js/boutique.js?v=30"></script>
+  <script defer src="js/day-system.js?v=30"></script>
+  <script defer src="js/meal.js?v=30"></script>
+  <script defer src="js/shift.js?v=30"></script>
+  <script defer src="js/controls.js?v=30"></script>
+  <script defer src="js/render.js?v=30"></script>
+  <script defer src="js/scene3d.js?v=30"></script>
+  <script defer src="js/game.js?v=30"></script>
+  <script defer src="js/app.js?v=30"></script>
 
 </body>
 </html>
