@@ -247,6 +247,10 @@ window.BlossomArt = (function () {
   }
 
   function drawShopBuilding(ctx, p, anim, theme) {
+    if (window.BlossomGfx?.drawBuilding3D) {
+      BlossomGfx.drawBuilding3D(ctx, p.x, p.y, p.w, p.h, 24, { ...theme, anim });
+      return;
+    }
     const { x, y, w, h } = p;
     const { wall, trim, awning, sign, door } = theme;
     softShadow(ctx, () => {
@@ -407,7 +411,14 @@ window.BlossomArt = (function () {
     ctx.strokeRect(x + 18, y + 72, w - 36, h - 95);
     ctx.fillStyle = '#fef08a';
     ctx.font = 'bold 14px Fredoka, Nunito, sans-serif';
-    ctx.fillText('Harbor Stage', x + 12, y + 28);
+    ctx.fillText('HB Art Center', x + 6, y + 28);
+  }
+
+  function drawArtCenter(ctx, p, anim) {
+    drawStage(ctx, p, anim);
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 14px Fredoka, Nunito, sans-serif';
+    ctx.fillText('HB Art Center', p.x + 6, p.y + 28);
   }
 
   function drawStudio(ctx, p, anim) {
@@ -526,7 +537,7 @@ window.BlossomArt = (function () {
     ctx.fillRect(x + 6, y + 44, w - 12, h - 60);
     ctx.fillStyle = '#047857';
     ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
-    ctx.fillText('Harbor', x + 8, y + 18);
+    ctx.fillText('Main St', x + 8, y + 18);
     ctx.fillText('Wellness', x + 8, y + 32);
     ctx.font = '9px Nunito, sans-serif';
     ctx.fillStyle = '#065f46';
@@ -553,10 +564,92 @@ window.BlossomArt = (function () {
     ctx.fill();
     ctx.fillStyle = '#f8fafc';
     ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
-    ctx.fillText('Harbor Gym', x + 10, y + 12);
+    ctx.fillText('City Beach', x + 10, y + 12);
     ctx.font = '9px Nunito, sans-serif';
     ctx.fillStyle = '#fdba74';
-    ctx.fillText('💪 Training floor', x + 10, y + 86);
+    ctx.fillText('💪 Pier workouts', x + 10, y + 86);
+  }
+
+  function drawBeachGym(ctx, p, anim) {
+    drawGym(ctx, p, anim);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
+    ctx.fillText('City Beach', p.x + 10, p.y + 12);
+  }
+
+  function drawRubys(ctx, p, anim) {
+    const { x, y, w, h } = p;
+    softShadow(ctx, () => {
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(x, y + 20, w, h - 20);
+    });
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x + 4, y + 8, w - 8, 14);
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 13px Fredoka, Nunito, sans-serif';
+    ctx.fillText("Ruby's Diner", x + 8, y + 20);
+    ctx.font = '9px Nunito, sans-serif';
+    ctx.fillStyle = '#fecaca';
+    ctx.fillText('End of the pier', x + 8, y + h - 12);
+  }
+
+  function drawVolleyball(ctx, p, anim) {
+    const { x, y, w, h } = p;
+    const sand = ctx.createLinearGradient(x, y + h * 0.4, x, y + h);
+    sand.addColorStop(0, '#fde68a');
+    sand.addColorStop(1, '#d4a843');
+    ctx.fillStyle = sand;
+    ctx.fillRect(x, y + h * 0.35, w, h * 0.65);
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x + w / 2, y + 8);
+    ctx.lineTo(x + w / 2, y + h - 8);
+    ctx.stroke();
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
+    ctx.fillText('🏐 Volleyball', x + 8, y + 22);
+  }
+
+  function drawBeach(ctx, p) {
+    const { x, y, w, h } = p;
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, '#fde68a');
+    g.addColorStop(1, '#d4a843');
+    ctx.fillStyle = g;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.fillRect(x, y, w, h * 0.18);
+  }
+
+  function drawLifeguard(ctx, p) {
+    const { x, y, w, h } = p;
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(x + w * 0.2, y + h * 0.25, w * 0.6, h * 0.75);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y + h * 0.2, w, h * 0.12);
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 10px Fredoka, Nunito, sans-serif';
+    ctx.fillText('🛟 Lifeguard', x + 4, y + 16);
+  }
+
+  function drawPier(ctx, p) {
+    const { x, y, w, h } = p;
+    ctx.fillStyle = '#9a7b4f';
+    ctx.fillRect(x + w * 0.35, y + h * 0.15, w * 0.3, h * 0.85);
+    for (let i = 0; i < 6; i++) {
+      ctx.fillRect(x + w * 0.32 + (i % 2) * w * 0.32, y + h * 0.2 + i * 18, 8, 14);
+    }
+    ctx.fillStyle = '#fde047';
+    ctx.font = 'bold 11px Fredoka, Nunito, sans-serif';
+    ctx.fillText('HB Pier', x + w * 0.28, y + 12);
+  }
+
+  function drawShorebirds(ctx, p) {
+    ctx.font = '22px serif';
+    ctx.fillText('🦅', p.x, p.y + 28);
+    ctx.fillText('🐦', p.x + 28, p.y + 22);
+    ctx.fillText('🦤', p.x + 56, p.y + 30);
   }
 
   function vignette(ctx, w, h, strength) {
@@ -608,10 +701,18 @@ window.BlossomArt = (function () {
     drawDoor,
     drawNpcBonnie,
     drawStage,
+    drawArtCenter,
     drawStudio,
     drawSalonRich,
     drawWellness,
     drawGym,
+    drawBeachGym,
+    drawRubys,
+    drawVolleyball,
+    drawBeach,
+    drawLifeguard,
+    drawPier,
+    drawShorebirds,
     drawBoutique,
     drawShopBuilding,
     drawGrassBlades,

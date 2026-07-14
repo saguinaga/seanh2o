@@ -1,4 +1,4 @@
-/** Careers — salon, stage, studio, life coaching & training */
+/** Careers — salon, HB Art Center, studio, life coaching & beach training */
 window.BlossomCareer = (function () {
   const PATHS = {
     salon: {
@@ -13,7 +13,7 @@ window.BlossomCareer = (function () {
       id: 'broadway',
       label: 'Broadway star',
       emoji: '🎭',
-      tagline: 'Rehearse, audition, and shine on the harbor stage.',
+      tagline: 'Rehearse at HB Art Center and shine on Main Street.',
       workLabel: 'Rehearsal shift',
       playLabel: 'Play stage',
     },
@@ -37,7 +37,7 @@ window.BlossomCareer = (function () {
       id: 'trainer',
       label: 'Personal trainer',
       emoji: '💪',
-      tagline: 'Lead warm-ups, cheer reps, build harbor strength.',
+      tagline: 'Lead warm-ups on City Beach — pier reps and PCH sunshine.',
       workLabel: 'Training shift',
       playLabel: 'Play gym',
     },
@@ -72,10 +72,10 @@ window.BlossomCareer = (function () {
   const QUINN = {
     lifeGame: 'It\'s a game where it\'s like a life game… start off with 10 dollars… get stars for completing a full day… 50 stars.',
     bonnieHire: 'You bloomed to level 3! I\'m Bonnie — I run the salon. Want to get hired?',
-    bonnieBroadway: 'Bonnie: The harbor stage needs your sparkle. Ready to rehearse for real?',
+    bonnieBroadway: 'Bonnie: HB Art Center on Main Street needs your sparkle. Ready to rehearse for real?',
     bonnieTiktok: 'Bonnie: Everyone\'s filming these days — want to get paid for your clips?',
-    bonnieCoach: 'Bonnie: Harbor Wellness is hiring warm hearts. Ready to coach for real?',
-    bonnieTrainer: 'Bonnie: The park gym needs your energy. Ready to train clients?',
+    bonnieCoach: 'Bonnie: Main St Wellness is hiring warm hearts. Ready to coach for real?',
+    bonnieTrainer: 'Bonnie: City Beach needs your energy — pier workouts, real HB grit. Ready to train clients?',
     playSalon: 'Pretend shift! No bills — just play and earn a few stars.',
     needWork: 'Adults need a work shift today — head to your job in the afternoon!',
     broke: 'You\'re short on cash after bills. Work a shift or pick cheaper meals!',
@@ -171,10 +171,10 @@ window.BlossomCareer = (function () {
   function workSiteFor(state) {
     const p = path(state);
     if (p.id === 'salon') return { loc: 'street', kind: 'shop', shop: 'salon' };
-    if (p.id === 'broadway') return { loc: 'park', kind: 'stage' };
+    if (p.id === 'broadway') return { loc: 'street', kind: 'artcenter' };
     if (p.id === 'tiktoker') return { loc: 'house', kind: 'studio' };
     if (p.id === 'coach') return { loc: 'street', kind: 'shop', shop: 'wellness' };
-    if (p.id === 'trainer') return { loc: 'park', kind: 'gym' };
+    if (p.id === 'trainer') return { loc: 'pacCity', kind: 'beachGym' };
     return { loc: 'street', kind: 'shop', shop: 'salon' };
   }
 

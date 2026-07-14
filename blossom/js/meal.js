@@ -6,7 +6,14 @@ window.BlossomMeal = (function () {
     dinner: { title: 'Dinner o\'clock!', emoji: '🌙', sub: 'Pick your plate · +5⭐' },
   };
 
-  const CAFE_COPY = { title: 'Harbor Café', emoji: '☕', sub: 'Cozy lunch · tap to order · +5⭐' };
+  const CAFE_COPY = { title: "Wahoo's Fish Tacos", emoji: '🌮', sub: 'HB original · tap to order · +5⭐' };
+
+  function copyFor(source, mealKey) {
+    const local = window.BlossomHBLocal?.restaurantMealCopy?.(source);
+    if (local) return local;
+    if (source === 'cafe') return CAFE_COPY;
+    return MEAL_COPY[mealKey] || MEAL_COPY.lunch;
+  }
 
   const FOOD_EMOJI = {
     Oatmeal: '🥣',
@@ -45,7 +52,7 @@ window.BlossomMeal = (function () {
     const card = modal?.querySelector('.meal-card-panel');
     if (!modal) return;
 
-    const copy = source === 'cafe' ? CAFE_COPY : (MEAL_COPY[mealKey] || MEAL_COPY.lunch);
+    const copy = copyFor(source, mealKey);
     const title = $('mealModalTitle');
     const sub = $('mealModalSub');
     const bigEmoji = $('mealModalEmoji');

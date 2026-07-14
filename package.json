@@ -4,9 +4,11 @@
   "version": "0.0.0",
   "description": "Sean Aguinaga personal site (GitHub Pages). Static HTML/JS/CSS with interactive calculators.",
   "scripts": {
-    "dev": "browser-sync start --server --files \"**/*\" --port 3000 --no-notify --no-ui --open local",
+    "dev": "browser-sync start --config bs-config.cjs --open local",
     "preview": "browser-sync start --server --port 3000 --no-notify --open",
-    "serve": "npx serve . -p 3000",
+    "serve": "npx serve . -p 3000 -c serve.json",
+    "blossom": "node blossom/dev-server.mjs",
+    "blossom:dev": "node blossom/dev-server.mjs",
     "check": "node --check calculator.js && node --check flip-calculator.js && echo 'JS syntax OK'",
     "refresh-offers": "node promo-tracker/scripts/refresh-offers.mjs",
     "start": "npm run dev"

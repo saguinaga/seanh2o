@@ -1,7 +1,24 @@
-/** WASD / arrows + mobile virtual joystick */
+/** WASD / arrows + mobile virtual joystick + mouse orbit (3D) */
 window.BlossomControls = (function () {
-  const keys = new Set();
+  /** Semantic movement — up/down = forward/back, left/right = strafe (never swapped) */
+  const MOVE_BY_CODE = {
+    ArrowUp: 'up',
+    ArrowDown: 'down',
+    ArrowLeft: 'left',
+    ArrowRight: 'right',
+    KeyW: 'up',
+    KeyS: 'down',
+    KeyA: 'left',
+    KeyD: 'right',
+  };
+
+  const moveKeys = new Set();
+  const modKeys = new Set();
   let joystick = { active: false, dx: 0, dy: 0, jump: false };
+  let mode3d = false;
+  let mouseOrbit = { active: false, pending: false, lastX: 0, startX: 0, delta: 0, dragged: false };
+  let orbitCanvas = null;
+  const DRAG_ORBIT_THRESHOLD = 10;
 
   function isTypingTarget(el) {
     const node = el || document.activeElement;
@@ -17,25 +34,155 @@ window.BlossomControls = (function () {
   }
 
   function clearMovementKeys() {
-    ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'space', ' '].forEach((k) => keys.delete(k));
+    moveKeys.clear();
+    modKeys.delete('space');
+    modKeys.delete('shift');
+  }
+
+  function movementIdFromEvent(e) {
+    return MOVE_BY_CODE[e.code] || null;
+  }
+
+  function isMovementArrow(e) {
+    return e.code === 'ArrowUp' || e.code === 'ArrowDown'
+      || e.code === 'ArrowLeft' || e.code === 'ArrowRight';
+  }
+
+  function readAxes() {
+    let dx = 0;
+    let dy = 0;
+    if (moveKeys.has('up')) dy -= 1;
+    if (moveKeys.has('down')) dy += 1;
+    if (moveKeys.has('left')) dx -= 1;
+    if (moveKeys.has('right')) dx += 1;
+    if (joystick.active) {
+      dx = joystick.dx;
+      dy = joystick.dy;
+    }
+    const len = Math.hypot(dx, dy);
+    if (len > 1) {
+      dx /= len;
+      dy /= len;
+    }
+    return { dx, dy, len };
+  }
+
+  function set3DMode(on) {
+    mode3d = !!on;
+  }
+
+  function canInstantOrbit(e) {
+    return e.button === 2 || e.button === 1 || (e.button === 0 && e.shiftKey);
+  }
+
+  function initPointerOrbit(canvas) {
+    orbitCanvas = canvas;
+    if (!canvas) return;
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    canvas.addEventListener('mousedown', (e) => {
+      if (!mode3d || isTypingTarget()) return;
+      if (canInstantOrbit(e)) {
+        mouseOrbit.active = true;
+        mouseOrbit.pending = false;
+        mouseOrbit.lastX = e.clientX;
+        mouseOrbit.startX = e.clientX;
+        mouseOrbit.delta = 0;
+        mouseOrbit.dragged = true;
+        orbitCanvas?.classList.add('orbit-drag');
+        e.preventDefault();
+        return;
+      }
+      if (e.button === 0) {
+        mouseOrbit.pending = true;
+        mouseOrbit.active = false;
+        mouseOrbit.lastX = e.clientX;
+        mouseOrbit.startX = e.clientX;
+        mouseOrbit.delta = 0;
+        mouseOrbit.dragged = false;
+      }
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (mouseOrbit.pending && !mouseOrbit.active) {
+        if (Math.abs(e.clientX - mouseOrbit.startX) >= DRAG_ORBIT_THRESHOLD) {
+          mouseOrbit.active = true;
+          mouseOrbit.dragged = true;
+          orbitCanvas?.classList.add('orbit-drag');
+        }
+      }
+      if (!mouseOrbit.active) return;
+      const orbitDx = e.clientX - mouseOrbit.lastX;
+      mouseOrbit.lastX = e.clientX;
+      mouseOrbit.delta += orbitDx * 0.0052;
+      e.preventDefault();
+    });
+    const endOrbit = () => {
+      mouseOrbit.pending = false;
+      mouseOrbit.active = false;
+      orbitCanvas?.classList.remove('orbit-drag');
+    };
+    window.addEventListener('mouseup', endOrbit);
+    window.addEventListener('blur', () => {
+      endOrbit();
+      mouseOrbit.dragged = false;
+      clearMovementKeys();
+    });
+  }
+
+  function consumedPointerClick() {
+    const wasDrag = mouseOrbit.dragged;
+    mouseOrbit.dragged = false;
+    return wasDrag;
+  }
+
+  function onKeyDown(e) {
+    if (isTypingTarget(e.target)) return;
+
+    const moveId = movementIdFromEvent(e);
+    if (moveId) {
+      e.preventDefault();
+      moveKeys.add(moveId);
+      return;
+    }
+
+    if (isMovementArrow(e)) e.preventDefault();
+    if (e.code === 'Space') {
+      e.preventDefault();
+      modKeys.add('space');
+    }
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.key === 'Shift') {
+      modKeys.add('shift');
+    }
+    if (e.code === 'KeyQ') modKeys.add('q');
+    if (e.code === 'KeyE') modKeys.add('e');
+  }
+
+  function onKeyUp(e) {
+    if (isTypingTarget(e.target)) return;
+
+    const moveId = movementIdFromEvent(e);
+    if (moveId) {
+      e.preventDefault();
+      moveKeys.delete(moveId);
+      return;
+    }
+
+    if (e.code === 'Space') modKeys.delete('space');
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.key === 'Shift') {
+      modKeys.delete('shift');
+    }
+    if (e.code === 'KeyQ') modKeys.delete('q');
+    if (e.code === 'KeyE') modKeys.delete('e');
   }
 
   function init() {
-    window.addEventListener('keydown', (e) => {
-      if (isTypingTarget(e.target)) return;
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
-      keys.add(e.key.toLowerCase());
-      if (e.key === ' ') keys.add('space');
-    });
-    window.addEventListener('keyup', (e) => {
-      if (isTypingTarget(e.target)) return;
-      keys.delete(e.key.toLowerCase());
-      if (e.key === ' ') keys.delete('space');
-    });
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
     document.addEventListener('focusin', (e) => {
       if (isTypingTarget(e.target)) clearMovementKeys();
     });
-    document.addEventListener('focusout', clearMovementKeys);
+    document.addEventListener('focusout', (e) => {
+      if (isTypingTarget(e.target)) clearMovementKeys();
+    });
     initJoystick();
   }
 
@@ -109,22 +256,31 @@ window.BlossomControls = (function () {
   }
 
   function getMovement() {
-    let dx = 0;
-    let dy = 0;
-    if (keys.has('w') || keys.has('arrowup')) dy -= 1;
-    if (keys.has('s') || keys.has('arrowdown')) dy += 1;
-    if (keys.has('a') || keys.has('arrowleft')) dx -= 1;
-    if (keys.has('d') || keys.has('arrowright')) dx += 1;
-    if (joystick.active) {
-      dx = joystick.dx;
-      dy = joystick.dy;
-    }
-    const len = Math.hypot(dx, dy);
-    if (len > 1) { dx /= len; dy /= len; }
-    const jump = keys.has('space') || joystick.jump;
+    const jump = modKeys.has('space') || joystick.jump;
+    const run = modKeys.has('shift');
+    const turnL = modKeys.has('q');
+    const turnR = modKeys.has('e');
     joystick.jump = false;
-    return { dx, dy, jump };
+
+    const { dx, dy, len } = readAxes();
+    if (mode3d) {
+      const camTurn = mouseOrbit.delta;
+      mouseOrbit.delta = 0;
+      return {
+        mode3d: true,
+        dx,
+        dy,
+        camTurn,
+        jump,
+        run,
+        turnL,
+        turnR,
+        moving: len > 0.08,
+      };
+    }
+
+    return { dx, dy, jump, run, turnL, turnR, moving: len > 0.08 };
   }
 
-  return { init, getMovement, isTypingTarget };
+  return { init, getMovement, isTypingTarget, set3DMode, initPointerOrbit, consumedPointerClick };
 })();

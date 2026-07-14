@@ -255,13 +255,209 @@ window.BlossomGfx = (function () {
     ctx.restore();
   }
 
+  function drawExtrudedFace(ctx, x, y, w, h, depth, colors) {
+    const { front, right, top, shadow: sh } = colors;
+    const d = depth || 18;
+    ctx.fillStyle = sh || 'rgba(15, 23, 42, 0.22)';
+    ctx.beginPath();
+    ctx.moveTo(x + 4, y + h + 4);
+    ctx.lineTo(x + w + d * 0.55, y + h + 4 - d * 0.35);
+    ctx.lineTo(x + w + d * 0.55, y + 4 - d * 0.35);
+    ctx.lineTo(x + 4, y + 4);
+    ctx.closePath();
+    ctx.fill();
+    const rg = ctx.createLinearGradient(x + w, y, x + w + d, y - d * 0.4);
+    rg.addColorStop(0, right || BlossomArt.shade(front, -0.18));
+    rg.addColorStop(1, BlossomArt.shade(right || front, -0.28));
+    ctx.fillStyle = rg;
+    ctx.beginPath();
+    ctx.moveTo(x + w, y);
+    ctx.lineTo(x + w + d, y - d * 0.4);
+    ctx.lineTo(x + w + d, y + h - d * 0.4);
+    ctx.lineTo(x + w, y + h);
+    ctx.closePath();
+    ctx.fill();
+    const tg = ctx.createLinearGradient(x, y - d, x + w, y);
+    tg.addColorStop(0, top || BlossomArt.shade(front, 0.14));
+    tg.addColorStop(1, front);
+    ctx.fillStyle = tg;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w, y);
+    ctx.lineTo(x + w + d, y - d * 0.4);
+    ctx.lineTo(x + d, y - d * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    const fg = ctx.createLinearGradient(x, y, x, y + h);
+    fg.addColorStop(0, BlossomArt.shade(front, 0.08));
+    fg.addColorStop(0.45, front);
+    fg.addColorStop(1, BlossomArt.shade(front, -0.14));
+    ctx.fillStyle = fg;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, w, h);
+  }
+
+  function drawBuilding3D(ctx, x, y, w, h, depth, theme) {
+    const { wall, trim, awning, sign, door } = theme;
+    const d = depth || 22;
+    const baseY = y + 40;
+    const bh = h - 40;
+    drawExtrudedFace(ctx, x, baseY, w, bh, d, {
+      front: wall,
+      right: BlossomArt.shade(wall, -0.22),
+      top: BlossomArt.shade(wall, 0.1),
+    });
+    ctx.fillStyle = trim;
+    ctx.fillRect(x, baseY - 2, w, 6);
+    ctx.fillStyle = BlossomArt.shade(trim, -0.15);
+    ctx.fillRect(x + w, baseY - 2 - d * 0.15, d, 6);
+    if (awning) {
+      const ag = ctx.createLinearGradient(x, y + 24, x, y + 44);
+      ag.addColorStop(0, BlossomArt.shade(awning, 0.12));
+      ag.addColorStop(1, awning);
+      ctx.fillStyle = ag;
+      ctx.beginPath();
+      ctx.moveTo(x - 3, y + 38);
+      for (let i = 0; i <= 6; i++) {
+        const px = x - 3 + (i / 6) * (w + 6);
+        const py = y + 24 + Math.sin(i * 0.9) * 4;
+        ctx.lineTo(px, py);
+      }
+      ctx.lineTo(x + w + 3, y + 38);
+      ctx.closePath();
+      ctx.fill();
+    }
+    BlossomArt.drawWindow(ctx, x + 16, y + 68, (w - 40) * 0.45, 52, theme.anim || 0, true);
+    BlossomArt.drawWindow(ctx, x + w - 16 - (w - 40) * 0.45, y + 68, (w - 40) * 0.45, 52, theme.anim || 0, true);
+    BlossomArt.drawDoor(ctx, x + w / 2 - 18, y + h - 58, 36, 52, door || '#92400e');
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.font = 'bold 13px Fredoka, Nunito, sans-serif';
+    ctx.fillText(sign, x + 10, y + 20);
+    groundShadow(ctx, x + w / 2, y + h + 6, w * 0.55, 10, 0.34);
+  }
+
+  function depthFog(ctx, floorY, anim, strength) {
+    const s = strength ?? 0.55;
+    const fg = ctx.createLinearGradient(0, floorY - 180, 0, floorY + 40);
+    fg.addColorStop(0, `rgba(148, 163, 184, ${s * 0.22})`);
+    fg.addColorStop(0.55, `rgba(100, 116, 139, ${s * 0.08})`);
+    fg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = fg;
+    ctx.fillRect(0, floorY - 200, W(), 240);
+    for (let i = 0; i < 6; i++) {
+      const dx = (i * 143 + anim * 8) % W();
+      const g = ctx.createRadialGradient(dx, floorY - 60 - i * 18, 2, dx, floorY - 60 - i * 18, 80);
+      g.addColorStop(0, 'rgba(255,255,255,0.04)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(dx, floorY - 60 - i * 18, 70, 22, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function perspectiveGround(ctx, floorY, groundColor, accentColor) {
+    const g = ctx.createLinearGradient(0, floorY - 120, 0, H());
+    g.addColorStop(0, BlossomArt.shade(groundColor, 0.18));
+    g.addColorStop(0.35, groundColor);
+    g.addColorStop(1, BlossomArt.shade(accentColor || groundColor, -0.2));
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(0, floorY);
+    ctx.lineTo(W(), floorY);
+    ctx.lineTo(W() * 0.92, H());
+    ctx.lineTo(W() * 0.08, H());
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    for (let row = 0; row < 8; row++) {
+      const ty = floorY + 12 + row * 14;
+      const inset = row * 18;
+      ctx.beginPath();
+      ctx.moveTo(inset, ty);
+      ctx.lineTo(W() - inset, ty);
+      ctx.stroke();
+    }
+  }
+
+  function drawQuestPin(ctx, x, y, anim, label) {
+    const bob = Math.sin(anim * 4) * 6;
+    const py = y + bob;
+    const pulse = 0.55 + Math.sin(anim * 5) * 0.45;
+    const rg = ctx.createRadialGradient(x, py + 8, 4, x, py + 8, 42 + pulse * 10);
+    rg.addColorStop(0, `rgba(250, 204, 21, ${0.45 + pulse * 0.3})`);
+    rg.addColorStop(1, 'rgba(250, 204, 21, 0)');
+    ctx.fillStyle = rg;
+    ctx.beginPath();
+    ctx.arc(x, py + 8, 40 + pulse * 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.moveTo(x, py - 38);
+    ctx.bezierCurveTo(x + 22, py - 22, x + 20, py + 2, x, py + 18);
+    ctx.bezierCurveTo(x - 20, py + 2, x - 22, py - 22, x, py - 38);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(x, py - 24, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    if (label) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+      const tw = ctx.measureText(label).width + 16;
+      BlossomArt.roundRect(ctx, x - tw / 2, py - 58, tw, 18, 9);
+      ctx.fill();
+      ctx.fillStyle = '#fde047';
+      ctx.font = '700 10px Nunito, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x, py - 45);
+      ctx.textAlign = 'left';
+    }
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+    ctx.beginPath();
+    ctx.ellipse(x, py + 22, 14, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawNavPath(ctx, points, anim) {
+    if (!points?.length) return;
+    ctx.save();
+    ctx.setLineDash([10, 8]);
+    ctx.lineDashOffset = -anim * 28;
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.65)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    points.forEach((pt, i) => {
+      if (i === 0) ctx.moveTo(pt.x, pt.y);
+      else ctx.lineTo(pt.x, pt.y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+    points.forEach((pt, i) => {
+      const pulse = 0.5 + Math.sin(anim * 4 + i) * 0.5;
+      ctx.fillStyle = `rgba(253, 224, 71, ${0.5 + pulse * 0.4})`;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 5 + pulse * 2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
   function finishFrame(ctx, w, h, opts) {
     const { loc, phaseId, anim } = opts || {};
     colorGrade(ctx, w, h, loc, phaseId);
-    BlossomArt.vignette(ctx, w, h, phaseId === 'night' ? 0.32 : 0.22);
+    if (loc?.id && loc.id !== 'house') {
+      depthFog(ctx, loc.floorY, anim ?? 0, loc.id === 'street' ? 0.45 : 0.38);
+    }
+    BlossomArt.vignette(ctx, w, h, phaseId === 'night' ? 0.32 : 0.24);
     if (phaseId !== 'night') {
-      const rg = ctx.createRadialGradient(w * 0.5, h * 0.45, h * 0.1, w * 0.5, h * 0.45, h * 0.75);
-      rg.addColorStop(0, 'rgba(255,255,255,0.04)');
+      const rg = ctx.createRadialGradient(w * 0.5, h * 0.42, h * 0.08, w * 0.5, h * 0.42, h * 0.78);
+      rg.addColorStop(0, 'rgba(255,255,255,0.05)');
       rg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = rg;
       ctx.fillRect(0, 0, w, h);
@@ -270,7 +466,7 @@ window.BlossomGfx = (function () {
   }
 
   function needsShadow(kind) {
-    return !['road', 'fence', 'tree', 'exit', 'rug', 'path', 'pond', 'bridge', 'npc', 'lamp', 'pet'].includes(kind);
+    return !['road', 'fence', 'tree', 'exit', 'rug', 'path', 'pond', 'bridge', 'beach', 'pier', 'npc', 'lamp', 'pet'].includes(kind);
   }
 
   function roomLighting(ctx, roomId, x, y, w, h, phaseId, anim) {
@@ -373,5 +569,11 @@ window.BlossomGfx = (function () {
     drawWindowView,
     drawCachedInterior,
     invalidateLayerCache,
+    drawExtrudedFace,
+    drawBuilding3D,
+    depthFog,
+    perspectiveGround,
+    drawQuestPin,
+    drawNavPath,
   };
 })();

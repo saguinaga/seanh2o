@@ -317,7 +317,21 @@ window.BlossomRender = (function () {
       ctx.fillStyle = 'rgba(255,255,255,0.12)';
       for (let i = 0; i < 12; i++) ctx.fillRect(80 + i * 62, loc.floorY + 48, 28, 4);
       BlossomGfx.streetReflection(ctx, loc.floorY, anim);
-    } else {
+    } else if (loc.id === 'pch') {
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(0, loc.floorY + 4, BlossomWorld.W, 18);
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(0, loc.floorY + 28, BlossomWorld.W, BlossomWorld.H - loc.floorY - 28);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([22, 16]);
+      ctx.beginPath();
+      ctx.moveTo(0, loc.floorY + 72);
+      ctx.lineTo(BlossomWorld.W, loc.floorY + 72);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else if (loc.id === 'pacCity' || loc.id === 'yard' || loc.id === 'park') {
+      BlossomGfx.perspectiveGround(ctx, loc.floorY, loc.ground, loc.groundAccent);
       BlossomArt.grassFill(ctx, 0, loc.floorY, BlossomWorld.W, BlossomWorld.H - loc.floorY);
       BlossomArt.drawGrassBlades(ctx, 0, loc.floorY, BlossomWorld.W, BlossomWorld.H - loc.floorY, anim);
       BlossomGfx.dappledLight(ctx, loc.floorY, anim);
@@ -353,16 +367,19 @@ window.BlossomRender = (function () {
       || (p.kind === 'shop' && p.shop === 'boutique' && nearId === 'boutique')
       || (p.kind === 'shop' && p.shop === 'salon' && nearId === 'salon-work')
       || (p.kind === 'shop' && p.shop === 'wellness' && nearId === 'wellness-work')
+      || (p.kind === 'artcenter' && nearId === 'artcenter-work')
       || (p.kind === 'stage' && nearId === 'stage-work')
       || (p.kind === 'studio' && nearId === 'studio-work')
+      || (p.kind === 'beachGym' && nearId === 'beachGym-work')
       || (p.kind === 'gym' && nearId === 'gym-work');
 
     if (p.choreId && !onList && !done) ctx.globalAlpha = 0.42;
 
     const interactHighlight = p.choreId || p.kind === 'exit' || p.kind === 'fridge'
-      || p.kind === 'npc' || p.kind === 'stage' || p.kind === 'studio'
-      || (p.kind === 'shop' && (p.choreId || p.shop === 'salon' || p.shop === 'boutique' || p.shop === 'wellness'))
-      || p.kind === 'gym';
+      || p.kind === 'npc' || p.kind === 'artcenter' || p.kind === 'stage' || p.kind === 'studio'
+      || (p.kind === 'shop' && (p.choreId || p.shop === 'salon' || p.shop === 'boutique' || p.shop === 'wellness'
+        || window.BlossomHBLocal?.isRestaurant?.(p.shop)))
+      || p.kind === 'beachGym' || p.kind === 'gym';
     if (interactHighlight && near && (!p.choreId || (!done && onList))) {
       const cx = p.x + (p.w || 50) / 2;
       const cy = p.y + (p.h || 50) / 2;
@@ -513,19 +530,26 @@ window.BlossomRender = (function () {
       case 'houseFacade': {
         const hx = p.x + 20;
         const hy = p.y + 60;
-        shadow(ctx, 'rgba(0,0,0,0.2)', 18, 0, 10);
-        drawFurnitureGrad(ctx, hx, hy, 160, 200, 10, '#fef3c7', true);
+        const hw = 160;
+        const hh = 200;
+        const depth = 28;
+        BlossomGfx.drawExtrudedFace(ctx, hx, hy, hw, hh, depth, {
+          front: '#fef3c7',
+          right: '#fcd34d',
+          top: '#fffbeb',
+        });
         ctx.fillStyle = '#7c3aed';
         ctx.beginPath();
         ctx.moveTo(hx - 10, hy + 10);
-        ctx.lineTo(hx + 80, hy - 40);
-        ctx.lineTo(hx + 170, hy + 10);
+        ctx.lineTo(hx + hw / 2, hy - 48);
+        ctx.lineTo(hx + hw + depth * 0.5, hy + 10 - depth * 0.25);
+        ctx.lineTo(hx + hw, hy + 10);
         ctx.closePath();
         ctx.fill();
         BlossomArt.drawWindow(ctx, hx + 30, hy + 50, 45, 50, anim, true);
         BlossomArt.drawWindow(ctx, hx + 95, hy + 50, 45, 50, anim, true);
         BlossomArt.drawDoor(ctx, hx + 62, hy + 130, 36, 58, '#92400e');
-        clearShadow(ctx);
+        BlossomGfx.groundShadow(ctx, hx + hw / 2, hy + hh + 8, hw * 0.6, 12, 0.3);
         break;
       }
       case 'fence':
@@ -584,9 +608,21 @@ window.BlossomRender = (function () {
           BlossomArt.drawShopBuilding(ctx, p, anim, {
             wall: '#fef08a', trim: '#ca8a04', awning: '#fde047', sign: '🛒 Market', door: '#92400e',
           });
+        } else if (p.shop === 'sugarShack') {
+          BlossomArt.drawShopBuilding(ctx, p, anim, {
+            wall: '#fff7ed', trim: '#b45309', awning: '#fcd34d', sign: '☕ Sugar Shack', door: '#92400e',
+          });
+        } else if (p.shop === 'jans') {
+          BlossomArt.drawShopBuilding(ctx, p, anim, {
+            wall: '#ecfdf5', trim: '#059669', awning: '#6ee7b7', sign: "🥗 Jan's", door: '#047857',
+          });
+        } else if (p.shop === 'nokaoi') {
+          BlossomArt.drawShopBuilding(ctx, p, anim, {
+            wall: '#fef3c7', trim: '#0d9488', awning: '#2dd4bf', sign: '🌺 No Ka Oi', door: '#0f766e',
+          });
         } else if (p.shop === 'cafe') {
           BlossomArt.drawShopBuilding(ctx, p, anim, {
-            wall: '#fecdd3', trim: '#f43f5e', awning: '#fda4af', sign: '☕ Café', door: '#9f1239',
+            wall: '#ffedd5', trim: '#c2410c', awning: '#fb923c', sign: "🌮 Wahoo's", door: '#9a3412',
           });
         } else {
           BlossomArt.drawShopBuilding(ctx, p, anim, {
@@ -599,11 +635,35 @@ window.BlossomRender = (function () {
           BlossomArt.drawNpcBonnie(ctx, p.x + 25, p.y + 60, anim, near);
         }
         break;
+      case 'artcenter':
+        BlossomArt.drawArtCenter(ctx, p, anim);
+        break;
       case 'stage':
         BlossomArt.drawStage(ctx, p, anim);
         break;
+      case 'beachGym':
+        BlossomArt.drawBeachGym(ctx, p, anim);
+        break;
       case 'gym':
         BlossomArt.drawGym(ctx, p, anim);
+        break;
+      case 'beach':
+        BlossomArt.drawBeach(ctx, p);
+        break;
+      case 'pier':
+        BlossomArt.drawPier(ctx, p);
+        break;
+      case 'rubys':
+        BlossomArt.drawRubys(ctx, p, anim);
+        break;
+      case 'lifeguard':
+        BlossomArt.drawLifeguard(ctx, p);
+        break;
+      case 'volleyball':
+        BlossomArt.drawVolleyball(ctx, p, anim);
+        break;
+      case 'shorebirds':
+        BlossomArt.drawShorebirds(ctx, p);
         break;
       case 'studio':
         BlossomArt.drawStudio(ctx, p, anim);
@@ -876,6 +936,22 @@ window.BlossomRender = (function () {
     ctx.drawImage(wc, 0, 0);
   }
 
+  function drawQuestOverlay(ctx, navState, anim) {
+    if (!navState?.active && !navState?.arrived) return;
+    const wp = navState.waypoints?.[0];
+    const target = navState.target;
+    const points = [];
+    if (navState.playerX != null) points.push({ x: navState.playerX, y: navState.playerY });
+    if (wp) points.push({ x: wp.x, y: wp.y });
+    else if (target?.center) points.push({ x: target.center.x, y: target.center.y });
+    if (points.length > 1) BlossomGfx.drawNavPath(ctx, points, anim);
+    const pin = wp || (navState.arrived && target?.center ? { x: target.center.x, y: target.center.y - 20 } : null);
+    if (pin) {
+      const label = navState.taskLabel || '';
+      BlossomGfx.drawQuestPin(ctx, pin.x, pin.y - 30, anim, navState.arrived ? label : 'GO');
+    }
+  }
+
   function drawChoreTracker(ctx, state) {
     const list = state.todaysChores || [];
     const done = state.choresDone || {};
@@ -918,6 +994,7 @@ window.BlossomRender = (function () {
     drawInteractGlow,
     drawInteractPrompt,
     drawSpeechTail,
+    drawQuestOverlay,
     hitProp,
     roundRect,
     invalidateCache: () => BlossomGfx?.invalidateLayerCache?.(),

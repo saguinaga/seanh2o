@@ -178,7 +178,6 @@ window.BlossomApp = (function () {
   function startGame() {
     showScreen('game');
     document.getElementById('playerName').textContent = state.name;
-    window.BlossomAudio?.unlock();
     syncSoundUi();
     BlossomGame.init(
       document.getElementById('gameCanvas'),
@@ -189,6 +188,9 @@ window.BlossomApp = (function () {
       }
     );
     BlossomGame.updateHud();
+    window.BlossomAI?.probe?.().then((on) => {
+      if (on) showToast('SpaceXAI NPCs live on Main Street — say hi!', 'good');
+    });
     const bubble = document.getElementById('npcBubble');
     if (bubble) {
       const cp = BlossomCareer.path(state);
@@ -229,6 +231,24 @@ window.BlossomApp = (function () {
     setModalOpen(modal, true);
   }
 
+  function showStaleCacheBanner() {
+    if (document.getElementById('blossomStaleBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'blossomStaleBanner';
+    banner.setAttribute('role', 'alert');
+    banner.style.cssText = 'position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(15,23,42,0.92);color:#fff;font:600 1rem Nunito,sans-serif;padding:24px;text-align:center';
+    banner.innerHTML = '<div style="max-width:360px;line-height:1.55"><p>Your browser cached an <strong>old Blossom build</strong> (scene3d v14).</p><p style="margin:12px 0 20px">Use the button below or press <strong>Ctrl+Shift+R</strong>.</p><button type="button" style="padding:12px 28px;font-size:1rem;border-radius:12px;border:none;cursor:pointer;background:#4ade80;color:#14532d;font-weight:700">Load fresh copy</button></div>';
+    banner.querySelector('button').onclick = () => {
+      try { sessionStorage.removeItem('blossom_script_recover'); } catch { /* noop */ }
+      const u = new URL(location.href);
+      u.pathname = u.pathname.replace(/\/play\/?$/, '/play.html');
+      u.searchParams.set('_fresh', Date.now().toString(36));
+      u.searchParams.set('b', '20');
+      location.replace(u.href);
+    };
+    document.body.appendChild(banner);
+  }
+
   function showToast(msg, type = 'info') {
     const el = document.getElementById('gameToast');
     if (!el) return;
@@ -255,7 +275,7 @@ window.BlossomApp = (function () {
     showTravelBanner._t = setTimeout(() => {
       el.classList.remove('travel-banner--show');
       setTimeout(() => { el.hidden = true; }, 500);
-    }, 1400);
+    }, 1800);
   }
 
   function showDayModal(result) {
@@ -306,6 +326,15 @@ window.BlossomApp = (function () {
       }
     });
     document.getElementById('chatSend')?.addEventListener('click', sendChat);
+    document.getElementById('chatChips')?.addEventListener('click', (e) => {
+      const chip = e.target.closest('[data-chat]');
+      if (!chip) return;
+      const input = document.getElementById('chatInput');
+      if (input) {
+        input.value = chip.dataset.chat || '';
+        sendChat();
+      }
+    });
     document.getElementById('chatInput')?.addEventListener('focus', () => {
       document.getElementById('chatLog')?.classList.add('chat-log--open');
     });
@@ -325,20 +354,31 @@ window.BlossomApp = (function () {
     });
   }
 
-  function sendChat() {
+  async function sendChat() {
     const input = document.getElementById('chatInput');
     const text = input?.value?.trim();
     if (!text) return;
-    const result = window.BlossomGame?.sendChatMessage?.(text);
-    if (result) {
-      showToast(`${result.who}: ${result.body}`, 'info');
-    }
     input.value = '';
+    input.disabled = true;
     document.getElementById('chatLog')?.classList.add('chat-log--open');
+    try {
+      const result = await window.BlossomGame?.sendChatMessage?.(text);
+      if (result) {
+        const tag = result.ai ? ' ✨' : '';
+        showToast(`${result.who}: ${result.body}${tag}`, 'info');
+      }
+    } finally {
+      input.disabled = false;
+      input.focus();
+    }
   }
 
   function setModalOpen(modal, open) {
     if (!modal) return;
+    if (!open) {
+      const active = document.activeElement;
+      if (active && modal.contains(active)) active.blur();
+    }
     modal.hidden = !open;
     modal.setAttribute('aria-hidden', open ? 'false' : 'true');
   }
@@ -417,5 +457,13 @@ window.BlossomApp = (function () {
     boot();
   });
 
-  return { showDayModal, showBonnieModal, showTravelBanner, showToast, maybeShowWelcome, boot };
+  return {
+    showDayModal,
+    showBonnieModal,
+    showTravelBanner,
+    showToast,
+    showStaleCacheBanner,
+    maybeShowWelcome,
+    boot,
+  };
 })();

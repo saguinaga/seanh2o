@@ -2,6 +2,8 @@
 window.BlossomWeather = (function () {
   function typeFor(locId, phaseId, day) {
     if (locId === 'street' && (phaseId === 'evening' || (day || 1) % 4 === 0)) return 'rain';
+    if (locId === 'pch' && phaseId === 'morning' && (day || 1) % 3 === 0) return 'rain';
+    if (locId === 'pacCity' && (phaseId === 'afternoon' || phaseId === 'evening')) return 'leaves';
     if (locId === 'park' && (phaseId === 'afternoon' || phaseId === 'evening')) return 'leaves';
     return 'none';
   }

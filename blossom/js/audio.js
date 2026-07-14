@@ -1,6 +1,6 @@
 /**
- * Cozy coastal ambient + gentle SFX (Puffin Rock-ish).
- * Procedural Web Audio — no external files.
+ * Laid-back HB beach bed — procedural (no external files).
+ * Slow coastal groove, nylon-guitar plucks, ocean wash, mellow pads.
  */
 window.BlossomAudio = (function () {
   let enabled = true;
@@ -9,16 +9,32 @@ window.BlossomAudio = (function () {
   let master = null;
   let ambientBus = null;
   let sfxBus = null;
+  let grooveBus = null;
+  let groovePanner = null;
   let ambientRunning = false;
-  let melodyTimer = null;
+  let grooveTimer = null;
+  let currentLocId = 'yard';
   let windSource = null;
+  let waveSource = null;
   let padNodes = [];
   let lastStep = 0;
   let locAmbience = null;
   let currentLocAmb = '';
 
-  // D major pentatonic — soft whistle/flute feel
-  const MELODY = [293.66, 329.63, 369.99, 440, 493.88, 587.33, 659.25];
+  const BPM = 74;
+  const BEAT_SEC = 60 / BPM;
+  let nextBeatTime = 0;
+  let beatIdx = 0;
+
+  // G major · laid-back surf-city changes (I–IV–vi–V)
+  const CHORDS = [
+    { root: 98, third: 123.47, fifth: 146.83, plucks: [196, 246.94, 293.66], name: 'G' },
+    { root: 65.41, third: 82.41, fifth: 98, plucks: [261.63, 329.63, 392], name: 'C' },
+    { root: 110, third: 130.81, fifth: 164.81, plucks: [220, 261.63, 329.63], name: 'Am' },
+    { root: 73.42, third: 92.5, fifth: 110, plucks: [293.66, 369.99, 440], name: 'D' },
+  ];
+  const MELODY = [392, 440, 493.88, 523.25, 587.33, 659.25, 739.99];
+  const melodyIdx = { i: 0 };
 
   function ensureCtx() {
     if (ctx) return ctx;
@@ -26,13 +42,26 @@ window.BlossomAudio = (function () {
     if (!AC) return null;
     ctx = new AC();
     master = ctx.createGain();
-    master.gain.value = 0.5;
-    master.connect(ctx.destination);
+    master.gain.value = 0.46;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -22;
+    comp.knee.value = 18;
+    comp.ratio.value = 2.2;
+    comp.attack.value = 0.012;
+    comp.release.value = 0.35;
+    master.connect(comp);
+    comp.connect(ctx.destination);
     ambientBus = ctx.createGain();
-    ambientBus.gain.value = 0.65;
+    ambientBus.gain.value = 0.68;
     ambientBus.connect(master);
+    grooveBus = ctx.createGain();
+    grooveBus.gain.value = 0.34;
+    groovePanner = ctx.createStereoPanner();
+    groovePanner.pan.value = 0;
+    grooveBus.connect(groovePanner);
+    groovePanner.connect(master);
     sfxBus = ctx.createGain();
-    sfxBus.gain.value = 0.9;
+    sfxBus.gain.value = 0.92;
     sfxBus.connect(master);
     return ctx;
   }
@@ -40,7 +69,11 @@ window.BlossomAudio = (function () {
   async function unlock() {
     const c = ensureCtx();
     if (!c) return false;
-    if (c.state === 'suspended') await c.resume();
+    try {
+      if (c.state === 'suspended') await c.resume();
+    } catch {
+      return false;
+    }
     unlocked = true;
     if (enabled) startAmbient();
     return true;
@@ -49,7 +82,7 @@ window.BlossomAudio = (function () {
   function setEnabled(on) {
     enabled = on;
     if (!ctx || !master) return;
-    master.gain.setTargetAtTime(on ? 0.5 : 0, ctx.currentTime, 0.35);
+    master.gain.setTargetAtTime(on ? 0.46 : 0, ctx.currentTime, 0.35);
     if (on && unlocked) startAmbient();
     else stopAmbient();
   }
@@ -70,18 +103,18 @@ window.BlossomAudio = (function () {
   function startWind() {
     if (windSource || !ctx) return;
     const src = ctx.createBufferSource();
-    src.buffer = noiseBuffer(3);
+    src.buffer = noiseBuffer(4);
     src.loop = true;
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 520;
-    filter.Q.value = 0.4;
+    filter.frequency.value = 680;
+    filter.Q.value = 0.35;
     const gain = ctx.createGain();
-    gain.gain.value = 0.045;
+    gain.gain.value = 0.042;
     const lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.08;
+    lfo.frequency.value = 0.06;
     const lfoGain = ctx.createGain();
-    lfoGain.gain.value = 0.018;
+    lfoGain.gain.value = 0.014;
     lfo.connect(lfoGain);
     lfoGain.connect(gain.gain);
     src.connect(filter);
@@ -92,62 +125,247 @@ window.BlossomAudio = (function () {
     windSource = { src, lfo, gain, filter };
   }
 
+  function startWaves() {
+    if (waveSource || !ctx) return;
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(6);
+    src.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 280;
+    filter.Q.value = 0.6;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.078;
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.14;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.028;
+    lfo.connect(lfoGain);
+    lfoGain.connect(gain.gain);
+    const lfo2 = ctx.createOscillator();
+    lfo2.frequency.value = 0.05;
+    const lfo2Gain = ctx.createGain();
+    lfo2Gain.gain.value = 0.012;
+    lfo2.connect(lfo2Gain);
+    lfo2Gain.connect(filter.frequency);
+    filter.frequency.value = 320;
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(ambientBus);
+    src.start();
+    lfo.start();
+    lfo2.start();
+    waveSource = { src, lfo, lfo2, gain, filter };
+  }
+
   function startPad() {
-    const freqs = [146.83, 220, 293.66];
-    freqs.forEach((f, i) => {
+    const chord = [98, 123.47, 146.83, 196, 246.94];
+    chord.forEach((f, i) => {
       const osc = ctx.createOscillator();
-      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.type = 'sine';
       osc.frequency.value = f;
       const gain = ctx.createGain();
-      gain.gain.value = 0.018 + i * 0.004;
+      gain.gain.value = 0.018 + (i % 2) * 0.004;
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.value = 900;
+      filter.frequency.value = 880;
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.03 + i * 0.004;
+      const lfoG = ctx.createGain();
+      lfoG.gain.value = 0.004;
+      lfo.connect(lfoG);
+      lfoG.connect(gain.gain);
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(ambientBus);
       osc.start();
-      osc.detune.value = i * 7;
-      padNodes.push(osc);
+      lfo.start();
+      osc.detune.value = (i - 2) * 4;
+      padNodes.push(osc, lfo);
     });
   }
 
-  function playWhistle(freq, duration = 1.4, volume = 0.12) {
-    if (!enabled || !unlocked || !ctx) return;
-    const t = ctx.currentTime;
+  function playSoftKick(t, vol = 0.14) {
     const osc = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
     osc.type = 'sine';
-    osc2.type = 'triangle';
-    osc.frequency.value = freq;
-    osc2.frequency.value = freq * 1.005;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 1400;
-    filter.Q.value = 0.8;
+    osc.frequency.setValueAtTime(72, t);
+    osc.frequency.exponentialRampToValueAtTime(42, t + 0.12);
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(volume, t + 0.35);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
-    osc.connect(filter);
-    osc2.connect(filter);
-    filter.connect(gain);
-    gain.connect(ambientBus);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    osc.connect(gain);
+    gain.connect(grooveBus);
     osc.start(t);
-    osc2.start(t);
-    osc.stop(t + duration + 0.1);
-    osc2.stop(t + duration + 0.1);
+    osc.stop(t + 0.24);
   }
 
-  function scheduleMelody() {
-    if (melodyTimer) clearInterval(melodyTimer);
-    const tick = () => {
-      if (!enabled || !unlocked) return;
-      const note = MELODY[Math.floor(Math.random() * MELODY.length)];
-      playWhistle(note, 1.2 + Math.random() * 0.8, 0.09);
+  function playBrush(t, vol = 0.05) {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(0.08);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2400;
+    filter.Q.value = 0.5;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(grooveBus);
+    src.start(t);
+    src.stop(t + 0.16);
+  }
+
+  function playHat(t, vol = 0.022, open = false) {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(0.05);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 5200;
+    const gain = ctx.createGain();
+    const dur = open ? 0.12 : 0.028;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(grooveBus);
+    src.start(t);
+    src.stop(t + dur + 0.02);
+  }
+
+  function playBass(freq, t, dur = 0.55, vol = 0.09) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 280;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.04);
+    gain.gain.setValueAtTime(vol * 0.7, t + dur * 0.75);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(grooveBus);
+    osc.start(t);
+    osc.stop(t + dur + 0.08);
+  }
+
+  function playGuitarStrum(chord, t, vol = 0.055) {
+    (chord.plucks || []).forEach((f, i) => {
+      playPluck(f, t + i * 0.018, 0.42, vol * (1 - i * 0.12), 'nylon');
+    });
+  }
+
+  function playPluck(freq, t, dur = 0.38, vol = 0.07, tone = 'nylon') {
+    const osc = ctx.createOscillator();
+    osc.type = tone === 'nylon' ? 'sine' : 'triangle';
+    osc.frequency.setValueAtTime(freq, t);
+    if (tone === 'nylon') {
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.992, t + dur * 0.6);
+    }
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = tone === 'nylon' ? 1400 : 1800;
+    filter.Q.value = 0.6;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(grooveBus);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  }
+
+  function playLazyLead(t, vol = 0.05) {
+    const note = MELODY[melodyIdx.i % MELODY.length];
+    melodyIdx.i += 1;
+    playPluck(note, t, 0.55, vol, 'nylon');
+    if (Math.random() < 0.35) {
+      playPluck(note * 1.5, t + BEAT_SEC * 0.5, 0.35, vol * 0.45, 'nylon');
+    }
+  }
+
+  function playWhistle(freq, duration = 1.4, volume = 0.12) {
+    playPluck(freq, ctx.currentTime, duration * 0.6, volume * 0.85);
+  }
+
+  function locGrooveMix(locId) {
+    const table = {
+      house: { vol: 0.22, pan: -0.35, waves: 0.9 },
+      yard: { vol: 0.28, pan: -0.22, waves: 1 },
+      street: { vol: 0.36, pan: -0.06, waves: 1 },
+      pch: { vol: 0.3, pan: 0.14, waves: 1.15 },
+      pacCity: { vol: 0.32, pan: 0.28, waves: 1.25 },
+      park: { vol: 0.26, pan: 0.42, waves: 1.35 },
     };
-    melodyTimer = setInterval(tick, 5200 + Math.random() * 2800);
-    setTimeout(tick, 800);
+    return table[locId] || table.yard;
+  }
+
+  function applyGrooveMix(locId) {
+    if (!ctx || !grooveBus || !groovePanner) return;
+    const mix = locGrooveMix(locId);
+    grooveBus.gain.setTargetAtTime(mix.vol, ctx.currentTime, 0.8);
+    groovePanner.pan.setTargetAtTime(mix.pan, ctx.currentTime, 0.9);
+    if (waveSource?.gain) {
+      waveSource.gain.gain.setTargetAtTime(0.078 * (mix.waves || 1), ctx.currentTime, 1.2);
+    }
+  }
+
+  function scheduleBeat(beat, t) {
+    const barBeat = beat % 4;
+    const bar = Math.floor(beat / 4) % CHORDS.length;
+    const chord = CHORDS[bar];
+
+    if (barBeat === 0) playSoftKick(t, 0.12);
+    if (barBeat === 2) playBrush(t, 0.04);
+    if (barBeat === 1 || barBeat === 3) playHat(t + BEAT_SEC * 0.5, 0.016);
+
+    if (barBeat === 0) {
+      playBass(chord.root, t, BEAT_SEC * 3.6, 0.08);
+      playGuitarStrum(chord, t + BEAT_SEC * 0.08, 0.05);
+    }
+    if (barBeat === 2) {
+      playGuitarStrum(chord, t + BEAT_SEC * 0.12, 0.042);
+    }
+
+    if (barBeat === 1 && beat % 8 === 1) {
+      playPluck(chord.third * 2, t + BEAT_SEC * 0.2, 0.48, 0.04, 'nylon');
+    }
+    if (barBeat === 3 && beat % 8 === 7) {
+      playLazyLead(t + BEAT_SEC * 0.15, 0.042);
+    }
+  }
+
+  function grooveScheduler() {
+    if (!enabled || !unlocked || !ctx) return;
+    const horizon = 0.14;
+    while (nextBeatTime < ctx.currentTime + horizon) {
+      scheduleBeat(beatIdx, nextBeatTime);
+      nextBeatTime += BEAT_SEC;
+      beatIdx += 1;
+    }
+  }
+
+  function startGroove() {
+    if (grooveTimer || !ctx) return;
+    nextBeatTime = ctx.currentTime + 0.08;
+    beatIdx = 0;
+    grooveTimer = setInterval(grooveScheduler, 30);
+    grooveScheduler();
+  }
+
+  function stopGroove() {
+    if (grooveTimer) {
+      clearInterval(grooveTimer);
+      grooveTimer = null;
+    }
   }
 
   function stopLocAmbience() {
@@ -164,7 +382,12 @@ window.BlossomAudio = (function () {
 
   function setLocationAmbience(locId, roomId) {
     const key = `${locId}-${roomId || ''}`;
-    if (!ctx || !enabled || !unlocked || key === currentLocAmb) return;
+    if (!ctx || !enabled || !unlocked) return;
+    if (locId !== currentLocId) {
+      currentLocId = locId;
+      applyGrooveMix(locId);
+    }
+    if (key === currentLocAmb) return;
     stopLocAmbience();
     currentLocAmb = key;
     const nodes = [];
@@ -188,29 +411,19 @@ window.BlossomAudio = (function () {
     }
 
     let timer = null;
-    if (locId === 'yard') {
-      const bird = loopNoise(0.012, 2400, 'bandpass');
-      timer = setInterval(() => {
-        if (!enabled || !unlocked) return;
-        playWhistle(MELODY[Math.floor(Math.random() * 3)], 0.35, 0.04);
-      }, 9000 + Math.random() * 5000);
-      nodes.push({ stop: () => clearInterval(timer) });
+    if (locId === 'yard' || locId === 'house') {
+      loopNoise(0.008, 2200, 'bandpass');
     } else if (locId === 'street') {
-      loopNoise(0.02, 700);
-      timer = setInterval(() => {
-        if (!enabled || !unlocked) return;
-        tone(180 + Math.random() * 40, 'sine', 0.08, 0.02, ambientBus);
-      }, 4200 + Math.random() * 3000);
-      nodes.push({ stop: () => clearInterval(timer) });
+      loopNoise(0.01, 520, 'lowpass');
     } else if (locId === 'house' && roomId === 'kitchen') {
-      const hum = loopNoise(0.018, 120);
+      loopNoise(0.008, 140, 'lowpass');
+    } else if (locId === 'pch' || locId === 'pacCity' || locId === 'park') {
+      loopNoise(0.014, 380, 'bandpass');
       timer = setInterval(() => {
         if (!enabled || !unlocked) return;
-        tone(90, 'sine', 0.05, 0.015, ambientBus);
-      }, 6000);
+        playPluck(329.63 + Math.random() * 60, ctx.currentTime, 0.5, 0.028, 'nylon');
+      }, 14000 + Math.random() * 8000);
       nodes.push({ stop: () => clearInterval(timer) });
-    } else if (locId === 'park') {
-      loopNoise(0.015, 900);
     }
 
     locAmbience = { nodes, timer };
@@ -219,16 +432,14 @@ window.BlossomAudio = (function () {
   function startAmbient() {
     if (!ctx || !enabled || ambientRunning) return;
     startWind();
+    startWaves();
     startPad();
-    scheduleMelody();
+    startGroove();
     ambientRunning = true;
   }
 
   function stopAmbient() {
-    if (melodyTimer) {
-      clearInterval(melodyTimer);
-      melodyTimer = null;
-    }
+    stopGroove();
     stopLocAmbience();
     if (windSource) {
       try {
@@ -236,6 +447,14 @@ window.BlossomAudio = (function () {
         windSource.lfo.stop();
       } catch { /* already stopped */ }
       windSource = null;
+    }
+    if (waveSource) {
+      try {
+        waveSource.src.stop();
+        waveSource.lfo.stop();
+        waveSource.lfo2.stop();
+      } catch { /* already stopped */ }
+      waveSource = null;
     }
     padNodes.forEach((osc) => {
       try { osc.stop(); } catch { /* noop */ }
@@ -262,7 +481,7 @@ window.BlossomAudio = (function () {
 
   function chime(arpeggio, baseVol = 0.14) {
     arpeggio.forEach((f, i) => {
-      setTimeout(() => tone(f, 'sine', 0.55, baseVol - i * 0.02), i * 90);
+      setTimeout(() => tone(f, 'triangle', 0.5, baseVol - i * 0.02), i * 80);
     });
   }
 
@@ -270,15 +489,15 @@ window.BlossomAudio = (function () {
     if (!enabled || !unlocked) return;
     switch (name) {
       case 'star':
-        chime([523.25, 659.25, 783.99], 0.12);
+        chime([523.25, 659.25, 783.99], 0.13);
         break;
       case 'eat':
-        tone(440, 'sine', 0.15, 0.1);
-        setTimeout(() => tone(554.37, 'triangle', 0.2, 0.08), 80);
+        playPluck(440, ctx.currentTime, 0.18, 0.11);
+        setTimeout(() => playPluck(554.37, ctx.currentTime, 0.22, 0.09), 70);
         break;
       case 'chore':
-        tone(329.63, 'triangle', 0.25, 0.11);
-        setTimeout(() => chime([392, 493.88], 0.1), 120);
+        playPluck(392, ctx.currentTime, 0.2, 0.06, 'nylon');
+        setTimeout(() => chime([493.88, 587.33], 0.08), 120);
         break;
       case 'jump':
         tone(180, 'sine', 0.18, 0.07);
@@ -296,21 +515,22 @@ window.BlossomAudio = (function () {
         tone(70 + Math.random() * 20, 'sine', 0.07, 0.02);
         break;
       case 'stepPavement':
-        tone(140 + Math.random() * 25, 'square', 0.045, 0.02);
+        playHat(ctx.currentTime, 0.03);
         break;
       case 'phaseShift':
         chime([392, 493.88, 587.33], 0.1);
-        setTimeout(() => playWhistle(659.25, 0.7, 0.06), 200);
+        setTimeout(() => playPluck(659.25, ctx.currentTime, 0.55, 0.08), 180);
         break;
       case 'ui':
-        tone(660, 'sine', 0.08, 0.06);
+        playPluck(660, ctx.currentTime, 0.1, 0.06);
         break;
       case 'chat':
-        playWhistle(MELODY[Math.floor(Math.random() * 4)], 0.5, 0.07);
+        playPluck(MELODY[Math.floor(Math.random() * 4)], ctx.currentTime, 0.4, 0.07);
         break;
       case 'dayWin':
-        chime([293.66, 369.99, 440, 587.33], 0.13);
-        setTimeout(() => playWhistle(659.25, 1.6, 0.1), 400);
+        chime([293.66, 369.99, 440, 587.33], 0.14);
+        setTimeout(() => playPluck(659.25, ctx.currentTime, 0.7, 0.1), 350);
+        setTimeout(() => playBrush(ctx.currentTime), 480);
         break;
       case 'dayFail':
         tone(220, 'sine', 0.5, 0.09);
@@ -320,27 +540,26 @@ window.BlossomAudio = (function () {
         tone(277.18, 'triangle', 0.2, 0.07);
         break;
       case 'travel':
-        tone(220, 'sine', 0.12, 0.08);
-        setTimeout(() => tone(330, 'triangle', 0.2, 0.09), 60);
-        setTimeout(() => chime([440, 554.37, 659.25], 0.1), 180);
+        playPluck(440, ctx.currentTime, 0.35, 0.05, 'nylon');
+        setTimeout(() => chime([523.25, 659.25], 0.08), 140);
         break;
       case 'combo':
-        chime([523.25, 659.25, 783.99, 987.77], 0.14);
+        chime([523.25, 659.25, 783.99, 987.77], 0.15);
         break;
       case 'shiftStart':
-        tone(392, 'triangle', 0.15, 0.09);
-        setTimeout(() => tone(523.25, 'sine', 0.25, 0.1), 100);
+        playPluck(523.25, ctx.currentTime, 0.3, 0.07, 'nylon');
+        setTimeout(() => playBrush(ctx.currentTime), 80);
         break;
       case 'shiftPerfect':
         chime([587.33, 739.99, 880], 0.15);
-        setTimeout(() => playWhistle(880, 0.8, 0.11), 200);
+        setTimeout(() => playPluck(880, ctx.currentTime, 0.6, 0.11), 180);
         break;
       case 'levelUp':
         chime([329.63, 392, 493.88, 659.25], 0.14);
-        setTimeout(() => chime([523.25, 659.25, 783.99], 0.12), 350);
+        setTimeout(() => chime([523.25, 659.25, 783.99], 0.12), 320);
         break;
       case 'sparkle':
-        tone(880 + Math.random() * 200, 'sine', 0.12, 0.05);
+        playPluck(880 + Math.random() * 200, ctx.currentTime, 0.14, 0.06);
         break;
       default:
         break;
@@ -353,7 +572,7 @@ window.BlossomAudio = (function () {
     const gap = surface === 'grass' ? 380 : 320;
     if (now - lastStep < gap) return;
     lastStep = now;
-    const map = { wood: 'stepWood', tile: 'stepTile', grass: 'stepGrass', pavement: 'stepPavement' };
+    const map = { wood: 'stepWood', tile: 'stepTile', grass: 'stepGrass', pavement: 'stepPavement', sand: 'stepGrass' };
     playSfx(map[surface] || 'step');
   }
 

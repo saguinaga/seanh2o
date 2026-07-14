@@ -21,10 +21,10 @@ window.BlossomDay = (function () {
     { id: 'trash', label: 'Take out trash' },
     { id: 'plants_out', label: 'Water garden' },
     { id: 'mailbox', label: 'Check mail' },
-    { id: 'groceries', label: 'Market errand' },
-    { id: 'litter', label: 'Pick up litter' },
-    { id: 'ducks', label: 'Feed ducks' },
-    { id: 'playground', label: 'Tidy playground' },
+    { id: 'groceries', label: BlossomHBLocal?.CHORES?.groceries || 'Grocery run on Main' },
+    { id: 'litter', label: BlossomHBLocal?.CHORES?.litter || 'Pick up litter on Main' },
+    { id: 'ducks', label: BlossomHBLocal?.CHORES?.ducks || 'Feed shorebirds by the pier' },
+    { id: 'playground', label: BlossomHBLocal?.CHORES?.playground || 'Tidy beach volleyball courts' },
   ];
 
   const FOODS = {

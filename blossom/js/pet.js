@@ -1,6 +1,6 @@
 /** Pet companion — follows player, reacts to chat/chores */
 window.BlossomPet = (function () {
-  const FOLLOW_LOCS = new Set(['house', 'yard', 'park']);
+  const FOLLOW_LOCS = new Set(['house', 'yard', 'street', 'pch', 'pacCity', 'park']);
   let pet = { x: 360, y: 360, facing: 1, mood: 'idle', wag: 0, hop: 0 };
 
   function reset(player) {

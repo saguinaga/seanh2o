@@ -28,3 +28,7 @@ window.BLOSSOM_CONFIG = {
 window.BLOSSOM_CONFIG.cloudEnabled = Boolean(
   window.BLOSSOM_CONFIG.supabaseUrl && window.BLOSSOM_CONFIG.supabaseAnonKey
 );
+
+/** SpaceXAI (xAI) NPC chat — proxied via blossom/dev-server.mjs; key in blossom/.env only */
+window.BLOSSOM_CONFIG.aiChatEndpoint = null;
+window.BLOSSOM_CONFIG.aiModel = 'grok-4.5';

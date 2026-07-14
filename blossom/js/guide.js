@@ -3,8 +3,8 @@ window.BlossomGuide = (function () {
   const STEPS = [
     { id: 'breakfast', label: 'Breakfast', stars: 5, hint: 'Tap the fridge · pick your breakfast (+5⭐)' },
     { id: 'chores_home', label: 'Home chores', stars: null, hint: 'Walk to glowing objects · E or tap · 5⭐ each' },
-    { id: 'explore', label: 'Outdoor chores', stars: null, hint: 'Green exit (right) → yard → street → park' },
-    { id: 'lunch', label: 'Lunch', stars: 5, hint: 'Afternoon: fridge at home or café on Main street' },
+    { id: 'explore', label: 'Outdoor chores', stars: null, hint: 'Walk out — 9th St → Main Street → PCH → Pacific City → pier' },
+    { id: 'lunch', label: 'Lunch', stars: 5, hint: 'Afternoon: fridge at home or Main St restaurants' },
     { id: 'play', label: 'Play / work (optional)', stars: null, hint: 'Kids: pretend shift at dream job · +2⭐' },
     { id: 'dinner', label: 'Dinner', stars: 5, hint: 'Evening: tap fridge · pick dinner (+5⭐)' },
     { id: 'finish', label: 'End day', stars: null, hint: 'Tap End day when the bar is full — you keep going if you miss!' },
@@ -71,14 +71,28 @@ window.BlossomGuide = (function () {
     const goal = starsGoal(state);
     const choreN = choreTarget(state);
     const choreDone = choresDoneCount(state);
-    const lines = [
-      { ok: state.mealsEaten?.breakfast, text: `☕ Breakfast (+5)` },
-      { ok: choreDone >= choreN, text: `🧹 Chores (${choreDone}/${choreN}) · +5 each` },
-      { ok: state.mealsEaten?.lunch, text: `🥪 Lunch (+5)` },
-      { ok: state.mealsEaten?.dinner, text: `🍽️ Dinner (+5)` },
-      { ok: state.stars >= goal, text: `⭐ ${state.stars}/${goal} stars` },
-    ];
-    return { goal, lines, choreDone, choreN };
+    const tasks = window.BlossomNavigate?.buildNavigableTasks?.(state) || [];
+    const lines = tasks.map((t) => {
+      const ok = BlossomNavigate?.taskIsDone?.(state, t.id) || false;
+      const starsTxt = t.stars ? ` (+${t.stars})` : '';
+      const locTxt = t.type === 'chore' && t.locationName ? ` · ${t.locationName}` : '';
+      return {
+        id: t.id,
+        ok,
+        navigable: t.type !== 'meta' && !ok,
+        text: `${t.emoji || '○'} ${t.label}${starsTxt}${locTxt}`,
+        hint: t.hint,
+      };
+    });
+    if (!lines.some((l) => l.id === 'stars')) {
+      lines.push({
+        id: 'stars',
+        ok: state.stars >= goal,
+        navigable: false,
+        text: `⭐ ${state.stars}/${goal} stars`,
+      });
+    }
+    return { goal, lines, choreDone, choreN, tasks };
   }
 
   function phaseHint(state) {
@@ -95,7 +109,7 @@ window.BlossomGuide = (function () {
       return 'Step 2: Do 2 home chores (bed, dishes, teeth…) · +5⭐ each';
     }
     if (phase.id === 'afternoon' && !state.mealsEaten?.lunch) {
-      return 'Step 3: Lunch time — fridge or café (+5⭐)';
+      return 'Step 3: Lunch time — fridge or Main St spot (+5⭐)';
     }
     if (choresDoneCount(state) < choreTarget(state)) {
       const left = choreTarget(state) - choresDoneCount(state);
@@ -124,7 +138,7 @@ window.BlossomGuide = (function () {
       '',
       'WASD to move · E to interact · green exits on the right = travel outside',
       '',
-      'Earn money from chores & shifts → visit Bloom Boutique on Main street for hoodies, boots, shades & more!',
+      'Earn money from chores & shifts → Sugar Shack, Jan\'s, No Ka Oi, Wahoo\'s on Main, then the pier!',
       '',
       'Take your time. Tap End day when ready. Miss the goal? You bloom again tomorrow!',
     ].filter(Boolean).join('\n');
@@ -165,12 +179,37 @@ window.BlossomGuide = (function () {
     const peekEl = document.getElementById('guidePeek');
     if (goalEl) goalEl.textContent = `${state.stars}/${goal} ⭐`;
     if (listEl) {
-      listEl.innerHTML = lines.map((l) =>
-        `<li class="guide-check ${l.ok ? 'guide-check--done' : ''}">${l.ok ? '✓' : '○'} ${l.text}</li>`
-      ).join('');
+      listEl.innerHTML = lines.map((l) => {
+        const cls = [
+          'guide-check',
+          l.ok ? 'guide-check--done' : '',
+          l.navigable ? 'guide-check--go' : '',
+        ].filter(Boolean).join(' ');
+        const goBtn = l.navigable
+          ? `<span class="guide-check__go" aria-hidden="true">GO →</span>`
+          : '';
+        return `<li class="${cls}" data-task-id="${l.id}" role="${l.navigable ? 'button' : 'listitem'}" tabindex="${l.navigable ? '0' : '-1'}">${l.ok ? '✓' : '○'} ${l.text}${goBtn}</li>`;
+      }).join('');
+      listEl.querySelectorAll('.guide-check--go').forEach((el) => {
+        el.onclick = (e) => {
+          e.stopPropagation();
+          const id = el.dataset.taskId;
+          if (id) window.BlossomGame?.goToTask?.(id);
+        };
+        el.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            el.click();
+          }
+        };
+      });
     }
-    if (tipEl) tipEl.textContent = step.hint;
-    if (peekEl) peekEl.textContent = step.hint;
+    const nextNav = lines.find((l) => l.navigable);
+    const tipText = nextNav
+      ? `Tap "${nextNav.text.replace(/^.\s/, '')}" to go there →`
+      : step.hint;
+    if (tipEl) tipEl.textContent = tipText;
+    if (peekEl) peekEl.textContent = tipText;
     const bar = document.getElementById('guideProgressBar');
     if (bar) bar.style.width = `${Math.min(100, (state.stars / goal) * 100)}%`;
     const expanded = isMobileGuide() ? Boolean(state.guideExpanded) : true;
