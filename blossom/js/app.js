@@ -85,6 +85,13 @@ window.BlossomApp = (function () {
     return { avatar, wardrobe };
   }
 
+  function restartCharacter() {
+    const saved = BlossomSave.loadLocal();
+    if (saved?.name && !window.confirm('Start a new character? Your save on this device will be erased.')) return;
+    BlossomSave.clearLocal();
+    location.href = `${location.pathname}?screen=create`;
+  }
+
   function refreshCreatePreview() {
     const form = document.getElementById('createForm');
     const preview = document.getElementById('avatarPreview');
@@ -95,36 +102,6 @@ window.BlossomApp = (function () {
 
   function initCreateForm() {
     const form = document.getElementById('createForm');
-    const shirtCanvas = document.getElementById('shirtCanvas');
-    const shirtCtx = shirtCanvas?.getContext('2d');
-    let drawing = false;
-
-    if (shirtCanvas && shirtCtx) {
-      shirtCtx.fillStyle = '#5eead4';
-      shirtCtx.fillRect(0, 0, shirtCanvas.width, shirtCanvas.height);
-      const draw = (e) => {
-        if (!drawing) return;
-        const rect = shirtCanvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) * (shirtCanvas.width / rect.width);
-        const y = (e.clientY - rect.top) * (shirtCanvas.height / rect.height);
-        shirtCtx.fillStyle = document.getElementById('shirtPen')?.value || '#e11d48';
-        shirtCtx.beginPath();
-        shirtCtx.arc(x, y, 6, 0, Math.PI * 2);
-        shirtCtx.fill();
-        refreshCreatePreview();
-      };
-      shirtCanvas.addEventListener('mousedown', () => { drawing = true; });
-      shirtCanvas.addEventListener('mouseup', () => { drawing = false; });
-      shirtCanvas.addEventListener('mousemove', draw);
-      shirtCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; draw(e.touches[0]); }, { passive: false });
-      shirtCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
-      shirtCanvas.addEventListener('touchend', () => { drawing = false; });
-      document.getElementById('clearShirt')?.addEventListener('click', () => {
-        shirtCtx.fillStyle = document.getElementById('shirtColor')?.value || '#5eead4';
-        shirtCtx.fillRect(0, 0, shirtCanvas.width, shirtCanvas.height);
-        refreshCreatePreview();
-      });
-    }
 
     form?.querySelectorAll('input, select').forEach((el) => {
       el.addEventListener('input', refreshCreatePreview);
@@ -160,17 +137,10 @@ window.BlossomApp = (function () {
         state.hired = false;
         state.bonnieOfferSeen = false;
         state.jobRank = 0;
-        if (shirtCanvas) {
-          try {
-            state.avatar.shirtPattern = shirtCanvas.toDataURL('image/jpeg', 0.82);
-          } catch {
-            state.avatar.shirtPattern = null;
-          }
-        }
         BlossomAvatar.migrate(state);
         startGame();
         const saved = await BlossomSave.persist(state, BlossomAuth.getUserId());
-        if (!saved.localOk) showToast('Could not save locally — try a simpler shirt drawing', 'warn');
+        if (!saved.localOk) showToast('Could not save locally — try again', 'warn');
       } catch (err) {
         console.error('Create form failed:', err);
         showToast('Could not start — try again', 'bad');
@@ -400,6 +370,11 @@ window.BlossomApp = (function () {
 
     document.getElementById('openAuth')?.addEventListener('click', openAuthModal);
     document.getElementById('openAuthGame')?.addEventListener('click', openAuthModal);
+    document.getElementById('newCharacterBtn')?.addEventListener('click', restartCharacter);
+    document.getElementById('newCharacterLink')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      restartCharacter();
+    });
     document.getElementById('authClose')?.addEventListener('click', closeAuthModal);
     document.getElementById('authGuest')?.addEventListener('click', (e) => {
       e.preventDefault();
@@ -463,6 +438,7 @@ window.BlossomApp = (function () {
     nudgeFirstDayGuide,
     shareGame,
     setGuideExpanded,
+    restartCharacter,
     boot,
   };
 })();

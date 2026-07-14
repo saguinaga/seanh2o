@@ -116,12 +116,13 @@ window.BlossomMeal = (function () {
 
   function choose(idx, btn) {
     const food = pendingFoods[idx];
-    if (!food || !pickHandler) return;
+    const handler = pickHandler;
+    if (!food || !handler) return;
     btn?.classList.add('meal-pick--chosen');
     window.BlossomAudio?.playSfx('ui');
     setTimeout(() => {
       close();
-      pickHandler(idx, food);
+      handler(idx, food);
     }, 280);
   }
 

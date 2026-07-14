@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="blossom-build" content="52">
+  <meta name="blossom-build" content="53">
   <title>Play — Blossom Life · 3D Huntington Beach</title>
   <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
   <meta property="og:title" content="Blossom Life — Play Now">
@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=52">
+  <link rel="stylesheet" href="css/blossom.css?v=53">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -33,7 +33,7 @@
   <div class="create-screen" data-screen="create">
     <div class="create-card">
       <h1>✨ Create your blossom</h1>
-      <p>Build your look Mii-style — then explore the full <strong>3D Huntington Beach</strong> open world. Shop at <strong>Bloom Boutique</strong> on Main Street!</p>
+      <p>Pick a look, name yourself, and explore <strong>3D Huntington Beach</strong>. Takes 30 seconds.</p>
       <form id="createForm" class="create-form-mii">
         <div class="create-layout">
           <div class="create-preview-col">
@@ -64,11 +64,11 @@
             <div class="form-row">
               <label>Hair style</label>
               <div class="radio-row radio-row--wrap">
-                <label class="radio-pill"><input type="radio" name="hairStyle" value="short" checked> Short</label>
-                <label class="radio-pill"><input type="radio" name="hairStyle" value="long"> Long</label>
-                <label class="radio-pill"><input type="radio" name="hairStyle" value="spiky"> Spiky</label>
-                <label class="radio-pill"><input type="radio" name="hairStyle" value="curly"> Curly</label>
-                <label class="radio-pill"><input type="radio" name="hairStyle" value="ponytail"> Ponytail</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="short" checked> Bob</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="long"> Waves</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="spiky"> Fade</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="curly"> Bun</label>
+                <label class="radio-pill"><input type="radio" name="hairStyle" value="ponytail"> Pony</label>
               </div>
             </div>
             <div class="form-row">
@@ -104,10 +104,17 @@
                 <label class="career-card"><input type="radio" name="careerPath" value="trainer"><span class="career-emoji">💪</span><strong>Trainer</strong><small>City Beach · pier</small></label>
               </div>
             </div>
-            <div class="form-row shirt-canvas-wrap">
-              <label>Draw shirt pattern (optional)</label>
-              <canvas id="shirtCanvas" width="160" height="100" aria-label="Draw shirt design"></canvas>
-              <p class="canvas-hint"><button type="button" class="btn-blossom btn-secondary" id="clearShirt" style="padding: 4px 12px; font-size: 0.75rem; min-height: auto;">Clear</button> · <input type="color" id="shirtPen" value="#e11d48" aria-label="Pen color" style="vertical-align: middle; width: 36px; height: 28px;"></p>
+            <div class="form-row">
+              <label>Shirt pattern</label>
+              <div class="pattern-row">
+                <label class="pattern-pill"><input type="radio" name="shirtPattern" value="none" checked><span>Solid</span></label>
+                <label class="pattern-pill"><input type="radio" name="shirtPattern" value="stripes"><span>Stripes</span></label>
+                <label class="pattern-pill"><input type="radio" name="shirtPattern" value="dots"><span>Dots</span></label>
+                <label class="pattern-pill"><input type="radio" name="shirtPattern" value="waves"><span>Waves</span></label>
+                <label class="pattern-pill"><input type="radio" name="shirtPattern" value="sunset"><span>Sunset</span></label>
+                <label class="pattern-pill"><input type="radio" name="shirtPattern" value="palm"><span>Palm</span></label>
+              </div>
+              <label class="pattern-accent-label">Pattern accent <input type="color" name="patternAccent" id="patternAccent" value="#e11d48"></label>
             </div>
           </div>
         </div>
@@ -115,6 +122,7 @@
       </form>
       <p class="create-tip">Day 1 goal: <strong>35 stars</strong> — 3 meals + 3 bloom tasks (mostly at home)</p>
       <p class="create-guest-note">No account needed — guest play saves on this device.</p>
+      <p class="create-reset-note"><a href="#" id="newCharacterLink">Start fresh</a> · wipes this device’s save</p>
       <p style="margin-top: 16px; text-align: center;"><a href="index.html">← Back to Blossom Life</a></p>
     </div>
   </div>
@@ -125,6 +133,7 @@
       <a href="index.html" style="color: #94a3b8; text-decoration: none;">🌸</a>
       <span id="playerName">You</span>
       <span id="authBadge" class="auth-badge">Guest</span>
+      <button type="button" class="toolbar-btn toolbar-btn--ghost" id="newCharacterBtn" style="min-height: 36px; padding: 0 10px; font-size: 0.72rem;" title="Erase save and make a new character">New</button>
       <button type="button" class="toolbar-btn toolbar-btn--ghost" id="openAuthGame" style="min-height: 36px; padding: 0 12px; font-size: 0.75rem;">Account</button>
     </header>
 
@@ -354,44 +363,50 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
-  <script src="js/stability.js?v=52"></script>
-  <script src="js/boot.js?v=52"></script>
-  <script src="js/config.js?v=52"></script>
-  <script src="js/hb-local.js?v=52"></script>
-  <script src="js/world.js?v=52"></script>
-  <script src="js/world3d.js?v=52"></script>
-  <script src="js/hb-env.js?v=52"></script>
-  <script src="js/scene3d-juice.js?v=52"></script>
-  <script src="js/scene3d-hud.js?v=52"></script>
-  <script src="js/art.js?v=52"></script>
-  <script src="js/gfx.js?v=52"></script>
-  <script src="js/navigator.js?v=52"></script>
-  <script src="js/weather.js?v=52"></script>
-  <script src="js/pet.js?v=52"></script>
-  <script src="js/chat.js?v=52"></script>
-  <script src="js/photo.js?v=52"></script>
-  <script src="js/avatar.js?v=52"></script>
-  <script src="js/career.js?v=52"></script>
-  <script src="js/effects.js?v=52"></script>
-  <script src="js/audio.js?v=52"></script>
-  <script src="js/save.js?v=52"></script>
-  <script src="js/today-card.js?v=52"></script>
-  <script src="js/passport.js?v=52"></script>
-  <script src="js/locals.js?v=52"></script>
-  <script src="js/discovery.js?v=52"></script>
-  <script src="js/ai-chat.js?v=52"></script>
-  <script src="js/guide.js?v=52"></script>
-  <script src="js/auth.js?v=52"></script>
-  <script src="js/boutique.js?v=52"></script>
-  <script src="js/day-system.js?v=52"></script>
-  <script src="js/meal.js?v=52"></script>
-  <script src="js/shift.js?v=52"></script>
-  <script src="js/controls.js?v=52"></script>
-  <script src="js/render.js?v=52"></script>
-  <script src="js/scene3d.js?v=52"></script>
-  <script src="js/game.js?v=52"></script>
-  <script src="js/app.js?v=52"></script>
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.module.js"}}
+  </script>
+  <script type="module">
+  import * as THREE from 'three';
+  window.THREE = THREE;
+  </script>
+  <script defer src="js/stability.js?v=53"></script>
+  <script defer src="js/boot.js?v=53"></script>
+  <script defer src="js/config.js?v=53"></script>
+  <script defer src="js/hb-local.js?v=53"></script>
+  <script defer src="js/world.js?v=53"></script>
+  <script defer src="js/world3d.js?v=53"></script>
+  <script defer src="js/hb-env.js?v=53"></script>
+  <script defer src="js/scene3d-juice.js?v=53"></script>
+  <script defer src="js/scene3d-hud.js?v=53"></script>
+  <script defer src="js/art.js?v=53"></script>
+  <script defer src="js/gfx.js?v=53"></script>
+  <script defer src="js/navigator.js?v=53"></script>
+  <script defer src="js/weather.js?v=53"></script>
+  <script defer src="js/pet.js?v=53"></script>
+  <script defer src="js/chat.js?v=53"></script>
+  <script defer src="js/photo.js?v=53"></script>
+  <script defer src="js/avatar.js?v=53"></script>
+  <script defer src="js/career.js?v=53"></script>
+  <script defer src="js/effects.js?v=53"></script>
+  <script defer src="js/audio.js?v=53"></script>
+  <script defer src="js/save.js?v=53"></script>
+  <script defer src="js/today-card.js?v=53"></script>
+  <script defer src="js/passport.js?v=53"></script>
+  <script defer src="js/locals.js?v=53"></script>
+  <script defer src="js/discovery.js?v=53"></script>
+  <script defer src="js/ai-chat.js?v=53"></script>
+  <script defer src="js/guide.js?v=53"></script>
+  <script defer src="js/auth.js?v=53"></script>
+  <script defer src="js/boutique.js?v=53"></script>
+  <script defer src="js/day-system.js?v=53"></script>
+  <script defer src="js/meal.js?v=53"></script>
+  <script defer src="js/shift.js?v=53"></script>
+  <script defer src="js/controls.js?v=53"></script>
+  <script defer src="js/render.js?v=53"></script>
+  <script defer src="js/scene3d.js?v=53"></script>
+  <script defer src="js/game.js?v=53"></script>
+  <script defer src="js/app.js?v=53"></script>
 
 </body>
 </html>

@@ -5,6 +5,15 @@ window.BlossomAvatar = (function () {
 
   const HAIR_STYLES = ['short', 'long', 'spiky', 'curly', 'ponytail'];
 
+  const SHIRT_PATTERNS = [
+    { id: 'none', label: 'Solid' },
+    { id: 'stripes', label: 'Stripes' },
+    { id: 'dots', label: 'Dots' },
+    { id: 'waves', label: 'Waves' },
+    { id: 'sunset', label: 'Sunset' },
+    { id: 'palm', label: 'Palm' },
+  ];
+
   const ITEMS = {
     top_starter: { id: 'top_starter', slot: 'top', name: 'Starter tee', price: 0, color: '#5eead4', style: 'tee', starter: true },
     top_striped: { id: 'top_striped', slot: 'top', name: 'Striped tee', price: 6, color: '#f472b6', style: 'striped' },
@@ -123,58 +132,171 @@ window.BlossomAvatar = (function () {
   function drawHairBack(ctx, av, y, s) {
     const c = av.hairColor || '#4a3728';
     const style = av.hairStyle || 'short';
-    ctx.fillStyle = shade(c, -0.08);
+    ctx.fillStyle = shade(c, -0.12);
     if (style === 'long') {
-      roundRect(ctx, -20 * s, y - 48 * s, 10 * s, 30 * s, 4);
+      roundRect(ctx, -21 * s, y - 46 * s, 11 * s, 34 * s, 5);
       ctx.fill();
-      ctx.fillRect(10 * s, y - 48 * s, 10 * s, 30 * s);
+      roundRect(ctx, 10 * s, y - 46 * s, 11 * s, 34 * s, 5);
+      ctx.fill();
     } else if (style === 'ponytail') {
-      roundRect(ctx, 12 * s, y - 58 * s, 9 * s, 24 * s, 4);
+      roundRect(ctx, 14 * s, y - 56 * s, 10 * s, 28 * s, 5);
+      ctx.fill();
+      ctx.fillStyle = '#f472b6';
+      roundRect(ctx, 13 * s, y - 58 * s, 12 * s, 4 * s, 2);
+      ctx.fill();
+    } else if (style === 'curly') {
+      ctx.beginPath();
+      ctx.arc(0, y - 58 * s, 11 * s, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 
   function drawHair(ctx, av, y, s) {
     const c = av.hairColor || '#4a3728';
-    ctx.fillStyle = c;
+    const hi = shade(c, 0.14);
+    const lo = shade(c, -0.14);
     const style = av.hairStyle || 'short';
+
     if (style === 'short') {
+      const g = ctx.createLinearGradient(-18 * s, y - 66 * s, 18 * s, y - 42 * s);
+      g.addColorStop(0, hi);
+      g.addColorStop(1, lo);
+      ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(0, y - 50 * s, 17 * s, Math.PI, 0);
+      ctx.arc(0, y - 50 * s, 17.5 * s, Math.PI, 0);
       ctx.fill();
-      roundRect(ctx, -17 * s, y - 52 * s, 34 * s, 10 * s, 4);
+      roundRect(ctx, -17 * s, y - 51 * s, 34 * s, 9 * s, 5);
       ctx.fill();
-      ctx.fillStyle = shade(c, 0.1);
-      roundRect(ctx, -12 * s, y - 50 * s, 24 * s, 6 * s, 3);
+      ctx.fillStyle = hi;
+      ctx.beginPath();
+      ctx.moveTo(-10 * s, y - 52 * s);
+      ctx.quadraticCurveTo(-4 * s, y - 58 * s, 2 * s, y - 52 * s);
       ctx.fill();
     } else if (style === 'long') {
+      const g = ctx.createLinearGradient(0, y - 66 * s, 0, y - 18 * s);
+      g.addColorStop(0, hi);
+      g.addColorStop(1, lo);
+      ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(0, y - 50 * s, 18 * s, Math.PI, 0);
       ctx.fill();
-      roundRect(ctx, -20 * s, y - 48 * s, 10 * s, 28 * s, 4);
-      ctx.fillRect(10 * s, y - 48 * s, 10 * s, 28 * s);
+      [-20, 10].forEach((sx) => {
+        roundRect(ctx, sx * s, y - 48 * s, 10 * s, 30 * s, 5);
+        ctx.fill();
+      });
+      ctx.strokeStyle = hi;
+      ctx.lineWidth = 1.2 * s;
+      ctx.beginPath();
+      ctx.moveTo(-14 * s, y - 44 * s);
+      ctx.quadraticCurveTo(-18 * s, y - 20 * s, -16 * s, y - 16 * s);
+      ctx.stroke();
     } else if (style === 'spiky') {
+      ctx.fillStyle = lo;
+      roundRect(ctx, -17 * s, y - 50 * s, 34 * s, 12 * s, 6);
+      ctx.fill();
+      ctx.fillStyle = c;
       for (let i = -2; i <= 2; i++) {
         ctx.beginPath();
-        ctx.moveTo(i * 7 * s, y - 48 * s);
-        ctx.lineTo(i * 7 * s + 4 * s, y - 68 * s);
-        ctx.lineTo(i * 7 * s + 8 * s, y - 48 * s);
+        ctx.moveTo((i * 6.5 - 2) * s, y - 48 * s);
+        ctx.quadraticCurveTo((i * 6.5 + 2) * s, y - 62 * s, (i * 6.5 + 6) * s, y - 48 * s);
         ctx.closePath();
         ctx.fill();
       }
     } else if (style === 'curly') {
+      ctx.fillStyle = c;
       for (let i = -2; i <= 2; i++) {
         ctx.beginPath();
-        ctx.arc(i * 8 * s, y - 54 * s, 9 * s, 0, Math.PI * 2);
+        ctx.arc(i * 7.5 * s, y - 54 * s, 7.5 * s, 0, Math.PI * 2);
         ctx.fill();
       }
-    } else if (style === 'ponytail') {
+      ctx.fillStyle = hi;
       ctx.beginPath();
-      ctx.arc(0, y - 50 * s, 16 * s, Math.PI, 0);
+      ctx.arc(0, y - 60 * s, 10 * s, 0, Math.PI * 2);
       ctx.fill();
-      roundRect(ctx, 12 * s, y - 58 * s, 8 * s, 22 * s, 4);
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(0, y - 62 * s, 2.5 * s, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (style === 'ponytail') {
+      ctx.fillStyle = c;
+      ctx.beginPath();
+      ctx.arc(0, y - 50 * s, 16.5 * s, Math.PI, 0);
+      ctx.fill();
+      roundRect(ctx, -16 * s, y - 51 * s, 32 * s, 8 * s, 4);
+      ctx.fill();
+      ctx.fillStyle = shade(c, -0.08);
+      roundRect(ctx, 13 * s, y - 56 * s, 9 * s, 24 * s, 4);
+      ctx.fill();
+      ctx.fillStyle = '#f472b6';
+      roundRect(ctx, 12 * s, y - 58 * s, 11 * s, 3.5 * s, 2);
       ctx.fill();
     }
+  }
+
+  function buildShirtPatternDataUrl(patternId, shirtColor, accentColor) {
+    if (!patternId || patternId === 'none') return null;
+    const c = document.createElement('canvas');
+    c.width = 96;
+    c.height = 96;
+    const ctx = c.getContext('2d');
+    const base = shirtColor || '#5eead4';
+    const accent = accentColor || '#e11d48';
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, 96, 96);
+
+    if (patternId === 'stripes') {
+      ctx.fillStyle = 'rgba(255,255,255,0.42)';
+      for (let x = -96; x < 192; x += 14) {
+        ctx.save();
+        ctx.translate(x, 0);
+        ctx.rotate(-0.35);
+        ctx.fillRect(0, 0, 7, 140);
+        ctx.restore();
+      }
+    } else if (patternId === 'dots') {
+      ctx.fillStyle = accent;
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          ctx.beginPath();
+          ctx.arc(8 + col * 12 + (row % 2) * 6, 8 + row * 12, 3.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    } else if (patternId === 'waves') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.lineWidth = 4;
+      for (let row = 0; row < 5; row++) {
+        ctx.beginPath();
+        for (let x = 0; x <= 96; x += 8) {
+          const wy = 18 + row * 18 + Math.sin(x / 10) * 6;
+          if (x === 0) ctx.moveTo(x, wy);
+          else ctx.lineTo(x, wy);
+        }
+        ctx.stroke();
+      }
+    } else if (patternId === 'sunset') {
+      const g = ctx.createLinearGradient(0, 0, 96, 96);
+      g.addColorStop(0, 'rgba(251, 191, 36, 0.55)');
+      g.addColorStop(0.5, 'rgba(244, 114, 182, 0.45)');
+      g.addColorStop(1, 'rgba(56, 189, 248, 0.4)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 96, 96);
+    } else if (patternId === 'palm') {
+      ctx.fillStyle = '#166534';
+      ctx.beginPath();
+      ctx.moveTo(48, 20);
+      ctx.quadraticCurveTo(20, 40, 30, 70);
+      ctx.quadraticCurveTo(48, 55, 66, 70);
+      ctx.quadraticCurveTo(76, 40, 48, 20);
+      ctx.fill();
+      ctx.strokeStyle = '#854d0e';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(48, 70);
+      ctx.lineTo(48, 88);
+      ctx.stroke();
+    }
+    return c.toDataURL('image/png');
   }
 
   function drawFace(ctx, av, y, s) {
@@ -547,6 +669,11 @@ window.BlossomAvatar = (function () {
     ctx.fillRect(0, canvas.height * 0.72, canvas.width, canvas.height * 0.28);
     ctx.fillStyle = 'rgba(255,255,255,0.25)';
     ctx.fillRect(0, canvas.height * 0.72, canvas.width, 4);
+    let shirtImg = null;
+    if (avatar.shirtPattern) {
+      shirtImg = new Image();
+      shirtImg.src = avatar.shirtPattern;
+    }
     drawCharacter(ctx, {
       avatar,
       wardrobe: wardrobe || { equipped: defaultWardrobe().equipped, owned: STARTER_OWNED },
@@ -555,6 +682,7 @@ window.BlossomAvatar = (function () {
       facing: 1,
       anim: Date.now() / 800,
       moving: false,
+      shirtImg,
     });
   }
 
@@ -589,6 +717,9 @@ window.BlossomAvatar = (function () {
   }
 
   function parseCreateForm(fd) {
+    const shirtColor = fd.get('shirtColor')?.toString() || '#5eead4';
+    const patternId = fd.get('shirtPattern')?.toString() || 'none';
+    const accent = fd.get('patternAccent')?.toString() || '#e11d48';
     return {
       skin: fd.get('skin')?.toString() || '#f5d0a8',
       hairColor: fd.get('hairColor')?.toString() || '#4a3728',
@@ -596,16 +727,19 @@ window.BlossomAvatar = (function () {
       eyeColor: fd.get('eyeColor')?.toString() || '#1e293b',
       height: fd.get('height')?.toString() || 'average',
       build: fd.get('build')?.toString() || 'average',
-      shirtColor: fd.get('shirtColor')?.toString() || '#5eead4',
+      shirtColor,
       pantsColor: fd.get('pantsColor')?.toString() || '#475569',
       shoesColor: fd.get('shoesColor')?.toString() || '#f8fafc',
-      shirtPattern: null,
+      shirtPatternId: patternId,
+      shirtPattern: buildShirtPatternDataUrl(patternId, shirtColor, accent),
     };
   }
 
   return {
     ITEMS,
     HAIR_STYLES,
+    SHIRT_PATTERNS,
+    buildShirtPatternDataUrl,
     HEIGHT,
     BUILD,
     defaultAvatar,
