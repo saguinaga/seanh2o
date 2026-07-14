@@ -50,7 +50,8 @@ window.BlossomGame = (function () {
   function fallbackTo2D(message) {
     if (!canvas) return;
     use3d = false;
-    canvas.parentElement?.classList?.remove('game-stage--3d');
+    canvas.closest('.game-stage')?.classList?.remove('game-stage--3d');
+    canvas.closest('.game-play-area')?.classList?.remove('game-play-area--3d');
     BlossomControls.set3DMode?.(false);
     if (!ctx) ctx = canvas.getContext('2d');
     window.BlossomBoot?.hideLoad?.();
@@ -92,7 +93,10 @@ window.BlossomGame = (function () {
       use3d = true;
       ctx = hudCanvas?.getContext('2d') || null;
       if (hudCanvas) hudCanvas.style.display = '';
-      canvas.parentElement?.classList?.add('game-stage--3d');
+      const stageEl = canvas.closest('.game-stage');
+      const playEl = canvas.closest('.game-play-area');
+      stageEl?.classList?.add('game-stage--3d');
+      playEl?.classList?.add('game-play-area--3d');
       BlossomControls.set3DMode?.(true);
       BlossomControls.initPointerOrbit?.(canvas);
       window.BlossomBoot?.setLoadStatus?.('Starting 3D world…');
@@ -108,6 +112,7 @@ window.BlossomGame = (function () {
       BlossomControls.init();
       resize();
       requestAnimationFrame(() => resize());
+      setTimeout(() => resize(), 120);
       window.addEventListener('resize', resize);
       canvas.addEventListener('click', onTap);
       canvas.addEventListener('touchend', onTapTouch, { passive: false });
@@ -131,8 +136,9 @@ window.BlossomGame = (function () {
     let h = wrap.clientHeight;
     if (use3d) {
       if (w < 10 || h < 10) {
-        w = wrap.offsetWidth || window.innerWidth;
-        h = wrap.offsetHeight || Math.floor(window.innerHeight * 0.55);
+        const area = wrap.closest('.game-play-area');
+        w = area?.clientWidth || wrap.offsetWidth || window.innerWidth;
+        h = area?.clientHeight || wrap.offsetHeight || Math.floor(window.innerHeight * 0.55);
       }
       canvas.style.width = '100%';
       canvas.style.height = '100%';
