@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="blossom-build" content="40">
+  <meta name="blossom-build" content="52">
   <title>Play — Blossom Life · 3D Huntington Beach</title>
   <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
   <meta property="og:title" content="Blossom Life — Play Now">
@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=40">
+  <link rel="stylesheet" href="css/blossom.css?v=52">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -124,7 +124,6 @@
     <header class="game-topbar">
       <a href="index.html" style="color: #94a3b8; text-decoration: none;">🌸</a>
       <span id="playerName">You</span>
-      <span class="grok-pill" id="grokPill" hidden></span>
       <span id="authBadge" class="auth-badge">Guest</span>
       <button type="button" class="toolbar-btn toolbar-btn--ghost" id="openAuthGame" style="min-height: 36px; padding: 0 12px; font-size: 0.75rem;">Account</button>
     </header>
@@ -132,21 +131,6 @@
     <p class="cloud-note" id="cloudNote" hidden></p>
 
     <div class="game-stage">
-      <aside class="star-guide star-guide--collapsed" id="starGuide" hidden>
-        <button type="button" class="star-guide__toggle" id="guideToggle" aria-expanded="false" aria-controls="guideBody">
-          <span class="star-guide__title">📖 Bloom</span>
-          <span class="star-guide__goal" id="guideGoal">0/35 ⭐</span>
-          <span class="star-guide__chevron" aria-hidden="true">▾</span>
-        </button>
-        <div class="star-guide__bar"><div class="star-guide__fill" id="guideProgressBar"></div></div>
-        <p class="star-guide__peek" id="guidePeek"></p>
-        <div class="star-guide__body" id="guideBody">
-          <ul class="star-guide__list" id="guideChecklist"></ul>
-          <p class="star-guide__tip" id="guideTip"></p>
-          <button type="button" class="star-guide__dismiss" id="guideDismiss">Hide for today</button>
-        </div>
-      </aside>
-
       <div class="game-play-area">
         <div class="canvas-glow" aria-hidden="true"></div>
         <div class="game-viewport" id="gameViewport">
@@ -190,6 +174,13 @@
           <div class="hud-career" id="hudCareer">💇 Dreamer</div>
         </div>
 
+        <button type="button" class="quest-chip" id="questChip" hidden aria-label="Open bloom tasks">
+          <span class="quest-chip__icon" aria-hidden="true">📋</span>
+          <span class="quest-chip__goal" id="questChipGoal">0/35 ⭐</span>
+          <span class="quest-chip__next" id="questChipNext">Tap for tasks</span>
+          <span class="quest-chip__bar" aria-hidden="true"><span class="quest-chip__fill" id="questChipBar"></span></span>
+        </button>
+
         <p class="day-reminder" id="dayReminder" hidden></p>
         <p class="desktop-hint">WASD move · drag look · Shift sprint · [ ] speed · E interact · 🛂 passport</p>
       </div>
@@ -204,15 +195,7 @@
 
     <footer class="game-bottom">
       <p class="npc-bubble" id="npcBubble">Walk to the green exit to leave home · tap objects to interact</p>
-      <p class="travel-hint" id="travelHint"></p>
-      <div class="chat-log" id="chatLog" aria-live="polite" hidden></div>
-      <div class="chat-chips" id="chatChips" hidden></div>
-      <div class="chat-bar" hidden>
-        <span class="chat-ai-badge" id="chatAiBadge" hidden></span>
-        <input type="text" class="chat-input" id="chatInput" placeholder="Say something to nearby locals…" maxlength="120" enterkeyhint="send">
-        <button type="button" class="chat-send" id="chatSend">Say</button>
-        <p class="chat-typing" id="chatTyping" hidden aria-hidden="true">…</p>
-      </div>
+      <p class="travel-hint" id="travelHint" hidden></p>
       <div class="game-toolbar">
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="passportBtn" title="Surf City Passport">🛂</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="guideHelpBtn" title="Bloom guide">📖</button>
@@ -225,6 +208,22 @@
   </div>
 
   <div class="game-toast" id="gameToast" hidden></div>
+
+  <div class="modal-backdrop quest-modal-backdrop" id="guideModal" hidden aria-hidden="true">
+    <div class="modal-card modal-card--quest">
+      <div class="quest-modal__header">
+        <div class="quest-modal__headtext">
+          <h2>📋 Bloom Tasks</h2>
+          <p class="quest-modal__goal" id="guideGoal">0/35 ⭐</p>
+        </div>
+        <button type="button" class="quest-modal__close" id="guideModalClose" aria-label="Close">×</button>
+      </div>
+      <div class="quest-modal__bar" aria-hidden="true"><div class="quest-modal__fill" id="guideProgressBar"></div></div>
+      <p class="quest-modal__tip" id="guideTip"></p>
+      <ul class="quest-modal__list" id="guideChecklist"></ul>
+      <button type="button" class="btn-blossom btn-secondary quest-modal__dismiss" id="guideDismiss">Hide for today</button>
+    </div>
+  </div>
 
   <div class="modal-backdrop passport-modal" id="passportModal" hidden>
     <div class="modal-card passport-card">
@@ -356,43 +355,43 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
-  <script src="js/stability.js?v=40"></script>
-  <script src="js/boot.js?v=40"></script>
-  <script src="js/config.js?v=40"></script>
-  <script src="js/hb-local.js?v=40"></script>
-  <script src="js/world.js?v=40"></script>
-  <script src="js/world3d.js?v=40"></script>
-  <script src="js/hb-env.js?v=40"></script>
-  <script src="js/scene3d-juice.js?v=40"></script>
-  <script src="js/scene3d-hud.js?v=40"></script>
-  <script src="js/art.js?v=40"></script>
-  <script src="js/gfx.js?v=40"></script>
-  <script src="js/navigator.js?v=40"></script>
-  <script src="js/weather.js?v=40"></script>
-  <script src="js/pet.js?v=40"></script>
-  <script src="js/chat.js?v=40"></script>
-  <script src="js/photo.js?v=40"></script>
-  <script src="js/avatar.js?v=40"></script>
-  <script src="js/career.js?v=40"></script>
-  <script src="js/effects.js?v=40"></script>
-  <script src="js/audio.js?v=40"></script>
-  <script src="js/save.js?v=40"></script>
-  <script src="js/today-card.js?v=40"></script>
-  <script src="js/passport.js?v=40"></script>
-  <script src="js/locals.js?v=40"></script>
-  <script src="js/discovery.js?v=40"></script>
-  <script src="js/ai-chat.js?v=40"></script>
-  <script src="js/guide.js?v=40"></script>
-  <script src="js/auth.js?v=40"></script>
-  <script src="js/boutique.js?v=40"></script>
-  <script src="js/day-system.js?v=40"></script>
-  <script src="js/meal.js?v=40"></script>
-  <script src="js/shift.js?v=40"></script>
-  <script src="js/controls.js?v=40"></script>
-  <script src="js/render.js?v=40"></script>
-  <script src="js/scene3d.js?v=40"></script>
-  <script src="js/game.js?v=40"></script>
-  <script src="js/app.js?v=40"></script>
+  <script src="js/stability.js?v=52"></script>
+  <script src="js/boot.js?v=52"></script>
+  <script src="js/config.js?v=52"></script>
+  <script src="js/hb-local.js?v=52"></script>
+  <script src="js/world.js?v=52"></script>
+  <script src="js/world3d.js?v=52"></script>
+  <script src="js/hb-env.js?v=52"></script>
+  <script src="js/scene3d-juice.js?v=52"></script>
+  <script src="js/scene3d-hud.js?v=52"></script>
+  <script src="js/art.js?v=52"></script>
+  <script src="js/gfx.js?v=52"></script>
+  <script src="js/navigator.js?v=52"></script>
+  <script src="js/weather.js?v=52"></script>
+  <script src="js/pet.js?v=52"></script>
+  <script src="js/chat.js?v=52"></script>
+  <script src="js/photo.js?v=52"></script>
+  <script src="js/avatar.js?v=52"></script>
+  <script src="js/career.js?v=52"></script>
+  <script src="js/effects.js?v=52"></script>
+  <script src="js/audio.js?v=52"></script>
+  <script src="js/save.js?v=52"></script>
+  <script src="js/today-card.js?v=52"></script>
+  <script src="js/passport.js?v=52"></script>
+  <script src="js/locals.js?v=52"></script>
+  <script src="js/discovery.js?v=52"></script>
+  <script src="js/ai-chat.js?v=52"></script>
+  <script src="js/guide.js?v=52"></script>
+  <script src="js/auth.js?v=52"></script>
+  <script src="js/boutique.js?v=52"></script>
+  <script src="js/day-system.js?v=52"></script>
+  <script src="js/meal.js?v=52"></script>
+  <script src="js/shift.js?v=52"></script>
+  <script src="js/controls.js?v=52"></script>
+  <script src="js/render.js?v=52"></script>
+  <script src="js/scene3d.js?v=52"></script>
+  <script src="js/game.js?v=52"></script>
+  <script src="js/app.js?v=52"></script>
 
 </body>
 </html>

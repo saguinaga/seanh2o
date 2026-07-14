@@ -89,20 +89,31 @@ window.BlossomNavigate = (function () {
     return [];
   }
 
-  function waypointsForPath(fromId, path, finalTarget) {
+  function waypointsForPath(fromId, path, finalTarget, state) {
     const wps = [];
     let cur = fromId;
     const use3d = !!window.BlossomWorld3D;
     const openWorld = use3d && BlossomWorld3D.isOverworld?.();
     if (openWorld && finalTarget) {
       const c = finalTarget.center;
-      wps.push({
-        type: 'target',
-        wx: c.wx ?? c.x,
-        wz: c.wz ?? c.y,
-        locId: finalTarget.locId,
-        prop: finalTarget.prop,
-        taskId: finalTarget.taskId,
+      const tx = c.wx ?? c.x;
+      const tz = c.wz ?? c.y;
+      const from = BlossomWorld3D.spawn3D(fromId, state?.position || null);
+      const route = BlossomWorld3D.buildWalkWaypoints?.(
+        state?.position?.wx ?? from.wx,
+        state?.position?.wz ?? from.wz,
+        tx,
+        tz
+      ) || [{ type: 'target', wx: tx, wz: tz }];
+      route.forEach((wp) => {
+        wps.push({
+          type: wp.type,
+          wx: wp.wx,
+          wz: wp.wz,
+          locId: finalTarget.locId,
+          prop: wp.type === 'target' ? finalTarget.prop : null,
+          taskId: finalTarget.taskId,
+        });
       });
       return wps;
     }
@@ -241,7 +252,7 @@ window.BlossomNavigate = (function () {
     if (!target) return null;
     const fromId = state.currentLocation || 'house';
     const path = getTravelPath(fromId, target.locId);
-    const waypoints = waypointsForPath(fromId, path, target);
+    const waypoints = waypointsForPath(fromId, path, target, state);
     return { taskId, target, waypoints, path };
   }
 

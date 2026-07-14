@@ -1,12 +1,12 @@
-/** 2008 MMO HUD — bronze frames, parchment minimap, yellow zone text */
+/** 3D HUD — clean coastal-luxury overlay (minimap + prompts only; stats live in HTML sidebar) */
 window.BlossomScene3DHud = (function () {
   const ZONE_TINT = {
-    house: '#8ecae6',
-    yard: '#90be6d',
-    street: '#ffd166',
-    pch: '#56cfe1',
-    pacCity: '#f9c74f',
-    park: '#f4978e',
+    house: '#7dd3fc',
+    yard: '#86efac',
+    street: '#fcd34d',
+    pch: '#67e8f9',
+    pacCity: '#fbbf24',
+    park: '#fda4af',
   };
 
   let zoneFlash = 0;
@@ -17,71 +17,55 @@ window.BlossomScene3DHud = (function () {
     zoneFlash = 1;
   }
 
-  function wowText(ctx, text, x, y, size, color) {
-    ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.lineWidth = Math.max(2, size * 0.14);
-    ctx.strokeStyle = '#000';
-    ctx.strokeText(text, x, y);
-    ctx.fillStyle = color || '#fff568';
-    ctx.fillText(text, x, y);
+  function roundRect(ctx, x, y, w, h, r) {
+    const rad = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
   }
 
-  function wowTextCenter(ctx, text, x, y, size, color) {
-    ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.lineWidth = Math.max(2, size * 0.14);
-    ctx.strokeStyle = '#000';
-    ctx.strokeText(text, x, y);
-    ctx.fillStyle = color || '#fff568';
-    ctx.fillText(text, x, y);
-    ctx.textAlign = 'left';
-  }
-
-  function drawWowPanel(ctx, x, y, w, h) {
-    const outer = ctx.createLinearGradient(x, y, x, y + h);
-    outer.addColorStop(0, '#9a7b4a');
-    outer.addColorStop(0.45, '#c9a227');
-    outer.addColorStop(1, '#4a3728');
-    ctx.fillStyle = outer;
-    ctx.fillRect(x, y, w, h);
-    ctx.fillStyle = 'rgba(8, 6, 4, 0.82)';
-    ctx.fillRect(x + 3, y + 3, w - 6, h - 6);
-    ctx.strokeStyle = '#e8c547';
+  function glassPanel(ctx, x, y, w, h, alpha) {
+    ctx.save();
+    roundRect(ctx, x, y, w, h, 14);
+    ctx.fillStyle = `rgba(15, 23, 42, ${alpha ?? 0.72})`;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
     ctx.lineWidth = 1;
-    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
-    ctx.strokeStyle = '#2d1f0f';
-    ctx.strokeRect(x + 3.5, y + 3.5, w - 7, h - 7);
+    ctx.stroke();
+    ctx.restore();
   }
 
-  function drawUnitFrame(ctx, x, y, w, h, title, sub, tint) {
-    drawWowPanel(ctx, x, y, w, h);
-    ctx.fillStyle = tint || '#fff568';
-    ctx.fillRect(x + 5, y + 5, w - 10, 4);
-    wowText(ctx, title, x + 10, y + 24, 13, '#fff568');
-    if (sub) wowText(ctx, sub, x + 10, y + 40, 11, '#f0e6c8');
+  function label(ctx, text, x, y, size, color, weight) {
+    ctx.font = `${weight || 600} ${size}px Nunito, system-ui, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = color || '#f8fafc';
+    ctx.fillText(text, x, y);
   }
 
   function drawMinimap(ctx, w, h, player, locId) {
     if (!BlossomWorld3D?.isOverworld?.()) return;
-    const mmW = 132;
-    const mmH = 108;
-    const mx = w - mmW - 10;
-    const my = h - mmH - 10;
+    const mmW = 118;
+    const mmH = 92;
+    const mx = w - mmW - 12;
+    const my = 12;
 
-    drawWowPanel(ctx, mx, my, mmW, mmH);
-    const pad = 8;
+    glassPanel(ctx, mx, my, mmW, mmH, 0.78);
+    const pad = 10;
     const ix = mx + pad;
     const iy = my + pad;
     const iw = mmW - pad * 2;
-    const ih = mmH - pad * 2 - 12;
+    const ih = mmH - pad * 2 - 14;
 
-    ctx.fillStyle = '#c4b08a';
-    ctx.fillRect(ix, iy, iw, ih);
-    ctx.fillStyle = '#8bb8d4';
-    ctx.fillRect(ix, iy, iw, ih * 0.42);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(ix, iy, iw, ih * 0.38);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(ix, iy + ih * 0.38, iw, ih * 0.62);
 
-    const bounds = BlossomWorld3D.WORLD_BOUNDS || { minX: -175, maxX: 252, minZ: -88, maxZ: 88 };
+    const bounds = BlossomWorld3D.WORLD_BOUNDS || { minX: -325, maxX: 870, minZ: -110, maxZ: 110 };
     const spanX = bounds.maxX - bounds.minX;
     const spanZ = bounds.maxZ - bounds.minZ;
     const mapX = (wx) => ix + ((wx - bounds.minX) / spanX) * iw;
@@ -92,139 +76,88 @@ window.BlossomScene3DHud = (function () {
       const cz = mapZ(z.wz);
       const zw = (z.halfW * 2 / spanX) * iw;
       const zh = (z.halfD * 2 / spanZ) * ih;
-      ctx.fillStyle = z.id === locId ? 'rgba(255, 209, 102, 0.55)' : 'rgba(144, 190, 109, 0.35)';
+      ctx.fillStyle = z.id === locId ? 'rgba(56, 189, 248, 0.45)' : 'rgba(148, 163, 184, 0.28)';
       ctx.fillRect(cx - zw / 2, cz - zh / 2, zw, zh);
-      ctx.fillStyle = '#2d1f0f';
-      ctx.font = 'bold 8px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      const labels = { house: '9th St', yard: 'Hood', street: 'Main St', pch: 'PCH', pacCity: 'Pac City', park: 'Pier' };
-      ctx.fillText(labels[z.id] || z.id, cx, cz + 3);
-      ctx.textAlign = 'left';
     });
 
     if (player?.wx != null) {
       const px = mapX(player.wx);
       const pz = mapZ(player.wz);
-      ctx.fillStyle = '#e63946';
-      ctx.fillRect(px - 3, pz - 3, 6, 6);
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(px - 3.5, pz - 3.5, 7, 7);
+      ctx.fillStyle = '#f43f5e';
+      ctx.beginPath();
+      ctx.arc(px, pz, 4, 0, Math.PI * 2);
+      ctx.fill();
       const yaw = player.moveYaw ?? 0;
-      ctx.strokeStyle = '#fff568';
+      ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(px, pz);
-      ctx.lineTo(px + Math.sin(yaw) * 10, pz + Math.cos(yaw) * 10);
+      ctx.lineTo(px + Math.sin(yaw) * 9, pz + Math.cos(yaw) * 9);
       ctx.stroke();
     }
 
-    wowText(ctx, 'WORLD MAP', mx + 10, my + mmH - 6, 9, '#e8c547');
+    label(ctx, 'Surf City', mx + 12, my + mmH - 8, 9, '#94a3b8', 700);
   }
 
-  function drawQuestTracker(ctx, state) {
-    const list = state.todaysChores || [];
-    const done = state.choresDone || {};
-    const slots = state.bloomSlots || {};
-    const slotEmoji = { home: '🏠', world: '🌊', career: '💼' };
-    const finished = list.filter((id) => done[id]).length;
-    const y = 118;
-    drawWowPanel(ctx, 10, y, 178, 62);
-    wowText(ctx, 'Bloom Tasks', 18, y + 18, 12, '#fff568');
-    wowText(ctx, `${finished}/${list.length || 3} done`, 18, y + 34, 10, finished >= (list.length || 3) ? '#40c040' : '#f0e6c8');
-    const tags = ['home', 'world', 'career'].map((s) => {
-      const id = slots[s];
-      const ok = id && done[id];
-      return `${ok ? '✓' : '○'}${slotEmoji[s] || '🌸'}`;
-    }).join(' ');
-    wowText(ctx, tags, 18, y + 50, 10, '#c9a227');
-  }
-
-  function drawStamina(ctx, w, h, stamina, running) {
+  function drawStamina(ctx, w, stamina, running) {
     const s = stamina ?? 100;
     if (s >= 99.5 && !running) return;
-    const barW = 72;
-    const x = w - barW - 14;
-    const y = h - 22;
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
-    ctx.fillRect(x - 2, y - 2, barW + 4, 10);
+    const barW = 88;
+    const x = w - barW - 12;
+    const y = 112;
+    glassPanel(ctx, x - 4, y - 10, barW + 8, 16, 0.55);
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(x, y, barW, 4);
     ctx.fillStyle = s < 18 ? '#f87171' : '#34d399';
-    ctx.fillRect(x, y, barW * (s / 100), 6);
-    ctx.fillStyle = '#a09070';
-    ctx.font = '9px Arial, sans-serif';
-    ctx.fillText(running ? 'RUN' : 'stamina', x, y - 3);
-  }
-
-  function drawDiscovery(ctx, w, state) {
-    const p = BlossomDiscovery?.progress?.(state);
-    if (!p) return;
-    const total = p.zonesTotal + p.landmarksTotal;
-    const done = p.zones + p.landmarks;
-    if (done <= 0) return;
-    ctx.fillStyle = '#c9a227';
-    ctx.font = '10px Arial, sans-serif';
-    ctx.fillText(`✦ ${done}/${total} discovered`, 12, 118);
+    ctx.fillRect(x, y, barW * (s / 100), 4);
+    label(ctx, running ? 'Sprint' : 'Stamina', x, y - 2, 8, '#cbd5e1', 600);
   }
 
   function drawInteractPrompt(ctx, w, h, nearInteract) {
     if (!nearInteract) return;
-    const label = nearInteract.label || nearInteract.kind || 'Interact';
-    wowTextCenter(ctx, `[E] ${label}`, w / 2, h - 36, 15, '#fff568');
+    const text = nearInteract.label || nearInteract.kind || 'Interact';
+    const padX = 18;
+    ctx.font = '600 14px Nunito, system-ui, sans-serif';
+    const tw = ctx.measureText(text).width;
+    const pw = tw + padX * 2 + 36;
+    const px = (w - pw) / 2;
+    const py = h - 52;
+    glassPanel(ctx, px, py, pw, 34, 0.82);
+    label(ctx, 'E', px + 14, py + 22, 13, '#38bdf8', 800);
+    label(ctx, text, px + 36, py + 22, 13, '#f8fafc', 600);
   }
 
   function drawZoneFlash(ctx, w, h) {
     if (zoneFlash <= 0) return;
     zoneFlash = Math.max(0, zoneFlash - 0.028);
     const t = zoneFlash;
-    if (zoneFlashName && t > 0.3) {
-      const alpha = Math.min(1, (t - 0.3) * 2.4);
-      ctx.globalAlpha = alpha;
-      const size = Math.min(32, w * 0.07);
-      wowTextCenter(ctx, zoneFlashName, w / 2, h * 0.3, size, '#fff568');
-      ctx.globalAlpha = 1;
-      wowTextCenter(ctx, '✦ Discovered ✦', w / 2, h * 0.3 + size + 8, 13, '#f0e6c8');
-    }
+    if (!zoneFlashName || t <= 0.25) return;
+    const alpha = Math.min(1, (t - 0.25) * 2.2);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const text = zoneFlashName;
+    ctx.font = '700 22px Nunito, system-ui, sans-serif';
+    const tw = ctx.measureText(text).width;
+    const px = (w - tw - 32) / 2;
+    const py = h * 0.22;
+    glassPanel(ctx, px, py, tw + 32, 40, 0.75);
+    label(ctx, text, px + 16, py + 26, 18, '#f8fafc', 700);
+    ctx.restore();
   }
 
   function draw(ctx, w, h, opts) {
-    const { loc, state, player, nearInteract, running, phaseFade, stamina } = opts;
-    const tint = ZONE_TINT[loc?.id] || '#fff568';
+    const { loc, nearInteract, running, phaseFade, stamina } = opts;
 
-    drawUnitFrame(ctx, 10, 10, 188, 52, loc?.name || 'Huntington Beach', null, tint);
-
-    const p = BlossomCareer.path(state);
-    const rank = BlossomCareer.rankLabel(state);
-    drawUnitFrame(ctx, 10, 68, 188, 44, `${p.emoji} ${rank}`, 'Career path', '#c9a227');
-
-    drawQuestTracker(ctx, state);
-    drawMinimap(ctx, w, h, player, loc?.id);
-    const pp = BlossomPassport?.count?.(state);
-    if (pp?.pages > 0) {
-      ctx.fillStyle = '#c9a227';
-      ctx.font = '10px Arial, sans-serif';
-      ctx.fillText(`🛂 ${pp.pages}/${pp.pagesTotal}`, 12, 128);
-    }
-    drawStamina(ctx, w, h, opts.stamina, opts.running);
-
-    const mult = window.BLOSSOM_CONFIG?.walkSpeedMultiplier ?? 1;
-    if (running) {
-      wowText(ctx, mult !== 1 ? `>> RUN ×${mult.toFixed(1)}` : '>> RUN', w - 88, 22, 12, '#40c040');
-    } else {
-      ctx.fillStyle = '#a09070';
-      ctx.font = '10px Arial, sans-serif';
-      const hint = mult !== 1 ? `Shift run · ×${mult.toFixed(1)}` : 'Shift — run';
-      ctx.fillText(hint, w - 88, 22);
-    }
+    drawMinimap(ctx, w, h, opts.player, loc?.id);
+    drawStamina(ctx, w, stamina, running);
 
     if (phaseFade > 0) {
-      ctx.fillStyle = `rgba(255, 245, 180, ${phaseFade * 0.22})`;
+      ctx.fillStyle = `rgba(255, 245, 220, ${phaseFade * 0.14})`;
       ctx.fillRect(0, 0, w, h);
     }
 
     drawZoneFlash(ctx, w, h);
     drawInteractPrompt(ctx, w, h, nearInteract);
-
-    wowText(ctx, '9th St → Main → PCH → Pac City → Pier', 12, h - 8, 9, '#c9a227');
   }
 
   return { draw, triggerZoneFlash };

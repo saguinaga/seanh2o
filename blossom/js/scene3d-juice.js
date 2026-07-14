@@ -146,38 +146,22 @@ window.BlossomScene3DJuice = (function () {
     }
   }
 
-  function spawnSpeedStreak(wx, wz, yaw) {
-    for (let i = 0; i < 2; i++) {
-      const slot = dustIdx % DUST_MAX;
-      dustIdx += 1;
-      dustPool[slot] = {
-        x: wx - Math.sin(yaw) * (0.4 + i * 0.2),
-        y: 0.9 + Math.random() * 0.3,
-        z: wz - Math.cos(yaw) * (0.4 + i * 0.2),
-        vx: -Math.sin(yaw) * 0.15,
-        vy: 0.01,
-        vz: -Math.cos(yaw) * 0.15,
-        life: 0.7,
-        col: [0.55, 0.85, 1],
-      };
-    }
-  }
-
   function spawnDust(wx, wz, running, surface) {
-    const n = running ? 5 : 2;
+    const n = running ? 2 : 1;
     const sand = surface === 'grass' || surface === 'wood' || surface === 'sand';
-    const col = sand ? [1, 0.88, 0.55] : [0.82, 0.86, 0.92];
+    const col = sand ? [0.68, 0.52, 0.34] : [0.5, 0.54, 0.58];
+    const spread = running ? 0.55 : 0.35;
     for (let i = 0; i < n; i++) {
       const slot = dustIdx % DUST_MAX;
       dustIdx += 1;
       dustPool[slot] = {
-        x: wx + (Math.random() - 0.5) * 0.7,
-        y: 0.12 + Math.random() * 0.1,
-        z: wz + (Math.random() - 0.5) * 0.7,
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: 0.05 + Math.random() * 0.06,
-        vz: (Math.random() - 0.5) * 0.08,
-        life: 1,
+        x: wx + (Math.random() - 0.5) * spread,
+        y: 0.08 + Math.random() * 0.05,
+        z: wz + (Math.random() - 0.5) * spread,
+        vx: (Math.random() - 0.5) * 0.04,
+        vy: -0.01 - Math.random() * 0.02,
+        vz: (Math.random() - 0.5) * 0.04,
+        life: running ? 0.55 : 0.75,
         col,
       };
     }
@@ -319,7 +303,6 @@ window.BlossomScene3DJuice = (function () {
     const { dt, t, player, moving, running, locId, phaseId, surface } = opts;
     if (moving && player?.wx != null) {
       spawnDust(player.wx, player.wz, running, surface);
-      if (running && player.moveYaw != null) spawnSpeedStreak(player.wx, player.wz, player.moveYaw);
     }
     updateDust(dt || 0.016);
     updateSparkles(t, locId);

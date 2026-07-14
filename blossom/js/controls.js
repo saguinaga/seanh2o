@@ -35,8 +35,19 @@ window.BlossomControls = (function () {
 
   function clearMovementKeys() {
     moveKeys.clear();
-    modKeys.delete('space');
-    modKeys.delete('shift');
+    modKeys.clear();
+  }
+
+  function clearAllInput() {
+    clearMovementKeys();
+    mouseOrbit.pending = false;
+    mouseOrbit.active = false;
+    mouseOrbit.delta = 0;
+    mouseOrbit.dragged = false;
+    orbitCanvas?.classList.remove('orbit-drag');
+    joystick = { active: false, dx: 0, dy: 0, jump: false };
+    const knob = document.getElementById('joystickKnob');
+    if (knob) knob.style.transform = 'translate(-50%, -50%)';
   }
 
   function movementIdFromEvent(e) {
@@ -121,11 +132,7 @@ window.BlossomControls = (function () {
       orbitCanvas?.classList.remove('orbit-drag');
     };
     window.addEventListener('mouseup', endOrbit);
-    window.addEventListener('blur', () => {
-      endOrbit();
-      mouseOrbit.dragged = false;
-      clearMovementKeys();
-    });
+    window.addEventListener('blur', clearAllInput);
   }
 
   function consumedPointerClick() {
@@ -190,6 +197,9 @@ window.BlossomControls = (function () {
   function init() {
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearAllInput();
+    });
     document.addEventListener('focusin', (e) => {
       if (isTypingTarget(e.target)) clearMovementKeys();
     });

@@ -59,6 +59,26 @@ window.BlossomWorld3D = (function () {
     maxZ: 110,
   };
 
+  /** Main coastal sidewalk — auto-nav follows this corridor */
+  const SIDEWALK_Z = 16;
+
+  /** Open yards / interiors where building blocks do not apply */
+  const OPEN_AREAS = [
+    { minX: -305, maxX: -218, minZ: -14, maxZ: 32 },
+    { minX: -188, maxX: -92, minZ: -55, maxZ: 55 },
+    { minX: 540, maxX: 860, minZ: 8, maxZ: 95 },
+  ];
+
+  /** Shop fronts & structures — block walking through */
+  const BUILDING_BLOCKS = [
+    { minX: -305, maxX: -218, minZ: -32, maxZ: -10 },
+    { minX: -188, maxX: -92, minZ: -38, maxZ: 2 },
+    { minX: -66, maxX: 232, minZ: -42, maxZ: 4 },
+    { minX: 148, maxX: 348, minZ: -40, maxZ: 4 },
+    { minX: 338, maxX: 658, minZ: -48, maxZ: 4 },
+    { minX: 548, maxX: 868, minZ: -42, maxZ: 6 },
+  ];
+
   function anchor(locId) {
     return ZONE_ANCHORS[locId] || { wx: 0, wz: 0 };
   }
@@ -288,11 +308,48 @@ window.BlossomWorld3D = (function () {
     return player;
   }
 
+  function inOpenArea(wx, wz) {
+    return OPEN_AREAS.some((a) => wx >= a.minX && wx <= a.maxX && wz >= a.minZ && wz <= a.maxZ);
+  }
+
+  function isBlocked(wx, wz) {
+    if (!OVERWORLD) return false;
+    if (inOpenArea(wx, wz)) return false;
+    return BUILDING_BLOCKS.some((b) => wx >= b.minX && wx <= b.maxX && wz >= b.minZ && wz <= b.maxZ);
+  }
+
+  function applyMove(wx, wz, mx, mz) {
+    const nx = wx + mx;
+    const nz = wz + mz;
+    if (!isBlocked(nx, nz)) return { wx: nx, wz: nz };
+    if (!isBlocked(wx + mx, wz)) return { wx: wx + mx, wz };
+    if (!isBlocked(wx, wz + mz)) return { wx, wz: wz + mz };
+    return { wx, wz };
+  }
+
+  /** Sidewalk-first routing for auto-walk (avoids cutting through buildings) */
+  function buildWalkWaypoints(fromWx, fromWz, toWx, toWz) {
+    const wps = [];
+    if (Math.abs(fromWz - SIDEWALK_Z) > 5) {
+      wps.push({ type: 'path', wx: fromWx, wz: SIDEWALK_Z });
+    }
+    if (Math.abs(toWx - fromWx) > 8) {
+      wps.push({ type: 'path', wx: toWx, wz: SIDEWALK_Z });
+    }
+    wps.push({ type: 'target', wx: toWx, wz: toWz });
+    return wps;
+  }
+
   function clampPlayer(player, locId) {
     if (OVERWORLD) {
       const b = WORLD_BOUNDS;
       player.wx = Math.max(b.minX, Math.min(b.maxX, player.wx));
       player.wz = Math.max(b.minZ, Math.min(b.maxZ, player.wz));
+      if (isBlocked(player.wx, player.wz)) {
+        const safe = applyMove(player.wx, player.wz, 0, SIDEWALK_Z - player.wz);
+        player.wx = safe.wx;
+        player.wz = safe.wz;
+      }
       return player;
     }
     const b = getBounds(locId);
@@ -369,6 +426,10 @@ window.BlossomWorld3D = (function () {
     ensurePlayer3D,
     syncLegacy,
     clampPlayer,
+    isBlocked,
+    applyMove,
+    buildWalkWaypoints,
+    SIDEWALK_Z,
     getRoomAt3D,
     distance3D,
     distanceToProp3D,

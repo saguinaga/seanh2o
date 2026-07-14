@@ -9,8 +9,10 @@ window.BlossomHBEnv = (function () {
     sky: 0x5eb8e8,
     sand: 0xf0d78c,
     sandDeep: 0xe4c76b,
-    walk: 0xc8c8cc,
-    walkEdge: 0x9ca3af,
+    walk: 0xc5c9d0,
+    walkEdge: 0x6b7280,
+    walkCurb: 0x9ca3af,
+    mcRoof: 0x64748b,
     pch: 0x3f3f46,
     pchLine: 0xfacc15,
     shiplap: 0xf8fafc,
@@ -37,28 +39,44 @@ window.BlossomHBEnv = (function () {
     return m;
   }
 
-  function wowNameplate(text, color, scale) {
+  function wowNameplate(text, _color, scale) {
     const pr = 2;
+    const label = (text || '').slice(0, 42);
     const c = document.createElement('canvas');
-    c.width = 480 * pr;
-    c.height = 56 * pr;
+    c.width = 512 * pr;
+    c.height = 48 * pr;
     const ctx = c.getContext('2d');
     ctx.scale(pr, pr);
-    ctx.font = 'bold 26px Arial, Helvetica, sans-serif';
+    ctx.font = '600 17px Nunito, system-ui, sans-serif';
+    const tw = ctx.measureText(label).width;
+    const pw = Math.min(480, tw + 28);
+    const px = (512 - pw) / 2;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+    ctx.beginPath();
+    const r = 10;
+    const py = 6;
+    const ph = 34;
+    ctx.moveTo(px + r, py);
+    ctx.arcTo(px + pw, py, px + pw, py + ph, r);
+    ctx.arcTo(px + pw, py + ph, px, py + ph, r);
+    ctx.arcTo(px, py + ph, px, py, r);
+    ctx.arcTo(px, py, px + pw, py, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#1e293b';
     ctx.textAlign = 'center';
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = '#000000';
-    ctx.strokeText(text, 240, 36);
-    ctx.fillStyle = color || '#fff568';
-    ctx.fillText(text, 240, 36);
+    ctx.fillText(label, 256, 28);
     const tex = new T.CanvasTexture(c);
     tex.colorSpace = T.SRGBColorSpace;
     tex.minFilter = T.LinearFilter;
     tex.magFilter = T.LinearFilter;
     tex.generateMipmaps = false;
-    const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-    sp.scale.set(scale || 5.5, 1.25, 1);
-    sp.renderOrder = 999;
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, depthTest: true }));
+    sp.scale.set(scale || 3.2, 0.72, 1);
+    sp.renderOrder = 12;
     return sp;
   }
 
@@ -115,26 +133,30 @@ window.BlossomHBEnv = (function () {
   }
 
   function texSidewalk() {
-    return canvasTex(256, 256, (ctx, w, h) => {
-      ctx.fillStyle = '#c8c8cc';
+    const slab = 16;
+    return canvasTex(128, 128, (ctx, w, h) => {
+      ctx.fillStyle = '#b8bcc4';
       ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = 'rgba(100,116,139,0.42)';
-      ctx.lineWidth = 1.5;
-      for (let x = 0; x < w; x += 16) {
+      for (let y = 0; y < h; y += slab) {
+        for (let x = 0; x < w; x += slab) {
+          const v = ((x / slab) + (y / slab)) % 2 === 0 ? 6 : 0;
+          ctx.fillStyle = `rgb(${197 + v},${201 + v},${208 + v})`;
+          ctx.fillRect(x + 1, y + 1, slab - 2, slab - 2);
+        }
+      }
+      ctx.strokeStyle = 'rgba(71,85,105,0.4)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= w; x += slab) {
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
+        ctx.moveTo(x + 0.5, 0);
+        ctx.lineTo(x + 0.5, h);
         ctx.stroke();
       }
-      for (let y = 0; y < h; y += 16) {
+      for (let y = 0; y <= h; y += slab) {
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
+        ctx.moveTo(0, y + 0.5);
+        ctx.lineTo(w, y + 0.5);
         ctx.stroke();
-      }
-      for (let i = 0; i < 120; i++) {
-        ctx.fillStyle = `rgba(148,163,184,${0.05 + Math.random() * 0.08})`;
-        ctx.fillRect(Math.random() * w, Math.random() * h, 4, 4);
       }
     });
   }
@@ -155,34 +177,7 @@ window.BlossomHBEnv = (function () {
   }
 
   function labelSprite(text, color, scale) {
-    const pr = 2;
-    const c = document.createElement('canvas');
-    c.width = 640 * pr;
-    c.height = 112 * pr;
-    const ctx = c.getContext('2d');
-    ctx.scale(pr, pr);
-    const grad = ctx.createLinearGradient(0, 0, 640, 0);
-    grad.addColorStop(0, 'rgba(30,64,175,0.97)');
-    grad.addColorStop(0.5, 'rgba(15,23,42,0.95)');
-    grad.addColorStop(1, 'rgba(30,64,175,0.97)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(10, 12, 620, 88);
-    ctx.strokeStyle = '#fde047';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(10, 12, 620, 88);
-    ctx.fillStyle = color || '#fde047';
-    ctx.font = 'bold 30px Fredoka, Nunito, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(text, 320, 64);
-    const tex = new T.CanvasTexture(c);
-    tex.colorSpace = T.SRGBColorSpace;
-    tex.minFilter = T.LinearFilter;
-    tex.magFilter = T.LinearFilter;
-    tex.generateMipmaps = false;
-    tex.needsUpdate = true;
-    const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true }));
-    sp.scale.set(scale || 7, 1.65, 1);
-    return sp;
+    return wowNameplate(text, color, Math.min(3.6, (scale || 4) * 0.42));
   }
 
   function skyGradient(phaseId) {
@@ -293,12 +288,44 @@ window.BlossomHBEnv = (function () {
   }
 
   function sidewalkLayer(root, gw, z, depth) {
+    const d = depth || 12;
     const t = texSidewalk();
-    t.repeat.set(gw / 12, (depth || 12) / 12);
-    const walk = mesh(new T.PlaneGeometry(gw, depth || 12), P.walk, { map: t, rough: 0.88 });
+    t.repeat.set(Math.max(2, gw / 8), Math.max(2, d / 8));
+    const walk = mesh(new T.PlaneGeometry(gw, d), P.walk, { map: t });
     walk.rotation.x = -Math.PI / 2;
-    walk.position.set(0, 0.03, z);
+    walk.position.set(0, 0.045, z);
     root.add(walk);
+    const curbH = 0.32;
+    const curbW = 0.45;
+    [-d / 2 + curbW / 2, d / 2 - curbW / 2].forEach((off) => {
+      const curb = box(gw + 0.8, curbH, curbW, P.walkCurb);
+      curb.position.set(0, curbH / 2, z + off);
+      root.add(curb);
+    });
+  }
+
+  /** Flat-roof Minecraft-style block building */
+  function mcBuilding(root, x, z, w, h, d, wallCol, roofCol) {
+    const body = box(w, h, d, wallCol);
+    body.position.set(x, h / 2, z);
+    root.add(body);
+    const roof = box(w + 0.35, 0.55, d + 0.35, roofCol || P.mcRoof);
+    roof.position.set(x, h + 0.28, z);
+    root.add(roof);
+    return body;
+  }
+
+  function mcShopFace(root, x, z, w, h, d, wallCol, trimCol) {
+    mcBuilding(root, x, z, w, h, d, wallCol, trimCol || P.mcRoof);
+    const win = box(Math.min(2.8, w * 0.38), 1.8, 0.45, 0x334155);
+    win.position.set(x - w * 0.18, h * 0.58, z + d / 2 + 0.23);
+    root.add(win);
+    const door = box(1.5, 2.6, 0.45, 0x5c4033);
+    door.position.set(x + w * 0.22, 1.3, z + d / 2 + 0.23);
+    root.add(door);
+    const awning = box(w + 0.5, 0.45, 1.2, trimCol || P.hbYellow);
+    awning.position.set(x, h - 0.15, z + d / 2 + 0.65);
+    root.add(awning);
   }
 
   function sandLayer(root, gw, z, depth) {
@@ -322,7 +349,7 @@ window.BlossomHBEnv = (function () {
     const pR = pL.clone();
     pR.position.x = x + 5.2;
     root.add(pR);
-    root.add(place(labelSprite('SURF CITY USA', '#fde047', 6), x, 9.5, z));
+
   }
 
   function addBench(root, x, z) {
@@ -347,10 +374,8 @@ window.BlossomHBEnv = (function () {
     addHBArch(root, -gw * 0.28, -4);
     root.add(place(wowNameplate('Main St & PCH', '#fff568', 5), -gw * 0.28, 10, -2));
 
-    const museum = box(14, 4.5, 10, 0xfef3c7);
-    museum.position.set(-gw * 0.36, 2.25, -12);
-    root.add(museum);
-    root.add(place(wowNameplate('International Surfing Museum', '#fff568', 5.5), -gw * 0.36, 7, -6));
+    mcShopFace(root, -gw * 0.36, -12, 14, 5, 10, 0xfef3c7, 0xca8a04);
+    root.add(place(wowNameplate('International Surfing Museum', '#1e293b', 4.2), -gw * 0.36, 7.5, -6));
 
     [-gw * 0.2, 0, gw * 0.22].forEach((px, i) => {
       addPalm(root, 0.9 + (i % 2) * 0.15, px, -10 - (i % 2));
@@ -382,15 +407,11 @@ window.BlossomHBEnv = (function () {
     root.add(archTop);
 
     const shopColors = [0xfef3c7, 0xd1fae5, 0xffedd5, 0xe0e7ff];
+    const shopTrims = [0xca8a04, 0x059669, 0xea580c, 0x4f46e5];
     const shopNames = ['Plant Food & Wine', 'Mendocino Farms', 'Boots', 'SteelCraft'];
     [-gw * 0.38, -gw * 0.18, gw * 0.02, gw * 0.24].forEach((px, i) => {
-      const shop = box(10, 5, 6, shopColors[i], { rough: 0.7 });
-      shop.position.set(px, 2.5, -14);
-      root.add(shop);
-      const awning = box(11, 0.4, 2.2, P.hbYellow);
-      awning.position.set(px, 4.8, -10.5);
-      root.add(awning);
-      root.add(place(wowNameplate(shopNames[i], '#fff568', 4.5), px, 7.5, -10));
+      mcShopFace(root, px, -14, 10, 5, 6, shopColors[i], shopTrims[i]);
+      root.add(place(wowNameplate(shopNames[i], '#1e293b', 3.6), px, 7.2, -10));
     });
 
     const strand = mesh(new T.PlaneGeometry(gw * 0.35, 8), 0xd4c4a8, { rough: 0.88 });
@@ -404,18 +425,11 @@ window.BlossomHBEnv = (function () {
       if (i % 2 === 0) addStreetLamp(root, px + 3, 10);
     });
 
-    const lg = box(2.4, 5, 2.4, 0xea580c);
-    lg.position.set(-gw * 0.04, 2.5, 2);
-    root.add(lg);
-    root.add(place(wowNameplate('Lifeguard · City Beach', '#fef08a', 4.5), -gw * 0.04, 7, 2));
+    mcBuilding(root, -gw * 0.04, 2, 2.8, 5.5, 2.8, 0xea580c, 0xffffff);
+    root.add(place(wowNameplate('Lifeguard · City Beach', '#1e293b', 3.8), -gw * 0.04, 7.2, 2));
 
-    const usOpen = box(10, 5, 8, 0x1d4ed8);
-    usOpen.position.set(gw * 0.34, 2.5, -10);
-    root.add(usOpen);
-    const banner = mesh(new T.PlaneGeometry(12, 2.2), P.hbYellow);
-    banner.position.set(gw * 0.34, 6.2, -6);
-    root.add(banner);
-    root.add(place(wowNameplate('US Open of Surfing', '#fff568', 5.5), gw * 0.34, 8.5, -6));
+    mcBuilding(root, gw * 0.34, -10, 10, 5.5, 8, 0x1d4ed8, P.hbYellow);
+    root.add(place(wowNameplate('US Open of Surfing', '#1e293b', 4), gw * 0.34, 7.5, -6));
 
     for (let i = 0; i < 4; i++) {
       const ring = cyl(0.55, 0.6, 0.35, 0x52525b);
@@ -440,7 +454,7 @@ window.BlossomHBEnv = (function () {
     sidewalkLayer(root, gw, -4, 16);
     if (hero) {
       addHBArch(root, 0, -20);
-      root.add(place(labelSprite('MAIN STREET · HUNTINGTON BEACH', '#fde047', 11), 0, 12, -26));
+
       addStringLights(root, -gw * 0.42, gw * 0.42, -10, 7);
       [-gw * 0.38, gw * 0.38].forEach((fx) => {
         const flag = box(0.08, 3.5, 1.8, P.trimBlue, { rough: 0.5 });
@@ -489,21 +503,8 @@ window.BlossomHBEnv = (function () {
       root.add(pylon);
     }
 
-    const pierHouse = box(pierW, 3.5, 4, 0xdc2626, { rough: 0.55 });
-    pierHouse.position.set(12, 1.75, -54);
-    root.add(pierHouse);
-    const pierRoof = box(pierW + 1, 0.5, 5, 0xffffff);
-    pierRoof.position.set(12, 3.6, -54);
-    root.add(pierRoof);
-    root.add(place(labelSprite('HUNTINGTON BEACH PIER', '#fde047', 9), 12, 9, -48));
-    root.add(place(labelSprite("Ruby's Diner", '#fef08a', 7), 12, 6, -54));
-
-    const lifeguard = box(2.2, 4.5, 2.2, 0xea580c);
-    lifeguard.position.set(-28, 2.25, 8);
-    root.add(lifeguard);
-    const lgRoof = box(3, 0.35, 2.8, 0xffffff);
-    lgRoof.position.set(-28, 4.6, 8);
-    root.add(lgRoof);
+    mcBuilding(root, 12, -54, pierW, 3.5, 4, 0xdc2626, 0xffffff);
+    mcBuilding(root, -28, 8, 2.4, 4.5, 2.4, 0xea580c, 0xffffff);
 
     for (let i = 0; i < 5; i++) {
       const umbrella = cyl(0.04, 0.04, 2.5, 0x94a3b8);
@@ -524,13 +525,7 @@ window.BlossomHBEnv = (function () {
     sidewalkLayer(root, gw * 0.7, 10, 8);
     pchLayer(root, gw * 0.55, 22);
 
-    const cottage = box(14, 5, 8, P.shiplap, { rough: 0.75 });
-    cottage.position.set(-32, 2.5, -6);
-    root.add(cottage);
-    const roof = mesh(new T.ConeGeometry(9, 3.5, 4), P.trimBlue, { rough: 0.6 });
-    roof.position.set(-32, 6.5, -6);
-    roof.rotation.y = Math.PI / 4;
-    root.add(roof);
+    mcBuilding(root, -32, -6, 14, 5, 8, P.shiplap, P.mcRoof);
     const porch = mesh(new T.PlaneGeometry(10, 5), P.pier, { rough: 0.9 });
     porch.rotation.x = -Math.PI / 2;
     porch.position.set(-32, 0.2, 2);
@@ -545,7 +540,7 @@ window.BlossomHBEnv = (function () {
     fenceTop.position.set(-11, 1.45, 24);
     root.add(fenceTop);
 
-    root.add(place(labelSprite('→ Main Street HB', '#86efac', 5.5), 30, 5, 10));
+
     addOcean(root, gw, -gd * 0.42);
     [ -28, -8, 12, 30 ].forEach((px, i) => addPalm(root, 0.95 + (i % 2) * 0.15, px, -14 + (i % 3)));
     addStreetLamp(root, 0, 14);
@@ -572,18 +567,15 @@ window.BlossomHBEnv = (function () {
       floor.position.set(rx, 0.04, rz);
       root.add(floor);
 
-      const wall = box(rw, 5.4, 0.3, P.shiplap, { rough: 0.78 });
-      wall.position.set(rx, 2.7, room.minZ + 0.15);
+      const wall = box(rw, 5.4, 0.4, P.shiplap);
+      wall.position.set(rx, 2.7, room.minZ + 0.2);
       root.add(wall);
-      const trim = box(rw, 0.25, 0.35, P.trimBlue);
-      trim.position.set(rx, 5.1, room.minZ + 0.2);
-      root.add(trim);
 
-      const w1 = box(0.3, 5.4, rd, P.shiplap);
-      w1.position.set(room.minX + 0.15, 2.7, rz);
+      const w1 = box(0.4, 5.4, rd, P.shiplap);
+      w1.position.set(room.minX + 0.2, 2.7, rz);
       root.add(w1);
-      const w2 = box(0.3, 5.4, rd, P.shiplap);
-      w2.position.set(room.maxX - 0.15, 2.7, rz);
+      const w2 = box(0.4, 5.4, rd, P.shiplap);
+      w2.position.set(room.maxX - 0.2, 2.7, rz);
       root.add(w2);
 
       if (room.id === 'living') {
@@ -592,8 +584,7 @@ window.BlossomHBEnv = (function () {
         rug.position.set(rx, 0.06, rz + 2);
         root.add(rug);
       }
-      const label = meta?.label || room.id;
-      root.add(place(labelSprite(label, '#bae6fd', 4), rx, 6.2, rz));
+
     });
 
     const porch = mesh(new T.PlaneGeometry(12, 7), P.pier, { rough: 0.88 });
@@ -603,7 +594,7 @@ window.BlossomHBEnv = (function () {
     for (let i = 0; i < 6; i++) {
       root.add(place(cyl(0.08, 0.08, 1.2, P.pier), -32 + i * 2.5, 0.6, 25));
     }
-    root.add(place(labelSprite('9th Street Cottage · downtown HB', '#fde047', 5.5), 0, 8, -18));
+    root.add(place(wowNameplate('9th Street Cottage', '#1e293b', 3), 0, 7.2, -16));
     addSurfboard(root, 34, 20, 0.25, P.trimOrange);
     addPalm(root, 0.8, -36, 20);
     addPalm(root, 0.9, 30, 18);
@@ -621,61 +612,36 @@ window.BlossomHBEnv = (function () {
   };
 
   function buildShopfront(group, prop, theme) {
-    const w = 7.5;
-    const h = 6.2;
-    const d = 5;
+    const w = 8;
+    const h = 6;
+    const d = 6;
     const t = theme || SHOPS[prop.shop] || SHOPS.cafe;
 
-    const body = box(w, h, d, t.wall, { rough: 0.72 });
+    const body = box(w, h, d, t.wall);
     body.position.y = h / 2;
     group.add(body);
 
-    const roof = mesh(new T.ConeGeometry(w * 0.72, 1.8, 4), t.trim, { rough: 0.55 });
-    roof.position.y = h + 0.8;
-    roof.rotation.y = Math.PI / 4;
+    const roof = box(w + 0.4, 0.55, d + 0.4, t.trim);
+    roof.position.y = h + 0.28;
     group.add(roof);
 
-    const win = box(w * 0.55, 2.2, 0.15, P.glow, { emissive: 0xffedd5, emi: 0.35, rough: 0.2 });
-    win.position.set(0, h * 0.55, d / 2 + 0.08);
+    const win = box(3, 2, 0.45, 0x334155);
+    win.position.set(-1.4, h * 0.58, d / 2 + 0.23);
     group.add(win);
-    const door = box(1.4, 2.8, 0.2, P.trimBlue, { rough: 0.5 });
-    door.position.set(w * 0.28, 1.4, d / 2 + 0.1);
+
+    const door = box(1.6, 2.8, 0.45, 0x5c4033);
+    door.position.set(2.2, 1.4, d / 2 + 0.23);
     group.add(door);
 
-    for (let i = 0; i < 5; i++) {
-      const stripe = box(w + 0.8, 0.22, 1.3, i % 2 ? t.awning : 0xf8fafc);
-      stripe.position.set(0, h - 0.5 - i * 0.2, d / 2 + 0.7);
-      group.add(stripe);
-    }
+    const awning = box(w + 0.55, 0.45, 1.25, t.awning);
+    awning.position.set(0, h - 0.2, d / 2 + 0.7);
+    group.add(awning);
 
-    const flower = box(w * 0.7, 0.35, 0.5, 0x166534);
-    flower.position.set(0, 0.5, d / 2 + 0.5);
-    group.add(flower);
-    for (let i = 0; i < 5; i++) {
-      const bloom = mesh(new T.SphereGeometry(0.14, 6, 6), [0xf472b6, 0xfacc15, 0xf87171][i % 3]);
-      bloom.position.set(-1.5 + i * 0.75, 0.75, d / 2 + 0.55);
-      group.add(bloom);
-    }
+    const signBand = box(w * 0.75, 0.35, 0.35, t.accent);
+    signBand.position.set(0, h + 0.65, d / 2 + 0.35);
+    group.add(signBand);
 
-    const signBoard = box(w * 0.82, 1.1, 0.18, t.accent, { emissive: t.accent, emi: 0.55, rough: 0.35 });
-    signBoard.position.set(0, h + 1.5, d / 2 + 0.45);
-    signBoard.userData.neonSign = true;
-    group.add(signBoard);
-    const openSign = box(1.4, 0.55, 0.12, 0x22c55e, { emissive: 0x4ade80, emi: 0.7, rough: 0.3 });
-    openSign.position.set(-w * 0.38, h * 0.72, d / 2 + 0.5);
-    openSign.userData.neonSign = true;
-    group.add(openSign);
-    const openLbl = wowNameplate('OPEN', '#40c040', 2);
-    openLbl.position.set(-w * 0.38, h * 0.72 + 1.2, d / 2 + 0.55);
-    group.add(openLbl);
-    const signGlow = new T.PointLight(t.accent, 0.7, 14);
-    signGlow.position.set(0, h + 1.5, d / 2 + 1.2);
-    group.add(signGlow);
-    group.add(place(wowNameplate(t.sign, '#fff568', 5.8), 0, h + 2.6, d / 2 + 0.8));
-
-    if (prop.shop === 'boutique' || prop.shop === 'market') {
-      addSurfboard(group, -2.5, d / 2 + 1.2, 0.35, t.accent);
-    }
+    group.add(place(wowNameplate(t.sign, '#1e293b', 3.2), 0, h + 1.35, d / 2 + 1.05));
   }
 
   /** Continuous ground + PCH connector for overworld traversal */
@@ -700,12 +666,22 @@ window.BlossomHBEnv = (function () {
     pch.position.set(cx, 0.01, cz + 18);
     root.add(pch);
 
+    const walkZ = 16;
+    const walkW = w * 0.96;
+    const walkD = 14;
     const walkT = texSidewalk();
-    walkT.repeat.set((w * 0.55) / 12, 10 / 12);
-    const walk = mesh(new T.PlaneGeometry(w * 0.55, 10), 0xd4c4a8, { map: walkT });
+    walkT.repeat.set(walkW / 8, walkD / 8);
+    const walk = mesh(new T.PlaneGeometry(walkW, walkD), P.walk, { map: walkT });
     walk.rotation.x = -Math.PI / 2;
-    walk.position.set(cx - 20, 0.02, cz + 8);
+    walk.position.set(cx, 0.045, walkZ);
     root.add(walk);
+    const curbH = 0.32;
+    const curbW = 0.45;
+    [-walkD / 2 + curbW / 2, walkD / 2 - curbW / 2].forEach((off) => {
+      const curb = box(walkW + 1, curbH, curbW, P.walkCurb);
+      curb.position.set(cx, curbH / 2, walkZ + off);
+      root.add(curb);
+    });
 
     addOcean(root, w + 60, cz - d * 0.42);
 

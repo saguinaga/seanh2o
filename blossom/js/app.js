@@ -1,4 +1,4 @@
-/** App orchestration: screens, auth UI, chat, day modal */
+/** App orchestration: screens, auth UI, day modal */
 window.BlossomApp = (function () {
   let state = null;
   let userId = null;
@@ -141,33 +141,42 @@ window.BlossomApp = (function () {
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const fd = new FormData(form);
-      state = BlossomSave.defaultState();
-      state.name = fd.get('name')?.toString().trim() || 'Blossom';
-      state.lifeStage = fd.get('lifeStage')?.toString() || 'child';
-      state.avatar = BlossomAvatar.parseCreateForm(fd);
-      state.wardrobe = BlossomAvatar.defaultWardrobe();
-      const glasses = fd.get('glasses')?.toString() || 'none';
-      if (glasses !== 'none') {
-        const accId = `acc_${glasses}`;
-        state.wardrobe.equipped.accessory = accId;
-        if (!state.wardrobe.owned.includes(accId)) state.wardrobe.owned.push(accId);
-      }
-      state.careerPath = fd.get('careerPath')?.toString() || 'salon';
-      state.hired = false;
-      state.bonnieOfferSeen = false;
-      state.jobRank = 0;
-      if (shirtCanvas) {
-        try {
-          state.avatar.shirtPattern = shirtCanvas.toDataURL('image/jpeg', 0.82);
-        } catch {
-          state.avatar.shirtPattern = null;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+      try {
+        const fd = new FormData(form);
+        state = BlossomSave.defaultState();
+        state.name = fd.get('name')?.toString().trim() || 'Blossom';
+        state.lifeStage = fd.get('lifeStage')?.toString() || 'child';
+        state.avatar = BlossomAvatar.parseCreateForm(fd);
+        state.wardrobe = BlossomAvatar.defaultWardrobe();
+        const glasses = fd.get('glasses')?.toString() || 'none';
+        if (glasses !== 'none') {
+          const accId = `acc_${glasses}`;
+          state.wardrobe.equipped.accessory = accId;
+          if (!state.wardrobe.owned.includes(accId)) state.wardrobe.owned.push(accId);
         }
+        state.careerPath = fd.get('careerPath')?.toString() || 'salon';
+        state.hired = false;
+        state.bonnieOfferSeen = false;
+        state.jobRank = 0;
+        if (shirtCanvas) {
+          try {
+            state.avatar.shirtPattern = shirtCanvas.toDataURL('image/jpeg', 0.82);
+          } catch {
+            state.avatar.shirtPattern = null;
+          }
+        }
+        BlossomAvatar.migrate(state);
+        startGame();
+        const saved = await BlossomSave.persist(state, BlossomAuth.getUserId());
+        if (!saved.localOk) showToast('Could not save locally — try a simpler shirt drawing', 'warn');
+      } catch (err) {
+        console.error('Create form failed:', err);
+        showToast('Could not start — try again', 'bad');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
-      BlossomAvatar.migrate(state);
-      const saved = await BlossomSave.persist(state, BlossomAuth.getUserId());
-      if (!saved.localOk) showToast('Could not save locally — try a simpler shirt drawing', 'warn');
-      startGame();
     });
   }
 
@@ -205,7 +214,6 @@ window.BlossomApp = (function () {
     BlossomGame.checkBonnieOffer?.();
     nudgeFirstDayGuide(state);
     window.BlossomToday?.renderCard?.(state);
-    hideChatUi();
     requestAnimationFrame(() => {
       window.BlossomGame?.resize?.();
       requestAnimationFrame(() => window.BlossomGame?.resize?.());
@@ -214,20 +222,11 @@ window.BlossomApp = (function () {
     setTimeout(() => cvs?.focus?.({ preventScroll: true }), 200);
   }
 
-  function hideChatUi() {
-    const log = document.getElementById('chatLog');
-    const chips = document.getElementById('chatChips');
-    const bar = document.querySelector('.chat-bar');
-    if (log) log.hidden = true;
-    if (chips) chips.hidden = true;
-    if (bar) bar.hidden = true;
-  }
-
   function nudgeFirstDayGuide(st) {
     if (!st || st.guideWelcomeSeen || st.day > 1) return;
     st.guideWelcomeSeen = true;
     st.guideDismissed = false;
-    if (!BlossomGuide.isMobileGuide?.()) st.guideExpanded = true;
+    if (st.guideExpanded == null) st.guideExpanded = false;
     BlossomGuide.updatePanel(st);
     BlossomSave.persist(st, BlossomAuth.getUserId());
 
@@ -246,12 +245,10 @@ window.BlossomApp = (function () {
   }
 
   function showStarGuide() {
-    if (state) {
-      state.guideDismissed = false;
-      state.guideExpanded = true;
-      BlossomGuide.updatePanel(state);
-      BlossomSave.persist(state, BlossomAuth.getUserId());
-    }
+    if (!state) return;
+    state.guideDismissed = false;
+    state = BlossomGuide.openModal(state) || state;
+    BlossomSave.persist(state, BlossomAuth.getUserId());
   }
 
   function showBonnieModal(offer) {
@@ -331,38 +328,24 @@ window.BlossomApp = (function () {
       setModalOpen(document.getElementById('bonnieModal'), false);
     });
     document.getElementById('guideHelpBtn')?.addEventListener('click', () => showStarGuide());
-    document.getElementById('guideToggle')?.addEventListener('click', () => {
+    document.getElementById('questChip')?.addEventListener('click', () => showStarGuide());
+    document.getElementById('guideModalClose')?.addEventListener('click', () => {
       if (!state) return;
-      state = BlossomGuide.togglePanel(state) || state;
+      state = BlossomGuide.closeModal(state) || state;
+      BlossomSave.persist(state, BlossomAuth.getUserId());
+    });
+    document.getElementById('guideModal')?.addEventListener('click', (e) => {
+      if (e.target.id !== 'guideModal') return;
+      if (!state) return;
+      state = BlossomGuide.closeModal(state) || state;
       BlossomSave.persist(state, BlossomAuth.getUserId());
     });
     document.getElementById('guideDismiss')?.addEventListener('click', () => {
-      if (state) {
-        state.guideDismissed = true;
-        state.guideExpanded = false;
-        BlossomGuide.updatePanel(state);
-        BlossomSave.persist(state, BlossomAuth.getUserId());
-      }
-    });
-    document.getElementById('chatSend')?.addEventListener('click', sendChat);
-    document.getElementById('chatChips')?.addEventListener('click', (e) => {
-      const chip = e.target.closest('[data-chat]');
-      if (!chip) return;
-      const input = document.getElementById('chatInput');
-      if (input) {
-        input.value = chip.dataset.chat || '';
-        sendChat();
-      }
-    });
-    document.getElementById('chatInput')?.addEventListener('focus', () => {
-      document.getElementById('chatLog')?.classList.add('chat-log--open');
-    });
-    document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
-      e.stopPropagation();
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendChat();
-      }
+      if (!state) return;
+      state.guideDismissed = true;
+      state = BlossomGuide.closeModal(state) || state;
+      BlossomGuide.updatePanel(state);
+      BlossomSave.persist(state, BlossomAuth.getUserId());
     });
     document.getElementById('shareBtn')?.addEventListener('click', shareGame);
     document.getElementById('passportBtn')?.addEventListener('click', () => {
@@ -382,25 +365,6 @@ window.BlossomApp = (function () {
       window.BlossomAudio?.playSfx('ui');
       if (state) BlossomSave.persist(state, BlossomAuth.getUserId());
     });
-  }
-
-  async function sendChat() {
-    const input = document.getElementById('chatInput');
-    const text = input?.value?.trim();
-    if (!text) return;
-    input.value = '';
-    const sendBtn = document.getElementById('chatSend');
-    input.disabled = true;
-    if (sendBtn) sendBtn.disabled = true;
-    document.getElementById('chatLog')?.classList.add('chat-log--open');
-    try {
-      const result = await window.BlossomGame?.sendChatMessage?.(text);
-      // Reply shows in chat log + npc bubble — no toast spam
-    } finally {
-      input.disabled = false;
-      if (sendBtn) sendBtn.disabled = false;
-      input.focus();
-    }
   }
 
   function setModalOpen(modal, open) {
@@ -487,6 +451,10 @@ window.BlossomApp = (function () {
     boot();
   });
 
+  function setGuideExpanded(val) {
+    if (state) state.guideExpanded = Boolean(val);
+  }
+
   return {
     showDayModal,
     showBonnieModal,
@@ -494,6 +462,7 @@ window.BlossomApp = (function () {
     showToast,
     nudgeFirstDayGuide,
     shareGame,
+    setGuideExpanded,
     boot,
   };
 })();

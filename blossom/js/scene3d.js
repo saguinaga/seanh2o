@@ -83,24 +83,8 @@ window.BlossomScene3D = (function () {
   }
 
   function labelSprite(text, color, scale) {
-    if (BlossomHBEnv?.wowNameplate) return BlossomHBEnv.wowNameplate(text, color || '#fff568', scale || 5);
-    const pr = 2;
-    const c = document.createElement('canvas');
-    c.width = 480 * pr;
-    c.height = 56 * pr;
-    const ctx = c.getContext('2d');
-    ctx.scale(pr, pr);
-    ctx.font = 'bold 26px Arial, Helvetica, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = '#000';
-    ctx.strokeText(text, 240, 36);
-    ctx.fillStyle = color || '#fff568';
-    ctx.fillText(text, 240, 36);
-    const sp = new T.Sprite(new T.SpriteMaterial({ map: crispLabelTex(c), transparent: true, depthTest: false }));
-    sp.scale.set(scale || 5, 1.25, 1);
-    sp.renderOrder = 999;
-    return sp;
+    if (BlossomHBEnv?.wowNameplate) return BlossomHBEnv.wowNameplate(text, color, scale || 3);
+    return null;
   }
 
   function questMarkerSprite() {
@@ -208,10 +192,12 @@ window.BlossomScene3D = (function () {
 
     rig.add(body);
 
-    const tag = labelSprite(state.name || 'You', '#40c040', 4.2);
-    tag.position.y = 3.55 * hScale;
-    tag.name = 'nameTag';
-    rig.add(tag);
+    const tag = labelSprite(state.name || 'You', '#1e293b', 2.2);
+    if (tag) {
+      tag.position.y = 3.55 * hScale;
+      tag.name = 'nameTag';
+      rig.add(tag);
+    }
 
     scene.add(rig);
     return rig;
@@ -298,8 +284,6 @@ window.BlossomScene3D = (function () {
         const theme = themes[prop.shop] || { wall: 0xfef9ee, trim: 0x1d4ed8, sign: prop.label, awning: 0xfde047 };
         buildShop(root, prop, theme);
         root.userData.neonAccent = theme.accent || 0xfde047;
-        const shopName = prop.label || theme.sign || 'Shop';
-        root.add(place(labelSprite(shopName, '#fff568', 4.8), 0, 9.5, 2.8));
         break;
       }
       case 'studio':
@@ -308,24 +292,20 @@ window.BlossomScene3D = (function () {
         break;
       case 'artcenter':
         root.add(place(box(5.5, 3.6, 4, 0xa855f7), 0, 1.8, 0));
-        root.add(place(labelSprite('🎭 HB Art Center', '#e9d5ff', 5), 0, 5, 0));
         break;
       case 'stage':
         root.add(place(box(6.5, 0.45, 4.2, 0xea580c), 0, 0.22, 0));
         break;
       case 'beachGym':
         root.add(place(box(5.2, 0.35, 4, HB.sand), 0, 0.18, 0));
-        root.add(place(labelSprite('💪 City Beach workouts', '#86efac', 4.5), 0, 3.2, 0));
         break;
       case 'gym':
         root.add(place(box(5.8, 3.8, 4.2, 0x475569), 0, 1.9, 0));
-        root.add(place(labelSprite('💪 City Beach', '#86efac', 5), 0, 5.2, 0));
         break;
       case 'volleyball':
       case 'playground':
         root.add(place(box(4.5, 0.2, 3.2, HB.sand), 0, 0.1, 0));
         root.add(place(box(0.12, 2.4, 0.12, 0xf8fafc), 0, 1.2, 0));
-        root.add(place(labelSprite('🏐 Volleyball', '#fde047', 4), 0, 2.8, 0));
         break;
       case 'beach': {
         const sand = mesh(
@@ -340,44 +320,35 @@ window.BlossomScene3D = (function () {
       }
       case 'pier':
         root.add(place(box(2.8, 0.35, 8, HB.pier), 0, 0.18, -2));
-        root.add(place(labelSprite('HB Pier', '#fde047', 5), 0, 4, -4));
         break;
       case 'rubys':
         root.add(place(box(3.2, 2.8, 2.8, 0xdc2626), 0, 1.4, 0));
-        root.add(place(labelSprite("Ruby's Diner", '#fef08a', 4.5), 0, 3.8, 0));
         break;
       case 'lifeguard':
         root.add(place(box(1.4, 3.8, 1.4, 0xea580c), 0, 1.9, 0));
-        root.add(place(labelSprite(prop.label || '🛟 Lifeguard', '#fef08a', 4), 0, 4.5, 0));
         break;
       case 'pchArch':
-        root.add(place(labelSprite(prop.label || 'Main St & PCH', '#fff568', 5.5), 0, 5, 0));
         break;
       case 'surfMuseum':
         root.add(place(box(6, 3.8, 5, 0xfef3c7), 0, 1.9, 0));
-        root.add(place(labelSprite(prop.label || 'Surfing Museum', '#fff568', 5), 0, 5.5, 0));
         break;
       case 'usOpen':
         root.add(place(box(5, 4.2, 4, 0x1d4ed8), 0, 2.1, 0));
-        root.add(place(labelSprite(prop.label || 'US Open of Surfing', '#fff568', 4.8), 0, 5.8, 0));
         break;
       case 'fireRings':
         for (let i = 0; i < 3; i++) {
           root.add(place(cyl(0.5, 0.55, 0.3, 0x52525b), -2 + i * 2, 0.15, 0));
           root.add(place(box(1.4, 0.3, 0.6, 0x78350f), -2 + i * 2, 0.45, 0));
         }
-        root.add(place(labelSprite(prop.label || 'Fire rings', '#fde047', 4), 0, 2.5, 0));
         break;
       case 'pacCityArch':
-        root.add(place(labelSprite(prop.label || 'Pacific City', '#fff568', 6), 0, 5.5, 0));
         break;
       case 'pcShop':
         root.add(place(box(5, 3.8, 4, 0xfef3c7), 0, 1.9, 0));
-        root.add(place(labelSprite(prop.label || 'Pacific City shop', '#fff568', 4.5), 0, 5.2, 0));
         break;
       case 'strand':
         root.add(place(box(8, 0.15, 3, 0xd4c4a8), 0, 0.08, 0));
-        root.add(place(labelSprite(prop.label || 'The Strand', '#fde047', 4.5), 0, 2.8, 0));
+
         break;
       case 'shorebirds':
       case 'ducks':
@@ -420,28 +391,23 @@ window.BlossomScene3D = (function () {
         const pillarR = pillarL.clone();
         pillarR.position.x = 1.6;
         root.add(pillarR);
-        const lbl = BlossomHBEnv?.labelSprite?.(prop.label || 'Go →', '#86efac', 5)
-          || labelSprite(prop.label || 'Go →', '#86efac', 5);
-        lbl.position.y = 4.5;
-        root.add(lbl);
         break;
       }
       case 'houseFacade': {
         const body = box(8.5, 4.2, 6.5, HB.shiplap);
         body.position.y = 2.1;
         root.add(body);
-        const roof = mesh(new T.ConeGeometry(5.8, 2.8, 4), 0x38bdf8);
-        roof.position.y = 5.4;
-        roof.rotation.y = Math.PI / 4;
+        const roof = box(9.2, 0.45, 7.2, 0x78716c);
+        roof.position.y = 4.55;
         root.add(roof);
-        root.add(place(labelSprite('🏠 Beach House', '#bae6fd', 6), 0, 6.5, 3.5));
+
         break;
       }
       case 'npc':
         if (prop.id === 'bonnie') {
           root.add(place(cyl(0.5, 0.58, 1.7, 0xbe185d, 12), 0, 0.85, 0));
           root.add(place(mesh(new T.SphereGeometry(0.45, 12, 12), 0xf5d0a8), 0, 2, 0));
-          root.add(place(labelSprite('Bonnie', '#fda4af', 4), 0, 3.2, 0));
+
         }
         break;
       case 'lamp': {

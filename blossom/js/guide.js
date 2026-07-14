@@ -1,4 +1,4 @@
-/** First-day coaching — how to hit your star goal */
+/** First-day coaching — Last War-style quest chip + popup task list */
 window.BlossomGuide = (function () {
   const STEPS = [
     { id: 'breakfast', label: 'Breakfast', stars: 5, hint: 'Tap the fridge · pick breakfast (+5⭐)' },
@@ -98,14 +98,14 @@ window.BlossomGuide = (function () {
       return 'Step 1: Tap the fridge for breakfast (+5⭐)';
     }
     if (phase.id === 'morning' && choresDoneCount(state) < 1) {
-      return 'Step 2: First bloom task — check 📋 or glowing spot · +5⭐';
+      return 'Step 2: First bloom task — tap 📋 · GO → auto-walks (+5⭐)';
     }
     if (phase.id === 'afternoon' && !state.mealsEaten?.lunch) {
       return 'Step 3: Lunch time — fridge or Main St spot (+5⭐)';
     }
     if (choresDoneCount(state) < choreTarget(state)) {
       const left = choreTarget(state) - choresDoneCount(state);
-      return `${left} bloom task${left > 1 ? 's' : ''} left — follow 📋 or explore between tasks`;
+      return `${left} bloom task${left > 1 ? 's' : ''} left — tap 📋 · GO →`;
     }
     return step.hint;
   }
@@ -119,79 +119,148 @@ window.BlossomGuide = (function () {
     return window.matchMedia('(max-width: 768px)').matches;
   }
 
-  function setGuideExpanded(expanded) {
-    const panel = document.getElementById('starGuide');
-    const toggle = document.getElementById('guideToggle');
-    if (!panel) return;
-    if (!isMobileGuide()) {
-      panel.classList.remove('star-guide--collapsed');
-      panel.classList.add('star-guide--expanded');
-      if (toggle) toggle.setAttribute('aria-expanded', 'true');
-      return;
-    }
-    panel.classList.toggle('star-guide--collapsed', !expanded);
-    panel.classList.toggle('star-guide--expanded', expanded);
-    if (toggle) toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  let guideListBound = false;
+
+  function setExpanded(val) {
+    window.BlossomGame?.setGuideExpanded?.(val);
+    window.BlossomApp?.setGuideExpanded?.(val);
+  }
+
+  function refocusGame() {
+    document.getElementById('gameCanvas')?.focus?.({ preventScroll: true });
+  }
+
+  function showModalDom() {
+    const modal = document.getElementById('guideModal');
+    if (!modal) return;
+    modal.removeAttribute('inert');
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function forceCloseModal() {
+    const modal = document.getElementById('guideModal');
+    if (!modal) return;
+    refocusGame();
+    const active = document.activeElement;
+    if (active && modal.contains(active)) active.blur();
+    refocusGame();
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('inert', '');
+  }
+
+  function openModal(state) {
+    if (!state || !shouldShowPanel(state)) return state;
+    state.guideExpanded = true;
+    setExpanded(true);
+    updatePanel(state);
+    showModalDom();
+    window.BlossomAudio?.playSfx?.('ui');
+    return state;
+  }
+
+  function closeModal(state) {
+    if (state) state.guideExpanded = false;
+    setExpanded(false);
+    forceCloseModal();
+    return state;
+  }
+
+  function goTaskAndClose(taskId) {
+    setExpanded(false);
+    forceCloseModal();
+    window.BlossomGame?.goToTask?.(taskId);
+    requestAnimationFrame(() => forceCloseModal());
+  }
+
+  function isModalOpen() {
+    const modal = document.getElementById('guideModal');
+    return modal && !modal.hidden;
+  }
+
+  function bindGuideList() {
+    const listEl = document.getElementById('guideChecklist');
+    if (!listEl || guideListBound) return;
+    guideListBound = true;
+    listEl.addEventListener('click', (e) => {
+      const row = e.target.closest('li.guide-check--go');
+      if (!row?.dataset.taskId) return;
+      e.preventDefault();
+      e.stopPropagation();
+      row.querySelector('button.guide-check__go')?.blur();
+      goTaskAndClose(row.dataset.taskId);
+    });
+  }
+
+  function renderChecklistHtml(lines) {
+    return lines.map((l) => {
+      const cls = [
+        'guide-check',
+        l.ok ? 'guide-check--done' : '',
+        l.navigable ? 'guide-check--go' : '',
+      ].filter(Boolean).join(' ');
+      const label = `${l.ok ? '✓' : '○'} ${l.text}`;
+      const goBtn = l.navigable
+        ? `<button type="button" class="guide-check__go" data-task-id="${l.id}">GO →</button>`
+        : '';
+      return `<li class="${cls}" data-task-id="${l.id}" tabindex="-1"><span class="guide-check__text">${label}</span>${goBtn}</li>`;
+    }).join('');
   }
 
   function updatePanel(state) {
-    const panel = document.getElementById('starGuide');
-    if (!panel) return;
-    if (!shouldShowPanel(state)) {
-      panel.hidden = true;
+    bindGuideList();
+    const chip = document.getElementById('questChip');
+    const show = shouldShowPanel(state);
+    if (chip) {
+      chip.hidden = !show;
+      chip.classList.toggle('quest-chip--pulse', show && (state.day || 1) <= 2 && state.stars < starsGoal(state));
+    }
+    if (!show) {
+      forceCloseModal();
       return;
     }
-    panel.hidden = false;
+
     const { goal, lines } = buildChecklist(state);
     const step = nextStep(state);
+    const locName = BlossomWorld.getLocation(state.currentLocation || 'house')?.name || 'Surf City';
+    const goalTxt = `${state.stars}/${goal} ⭐ · ${locName}`;
+    const pct = `${Math.min(100, (state.stars / goal) * 100)}%`;
+
     const goalEl = document.getElementById('guideGoal');
     const listEl = document.getElementById('guideChecklist');
     const tipEl = document.getElementById('guideTip');
-    const peekEl = document.getElementById('guidePeek');
-    if (goalEl) goalEl.textContent = `${state.stars}/${goal} ⭐`;
-    if (listEl) {
-      listEl.innerHTML = lines.map((l) => {
-        const cls = [
-          'guide-check',
-          l.ok ? 'guide-check--done' : '',
-          l.navigable ? 'guide-check--go' : '',
-        ].filter(Boolean).join(' ');
-        const goBtn = l.navigable
-          ? `<span class="guide-check__go" aria-hidden="true">GO →</span>`
-          : '';
-        return `<li class="${cls}" data-task-id="${l.id}" role="${l.navigable ? 'button' : 'listitem'}" tabindex="${l.navigable ? '0' : '-1'}">${l.ok ? '✓' : '○'} ${l.text}${goBtn}</li>`;
-      }).join('');
-      listEl.querySelectorAll('.guide-check--go').forEach((el) => {
-        el.onclick = (e) => {
-          e.stopPropagation();
-          const id = el.dataset.taskId;
-          if (id) window.BlossomGame?.goToTask?.(id);
-        };
-        el.onkeydown = (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            el.click();
-          }
-        };
-      });
-    }
+    const bar = document.getElementById('guideProgressBar');
+    const chipGoal = document.getElementById('questChipGoal');
+    const chipNext = document.getElementById('questChipNext');
+    const chipBar = document.getElementById('questChipBar');
+
+    if (goalEl) goalEl.textContent = goalTxt;
+    if (chipGoal) chipGoal.textContent = `${state.stars}/${goal} ⭐`;
+    if (bar) bar.style.width = pct;
+    if (chipBar) chipBar.style.width = pct;
+
     const nextNav = lines.find((l) => l.navigable);
+    const nextLabel = nextNav
+      ? nextNav.text.replace(/^.\s/, '')
+      : step.hint;
+    if (chipNext) {
+      chipNext.textContent = nextNav ? `Next: ${nextLabel.slice(0, 36)}` : step.hint.slice(0, 40);
+    }
+
+    if (listEl) listEl.innerHTML = renderChecklistHtml(lines);
+
     const tipText = nextNav
-      ? `Tap "${nextNav.text.replace(/^.\s/, '')}" to go there →`
+      ? `Next: ${nextNav.text.replace(/^.\s/, '')} — tap GO → to auto-walk`
       : step.hint;
     if (tipEl) tipEl.textContent = tipText;
-    if (peekEl) peekEl.textContent = tipText;
-    const bar = document.getElementById('guideProgressBar');
-    if (bar) bar.style.width = `${Math.min(100, (state.stars / goal) * 100)}%`;
-    const expanded = isMobileGuide() ? Boolean(state.guideExpanded) : true;
-    setGuideExpanded(expanded);
+
+    if (!state.guideExpanded) forceCloseModal();
   }
 
   function togglePanel(state) {
-    if (!state || !isMobileGuide()) return state;
-    state.guideExpanded = !state.guideExpanded;
-    setGuideExpanded(state.guideExpanded);
-    return state;
+    if (!state) return state;
+    return isModalOpen() ? closeModal(state) : openModal(state);
   }
 
   return {
@@ -204,8 +273,10 @@ window.BlossomGuide = (function () {
     phaseHint,
     shouldShowPanel,
     updatePanel,
+    openModal,
+    closeModal,
+    isModalOpen,
     togglePanel,
-    setGuideExpanded,
     isMobileGuide,
   };
 })();

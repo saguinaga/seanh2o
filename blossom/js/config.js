@@ -24,10 +24,10 @@ window.BLOSSOM_CONFIG = {
   weeklyBillEvery: 7,
   careerUnlockLevel: 3,
   /** 3D movement — units per second (Shift = run) */
-  walkSpeedOpen: 3.6,
-  runSpeedOpen: 6.2,
-  walkSpeedIndoor: 2.4,
-  runSpeedIndoor: 4.0,
+  walkSpeedOpen: 9.5,
+  runSpeedOpen: 14.5,
+  walkSpeedIndoor: 6.5,
+  runSpeedIndoor: 10.5,
   walkSpeedMultiplier: 1,
 };
 
