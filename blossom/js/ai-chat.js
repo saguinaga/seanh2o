@@ -1,6 +1,6 @@
 /** xAI Grok 4.5 NPC chat — server proxy only, key never in browser */
 window.BlossomAI = (function () {
-  const MODEL = 'grok-4.5';
+  const MODEL = 'grok-4.5-latest';
   const MODEL_LABEL = 'Grok 4.5';
   const PROVIDER_LABEL = 'xAI';
   let apiLive = false;
@@ -181,7 +181,7 @@ window.BlossomAI = (function () {
         signal: AbortSignal.timeout(5000),
       });
       const data = await res.json().catch(() => ({}));
-      apiLive = Boolean(data?.ai) && (data?.model === MODEL || !data?.model);
+      apiLive = Boolean(data?.ai) && (!data?.model || String(data.model).startsWith('grok-4.5'));
       streaming = data?.stream !== false;
       setBadge(apiLive);
       return apiLive;

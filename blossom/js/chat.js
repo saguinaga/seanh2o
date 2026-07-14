@@ -1,7 +1,7 @@
 /** Grok 4.5 NPC chat — no scripted fallback */
 window.BlossomChat = (function () {
   const MAX_LOG = 24;
-  const MODEL = 'grok-4.5';
+  const MODEL = 'Grok 4.5';
 
   function speakerFrom(reply) {
     const idx = reply.indexOf(':');

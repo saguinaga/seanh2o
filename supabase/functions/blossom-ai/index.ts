@@ -5,7 +5,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const XAI_BASE = "https://api.x.ai/v1";
-const XAI_MODEL = "grok-4.5";
+const XAI_MODEL = "grok-4.5-latest";
 const XAI_API_KEY = Deno.env.get("XAI_API_KEY") || "";
 
 const cors = {

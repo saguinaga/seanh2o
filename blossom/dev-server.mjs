@@ -33,7 +33,7 @@ loadDotEnv();
 
 const PORT = Number(process.env.BLOSSOM_PORT || 3000);
 const XAI_API_KEY = process.env.XAI_API_KEY || '';
-const XAI_MODEL = 'grok-4.5';
+const XAI_MODEL = 'grok-4.5-latest';
 const XAI_BASE = 'https://api.x.ai/v1';
 
 const MIME = {

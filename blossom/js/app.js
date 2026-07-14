@@ -244,7 +244,7 @@ window.BlossomApp = (function () {
       const u = new URL(location.href);
       u.pathname = u.pathname.replace(/\/play\/?$/, '/play.html');
       u.searchParams.set('_fresh', Date.now().toString(36));
-      u.searchParams.set('b', '22');
+      u.searchParams.set('b', '25');
       location.replace(u.href);
     };
     document.body.appendChild(banner);
