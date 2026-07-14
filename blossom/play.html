@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="blossom-build" content="37">
+  <meta name="blossom-build" content="38">
   <title>Play — Blossom Life · 3D Huntington Beach</title>
   <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
   <meta property="og:title" content="Blossom Life — Play Now">
@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=37">
+  <link rel="stylesheet" href="css/blossom.css?v=38">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -132,50 +132,9 @@
     <p class="cloud-note" id="cloudNote" hidden></p>
 
     <div class="game-stage">
-      <div class="canvas-glow" aria-hidden="true"></div>
-      <div class="game-viewport" id="gameViewport">
-        <canvas id="gameCanvas" aria-label="Blossom Life — downtown Huntington Beach 3D"></canvas>
-        <canvas id="gameHud" class="game-hud-canvas" aria-hidden="true"></canvas>
-        <div class="game-load" id="gameLoad">
-          <div class="game-load__inner">
-            <p class="game-load__brand">🌸 Blossom Life</p>
-            <p class="game-load__title">Surf City USA</p>
-            <p class="game-load__sub" id="gameLoadStatus">Building the open world…</p>
-            <div class="game-load__wave" aria-hidden="true"></div>
-            <div class="game-load__dots" aria-hidden="true"><span></span><span></span><span></span></div>
-          </div>
-        </div>
-      </div>
-      <div class="travel-banner" id="travelBanner" hidden>
-        <div class="travel-banner__panel">
-          <span class="travel-banner__label">Discovered</span>
-          <span class="travel-banner__name" id="travelBannerText">Main street</span>
-          <span class="travel-banner__sub" id="travelBannerSub"></span>
-        </div>
-      </div>
-
-      <div class="today-card" id="todayCard" hidden>
-        <span class="today-card__emoji" aria-hidden="true">🌸</span>
-        <div class="today-card__body">
-          <p class="today-card__title">Today in Surf City</p>
-          <p class="today-card__line">Walk Main Street and bloom.</p>
-        </div>
-        <button type="button" class="today-card__dismiss" id="todayCardDismiss" aria-label="Dismiss">×</button>
-      </div>
-
-      <div class="game-hud">
-        <div class="hud-money">
-          <span class="hud-money-icon">$</span>
-          <span id="hudMoney">$10</span>
-        </div>
-        <div class="hud-stars" id="hudStars">0/50</div>
-        <div class="hud-meta"><span id="hudLocation">Home</span> · <span id="hudLevel">Lv 1</span> · <span id="hudPhase">Morning</span></div>
-        <div class="hud-career" id="hudCareer">💇 Dreamer</div>
-      </div>
-
       <aside class="star-guide star-guide--collapsed" id="starGuide" hidden>
         <button type="button" class="star-guide__toggle" id="guideToggle" aria-expanded="false" aria-controls="guideBody">
-          <span class="star-guide__title">📖 Stars</span>
+          <span class="star-guide__title">📖 Bloom</span>
           <span class="star-guide__goal" id="guideGoal">0/35 ⭐</span>
           <span class="star-guide__chevron" aria-hidden="true">▾</span>
         </button>
@@ -188,7 +147,52 @@
         </div>
       </aside>
 
-      <p class="day-reminder" id="dayReminder" hidden></p>
+      <div class="game-play-area">
+        <div class="canvas-glow" aria-hidden="true"></div>
+        <div class="game-viewport" id="gameViewport">
+          <canvas id="gameCanvas" aria-label="Blossom Life — downtown Huntington Beach 3D"></canvas>
+          <canvas id="gameHud" class="game-hud-canvas" aria-hidden="true"></canvas>
+          <div class="game-load" id="gameLoad">
+            <div class="game-load__inner">
+              <p class="game-load__brand">🌸 Blossom Life</p>
+              <p class="game-load__title">Surf City USA</p>
+              <p class="game-load__sub" id="gameLoadStatus">Building the open world…</p>
+              <div class="game-load__wave" aria-hidden="true"></div>
+              <div class="game-load__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="travel-banner" id="travelBanner" hidden>
+          <div class="travel-banner__panel">
+            <span class="travel-banner__label">Discovered</span>
+            <span class="travel-banner__name" id="travelBannerText">Main street</span>
+            <span class="travel-banner__sub" id="travelBannerSub"></span>
+          </div>
+        </div>
+
+        <div class="today-card" id="todayCard" hidden>
+          <span class="today-card__emoji" aria-hidden="true">🌸</span>
+          <div class="today-card__body">
+            <p class="today-card__title">Today in Surf City</p>
+            <p class="today-card__line">Walk Main Street and bloom.</p>
+          </div>
+          <button type="button" class="today-card__dismiss" id="todayCardDismiss" aria-label="Dismiss">×</button>
+        </div>
+
+        <div class="game-hud" id="htmlHud">
+          <div class="hud-money">
+            <span class="hud-money-icon">$</span>
+            <span id="hudMoney">$10</span>
+          </div>
+          <div class="hud-stars" id="hudStars">0/50</div>
+          <div class="hud-meta"><span id="hudLocation">Home</span> · <span id="hudLevel">Lv 1</span> · <span id="hudPhase">Morning</span></div>
+          <div class="hud-career" id="hudCareer">💇 Dreamer</div>
+        </div>
+
+        <p class="day-reminder" id="dayReminder" hidden></p>
+        <p class="desktop-hint">WASD move · drag look · Shift sprint · [ ] speed · E interact · 🛂 passport</p>
+      </div>
 
       <div class="game-controls" id="mobileControls">
         <div class="joystick-base" id="joystickBase" aria-label="Move">
@@ -196,8 +200,6 @@
         </div>
         <button type="button" class="jump-btn" id="jumpBtn" aria-label="Jump">JUMP</button>
       </div>
-
-      <p class="desktop-hint">3 bloom tasks + explore for passport stamps · WASD · Shift sprint · [ ] speed · E interact</p>
     </div>
 
     <footer class="game-bottom">
@@ -354,43 +356,43 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
-  <script src="js/stability.js?v=37"></script>
-  <script src="js/boot.js?v=37"></script>
-  <script src="js/config.js?v=37"></script>
-  <script src="js/hb-local.js?v=37"></script>
-  <script src="js/world.js?v=37"></script>
-  <script src="js/world3d.js?v=37"></script>
-  <script src="js/hb-env.js?v=37"></script>
-  <script src="js/scene3d-juice.js?v=37"></script>
-  <script src="js/scene3d-hud.js?v=37"></script>
-  <script src="js/art.js?v=37"></script>
-  <script src="js/gfx.js?v=37"></script>
-  <script src="js/navigator.js?v=37"></script>
-  <script src="js/weather.js?v=37"></script>
-  <script src="js/pet.js?v=37"></script>
-  <script src="js/chat.js?v=37"></script>
-  <script src="js/photo.js?v=37"></script>
-  <script src="js/avatar.js?v=37"></script>
-  <script src="js/career.js?v=37"></script>
-  <script src="js/effects.js?v=37"></script>
-  <script src="js/audio.js?v=37"></script>
-  <script src="js/save.js?v=37"></script>
-  <script src="js/today-card.js?v=37"></script>
-  <script src="js/passport.js?v=37"></script>
-  <script src="js/locals.js?v=37"></script>
-  <script src="js/discovery.js?v=37"></script>
-  <script src="js/ai-chat.js?v=37"></script>
-  <script src="js/guide.js?v=37"></script>
-  <script src="js/auth.js?v=37"></script>
-  <script src="js/boutique.js?v=37"></script>
-  <script src="js/day-system.js?v=37"></script>
-  <script src="js/meal.js?v=37"></script>
-  <script src="js/shift.js?v=37"></script>
-  <script src="js/controls.js?v=37"></script>
-  <script src="js/render.js?v=37"></script>
-  <script src="js/scene3d.js?v=37"></script>
-  <script src="js/game.js?v=37"></script>
-  <script src="js/app.js?v=37"></script>
+  <script src="js/stability.js?v=38"></script>
+  <script src="js/boot.js?v=38"></script>
+  <script src="js/config.js?v=38"></script>
+  <script src="js/hb-local.js?v=38"></script>
+  <script src="js/world.js?v=38"></script>
+  <script src="js/world3d.js?v=38"></script>
+  <script src="js/hb-env.js?v=38"></script>
+  <script src="js/scene3d-juice.js?v=38"></script>
+  <script src="js/scene3d-hud.js?v=38"></script>
+  <script src="js/art.js?v=38"></script>
+  <script src="js/gfx.js?v=38"></script>
+  <script src="js/navigator.js?v=38"></script>
+  <script src="js/weather.js?v=38"></script>
+  <script src="js/pet.js?v=38"></script>
+  <script src="js/chat.js?v=38"></script>
+  <script src="js/photo.js?v=38"></script>
+  <script src="js/avatar.js?v=38"></script>
+  <script src="js/career.js?v=38"></script>
+  <script src="js/effects.js?v=38"></script>
+  <script src="js/audio.js?v=38"></script>
+  <script src="js/save.js?v=38"></script>
+  <script src="js/today-card.js?v=38"></script>
+  <script src="js/passport.js?v=38"></script>
+  <script src="js/locals.js?v=38"></script>
+  <script src="js/discovery.js?v=38"></script>
+  <script src="js/ai-chat.js?v=38"></script>
+  <script src="js/guide.js?v=38"></script>
+  <script src="js/auth.js?v=38"></script>
+  <script src="js/boutique.js?v=38"></script>
+  <script src="js/day-system.js?v=38"></script>
+  <script src="js/meal.js?v=38"></script>
+  <script src="js/shift.js?v=38"></script>
+  <script src="js/controls.js?v=38"></script>
+  <script src="js/render.js?v=38"></script>
+  <script src="js/scene3d.js?v=38"></script>
+  <script src="js/game.js?v=38"></script>
+  <script src="js/app.js?v=38"></script>
 
 </body>
 </html>
