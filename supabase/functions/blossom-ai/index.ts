@@ -1,5 +1,5 @@
 /**
- * Blossom Life — SpaceXAI (Grok 4.5) NPC chat proxy for production.
+ * Blossom Life — xAI Grok 4.5 NPC chat proxy for production.
  * Deploy: supabase secrets set XAI_API_KEY=... && supabase functions deploy blossom-ai --no-verify-jwt
  */
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -161,8 +161,8 @@ async function proxyChat(payload: { message?: string; context?: Record<string, u
     return { ok: false, error: "api_error", message: errMsg };
   }
   const text = data?.choices?.[0]?.message?.content?.trim();
-  if (!text) return { ok: false, error: "empty", message: "Empty response from SpaceXAI" };
-  return { ok: true, reply: text, model: XAI_MODEL, provider: "SpaceXAI" };
+  if (!text) return { ok: false, error: "empty", message: "Empty response from Grok 4.5" };
+  return { ok: true, reply: text, model: XAI_MODEL, provider: "xAI" };
 }
 
 async function proxyChatStream(
@@ -234,7 +234,7 @@ Deno.serve(async (req) => {
       ok: true,
       ai: Boolean(XAI_API_KEY),
       model: XAI_MODEL,
-      provider: "SpaceXAI",
+      provider: "xAI",
       stream: true,
     });
   }

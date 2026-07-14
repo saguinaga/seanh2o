@@ -189,8 +189,8 @@ window.BlossomApp = (function () {
     );
     BlossomGame.updateHud();
     window.BlossomAI?.probe?.().then((on) => {
-      if (on) showToast('Grok 4.5 live — talk to locals!', 'good');
-      else showToast('Grok 4.5 offline — set XAI_API_KEY + deploy API', 'warn');
+      if (on) showToast('xAI Grok 4.5 live — flagship NPC chat', 'good');
+      else showToast('xAI Grok 4.5 offline — set XAI_API_KEY + deploy', 'warn');
     });
     const bubble = document.getElementById('npcBubble');
     if (bubble) {

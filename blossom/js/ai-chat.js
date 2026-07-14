@@ -1,6 +1,8 @@
-/** Grok 4.5 NPC chat — server proxy only, key never in browser */
+/** xAI Grok 4.5 NPC chat — server proxy only, key never in browser */
 window.BlossomAI = (function () {
   const MODEL = 'grok-4.5';
+  const MODEL_LABEL = 'Grok 4.5';
+  const PROVIDER_LABEL = 'xAI';
   let apiLive = false;
   let streaming = true;
   let pending = false;
@@ -145,17 +147,24 @@ window.BlossomAI = (function () {
 
   function setBadge(live) {
     const badge = document.getElementById('chatAiBadge');
+    const pill = document.getElementById('grokPill');
     const input = document.getElementById('chatInput');
+    const label = `${PROVIDER_LABEL} · ${MODEL_LABEL}`;
     if (badge) {
       badge.hidden = false;
       badge.classList.toggle('chat-ai-badge--on', live);
       badge.classList.toggle('chat-ai-badge--off', !live);
-      badge.textContent = live ? `✨ Grok 4.5` : `⚠ Grok 4.5 offline`;
+      badge.textContent = live ? `✨ ${label} live` : `⚠ ${label} offline`;
+    }
+    if (pill) {
+      pill.classList.toggle('grok-pill--live', live);
+      pill.classList.toggle('grok-pill--off', !live);
+      pill.textContent = live ? `${PROVIDER_LABEL} · ${MODEL_LABEL}` : `${MODEL_LABEL} offline`;
     }
     if (input) {
       input.placeholder = live
-        ? 'Talk to HB locals — Grok 4.5'
-        : 'Grok 4.5 offline — API key / deploy needed';
+        ? `Talk to locals — ${PROVIDER_LABEL} ${MODEL_LABEL}`
+        : `${MODEL_LABEL} offline — set XAI_API_KEY + deploy`;
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Blossom local dev — static files + SpaceXAI (xAI) chat proxy.
+ * Blossom local dev — static files + xAI Grok 4.5 chat proxy.
  * Usage: copy blossom/.env.example → blossom/.env, set XAI_API_KEY, then npm run blossom
  * Open: http://localhost:3000/blossom/play.html (or BLOSSOM_PORT)
  */
@@ -178,7 +178,7 @@ async function xaiChat(messages, stream) {
 
 async function proxyChat(payload) {
   if (!XAI_API_KEY) {
-    return { ok: false, error: 'no_key', message: 'Set XAI_API_KEY in blossom/.env for SpaceXAI chat.' };
+    return { ok: false, error: 'no_key', message: 'Set XAI_API_KEY in blossom/.env for Grok 4.5 chat.' };
   }
   const res = await xaiChat(buildMessages(payload), false);
   const data = await res.json().catch(() => ({}));
@@ -187,8 +187,8 @@ async function proxyChat(payload) {
     return { ok: false, error: 'api_error', message: errMsg };
   }
   const text = data?.choices?.[0]?.message?.content?.trim();
-  if (!text) return { ok: false, error: 'empty', message: 'Empty response from SpaceXAI' };
-  return { ok: true, reply: text, model: XAI_MODEL, provider: 'SpaceXAI' };
+  if (!text) return { ok: false, error: 'empty', message: 'Empty response from Grok 4.5' };
+  return { ok: true, reply: text, model: XAI_MODEL, provider: 'xAI' };
 }
 
 async function proxyChatStream(payload, res) {
@@ -285,7 +285,7 @@ const server = http.createServer(async (req, res) => {
       ok: true,
       ai: Boolean(XAI_API_KEY),
       model: XAI_MODEL,
-      provider: 'SpaceXAI',
+      provider: 'xAI',
       stream: true,
     }));
     return;
@@ -322,5 +322,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n🏄 Blossom dev server → http://localhost:${PORT}/blossom/play.html`);
-  console.log(`   SpaceXAI (xAI): ${XAI_API_KEY ? `ON · ${XAI_MODEL} · streaming` : 'OFF — set XAI_API_KEY in blossom/.env'}\n`);
+  console.log(`   xAI Grok 4.5: ${XAI_API_KEY ? `ON · ${XAI_MODEL} · streaming` : 'OFF — set XAI_API_KEY in blossom/.env'}\n`);
 });
