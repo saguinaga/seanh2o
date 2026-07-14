@@ -189,7 +189,7 @@ window.BlossomApp = (function () {
     );
     BlossomGame.updateHud();
     window.BlossomAI?.probe?.().then((on) => {
-      if (on) showToast('SpaceXAI NPCs live on Main Street — say hi!', 'good');
+      if (on) showToast('Grok 4.5 NPCs live — talk to locals on Main Street!', 'good');
     });
     const bubble = document.getElementById('npcBubble');
     if (bubble) {

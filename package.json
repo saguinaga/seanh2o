@@ -9,6 +9,7 @@
     "serve": "npx serve . -p 3000 -c serve.json",
     "blossom": "node blossom/dev-server.mjs",
     "blossom:dev": "node blossom/dev-server.mjs",
+    "blossom:deploy-ai": "supabase functions deploy blossom-ai --no-verify-jwt --project-ref mtqezgchhggmlrfzfyjb",
     "check": "node --check calculator.js && node --check flip-calculator.js && echo 'JS syntax OK'",
     "refresh-offers": "node promo-tracker/scripts/refresh-offers.mjs",
     "start": "npm run dev"

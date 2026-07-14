@@ -251,7 +251,7 @@ window.BlossomChat = (function () {
       const aiOn = await BlossomAI.isEnabled();
       if (aiOn) {
         const streamLine = beginStreamLine(logStore);
-        if (typingEl) typingEl.textContent = 'SpaceXAI is typing…';
+        if (typingEl) typingEl.textContent = 'Grok 4.5 is typing…';
         const onToken = (partial) => {
           streamLine.text = bodyFrom(partial) || partial;
           if (partial.includes(':')) streamLine.who = speakerFrom(partial);

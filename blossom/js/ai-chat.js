@@ -5,18 +5,47 @@ window.BlossomAI = (function () {
   let model = 'grok-4.5';
   let pending = false;
 
-  function endpoint() {
+  function apiBase() {
+    const base = window.BLOSSOM_CONFIG?.aiChatBase;
+    if (base) return String(base).replace(/\/$/, '');
     const cfg = window.BLOSSOM_CONFIG?.aiChatEndpoint;
-    if (cfg) return cfg;
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      return `${location.origin}/api/blossom/chat`;
+    if (cfg) {
+      if (cfg.includes('/functions/v1/')) return cfg.replace(/\/chat\/?$/, '');
+      if (cfg.endsWith('/chat')) return cfg.slice(0, -5);
+      return cfg;
     }
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      return `${location.origin}/api/blossom`;
+    }
+    const sb = window.BLOSSOM_CONFIG?.supabaseUrl;
+    if (sb) return `${sb}/functions/v1/blossom-ai`;
     return null;
   }
 
+  function fetchHeaders() {
+    const h = { 'Content-Type': 'application/json' };
+    const base = apiBase();
+    const key = window.BLOSSOM_CONFIG?.supabaseAnonKey;
+    if (base?.includes('supabase.co') && key) {
+      h.Authorization = `Bearer ${key}`;
+      h.apikey = key;
+    }
+    return h;
+  }
+
+  function endpoint() {
+    const base = apiBase();
+    return base ? `${base}/chat` : null;
+  }
+
   function streamEndpoint() {
-    const ep = endpoint();
-    return ep ? ep.replace(/\/chat$/, '/chat/stream') : null;
+    const base = apiBase();
+    return base ? `${base}/chat/stream` : null;
+  }
+
+  function healthUrl() {
+    const base = apiBase();
+    return base ? `${base}/health` : null;
   }
 
   function zoneLabel(locId) {
@@ -105,26 +134,28 @@ window.BlossomAI = (function () {
       badge.classList.toggle('chat-ai-badge--on', on);
       badge.classList.toggle('chat-ai-badge--off', !on);
       badge.textContent = on
-        ? `✨ SpaceXAI · ${meta?.model || model}`
-        : '💬 Offline NPCs (run npm run blossom + .env)';
+        ? `✨ Grok 4.5 · ${meta?.model || model}`
+        : '💬 Scripted NPCs — Grok 4.5 loading…';
     }
     if (input) {
       input.placeholder = on
-        ? 'Talk to HB locals… (SpaceXAI)'
-        : 'Talk to NPCs (scripted — add XAI_API_KEY for AI)';
+        ? 'Talk to HB locals… (Grok 4.5)'
+        : 'Talk to NPCs… (Grok 4.5 connects when ready)';
     }
   }
 
   async function probe() {
-    const ep = endpoint();
-    if (!ep) {
+    const health = healthUrl();
+    if (!health) {
       enabled = false;
       setBadge(false);
       return false;
     }
-    const healthUrl = ep.replace(/\/chat$/, '/health');
     try {
-      const res = await fetch(healthUrl, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(health, {
+        headers: fetchHeaders(),
+        signal: AbortSignal.timeout(4500),
+      });
       const data = await res.json();
       enabled = Boolean(data?.ai);
       streaming = Boolean(data?.stream);
@@ -181,13 +212,13 @@ window.BlossomAI = (function () {
     try {
       const res = await fetch(ep, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: fetchHeaders(),
         body: JSON.stringify({
           message,
           context: buildContext(state, near),
           history: historyFromLog(logStore),
         }),
-        signal: AbortSignal.timeout(25000),
+        signal: AbortSignal.timeout(30000),
       });
       const ct = res.headers.get('content-type') || '';
       if (ct.includes('text/event-stream') && res.ok) {
@@ -213,13 +244,13 @@ window.BlossomAI = (function () {
     try {
       const res = await fetch(ep, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: fetchHeaders(),
         body: JSON.stringify({
           message,
           context: buildContext(state, near),
           history: historyFromLog(logStore),
         }),
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(28000),
       });
       const data = await res.json();
       if (!data?.ok || !data.reply) return null;

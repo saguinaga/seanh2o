@@ -633,8 +633,8 @@ window.BlossomScene3D = (function () {
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = T.PCFShadowMap;
       renderer.outputColorSpace = T.SRGBColorSpace;
-      renderer.toneMapping = T.ReinhardToneMapping;
-      renderer.toneMappingExposure = 1.22;
+      renderer.toneMapping = T.ACESFilmicToneMapping || T.ReinhardToneMapping;
+      renderer.toneMappingExposure = 1.28;
 
       scene = new T.Scene();
       clock = new T.Clock();

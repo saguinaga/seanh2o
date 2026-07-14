@@ -142,10 +142,10 @@ function npcSystemPrompt(ctx) {
     `Nearby: ${ctx.nearLabel || 'open area'}. ${chores} ${meals}`,
     'Rules:',
     '- Reply in character. Format exactly: "Name: dialogue" (speaker name, colon, then words).',
-    '- 1-2 short sentences. Warm HB refs: Main Street restaurants, PCH, Pacific City boardwalk, Ruby\'s pier.',
+    '- 2-3 vivid sentences. Warm Surf City energy — Main St eats, PCH breeze, Pacific City boardwalk, Ruby\'s pier.',
     '- Give practical game tips when asked (chores, meals, walk east to Pacific City/pier, career shifts, stars).',
     '- Never mention AI, APIs, models, or being a language model.',
-    '- Under 200 characters total.',
+    '- Stay under 320 characters total.',
   ].join('\n');
 }
 
@@ -169,8 +169,8 @@ async function xaiChat(messages, stream) {
     body: JSON.stringify({
       model: XAI_MODEL,
       messages,
-      max_tokens: 180,
-      temperature: 0.78,
+      max_tokens: 320,
+      temperature: 0.82,
       stream: Boolean(stream),
     }),
   });

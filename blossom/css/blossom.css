@@ -487,6 +487,13 @@ a { color: var(--blossom-green-dark); }
   color: #fde047;
   background: rgba(30, 64, 175, 0.55);
   border: 1px solid rgba(253, 224, 71, 0.35);
+  animation: ai-badge-glow 2.4s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(253, 224, 71, 0.25);
+}
+
+@keyframes ai-badge-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(253, 224, 71, 0.2); }
+  50% { box-shadow: 0 0 18px rgba(56, 189, 248, 0.45); }
 }
 
 .chat-ai-badge--off {
