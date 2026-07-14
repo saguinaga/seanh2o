@@ -9,7 +9,8 @@
       return;
     }
     // Bust stale cached play.html (v25 had three.min.js + broken health probe)
-    if (!document.querySelector('script[type="importmap"]') && !/\b_refresh=/.test(location.search)) {
+    var build = document.querySelector('meta[name="blossom-build"]');
+    if ((!build || build.getAttribute('content') !== '29') && !/\b_refresh=/.test(location.search)) {
       var q = location.search ? location.search + '&' : '?';
       location.replace(location.pathname + q + '_refresh=' + Date.now());
     }
@@ -20,6 +21,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="blossom-build" content="29">
   <title>Play — Blossom Life · 3D Huntington Beach</title>
   <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
   <meta property="og:title" content="Blossom Life — Play Now">
