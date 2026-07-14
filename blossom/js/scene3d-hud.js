@@ -125,11 +125,19 @@ window.BlossomScene3DHud = (function () {
   function drawQuestTracker(ctx, state) {
     const list = state.todaysChores || [];
     const done = state.choresDone || {};
+    const slots = state.bloomSlots || {};
+    const slotEmoji = { home: '🏠', world: '🌊', career: '💼' };
     const finished = list.filter((id) => done[id]).length;
     const y = 118;
-    drawWowPanel(ctx, 10, y, 178, 54);
-    wowText(ctx, 'Daily Objectives', 18, y + 20, 12, '#fff568');
-    wowText(ctx, `${finished} / ${list.length} complete`, 18, y + 38, 11, finished === list.length ? '#40c040' : '#f0e6c8');
+    drawWowPanel(ctx, 10, y, 178, 62);
+    wowText(ctx, 'Bloom Tasks', 18, y + 18, 12, '#fff568');
+    wowText(ctx, `${finished}/${list.length || 3} done`, 18, y + 34, 10, finished >= (list.length || 3) ? '#40c040' : '#f0e6c8');
+    const tags = ['home', 'world', 'career'].map((s) => {
+      const id = slots[s];
+      const ok = id && done[id];
+      return `${ok ? '✓' : '○'}${slotEmoji[s] || '🌸'}`;
+    }).join(' ');
+    wowText(ctx, tags, 18, y + 50, 10, '#c9a227');
   }
 
   function drawStamina(ctx, w, h, stamina, running) {
@@ -190,7 +198,12 @@ window.BlossomScene3DHud = (function () {
 
     drawQuestTracker(ctx, state);
     drawMinimap(ctx, w, h, player, loc?.id);
-    drawDiscovery(ctx, w, state);
+    const pp = BlossomPassport?.count?.(state);
+    if (pp?.pages > 0) {
+      ctx.fillStyle = '#c9a227';
+      ctx.font = '10px Arial, sans-serif';
+      ctx.fillText(`🛂 ${pp.pages}/${pp.pagesTotal}`, 12, 128);
+    }
     drawStamina(ctx, w, h, opts.stamina, opts.running);
 
     const mult = window.BLOSSOM_CONFIG?.walkSpeedMultiplier ?? 1;

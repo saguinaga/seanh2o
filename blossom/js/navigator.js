@@ -172,18 +172,26 @@ window.BlossomNavigate = (function () {
       });
     }
 
+    const slots = state.bloomSlots || {};
+    const slotEmoji = { home: '🏠', world: '🌊', career: '💼' };
     (state.todaysChores || []).forEach((choreId) => {
       if (done[choreId]) return;
       const hit = findPropForChore(choreId);
       const loc = hit ? BlossomWorld.getLocation(hit.locId) : null;
+      let slot = 'bloom';
+      if (slots.home === choreId) slot = 'home';
+      else if (slots.world === choreId) slot = 'world';
+      else if (slots.career === choreId) slot = 'career';
+      const cp = window.BlossomCareer?.path?.(state);
+      const careerTag = slot === 'career' && cp ? cp.emoji : '';
       tasks.push({
         id: choreId,
         type: 'chore',
         label: CHORE_LABELS[choreId] || choreId,
-        emoji: '🧹',
+        emoji: slotEmoji[slot] || careerTag || '🌸',
         stars: 5,
         locationName: loc?.name || 'Somewhere',
-        hint: hit ? `Go to ${loc.name}` : 'Find this chore',
+        hint: hit ? `Bloom · ${loc.name}` : 'Find this bloom task',
       });
     });
 

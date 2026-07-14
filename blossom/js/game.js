@@ -63,7 +63,8 @@ window.BlossomGame = (function () {
     canvas = cvs;
     state = gameState;
     if (!state.currentLocation) state.currentLocation = 'house';
-    if (!state.todaysChores?.length) BlossomDay.assignDailyChores(state);
+    if (!state.todaysChores?.length || state.todaysChores.length > 3) BlossomDay.assignDailyChores(state);
+    if (!state.todayEventId) window.BlossomToday?.assign?.(state);
     if (!state.careerPath) state.careerPath = 'salon';
     BlossomAvatar.migrate(state);
     onMessage = callbacks.onMessage;
@@ -737,8 +738,11 @@ window.BlossomGame = (function () {
     }
     if (careerEl) {
       const p = BlossomCareer.path(state);
-      careerEl.textContent = `${p.emoji} ${BlossomCareer.rankLabel(state)}`;
+      const streak = state.bloomStreak > 0 ? ` · 🔥${state.bloomStreak}` : '';
+      careerEl.textContent = `${p.emoji} ${BlossomCareer.rankLabel(state)}${streak}`;
     }
+    document.querySelector('.game-stage')?.classList.toggle('game-stage--quiet', (state.day || 1) > 2);
+    window.BlossomToday?.renderCard?.(state);
     const hint = document.getElementById('travelHint');
     if (hint) {
       if ((state.day || 1) <= 3 && state.stars < goal) {
@@ -850,10 +854,10 @@ window.BlossomGame = (function () {
         fx().confetti?.();
         fx().floatText(player.x, player.y - 62, `Landmark! +${lm.stars}⭐`, '#f472b6');
         window.BlossomAudio?.playSfx('levelUp');
+        onMessage(`Passport stamp: ${lm.name}`, 'good');
         onPersist(state);
         updateHud();
       }
-      BlossomAmbientChat?.tick?.(state, nearInteract);
     }
     if (!BlossomWorld3D.isOverworld?.() && !nav.active && transitionLock <= 0 && nearInteract?.kind === 'exit') {
       const movingInto = use3d
@@ -882,14 +886,8 @@ window.BlossomGame = (function () {
       bubble.classList.add('npc-bubble--zone');
       bubble.classList.remove('npc-bubble--chat', 'npc-bubble--ai');
     } else if (bubble && nearInteract) {
-      bubble.classList.remove('npc-bubble--zone');
-      const ambient = BlossomAmbientChat?.getBubble?.();
-      if (ambient) {
-        bubble.textContent = ambient.text;
-        bubble.classList.add('npc-bubble--ai');
-        bubble.classList.remove('npc-bubble--chat');
-      } else {
-        bubble.classList.remove('npc-bubble--ai');
+      bubble.classList.remove('npc-bubble--zone', 'npc-bubble--ai');
+      const localLine = BlossomLocals?.greeting?.(nearInteract, state);
       const cp = BlossomCareer.path(state);
       if (nearInteract.kind === 'exit') bubble.textContent = nearInteract.label + ' (walk into it)';
       else if (nearInteract.kind === 'npc' && nearInteract.id === 'bonnie') {
@@ -918,7 +916,8 @@ window.BlossomGame = (function () {
       else if (nearInteract.shop === 'boutique') bubble.textContent = 'E — Bloom Boutique · buy new clothes!';
       else if (BlossomHBLocal?.isRestaurant?.(nearInteract.shop)) {
         bubble.textContent = `E or tap ${nearInteract.label || 'restaurant'} for lunch`;
-      }
+      } else if (localLine) {
+        bubble.textContent = localLine;
       }
     }
   }
@@ -1067,7 +1066,6 @@ window.BlossomGame = (function () {
   }
 
   async function sendChatMessage(text) {
-    BlossomAmbientChat?.clearOnUserChat?.();
     const result = await BlossomChat?.sendAsync?.(text, state, nearInteract, chatLog);
     if (result) {
       const bubble = document.getElementById('npcBubble');

@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="blossom-build" content="36">
+  <meta name="blossom-build" content="37">
   <title>Play — Blossom Life · 3D Huntington Beach</title>
   <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
   <meta property="og:title" content="Blossom Life — Play Now">
@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=36">
+  <link rel="stylesheet" href="css/blossom.css?v=37">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -154,6 +154,15 @@
         </div>
       </div>
 
+      <div class="today-card" id="todayCard" hidden>
+        <span class="today-card__emoji" aria-hidden="true">🌸</span>
+        <div class="today-card__body">
+          <p class="today-card__title">Today in Surf City</p>
+          <p class="today-card__line">Walk Main Street and bloom.</p>
+        </div>
+        <button type="button" class="today-card__dismiss" id="todayCardDismiss" aria-label="Dismiss">×</button>
+      </div>
+
       <div class="game-hud">
         <div class="hud-money">
           <span class="hud-money-icon">$</span>
@@ -188,21 +197,14 @@
         <button type="button" class="jump-btn" id="jumpBtn" aria-label="Jump">JUMP</button>
       </div>
 
-      <p class="desktop-hint">Explore for discoveries · Grok locals talk when you walk up · WASD · Shift sprint · [ ] speed · E interact</p>
+      <p class="desktop-hint">3 bloom tasks + explore for passport stamps · WASD · Shift sprint · [ ] speed · E interact</p>
     </div>
 
     <footer class="game-bottom">
       <p class="npc-bubble" id="npcBubble">Walk to the green exit to leave home · tap objects to interact</p>
       <p class="travel-hint" id="travelHint"></p>
       <div class="chat-log" id="chatLog" aria-live="polite" hidden></div>
-      <div class="chat-chips" id="chatChips" hidden>
-        <button type="button" class="chat-chip" data-chat="What should I do next?">What next?</button>
-        <button type="button" class="chat-chip" data-chat="How do I earn more stars?">More stars?</button>
-        <button type="button" class="chat-chip" data-chat="What's good on Main Street HB?">Main Street</button>
-        <button type="button" class="chat-chip" data-chat="Tips for Pacific City and the pier?">Pacific City</button>
-        <button type="button" class="chat-chip" data-chat="Where are Sugar Shack, Jan's, and No Ka Oi?">Restaurants</button>
-        <button type="button" class="chat-chip" data-chat="Where's the pier and Ruby's?">Pier & Ruby's</button>
-      </div>
+      <div class="chat-chips" id="chatChips" hidden></div>
       <div class="chat-bar" hidden>
         <span class="chat-ai-badge" id="chatAiBadge" hidden></span>
         <input type="text" class="chat-input" id="chatInput" placeholder="Say something to nearby locals…" maxlength="120" enterkeyhint="send">
@@ -210,7 +212,8 @@
         <p class="chat-typing" id="chatTyping" hidden aria-hidden="true">…</p>
       </div>
       <div class="game-toolbar">
-        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="guideHelpBtn" title="How to get stars">📖</button>
+        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="passportBtn" title="Surf City Passport">🛂</button>
+        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="guideHelpBtn" title="Bloom guide">📖</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="shareBtn" title="Share Blossom Life">🔗</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="photoBtn" title="Photo mode (P)">📷</button>
         <button type="button" class="toolbar-btn" id="endDayBtn">End day</button>
@@ -220,6 +223,16 @@
   </div>
 
   <div class="game-toast" id="gameToast" hidden></div>
+
+  <div class="modal-backdrop passport-modal" id="passportModal" hidden>
+    <div class="modal-card passport-card">
+      <h2>🛂 Surf City Passport</h2>
+      <p class="passport-progress" id="passportProgress">0/11 stamps</p>
+      <p class="passport-sub">Collect stamps by exploring zones & landmarks. Built with Quinn.</p>
+      <div class="passport-grid" id="passportGrid"></div>
+      <button type="button" class="btn-blossom btn-primary" id="passportClose" style="width:100%;margin-top:12px;">Close</button>
+    </div>
+  </div>
 
   <!-- Bonnie job offer -->
   <div class="modal-backdrop" id="bonnieModal" hidden>
@@ -341,41 +354,43 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
-  <script src="js/stability.js?v=36"></script>
-  <script src="js/boot.js?v=36"></script>
-  <script src="js/config.js?v=36"></script>
-  <script src="js/hb-local.js?v=36"></script>
-  <script src="js/world.js?v=36"></script>
-  <script src="js/world3d.js?v=36"></script>
-  <script src="js/hb-env.js?v=36"></script>
-  <script src="js/scene3d-juice.js?v=36"></script>
-  <script src="js/scene3d-hud.js?v=36"></script>
-  <script src="js/art.js?v=36"></script>
-  <script src="js/gfx.js?v=36"></script>
-  <script src="js/navigator.js?v=36"></script>
-  <script src="js/weather.js?v=36"></script>
-  <script src="js/pet.js?v=36"></script>
-  <script src="js/chat.js?v=36"></script>
-  <script src="js/photo.js?v=36"></script>
-  <script src="js/avatar.js?v=36"></script>
-  <script src="js/career.js?v=36"></script>
-  <script src="js/effects.js?v=36"></script>
-  <script src="js/audio.js?v=36"></script>
-  <script src="js/save.js?v=36"></script>
-  <script src="js/discovery.js?v=36"></script>
-  <script src="js/ambient-chat.js?v=36"></script>
-  <script src="js/ai-chat.js?v=36"></script>
-  <script src="js/guide.js?v=36"></script>
-  <script src="js/auth.js?v=36"></script>
-  <script src="js/boutique.js?v=36"></script>
-  <script src="js/day-system.js?v=36"></script>
-  <script src="js/meal.js?v=36"></script>
-  <script src="js/shift.js?v=36"></script>
-  <script src="js/controls.js?v=36"></script>
-  <script src="js/render.js?v=36"></script>
-  <script src="js/scene3d.js?v=36"></script>
-  <script src="js/game.js?v=36"></script>
-  <script src="js/app.js?v=36"></script>
+  <script src="js/stability.js?v=37"></script>
+  <script src="js/boot.js?v=37"></script>
+  <script src="js/config.js?v=37"></script>
+  <script src="js/hb-local.js?v=37"></script>
+  <script src="js/world.js?v=37"></script>
+  <script src="js/world3d.js?v=37"></script>
+  <script src="js/hb-env.js?v=37"></script>
+  <script src="js/scene3d-juice.js?v=37"></script>
+  <script src="js/scene3d-hud.js?v=37"></script>
+  <script src="js/art.js?v=37"></script>
+  <script src="js/gfx.js?v=37"></script>
+  <script src="js/navigator.js?v=37"></script>
+  <script src="js/weather.js?v=37"></script>
+  <script src="js/pet.js?v=37"></script>
+  <script src="js/chat.js?v=37"></script>
+  <script src="js/photo.js?v=37"></script>
+  <script src="js/avatar.js?v=37"></script>
+  <script src="js/career.js?v=37"></script>
+  <script src="js/effects.js?v=37"></script>
+  <script src="js/audio.js?v=37"></script>
+  <script src="js/save.js?v=37"></script>
+  <script src="js/today-card.js?v=37"></script>
+  <script src="js/passport.js?v=37"></script>
+  <script src="js/locals.js?v=37"></script>
+  <script src="js/discovery.js?v=37"></script>
+  <script src="js/ai-chat.js?v=37"></script>
+  <script src="js/guide.js?v=37"></script>
+  <script src="js/auth.js?v=37"></script>
+  <script src="js/boutique.js?v=37"></script>
+  <script src="js/day-system.js?v=37"></script>
+  <script src="js/meal.js?v=37"></script>
+  <script src="js/shift.js?v=37"></script>
+  <script src="js/controls.js?v=37"></script>
+  <script src="js/render.js?v=37"></script>
+  <script src="js/scene3d.js?v=37"></script>
+  <script src="js/game.js?v=37"></script>
+  <script src="js/app.js?v=37"></script>
 
 </body>
 </html>

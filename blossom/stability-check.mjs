@@ -1,8 +1,8 @@
 /** Prod stability gate — exit 0 only if game shell + Grok 4.5 are up */
 const checks = [
   { name: 'play.html', url: 'https://seanaguinaga.com/blossom/play.html', match: /blossom-build/ },
-  { name: 'config.js', url: 'https://seanaguinaga.com/blossom/js/config.js', match: /aiChatEnabled\s*=\s*true/ },
-  { name: 'grok-health', url: 'https://blossom-ai-proxy.smart-horse.workers.dev/health', match: /grok-4\.5/ },
+  { name: 'config.js', url: 'https://seanaguinaga.com/blossom/js/config.js', match: /aiChatEnabled\s*=\s*false/ },
+  { name: 'today-card.js', url: 'https://seanaguinaga.com/blossom/js/today-card.js', match: /BlossomToday/ },
 ];
 
 let failed = 0;

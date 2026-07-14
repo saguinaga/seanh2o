@@ -52,6 +52,10 @@ window.BlossomSave = (function () {
       createdAt: Date.now(),
       discoveredZones: {},
       discoveredLandmarks: {},
+      passportStamps: {},
+      bloomSlots: {},
+      todayEventId: null,
+      bloomStreak: 0,
     };
   }
 

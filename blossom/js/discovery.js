@@ -30,6 +30,7 @@ window.BlossomDiscovery = (function () {
     state.discoveredZones[zoneId] = true;
     state.stars = (state.stars || 0) + rw.stars;
     state.money = (state.money || 0) + rw.money;
+    window.BlossomPassport?.stampZone?.(state, zoneId);
     return rw;
   }
 
@@ -42,6 +43,7 @@ window.BlossomDiscovery = (function () {
       state.discoveredLandmarks[lm.id] = true;
       state.stars = (state.stars || 0) + lm.stars;
       state.money = (state.money || 0) + (lm.money || 0);
+      window.BlossomPassport?.stampLandmark?.(state, lm.id);
       return lm;
     }
     return null;

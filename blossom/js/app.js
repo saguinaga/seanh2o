@@ -200,7 +200,17 @@ window.BlossomApp = (function () {
     }
     BlossomGame.checkBonnieOffer?.();
     nudgeFirstDayGuide(state);
-    window.BlossomAI?.probe?.();
+    window.BlossomToday?.renderCard?.(state);
+    hideChatUi();
+  }
+
+  function hideChatUi() {
+    const log = document.getElementById('chatLog');
+    const chips = document.getElementById('chatChips');
+    const bar = document.querySelector('.chat-bar');
+    if (log) log.hidden = true;
+    if (chips) chips.hidden = true;
+    if (bar) bar.hidden = true;
   }
 
   function nudgeFirstDayGuide(st) {
@@ -345,6 +355,16 @@ window.BlossomApp = (function () {
       }
     });
     document.getElementById('shareBtn')?.addEventListener('click', shareGame);
+    document.getElementById('passportBtn')?.addEventListener('click', () => {
+      if (state) window.BlossomPassport?.renderModal?.(state);
+    });
+    document.getElementById('passportClose')?.addEventListener('click', () => {
+      window.BlossomPassport?.closeModal?.();
+    });
+    document.getElementById('todayCardDismiss')?.addEventListener('click', () => {
+      const el = document.getElementById('todayCard');
+      if (el) el.hidden = true;
+    });
     document.getElementById('soundToggle')?.addEventListener('click', async () => {
       await window.BlossomAudio?.unlock();
       state.soundOn = !state.soundOn;

@@ -1,13 +1,12 @@
 /** First-day coaching — how to hit your star goal */
 window.BlossomGuide = (function () {
   const STEPS = [
-    { id: 'breakfast', label: 'Breakfast', stars: 5, hint: 'Tap the fridge · pick your breakfast (+5⭐)' },
-    { id: 'chores_home', label: 'Home chores', stars: null, hint: 'Walk to glowing objects · E or tap · 5⭐ each' },
-    { id: 'explore', label: 'Outdoor chores', stars: null, hint: 'Walk out — 9th St → Main Street → PCH → Pacific City → pier' },
-    { id: 'lunch', label: 'Lunch', stars: 5, hint: 'Afternoon: fridge at home or Main St restaurants' },
-    { id: 'play', label: 'Play / work (optional)', stars: null, hint: 'Kids: pretend shift at dream job · +2⭐' },
+    { id: 'breakfast', label: 'Breakfast', stars: 5, hint: 'Tap the fridge · pick breakfast (+5⭐)' },
+    { id: 'bloom', label: '3 Bloom Tasks', stars: null, hint: '🏠 home · 🌊 world · 💼 career — glowing spots · E or tap' },
+    { id: 'lunch', label: 'Lunch', stars: 5, hint: 'Afternoon: fridge or Main St restaurants (+5⭐)' },
+    { id: 'explore', label: 'Explore HB', stars: null, hint: 'Walk the loop — passport stamps at zones & landmarks' },
     { id: 'dinner', label: 'Dinner', stars: 5, hint: 'Evening: tap fridge · pick dinner (+5⭐)' },
-    { id: 'finish', label: 'End day', stars: null, hint: 'Tap End day when the bar is full — you keep going if you miss!' },
+    { id: 'finish', label: 'End day', stars: null, hint: 'Tap End day when stars hit the goal — streak builds on wins!' },
   ];
 
   function starsGoal(state) {
@@ -18,16 +17,14 @@ window.BlossomGuide = (function () {
   }
 
   function choreTarget(state) {
-    if (state.day <= 1) return 4;
-    if (state.day <= 2) return 5;
-    return Math.min(7, (state.todaysChores || []).length);
+    return Math.min(3, (state.todaysChores || []).length) || 3;
   }
 
   function recipeText(state) {
     const goal = starsGoal(state);
     const meals = 15;
     const chores = choreTarget(state) * cfgStarsPerChore();
-    return `Quinn's recipe: 3 meals (${meals}⭐) + ${choreTarget(state)} chores (${chores}⭐) = ${meals + chores}⭐ — you need ${goal}⭐ today!`;
+    return `Quinn's recipe: 3 meals (${meals}⭐) + 3 bloom tasks (${chores}⭐) = ${meals + chores}⭐ — need ${goal}⭐ today!`;
   }
 
   function cfgStarsPerChore() {
@@ -45,16 +42,11 @@ window.BlossomGuide = (function () {
       case 'breakfast': return state.mealsEaten?.breakfast;
       case 'lunch': return state.mealsEaten?.lunch;
       case 'dinner': return state.mealsEaten?.dinner;
-      case 'chores_home': return choresDoneCount(state) >= Math.min(3, choreTarget(state));
+      case 'bloom': return choresDoneCount(state) >= choreTarget(state);
       case 'explore': {
-        const outdoor = ['trash', 'plants_out', 'mailbox', 'groceries', 'litter', 'ducks', 'playground'];
-        const list = state.todaysChores || [];
-        const done = state.choresDone || {};
-        const need = list.filter((id) => outdoor.includes(id));
-        if (need.length === 0) return true;
-        return need.some((id) => done[id]);
+        const stamps = window.BlossomPassport?.count?.(state);
+        return (stamps?.pages || 0) >= 1;
       }
-      case 'play': return state.playedToday || state.workedToday;
       case 'finish': return state.stars >= starsGoal(state);
       default: return false;
     }
@@ -105,21 +97,22 @@ window.BlossomGuide = (function () {
     if (phase.id === 'morning' && !state.mealsEaten?.breakfast) {
       return 'Step 1: Tap the fridge for breakfast (+5⭐)';
     }
-    if (phase.id === 'morning' && choresDoneCount(state) < 2) {
-      return 'Step 2: Do 2 home chores (bed, dishes, teeth…) · +5⭐ each';
+    if (phase.id === 'morning' && choresDoneCount(state) < 1) {
+      return 'Step 2: First bloom task — check 📋 or glowing spot · +5⭐';
     }
     if (phase.id === 'afternoon' && !state.mealsEaten?.lunch) {
       return 'Step 3: Lunch time — fridge or Main St spot (+5⭐)';
     }
     if (choresDoneCount(state) < choreTarget(state)) {
       const left = choreTarget(state) - choresDoneCount(state);
-      return `${left} chore${left > 1 ? 's' : ''} left on your list — follow the 📋 panel`;
+      return `${left} bloom task${left > 1 ? 's' : ''} left — follow 📋 or explore between tasks`;
     }
     return step.hint;
   }
 
   function shouldShowPanel(state) {
-    return state.day <= 3 || state.level <= 2 || !state.guideDismissed;
+    if (state.guideDismissed) return false;
+    return state.day <= 2 || state.level <= 2;
   }
 
   function isMobileGuide() {

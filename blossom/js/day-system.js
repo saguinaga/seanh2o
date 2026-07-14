@@ -9,7 +9,14 @@ window.BlossomDay = (function () {
 
   const OUTDOOR_CHORES = ['trash', 'plants_out', 'mailbox', 'groceries', 'litter', 'ducks', 'playground'];
   const HOME_CHORES = ['bed', 'dishes', 'homework', 'teeth', 'sweep', 'plants'];
-  const CHORES_PER_DAY = 8;
+  const BLOOM_PER_DAY = 3;
+  const CAREER_CHORES = {
+    salon: ['litter', 'groceries', 'mailbox'],
+    broadway: ['litter', 'playground', 'ducks'],
+    tiktoker: ['plants_out', 'mailbox', 'litter'],
+    coach: ['groceries', 'ducks', 'mailbox'],
+    trainer: ['playground', 'ducks', 'trash'],
+  };
 
   const CHORES = [
     { id: 'bed', label: 'Make bed' },
@@ -84,28 +91,32 @@ window.BlossomDay = (function () {
   }
 
   function assignDailyChores(state) {
-    const picked = new Set();
     const day = state.day || 1;
+    let home;
+    let world;
+    let career;
 
     if (day <= 1) {
-      shuffle(HOME_CHORES).slice(0, 6).forEach((id) => picked.add(id));
-      state.todaysChores = [...picked];
-      return;
-    }
-    if (day <= 2) {
-      shuffle(HOME_CHORES).forEach((id) => { if (picked.size < 5) picked.add(id); });
-      shuffle(OUTDOOR_CHORES).slice(0, 2).forEach((id) => picked.add(id));
-      state.todaysChores = [...picked];
+      const picks = shuffle(HOME_CHORES).slice(0, BLOOM_PER_DAY);
+      state.todaysChores = picks;
+      state.bloomSlots = { home: picks[0], world: picks[1], career: picks[2] };
       return;
     }
 
-    const all = CHORES.map((c) => c.id);
-    shuffle(OUTDOOR_CHORES).slice(0, 3).forEach((id) => picked.add(id));
-    shuffle(all).forEach((id) => {
-      if (picked.size >= CHORES_PER_DAY) return;
-      picked.add(id);
-    });
-    state.todaysChores = [...picked];
+    home = shuffle(HOME_CHORES)[0];
+    world = shuffle(OUTDOOR_CHORES)[0];
+    const pool = CAREER_CHORES[state.careerPath] || CAREER_CHORES.salon;
+    career = shuffle(pool)[0];
+
+    const used = new Set([home]);
+    if (used.has(world)) world = shuffle(OUTDOOR_CHORES).find((id) => !used.has(id)) || world;
+    used.add(world);
+    if (used.has(career)) {
+      career = shuffle([...pool, ...OUTDOOR_CHORES]).find((id) => !used.has(id)) || career;
+    }
+
+    state.bloomSlots = { home, world, career };
+    state.todaysChores = [home, world, career];
   }
 
   function starsGoal(state) {
@@ -124,8 +135,9 @@ window.BlossomDay = (function () {
     const chore = CHORES.find((c) => c.id === choreId);
     if (!chore) return { ok: false, msg: 'Unknown chore' };
     state.choresDone[choreId] = true;
-    const gain = addStars(state, window.BLOSSOM_CONFIG.starsPerChore, chore.label);
-    return { ok: true, msg: `${chore.label} done! (+${gain.stars} stars)` };
+    let bonus = window.BlossomToday?.onChoreDone?.(state, choreId) || 0;
+    const gain = addStars(state, window.BLOSSOM_CONFIG.starsPerChore + bonus, chore.label);
+    return { ok: true, msg: `${chore.label} done! (+${gain.stars} stars${bonus ? ' · event bonus!' : ''})` };
   }
 
   function evaluateDay(state) {
@@ -142,7 +154,7 @@ window.BlossomDay = (function () {
     }
     const goal = starsGoal(state);
     if (total < goal) {
-      const tip = window.BlossomGuide?.nextStep(state)?.hint || 'Eat 3 meals and do chores on your 📋 list.';
+      const tip = window.BlossomGuide?.nextStep(state)?.hint || 'Eat 3 meals and finish 3 bloom tasks.';
       return {
         success: false,
         title: 'Tough day — but you can bloom again!',
@@ -163,14 +175,21 @@ window.BlossomDay = (function () {
     state.level += levelGain;
     state.money += cfg.dailyBonusMoney;
     state.bonusStars += cfg.dailyBonusStars;
+    state.bloomStreak = (state.bloomStreak || 0) + 1;
+    const eventBonus = window.BlossomToday?.onDayClear?.(state);
+    if (eventBonus?.money) state.money += eventBonus.money;
+    window.BlossomPassport?.stampDay?.(state);
     const houseUnlock = state.level >= 50 && state.house === 'small';
     if (houseUnlock) state.houseUpgradeAvailable = true;
+    const streak = state.bloomStreak || 1;
+    const extra = eventBonus?.money ? ` Event bonus +$${eventBonus.money}!` : '';
     return {
       success: true,
       title: 'You bloomed today!',
-      body: `+${cfg.dailyBonusMoney} money, level up${levelGain > 1 ? ' (bonus skip!)' : ''}!`,
+      body: `+${cfg.dailyBonusMoney} money, level up${levelGain > 1 ? ' (bonus skip!)' : ''}! 🔥 ${streak}-day streak.${extra}`,
       levelGain,
       houseUnlock,
+      streak,
     };
   }
 
@@ -178,6 +197,7 @@ window.BlossomDay = (function () {
     state.day += 1;
     window.BlossomCareer?.resetDailyCareer(state);
     const bills = window.BlossomCareer?.applyMorningBills(state);
+    window.BlossomToday?.assign?.(state);
     state.stars = 0;
     state.fatItemsToday = 0;
     state.chubby = state.chubby && state.fatItemsToday === 0 ? state.chubby : state.chubby;
@@ -192,6 +212,7 @@ window.BlossomDay = (function () {
   }
 
   function resetAfterFail(state) {
+    state.bloomStreak = 0;
     window.BlossomCareer?.resetDailyCareer(state);
     state.stars = 0;
     state.mealsEaten = { breakfast: false, lunch: false, dinner: false };
