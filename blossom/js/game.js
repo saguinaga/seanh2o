@@ -78,6 +78,7 @@ window.BlossomGame = (function () {
     camera.y = player.y - 30;
     BlossomPet?.reset?.(player);
     hudCanvas = document.getElementById('gameHud');
+    window.BlossomBoot?.ensureLoadClears?.(7000);
     if (!window.THREE || !BlossomScene3D?.init?.(canvas, canvas.parentElement, hudCanvas)) {
       fallbackTo2D('Classic 2D mode — 3D unavailable on this device.');
     } else {
@@ -88,10 +89,12 @@ window.BlossomGame = (function () {
       BlossomControls.set3DMode?.(true);
       BlossomControls.initPointerOrbit?.(canvas);
       window.BlossomBoot?.setLoadStatus?.('Starting 3D world…');
-      Promise.resolve(BlossomScene3D.warmStart(getLoc(), state, player)).catch((err) => {
+      try {
+        BlossomScene3D.warmStart(getLoc(), state, player);
+      } catch (err) {
         console.error('BlossomScene3D warmStart failed:', err);
         fallbackTo2D('Classic 2D mode — 3D had a hiccup. Game still works!');
-      });
+      }
     }
     if (!started) {
       started = true;

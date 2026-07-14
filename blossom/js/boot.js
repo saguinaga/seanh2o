@@ -20,5 +20,12 @@ window.BlossomBoot = (function () {
     });
   }
 
-  return { setLoadStatus, hideLoad, hideLoadAfterPaint };
+  function ensureLoadClears(ms) {
+    window.setTimeout(() => {
+      const loadEl = document.getElementById('gameLoad');
+      if (loadEl && !loadEl.hidden) hideLoad();
+    }, ms || 6000);
+  }
+
+  return { setLoadStatus, hideLoad, hideLoadAfterPaint, ensureLoadClears };
 })();

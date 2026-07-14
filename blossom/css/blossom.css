@@ -437,6 +437,12 @@ a { color: var(--blossom-green-dark); }
     linear-gradient(165deg, rgba(0, 90, 143, 0.94), rgba(15, 23, 42, 0.9));
   border-radius: 14px;
   pointer-events: none;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+.game-load--out {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .game-load__inner {

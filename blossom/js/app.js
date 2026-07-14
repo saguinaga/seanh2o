@@ -201,12 +201,12 @@ window.BlossomApp = (function () {
     if (!st || st.guideWelcomeSeen || st.day > 1) return;
     st.guideWelcomeSeen = true;
     st.guideDismissed = false;
-    st.guideExpanded = true;
+    if (!BlossomGuide.isMobileGuide?.()) st.guideExpanded = true;
     BlossomGuide.updatePanel(st);
     BlossomSave.persist(st, BlossomAuth.getUserId());
     window.setTimeout(() => {
-      showToast('Day 1: follow the 📖 panel — meals, chores, stars', 'info');
-    }, 1200);
+      showToast('Day 1: tap 📖 for your star checklist', 'info');
+    }, 2000);
   }
 
   function shareGame() {
@@ -361,9 +361,7 @@ window.BlossomApp = (function () {
     document.getElementById('chatLog')?.classList.add('chat-log--open');
     try {
       const result = await window.BlossomGame?.sendChatMessage?.(text);
-      if (result && !result.error) {
-        showToast(`${result.who}: ${result.body}`, 'good');
-      }
+      // Reply shows in chat log + npc bubble — no toast spam
     } finally {
       input.disabled = false;
       if (sendBtn) sendBtn.disabled = false;

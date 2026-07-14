@@ -689,7 +689,10 @@ window.BlossomScene3D = (function () {
   }
 
   function warmStart(loc, state, player) {
-    if (!ready) return;
+    if (!ready) {
+      window.BlossomBoot?.hideLoadAfterPaint?.();
+      return;
+    }
     window.BlossomBoot?.setLoadStatus?.('Loading Surf City…');
     BlossomWorld3D.ensurePlayer3D(player, loc.id);
     if (BlossomWorld3D.isOverworld?.()) {
