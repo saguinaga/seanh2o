@@ -191,8 +191,6 @@ window.BlossomApp = (function () {
       }
     );
     BlossomGame.updateHud();
-    window.BlossomAI?.probe?.();
-    window.setInterval(() => window.BlossomAI?.probe?.(), 120000);
     const bubble = document.getElementById('npcBubble');
     if (bubble) {
       const cp = BlossomCareer.path(state);

@@ -1,5 +1,17 @@
 /** NPC chat proxy — grok-4.5-latest server-side only, key never in browser */
 window.BlossomAI = (function () {
+  if (!window.BLOSSOM_CONFIG?.aiChatEnabled) {
+    return {
+      chat: async () => ({ error: 'offline' }),
+      chatStream: async () => ({ error: 'offline' }),
+      hasEndpoint: () => false,
+      supportsStream: () => false,
+      probe: async () => false,
+      isLive: () => false,
+      setChatUi: () => {},
+      MODEL: 'grok-4.5-latest',
+    };
+  }
   const MODEL = 'grok-4.5-latest';
   let apiLive = false;
   let streaming = true;
