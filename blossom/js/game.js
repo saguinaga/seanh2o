@@ -41,6 +41,7 @@ window.BlossomGame = (function () {
   let dpr = 1;
   let use3d = false;
   let hudCanvas = null;
+  let resizeObs = null;
 
   function getLoc() {
     return BlossomWorld.getLocation(state.currentLocation || 'house');
@@ -97,6 +98,7 @@ window.BlossomGame = (function () {
       const playEl = canvas.closest('.game-play-area');
       stageEl?.classList?.add('game-stage--3d');
       playEl?.classList?.add('game-play-area--3d');
+      setupResizeObserver();
       BlossomControls.set3DMode?.(true);
       BlossomControls.initPointerOrbit?.(canvas);
       window.BlossomBoot?.setLoadStatus?.('Starting 3D world…');
@@ -113,7 +115,10 @@ window.BlossomGame = (function () {
       resize();
       requestAnimationFrame(() => resize());
       setTimeout(() => resize(), 120);
+      setTimeout(() => resize(), 400);
       window.addEventListener('resize', resize);
+      try { canvas.tabIndex = 0; } catch (_) {}
+      canvas.focus?.({ preventScroll: true });
       canvas.addEventListener('click', onTap);
       canvas.addEventListener('touchend', onTapTouch, { passive: false });
       window.addEventListener('keydown', onInteractKey);
@@ -130,15 +135,28 @@ window.BlossomGame = (function () {
     updateHud();
   }
 
+  function setupResizeObserver() {
+    const area = canvas?.closest('.game-play-area');
+    if (!area || resizeObs) return;
+    resizeObs = new ResizeObserver(() => resize());
+    resizeObs.observe(area);
+  }
+
   function resize() {
+    if (!canvas) return;
     const wrap = canvas.parentElement;
-    let w = wrap.clientWidth;
-    let h = wrap.clientHeight;
+    if (!wrap) return;
+    const rect = wrap.getBoundingClientRect();
+    let w = Math.max(1, Math.floor(rect.width));
+    let h = Math.max(1, Math.floor(rect.height));
     if (use3d) {
-      if (w < 10 || h < 10) {
+      if (w < 20 || h < 20) {
         const area = wrap.closest('.game-play-area');
-        w = area?.clientWidth || wrap.offsetWidth || window.innerWidth;
-        h = area?.clientHeight || wrap.offsetHeight || Math.floor(window.innerHeight * 0.55);
+        const ar = area?.getBoundingClientRect();
+        if (ar?.width > 20 && ar?.height > 20) {
+          w = Math.floor(ar.width);
+          h = Math.floor(ar.height);
+        }
       }
       canvas.style.width = '100%';
       canvas.style.height = '100%';
@@ -1091,7 +1109,7 @@ window.BlossomGame = (function () {
   }
 
   return {
-    init, updateHud, endDay, showReminder, onBonnieAccepted, checkBonnieOffer,
+    init, resize, updateHud, endDay, showReminder, onBonnieAccepted, checkBonnieOffer,
     getNearInteract, getChatLog, sendChatMessage, haptic, goToTask, clearNavigation,
     onSpeedMultiplier,
   };

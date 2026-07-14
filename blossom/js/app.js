@@ -28,6 +28,7 @@ window.BlossomApp = (function () {
     if (params.get('screen') === 'create') {
       BlossomSave.clearLocal();
       showScreen('create');
+      history.replaceState(null, '', location.pathname + location.hash);
       return;
     }
 
@@ -49,6 +50,9 @@ window.BlossomApp = (function () {
     document.querySelectorAll('[data-screen]').forEach((el) => {
       el.hidden = el.dataset.screen !== id;
     });
+    document.body.classList.toggle('blossom-playing', id === 'game');
+    document.body.classList.toggle('blossom-create', id === 'create');
+    document.querySelector('.game-shell')?.classList.toggle('is-playing', id === 'game');
   }
 
   function updateAuthUi() {
@@ -202,6 +206,12 @@ window.BlossomApp = (function () {
     nudgeFirstDayGuide(state);
     window.BlossomToday?.renderCard?.(state);
     hideChatUi();
+    requestAnimationFrame(() => {
+      window.BlossomGame?.resize?.();
+      requestAnimationFrame(() => window.BlossomGame?.resize?.());
+    });
+    const cvs = document.getElementById('gameCanvas');
+    setTimeout(() => cvs?.focus?.({ preventScroll: true }), 200);
   }
 
   function hideChatUi() {
