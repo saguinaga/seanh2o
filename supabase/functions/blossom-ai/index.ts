@@ -224,7 +224,7 @@ async function proxyChatStream(
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: cors });
+    return new Response(null, { status: 204, headers: cors });
   }
 
   const path = subpath(new URL(req.url));

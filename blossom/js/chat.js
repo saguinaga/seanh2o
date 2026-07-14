@@ -1,18 +1,29 @@
-/** Grok 4.5 NPC chat — no scripted fallback */
+/** NPC chat — grok-4.5-latest via server proxy, no scripted fallback */
 window.BlossomChat = (function () {
   const MAX_LOG = 24;
-  const MODEL = 'Grok 4.5';
+  const OFFLINE_MSG = "Nobody's around to talk right now — keep exploring Surf City.";
+  const BUSY_MSG = 'Hold on — someone nearby is still talking.';
+  const FAIL_MSG = "Couldn't get a reply — try again in a moment.";
 
   function speakerFrom(reply) {
     const idx = reply.indexOf(':');
     if (idx > 0 && idx < 24) return reply.slice(0, idx).trim();
-    return MODEL;
+    return 'Local';
   }
 
   function bodyFrom(reply) {
     const idx = reply.indexOf(':');
     if (idx > 0 && idx < 24) return reply.slice(idx + 1).trim();
     return reply;
+  }
+
+  function userError(err) {
+    const msg = String(err || '').toLowerCase();
+    if (msg === 'busy') return BUSY_MSG;
+    if (msg.includes('no_key') || msg.includes('not_found') || msg.includes('unavailable') || msg.includes('offline')) {
+      return OFFLINE_MSG;
+    }
+    return FAIL_MSG;
   }
 
   function renderLog(entries) {
@@ -52,25 +63,26 @@ window.BlossomChat = (function () {
   }
 
   function failReply(store, message) {
-    const body = message || 'Grok 4.5 offline — set XAI_API_KEY (local: blossom/.env · prod: Supabase secret + deploy).';
-    appendLog(MODEL, body, store, { error: true });
-    return { who: MODEL, body, ai: false, error: true };
+    const body = userError(message);
+    appendLog('Note', body, store, { error: true });
+    return { who: 'Note', body, ai: false, error: true };
   }
 
   async function sendAsync(text, state, near, logStore) {
     const trimmed = (text || '').trim();
     if (!trimmed) return null;
+    if (!window.BlossomAI?.isLive?.()) return failReply(logStore, 'offline');
     appendLog('You', trimmed, logStore);
 
     const typingEl = document.getElementById('chatTyping');
     if (typingEl) {
       typingEl.hidden = false;
-      typingEl.textContent = 'Grok 4.5 is thinking…';
+      typingEl.textContent = '…';
     }
 
     if (!window.BlossomAI?.hasEndpoint?.()) {
       if (typingEl) typingEl.hidden = true;
-      return failReply(logStore, 'Grok 4.5 endpoint missing.');
+      return failReply(logStore, 'offline');
     }
 
     const streamLine = beginStreamLine(logStore);

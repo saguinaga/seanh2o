@@ -29,8 +29,6 @@ window.BLOSSOM_CONFIG.cloudEnabled = Boolean(
   window.BLOSSOM_CONFIG.supabaseUrl && window.BLOSSOM_CONFIG.supabaseAnonKey
 );
 
-/** xAI Grok 4.5 only (not Composer) — local: dev-server · prod: Supabase blossom-ai */
+/** NPC chat — grok-4.5-latest via local dev-server or Supabase blossom-ai */
 window.BLOSSOM_CONFIG.aiChatEndpoint = null;
 window.BLOSSOM_CONFIG.aiModel = 'grok-4.5-latest';
-window.BLOSSOM_CONFIG.aiModelLabel = 'Grok 4.5';
-window.BLOSSOM_CONFIG.aiProviderLabel = 'xAI';

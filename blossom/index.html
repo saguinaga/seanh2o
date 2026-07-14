@@ -3,12 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Blossom Life — xAI Grok 4.5 · Grow your life</title>
-  <meta name="description" content="3D Huntington Beach life sim — every NPC reply powered by xAI Grok 4.5 (flagship model, not Composer).">
+  <title>Blossom Life — 3D Huntington Beach</title>
+  <meta name="description" content="Free 3D life sim in Huntington Beach. Walk Main Street to the pier, earn stars, pick your dream career. Built with Quinn.">
+  <link rel="canonical" href="https://seanaguinaga.com/blossom/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seanaguinaga.com/blossom/">
+  <meta property="og:title" content="Blossom Life — 3D Huntington Beach">
+  <meta property="og:description" content="Free open-world life sim. 6 zones, careers, stars. Play in your browser.">
+  <meta property="og:image" content="https://seanaguinaga.com/blossom/assets/og-card.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blossom Life">
+  <meta name="twitter:description" content="3D HB open world life sim. Play free.">
+  <meta name="twitter:image" content="https://seanaguinaga.com/blossom/assets/og-card.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=27">
+  <link rel="stylesheet" href="css/blossom.css?v=29">
 </head>
 <body class="landing">
   <div class="aurora-bg aurora-bg--light" aria-hidden="true"></div>
@@ -16,19 +26,26 @@
 
   <nav class="landing-nav">
     <span class="landing-logo">🌸 Blossom Life</span>
-    <a href="../index.html" class="btn-blossom btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Sean Aguinaga</a>
+    <a href="../index.html" class="btn-blossom btn-secondary landing-nav__link">Sean Aguinaga</a>
   </nav>
 
   <header class="landing-hero">
-    <p class="landing-eyebrow">✨ xAI Grok 4.5 NPCs · Quinn's life game</p>
+    <p class="landing-eyebrow">Free · browser · no download</p>
     <h1 class="landing-title-glow">Blossom Life</h1>
-    <p class="landing-tagline">Grow your life. One star at a time. Full Surf City in 3D.</p>
+    <p class="landing-tagline">3D Huntington Beach open world — dream careers, 50 stars a day.</p>
+
+    <div class="landing-poster" aria-hidden="true">
+      <div class="landing-poster__zones">
+        <span>9th St</span><span>Main</span><span>PCH</span><span>Pac City</span><span>Pier</span>
+      </div>
+      <p class="landing-poster__tag">Surf City USA · playable now</p>
+    </div>
 
     <div class="landing-story">
       <p>
-        A cozy life game built with Quinn (age 9). Walk the full <strong>3D Huntington Beach</strong> open world —
-        9th Street → Main Street → Pacific City → the pier. Eat meals, do chores, pick your <strong>dream career</strong>,
-        and collect <strong>50 stars</strong> to level up. (Classic 2D mode if your device can't do WebGL.)
+        A cozy life game built with Quinn (age 9). Explore the full <strong>3D Huntington Beach</strong> —
+        cottage on 9th, Main Street shops, Pacific City boardwalk, Ruby's on the pier.
+        Eat meals, do chores, level up your career, collect stars.
       </p>
       <blockquote>
         "It's a game where it's like a life game… start off with 10 dollars… get stars for completing a full day… 50 stars."
@@ -39,17 +56,39 @@
     <div class="landing-actions">
       <a href="play.html" class="btn-blossom btn-primary btn-glow">Play now →</a>
       <a href="play.html?screen=create" class="btn-blossom btn-secondary">New character</a>
+      <button type="button" class="btn-blossom btn-secondary" id="shareLanding">Share link</button>
     </div>
+    <p class="landing-share-url" id="shareUrl">seanaguinaga.com/blossom/play.html</p>
   </header>
 
   <section class="landing-features" aria-label="Game features">
-    <div class="feature-card feature-card--float"><span>💇</span><strong>Dream careers</strong><p>Salon · Broadway · TikToker · Coach · Trainer</p></div>
-    <div class="feature-card feature-card--float" style="animation-delay: 0.1s"><span>⭐</span><strong>50 stars/day</strong><p>Day 1 starts at 35 — the game teaches you!</p></div>
-    <div class="feature-card feature-card--float" style="animation-delay: 0.2s"><span>🗺️</span><strong>6-zone open world</strong><p>9th St → Main → PCH → Pacific City → Pier</p></div>
-    <div class="feature-card feature-card--float" style="animation-delay: 0.25s"><span>🤖</span><strong>xAI Grok 4.5</strong><p>Flagship model · every NPC · no Composer · no scripts</p></div>
-    <div class="feature-card feature-card--float" style="animation-delay: 0.3s"><span>👗</span><strong>Mii-style avatar</strong><p>Height, hair, glasses — shop new fits on Main street</p></div>
-    <div class="feature-card feature-card--float" style="animation-delay: 0.4s"><span>📱</span><strong>Any device</strong><p>Joystick + WASD</p></div>
-    <div class="feature-card feature-card--float" style="animation-delay: 0.5s"><span>☁️</span><strong>Cloud saves</strong><p>Guest or sign in</p></div>
+    <div class="feature-card feature-card--float"><span>🗺️</span><strong>6-zone open world</strong><p>Walk the full HB loop in 3D</p></div>
+    <div class="feature-card feature-card--float" style="animation-delay: 0.08s"><span>💬</span><strong>Talk to locals</strong><p>Chat with HB characters as you explore</p></div>
+    <div class="feature-card feature-card--float" style="animation-delay: 0.16s"><span>💇</span><strong>Dream careers</strong><p>Salon · Broadway · TikToker · Coach · Trainer</p></div>
+    <div class="feature-card feature-card--float" style="animation-delay: 0.24s"><span>⭐</span><strong>50 stars/day</strong><p>Day 1 starts at 35 — the game teaches you</p></div>
+    <div class="feature-card feature-card--float" style="animation-delay: 0.32s"><span>👗</span><strong>Mii-style avatar</strong><p>Shop fits on Main Street</p></div>
+    <div class="feature-card feature-card--float" style="animation-delay: 0.4s"><span>📱</span><strong>Phone + desktop</strong><p>Joystick, WASD, touch</p></div>
   </section>
+
+  <footer class="landing-footer">
+    <p>Share: <a href="play.html">seanaguinaga.com/blossom/play.html</a></p>
+  </footer>
+
+  <script>
+  (function () {
+    var url = 'https://seanaguinaga.com/blossom/play.html';
+    document.getElementById('shareLanding')?.addEventListener('click', function () {
+      var text = 'Play Blossom Life — 3D Huntington Beach open world!';
+      if (navigator.share) {
+        navigator.share({ title: 'Blossom Life', text: text, url: url }).catch(function () {});
+        return;
+      }
+      navigator.clipboard?.writeText(url).then(function () {
+        var btn = document.getElementById('shareLanding');
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(function () { btn.textContent = 'Share link'; }, 2000); }
+      });
+    });
+  })();
+  </script>
 </body>
 </html>

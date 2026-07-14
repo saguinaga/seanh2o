@@ -51,8 +51,7 @@ window.BlossomGame = (function () {
     canvas.parentElement?.classList?.remove('game-stage--3d');
     BlossomControls.set3DMode?.(false);
     if (!ctx) ctx = canvas.getContext('2d');
-    const loadEl = document.getElementById('gameLoad');
-    if (loadEl) loadEl.hidden = true;
+    window.BlossomBoot?.hideLoad?.();
     if (hudCanvas) hudCanvas.style.display = 'none';
     resize();
     if (message) onMessage?.(message, 'info');
@@ -88,6 +87,7 @@ window.BlossomGame = (function () {
       canvas.parentElement?.classList?.add('game-stage--3d');
       BlossomControls.set3DMode?.(true);
       BlossomControls.initPointerOrbit?.(canvas);
+      window.BlossomBoot?.setLoadStatus?.('Starting 3D world…');
       Promise.resolve(BlossomScene3D.warmStart(getLoc(), state, player)).catch((err) => {
         console.error('BlossomScene3D warmStart failed:', err);
         fallbackTo2D('Classic 2D mode — 3D had a hiccup. Game still works!');
@@ -113,7 +113,6 @@ window.BlossomGame = (function () {
     showReminder(hint);
     checkBonnieOffer();
     updateHud();
-    window.BlossomApp?.maybeShowWelcome?.(state);
   }
 
   function resize() {

@@ -14,12 +14,16 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Play — Blossom Life · xAI Grok 4.5</title>
-  <meta name="description" content="Blossom Life 3D HB open world — every NPC powered by xAI Grok 4.5 (not Composer).">
+  <title>Play — Blossom Life · 3D Huntington Beach</title>
+  <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
+  <meta property="og:title" content="Blossom Life — Play Now">
+  <meta property="og:description" content="3D Surf City open world. Free in your browser.">
+  <meta property="og:image" content="https://seanaguinaga.com/blossom/assets/og-card.svg">
+  <meta property="og:url" content="https://seanaguinaga.com/blossom/play.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/blossom.css?v=28">
+  <link rel="stylesheet" href="css/blossom.css?v=29">
 </head>
 <body>
   <div class="aurora-bg" aria-hidden="true"></div>
@@ -119,7 +123,7 @@
     <header class="game-topbar">
       <a href="index.html" style="color: #94a3b8; text-decoration: none;">🌸</a>
       <span id="playerName">You</span>
-      <span class="grok-pill" id="grokPill" title="xAI grok-4.5-latest">xAI · Grok 4.5</span>
+      <span class="grok-pill" id="grokPill" hidden></span>
       <span id="authBadge" class="auth-badge">Guest</span>
       <button type="button" class="toolbar-btn toolbar-btn--ghost" id="openAuthGame" style="min-height: 36px; padding: 0 12px; font-size: 0.75rem;">Account</button>
     </header>
@@ -133,8 +137,9 @@
         <canvas id="gameHud" class="game-hud-canvas" aria-hidden="true"></canvas>
         <div class="game-load" id="gameLoad">
           <div class="game-load__inner">
-            <p class="game-load__title">🏄 9th St → Main → PCH → Pacific City → Pier</p>
-            <p class="game-load__sub">xAI Grok 4.5 locals · full Surf City open world</p>
+            <p class="game-load__brand">🌸 Blossom Life</p>
+            <p class="game-load__title">Surf City USA</p>
+            <p class="game-load__sub" id="gameLoadStatus">Building the open world…</p>
             <div class="game-load__wave" aria-hidden="true"></div>
             <div class="game-load__dots" aria-hidden="true"><span></span><span></span><span></span></div>
           </div>
@@ -188,8 +193,8 @@
     <footer class="game-bottom">
       <p class="npc-bubble" id="npcBubble">Walk to the green exit to leave home · tap objects to interact</p>
       <p class="travel-hint" id="travelHint"></p>
-      <div class="chat-log" id="chatLog" aria-live="polite"></div>
-      <div class="chat-chips" id="chatChips">
+      <div class="chat-log" id="chatLog" aria-live="polite" hidden></div>
+      <div class="chat-chips" id="chatChips" hidden>
         <button type="button" class="chat-chip" data-chat="What should I do next?">What next?</button>
         <button type="button" class="chat-chip" data-chat="How do I earn more stars?">More stars?</button>
         <button type="button" class="chat-chip" data-chat="What's good on Main Street HB?">Main Street</button>
@@ -197,14 +202,15 @@
         <button type="button" class="chat-chip" data-chat="Where are Sugar Shack, Jan's, and No Ka Oi?">Restaurants</button>
         <button type="button" class="chat-chip" data-chat="Where's the pier and Ruby's?">Pier & Ruby's</button>
       </div>
-      <div class="chat-bar">
-        <span class="chat-ai-badge chat-ai-badge--off" id="chatAiBadge">xAI · Grok 4.5</span>
-        <input type="text" class="chat-input" id="chatInput" placeholder="Talk to locals — xAI Grok 4.5…" maxlength="120" enterkeyhint="send">
+      <div class="chat-bar" hidden>
+        <span class="chat-ai-badge" id="chatAiBadge" hidden></span>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Say something to nearby locals…" maxlength="120" enterkeyhint="send">
         <button type="button" class="chat-send" id="chatSend">Say</button>
-        <p class="chat-typing" id="chatTyping" hidden>Grok 4.5 is thinking…</p>
+        <p class="chat-typing" id="chatTyping" hidden aria-hidden="true">…</p>
       </div>
       <div class="game-toolbar">
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="guideHelpBtn" title="How to get stars">📖</button>
+        <button type="button" class="toolbar-btn toolbar-btn--ghost" id="shareBtn" title="Share Blossom Life">🔗</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="photoBtn" title="Photo mode (P)">📷</button>
         <button type="button" class="toolbar-btn" id="endDayBtn">End day</button>
         <button type="button" class="toolbar-btn toolbar-btn--ghost" id="soundToggle" title="Sound on" aria-pressed="true">🔊</button>
@@ -341,66 +347,46 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
-  <script src="js/config.js?v=25"></script>
-  <script src="js/hb-local.js?v=25"></script>
-  <script src="js/world.js?v=25"></script>
-  <script src="js/world3d.js?v=25"></script>
-  <script src="js/hb-env.js?v=25"></script>
-  <script src="js/scene3d-juice.js?v=25"></script>
-  <script src="js/scene3d-hud.js?v=25"></script>
-  <script src="js/art.js?v=25"></script>
-  <script src="js/gfx.js?v=25"></script>
-  <script src="js/navigator.js?v=25"></script>
-  <script src="js/weather.js?v=25"></script>
-  <script src="js/pet.js?v=25"></script>
-  <script src="js/chat.js?v=25"></script>
-  <script src="js/photo.js?v=25"></script>
-  <script src="js/avatar.js?v=25"></script>
-  <script src="js/career.js?v=25"></script>
-  <script src="js/effects.js?v=25"></script>
-  <script src="js/audio.js?v=25"></script>
-  <script src="js/save.js?v=25"></script>
-  <script src="js/ai-chat.js?v=25"></script>
-  <script src="js/guide.js?v=25"></script>
-  <script src="js/auth.js?v=25"></script>
-  <script src="js/boutique.js?v=25"></script>
-  <script src="js/day-system.js?v=25"></script>
-  <script src="js/meal.js?v=25"></script>
-  <script src="js/shift.js?v=25"></script>
-  <script src="js/controls.js?v=25"></script>
-  <script src="js/render.js?v=25"></script>
-  <script src="js/scene3d.js?v=25"></script>
-  <script src="js/game.js?v=25"></script>
-  <script src="js/app.js?v=25"></script>
-  <script>
-  (function recoverFromStaleScripts() {
-    if (window.BlossomFx) {
-      try { sessionStorage.removeItem('blossom_script_recover'); } catch (_) {}
-      return;
-    }
-    var tried = false;
-    try { tried = !!sessionStorage.getItem('blossom_script_recover'); } catch (_) {}
-    if (!tried) {
-      try { sessionStorage.setItem('blossom_script_recover', '1'); } catch (_) {}
-      var url = new URL(location.href);
-      url.searchParams.set('_fresh', Date.now().toString(36));
-      location.replace(url.href);
-      return;
-    }
-    var banner = document.createElement('div');
-    banner.setAttribute('role', 'alert');
-    banner.style.cssText = 'position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(15,23,42,0.88);color:#fff;font:600 1rem Nunito,sans-serif;padding:24px;text-align:center';
-    banner.innerHTML = '<p style="max-width:320px;line-height:1.5">Blossom Life is stuck on an old cached version.<br><br><button type="button" style="padding:12px 24px;font-size:1rem;border-radius:12px;border:none;cursor:pointer;background:#4ade80;color:#14532d;font-weight:700">Reload fresh copy</button></p>';
-    banner.querySelector('button').onclick = function () {
-      try { sessionStorage.removeItem('blossom_script_recover'); } catch (_) {}
-      var u = new URL(location.href);
-      u.searchParams.set('_fresh', Date.now().toString(36));
-      location.replace(u.href);
-    };
-    document.body.appendChild(banner);
-  })();
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.module.js"}}
   </script>
+  <script type="module">
+  import * as THREE from 'three';
+  window.THREE = THREE;
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script defer src="js/boot.js?v=28"></script>
+  <script defer src="js/config.js?v=28"></script>
+  <script defer src="js/hb-local.js?v=28"></script>
+  <script defer src="js/world.js?v=28"></script>
+  <script defer src="js/world3d.js?v=28"></script>
+  <script defer src="js/hb-env.js?v=28"></script>
+  <script defer src="js/scene3d-juice.js?v=28"></script>
+  <script defer src="js/scene3d-hud.js?v=28"></script>
+  <script defer src="js/art.js?v=28"></script>
+  <script defer src="js/gfx.js?v=28"></script>
+  <script defer src="js/navigator.js?v=28"></script>
+  <script defer src="js/weather.js?v=28"></script>
+  <script defer src="js/pet.js?v=28"></script>
+  <script defer src="js/chat.js?v=28"></script>
+  <script defer src="js/photo.js?v=28"></script>
+  <script defer src="js/avatar.js?v=28"></script>
+  <script defer src="js/career.js?v=28"></script>
+  <script defer src="js/effects.js?v=28"></script>
+  <script defer src="js/audio.js?v=28"></script>
+  <script defer src="js/save.js?v=28"></script>
+  <script defer src="js/ai-chat.js?v=28"></script>
+  <script defer src="js/guide.js?v=28"></script>
+  <script defer src="js/auth.js?v=28"></script>
+  <script defer src="js/boutique.js?v=28"></script>
+  <script defer src="js/day-system.js?v=28"></script>
+  <script defer src="js/meal.js?v=28"></script>
+  <script defer src="js/shift.js?v=28"></script>
+  <script defer src="js/controls.js?v=28"></script>
+  <script defer src="js/render.js?v=28"></script>
+  <script defer src="js/scene3d.js?v=28"></script>
+  <script defer src="js/game.js?v=28"></script>
+  <script defer src="js/app.js?v=28"></script>
+
 </body>
 </html>

@@ -53,15 +53,12 @@ window.BlossomApp = (function () {
       badge.textContent = BlossomAuth.getEmail() || 'Signed in';
       badge.className = 'auth-badge auth-badge--on';
     } else {
-      badge.textContent = 'Guest · saved on this device';
+      badge.textContent = 'Guest';
       badge.className = 'auth-badge';
     }
     if (cloudNote) {
       if (window.BLOSSOM_CONFIG.cloudEnabled) {
-        cloudNote.hidden = BlossomAuth.isLoggedIn();
-        cloudNote.textContent = BlossomAuth.isLoggedIn()
-          ? ''
-          : '☁️ Cloud saves ready — tap Account to sign in and sync across devices.';
+        cloudNote.hidden = true;
       } else {
         cloudNote.hidden = false;
         cloudNote.textContent = 'Cloud saves: paste your Supabase anon key in config.js (see API settings).';
@@ -188,10 +185,7 @@ window.BlossomApp = (function () {
       }
     );
     BlossomGame.updateHud();
-    window.BlossomAI?.probe?.().then((on) => {
-      if (on) showToast('xAI Grok 4.5 live — flagship NPC chat', 'good');
-      else showToast('xAI Grok 4.5 offline — set XAI_API_KEY + deploy', 'warn');
-    });
+    window.BlossomAI?.probe?.();
     const bubble = document.getElementById('npcBubble');
     if (bubble) {
       const cp = BlossomCareer.path(state);
@@ -200,17 +194,30 @@ window.BlossomApp = (function () {
         : `Level ${BlossomCareer.BONNIE_LEVEL}: Bonnie hires on Main street · ${cp.workLabel} afternoons`;
     }
     BlossomGame.checkBonnieOffer?.();
-    maybeShowWelcome(state);
+    window.setTimeout(() => maybeShowWelcome(state), 1600);
   }
 
   function maybeShowWelcome(st) {
     if (!st || st.guideWelcomeSeen) return;
+    if (document.getElementById('gameLoad') && !document.getElementById('gameLoad').hidden) return;
     st.guideWelcomeSeen = true;
     const modal = document.getElementById('welcomeGuideModal');
     const body = document.getElementById('welcomeGuideBody');
     if (body) body.textContent = BlossomGuide.welcomeBody(st);
     setModalOpen(modal, true);
     BlossomSave.persist(st, BlossomAuth.getUserId());
+  }
+
+  function shareGame() {
+    const url = 'https://seanaguinaga.com/blossom/play.html';
+    const text = 'Play Blossom Life — 3D Huntington Beach open world!';
+    if (navigator.share) {
+      navigator.share({ title: 'Blossom Life', text, url }).catch(() => {});
+      return;
+    }
+    navigator.clipboard?.writeText(url).then(() => {
+      showToast('Link copied — share Blossom Life!', 'good');
+    }).catch(() => showToast(url, 'info'));
   }
 
   function showStarGuide() {
@@ -232,23 +239,7 @@ window.BlossomApp = (function () {
     setModalOpen(modal, true);
   }
 
-  function showStaleCacheBanner() {
-    if (document.getElementById('blossomStaleBanner')) return;
-    const banner = document.createElement('div');
-    banner.id = 'blossomStaleBanner';
-    banner.setAttribute('role', 'alert');
-    banner.style.cssText = 'position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(15,23,42,0.92);color:#fff;font:600 1rem Nunito,sans-serif;padding:24px;text-align:center';
-    banner.innerHTML = '<div style="max-width:360px;line-height:1.55"><p>Your browser cached an <strong>old Blossom build</strong> (scene3d v14).</p><p style="margin:12px 0 20px">Use the button below or press <strong>Ctrl+Shift+R</strong>.</p><button type="button" style="padding:12px 28px;font-size:1rem;border-radius:12px;border:none;cursor:pointer;background:#4ade80;color:#14532d;font-weight:700">Load fresh copy</button></div>';
-    banner.querySelector('button').onclick = () => {
-      try { sessionStorage.removeItem('blossom_script_recover'); } catch { /* noop */ }
-      const u = new URL(location.href);
-      u.pathname = u.pathname.replace(/\/play\/?$/, '/play.html');
-      u.searchParams.set('_fresh', Date.now().toString(36));
-      u.searchParams.set('b', '25');
-      location.replace(u.href);
-    };
-    document.body.appendChild(banner);
-  }
+
 
   function showToast(msg, type = 'info') {
     const el = document.getElementById('gameToast');
@@ -351,6 +342,7 @@ window.BlossomApp = (function () {
         sendChat();
       }
     });
+    document.getElementById('shareBtn')?.addEventListener('click', shareGame);
     document.getElementById('soundToggle')?.addEventListener('click', async () => {
       await window.BlossomAudio?.unlock();
       state.soundOn = !state.soundOn;
@@ -371,9 +363,8 @@ window.BlossomApp = (function () {
     document.getElementById('chatLog')?.classList.add('chat-log--open');
     try {
       const result = await window.BlossomGame?.sendChatMessage?.(text);
-      if (result) {
-        if (result.error) showToast(result.body, 'warn');
-        else showToast(`${result.who}: ${result.body}`, 'good');
+      if (result && !result.error) {
+        showToast(`${result.who}: ${result.body}`, 'good');
       }
     } finally {
       input.disabled = false;
@@ -471,8 +462,8 @@ window.BlossomApp = (function () {
     showBonnieModal,
     showTravelBanner,
     showToast,
-    showStaleCacheBanner,
     maybeShowWelcome,
+    shareGame,
     boot,
   };
 })();

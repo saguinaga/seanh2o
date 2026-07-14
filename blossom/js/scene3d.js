@@ -690,9 +690,13 @@ window.BlossomScene3D = (function () {
 
   function warmStart(loc, state, player) {
     if (!ready) return;
+    window.BlossomBoot?.setLoadStatus?.('Loading Surf City…');
     BlossomWorld3D.ensurePlayer3D(player, loc.id);
     if (BlossomWorld3D.isOverworld?.()) {
-      if (!overworldBuilt) buildOverworld(state);
+      if (!overworldBuilt) {
+        window.BlossomBoot?.setLoadStatus?.('Building Main Street → Pier…');
+        buildOverworld(state);
+      }
     } else {
       buildLocation(loc, state);
     }
@@ -705,8 +709,8 @@ window.BlossomScene3D = (function () {
     playerRig.position.copy(p);
     camYaw = player.moveYaw ?? Math.PI;
     snapCamera(p);
-    const loadEl = document.getElementById('gameLoad');
-    if (loadEl) loadEl.hidden = true;
+    window.BlossomBoot?.setLoadStatus?.('Almost there…');
+    window.BlossomBoot?.hideLoadAfterPaint?.();
   }
 
   function snapCamera(p) {

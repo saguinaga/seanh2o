@@ -1,8 +1,6 @@
-/** xAI Grok 4.5 NPC chat — server proxy only, key never in browser */
+/** NPC chat proxy — grok-4.5-latest server-side only, key never in browser */
 window.BlossomAI = (function () {
   const MODEL = 'grok-4.5-latest';
-  const MODEL_LABEL = 'Grok 4.5';
-  const PROVIDER_LABEL = 'xAI';
   let apiLive = false;
   let streaming = true;
   let pending = false;
@@ -142,54 +140,58 @@ window.BlossomAI = (function () {
   }
 
   function parseApiError(data, res) {
-    return data?.message || data?.error?.message || data?.error || res?.statusText || 'Grok 4.5 request failed';
+    return data?.message || data?.error?.message || data?.error || res?.statusText || 'chat_unavailable';
   }
 
-  function setBadge(live) {
+  function setChatUi(live) {
     const badge = document.getElementById('chatAiBadge');
     const pill = document.getElementById('grokPill');
+    const bar = document.querySelector('.chat-bar');
+    const chips = document.getElementById('chatChips');
+    const log = document.getElementById('chatLog');
     const input = document.getElementById('chatInput');
-    const label = `${PROVIDER_LABEL} · ${MODEL_LABEL}`;
-    if (badge) {
-      badge.hidden = false;
-      badge.classList.toggle('chat-ai-badge--on', live);
-      badge.classList.toggle('chat-ai-badge--off', !live);
-      badge.textContent = live ? `✨ ${label} live` : `⚠ ${label} offline`;
-    }
-    if (pill) {
-      pill.classList.toggle('grok-pill--live', live);
-      pill.classList.toggle('grok-pill--off', !live);
-      pill.textContent = live ? `${PROVIDER_LABEL} · ${MODEL_LABEL}` : `${MODEL_LABEL} offline`;
-    }
+    const send = document.getElementById('chatSend');
+    if (badge) badge.hidden = true;
+    if (pill) pill.hidden = true;
+    if (bar) bar.hidden = !live;
+    if (chips) chips.hidden = !live;
+    if (log) log.hidden = !live;
     if (input) {
-      input.placeholder = live
-        ? `Talk to locals — ${PROVIDER_LABEL} ${MODEL_LABEL}`
-        : `${MODEL_LABEL} offline — set XAI_API_KEY + deploy`;
+      input.disabled = !live;
+      input.placeholder = 'Say something to nearby locals…';
     }
+    if (send) send.disabled = !live;
   }
 
   async function probe() {
     const health = healthUrl();
     if (!health) {
       apiLive = false;
-      setBadge(false);
+      setChatUi(false);
       return false;
     }
     try {
-      const res = await fetch(health, {
-        headers: fetchHeaders(),
-        signal: AbortSignal.timeout(5000),
-      });
+      // Simple GET (no auth headers) avoids CORS preflight; function uses --no-verify-jwt
+      const res = await fetch(health, { signal: AbortSignal.timeout(5000) });
       const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.code === 'NOT_FOUND' || data?.error === 'not_found') {
+        apiLive = false;
+        setChatUi(false);
+        return false;
+      }
       apiLive = Boolean(data?.ai) && (!data?.model || String(data.model).startsWith('grok-4.5'));
       streaming = data?.stream !== false;
-      setBadge(apiLive);
+      setChatUi(apiLive);
       return apiLive;
     } catch {
       apiLive = false;
-      setBadge(false);
+      setChatUi(false);
       return false;
     }
+  }
+
+  function isLive() {
+    return apiLive;
   }
 
   function supportsStream() {
@@ -225,7 +227,7 @@ window.BlossomAI = (function () {
 
   async function chatStream(message, state, near, logStore, onToken) {
     const ep = streamEndpoint();
-    if (!ep || pending) return { error: 'Grok 4.5 busy — try again.' };
+    if (!ep || pending) return { error: 'busy' };
     pending = true;
     try {
       const res = await fetch(ep, {
@@ -239,21 +241,21 @@ window.BlossomAI = (function () {
         const reply = await parseSseStream(res, onToken);
         if (reply) {
           apiLive = true;
-          setBadge(true);
+          setChatUi(true);
           return { reply };
         }
-        return { error: 'Grok 4.5 returned empty stream.' };
+        return { error: 'empty' };
       }
       const data = await res.json().catch(() => ({}));
       if (data?.ok && data.reply) {
         apiLive = true;
-        setBadge(true);
+        setChatUi(true);
         onToken?.(data.reply);
         return { reply: data.reply.trim() };
       }
       return { error: parseApiError(data, res) };
     } catch (e) {
-      return { error: e?.message || 'Grok 4.5 connection failed.' };
+      return { error: e?.message || 'unavailable' };
     } finally {
       pending = false;
     }
@@ -261,7 +263,7 @@ window.BlossomAI = (function () {
 
   async function chat(message, state, near, logStore) {
     const ep = endpoint();
-    if (!ep || pending) return { error: 'Grok 4.5 busy — try again.' };
+    if (!ep || pending) return { error: 'busy' };
     pending = true;
     try {
       const res = await fetch(ep, {
@@ -273,12 +275,12 @@ window.BlossomAI = (function () {
       const data = await res.json().catch(() => ({}));
       if (data?.ok && data.reply) {
         apiLive = true;
-        setBadge(true);
+        setChatUi(true);
         return { reply: data.reply.trim() };
       }
       return { error: parseApiError(data, res) };
     } catch (e) {
-      return { error: e?.message || 'Grok 4.5 connection failed.' };
+      return { error: e?.message || 'unavailable' };
     } finally {
       pending = false;
     }
@@ -290,9 +292,10 @@ window.BlossomAI = (function () {
     hasEndpoint,
     supportsStream,
     probe,
+    isLive,
     nearLabel,
     buildContext,
-    setBadge,
+    setChatUi,
     MODEL,
   };
 })();
