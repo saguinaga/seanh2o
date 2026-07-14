@@ -132,6 +132,32 @@ window.BlossomScene3DHud = (function () {
     wowText(ctx, `${finished} / ${list.length} complete`, 18, y + 38, 11, finished === list.length ? '#40c040' : '#f0e6c8');
   }
 
+  function drawStamina(ctx, w, h, stamina, running) {
+    const s = stamina ?? 100;
+    if (s >= 99.5 && !running) return;
+    const barW = 72;
+    const x = w - barW - 14;
+    const y = h - 22;
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(x - 2, y - 2, barW + 4, 10);
+    ctx.fillStyle = s < 18 ? '#f87171' : '#34d399';
+    ctx.fillRect(x, y, barW * (s / 100), 6);
+    ctx.fillStyle = '#a09070';
+    ctx.font = '9px Arial, sans-serif';
+    ctx.fillText(running ? 'RUN' : 'stamina', x, y - 3);
+  }
+
+  function drawDiscovery(ctx, w, state) {
+    const p = BlossomDiscovery?.progress?.(state);
+    if (!p) return;
+    const total = p.zonesTotal + p.landmarksTotal;
+    const done = p.zones + p.landmarks;
+    if (done <= 0) return;
+    ctx.fillStyle = '#c9a227';
+    ctx.font = '10px Arial, sans-serif';
+    ctx.fillText(`✦ ${done}/${total} discovered`, 12, 118);
+  }
+
   function drawInteractPrompt(ctx, w, h, nearInteract) {
     if (!nearInteract) return;
     const label = nearInteract.label || nearInteract.kind || 'Interact';
@@ -153,7 +179,7 @@ window.BlossomScene3DHud = (function () {
   }
 
   function draw(ctx, w, h, opts) {
-    const { loc, state, player, nearInteract, running, phaseFade } = opts;
+    const { loc, state, player, nearInteract, running, phaseFade, stamina } = opts;
     const tint = ZONE_TINT[loc?.id] || '#fff568';
 
     drawUnitFrame(ctx, 10, 10, 188, 52, loc?.name || 'Huntington Beach', null, tint);
@@ -164,6 +190,8 @@ window.BlossomScene3DHud = (function () {
 
     drawQuestTracker(ctx, state);
     drawMinimap(ctx, w, h, player, loc?.id);
+    drawDiscovery(ctx, w, state);
+    drawStamina(ctx, w, h, opts.stamina, opts.running);
 
     const mult = window.BLOSSOM_CONFIG?.walkSpeedMultiplier ?? 1;
     if (running) {

@@ -259,14 +259,14 @@ window.BlossomApp = (function () {
     }, 3500);
   }
 
-  function showTravelBanner(name, locId) {
+  function showTravelBanner(name, locId, rewardSub) {
     const el = document.getElementById('travelBanner');
     const text = document.getElementById('travelBannerText');
     const sub = document.getElementById('travelBannerSub');
     if (!el || !text) return;
     text.textContent = name;
     const hb = BlossomHBLocal?.loc?.(locId);
-    if (sub) sub.textContent = hb?.blurb || '';
+    if (sub) sub.textContent = rewardSub || hb?.blurb || '';
     if (locId) el.dataset.zone = locId;
     else delete el.dataset.zone;
     el.hidden = false;

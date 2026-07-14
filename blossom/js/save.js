@@ -50,6 +50,8 @@ window.BlossomSave = (function () {
       hasPet: false,
       soundOn: true,
       createdAt: Date.now(),
+      discoveredZones: {},
+      discoveredLandmarks: {},
     };
   }
 

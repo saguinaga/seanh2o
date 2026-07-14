@@ -20,6 +20,7 @@ window.BlossomScene3D = (function () {
   let currentLocId = '';
   let overworldBuilt = false;
   let oceanMesh, sunLight;
+  let nearGlow = null;
   let camYaw = Math.PI;
   const raycaster = new T.Raycaster();
   const pointer = new T.Vector2();
@@ -656,6 +657,9 @@ window.BlossomScene3D = (function () {
       sunLight.shadow.camera.top = 65;
       sunLight.shadow.camera.bottom = -65;
       scene.add(sunLight);
+      nearGlow = new T.PointLight(0xfde047, 0, 18, 28);
+      nearGlow.position.y = 4;
+      scene.add(nearGlow);
       const fill = new T.DirectionalLight(0xa8c8e8, 0.35);
       fill.position.set(-28, 24, -18);
       scene.add(fill);
@@ -865,12 +869,34 @@ window.BlossomScene3D = (function () {
       surface,
     });
 
+    const isNight = phaseId === 'night' || phaseId === 'evening';
+    let glowTarget = null;
+    if (nearInteract) {
+      glowTarget = propRoots.find((root) => {
+        const p = root.userData.prop;
+        if (!p) return false;
+        return p === nearInteract
+          || (p.kind === nearInteract.kind && p.x === nearInteract.x && p.shop === nearInteract.shop);
+      });
+    }
+    if (nearGlow) {
+      if (glowTarget) {
+        nearGlow.position.set(glowTarget.position.x, 5.5, glowTarget.position.z);
+        nearGlow.intensity = 1.1 + Math.sin(anim * 5) * 0.35;
+        nearGlow.color.setHex(0xfde047);
+      } else {
+        nearGlow.intensity = 0;
+      }
+    }
     propRoots.forEach((root) => {
-      if (root.userData.neonAccent != null) {
+      const isNear = root === glowTarget;
+      if (root.userData.neonAccent != null || isNear) {
         root.traverse((c) => {
-          if (c.isPointLight) c.intensity = 0.65;
-          if (c.material?.emissiveIntensity != null && c.userData.neonSign) {
-            c.material.emissiveIntensity = 0.45;
+          if (c.isPointLight) c.intensity = isNight ? 0.95 : 0.65;
+          if (c.material?.emissiveIntensity != null && (c.userData.neonSign || isNear)) {
+            c.material.emissiveIntensity = isNear
+              ? 0.75 + Math.sin(anim * 6) * 0.2
+              : (isNight ? 0.72 : 0.45);
           }
         });
       }
@@ -922,6 +948,7 @@ window.BlossomScene3D = (function () {
       nearInteract: opts.nearInteract,
       anim: opts.anim || 0,
       running: opts.running,
+      stamina: opts.stamina,
       phaseFade: phaseFade || 0,
     });
   }

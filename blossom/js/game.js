@@ -25,6 +25,7 @@ window.BlossomGame = (function () {
   let nearInteract = null;
   let lastTs = 0;
   let frameDt = 1 / 60;
+  let stamina = 100;
   let camera = { x: 400, y: 240, zoom: 1 };
   let nav = {
     active: false, arrived: false, waypoints: [], target: null,
@@ -386,7 +387,15 @@ window.BlossomGame = (function () {
     BlossomScene3DHud?.triggerZoneFlash?.(next.name);
     window.BlossomAudio?.playSfx('travel');
     fx().screenFlash('#38bdf8', 0.22);
-    window.BlossomApp?.showTravelBanner(next.name, nextId);
+    const disc = BlossomDiscovery?.zoneReward?.(nextId, state);
+    if (disc) {
+      fx().starBurst(player.x, player.y - 40);
+      fx().floatText(player.x, player.y - 58, `+${disc.stars}⭐ +$${disc.money}`, '#fde047');
+      window.BlossomApp?.showTravelBanner(next.name, nextId, `First visit! +${disc.stars}⭐ +$${disc.money}`);
+      onPersist(state);
+    } else {
+      window.BlossomApp?.showTravelBanner(next.name, nextId);
+    }
     updateHud();
   }
 
@@ -768,7 +777,15 @@ window.BlossomGame = (function () {
     const { dx, dy, jump, run } = mv;
     const speed = 2.9;
     playerMoving = mv.moving || Math.abs(dx) > 0.08 || Math.abs(dy) > 0.08;
-    playerRunning = run && playerMoving && !nav.active;
+    const wantsRun = run && playerMoving && !nav.active;
+    const canSprint = stamina > 6;
+    if (use3d && wantsRun && canSprint) {
+      stamina = Math.max(0, stamina - 38 * frameDt);
+    } else {
+      stamina = Math.min(100, stamina + 28 * frameDt);
+    }
+    playerRunning = wantsRun && canSprint;
+    if (use3d && wantsRun && !canSprint) mv = { ...mv, run: false };
 
     if (use3d) {
       BlossomWorld3D.ensurePlayer3D(player, loc.id);
@@ -826,6 +843,18 @@ window.BlossomGame = (function () {
     BlossomPet?.update?.(player, loc);
 
     nearInteract = findNearProp();
+    if (use3d) {
+      const lm = BlossomDiscovery?.checkLandmarks?.(state, player);
+      if (lm) {
+        BlossomScene3DHud?.triggerZoneFlash?.(`✦ ${lm.name}`);
+        fx().confetti?.();
+        fx().floatText(player.x, player.y - 62, `Landmark! +${lm.stars}⭐`, '#f472b6');
+        window.BlossomAudio?.playSfx('levelUp');
+        onPersist(state);
+        updateHud();
+      }
+      BlossomAmbientChat?.tick?.(state, nearInteract);
+    }
     if (!BlossomWorld3D.isOverworld?.() && !nav.active && transitionLock <= 0 && nearInteract?.kind === 'exit') {
       const movingInto = use3d
         ? playerMoving
@@ -854,6 +883,13 @@ window.BlossomGame = (function () {
       bubble.classList.remove('npc-bubble--chat', 'npc-bubble--ai');
     } else if (bubble && nearInteract) {
       bubble.classList.remove('npc-bubble--zone');
+      const ambient = BlossomAmbientChat?.getBubble?.();
+      if (ambient) {
+        bubble.textContent = ambient.text;
+        bubble.classList.add('npc-bubble--ai');
+        bubble.classList.remove('npc-bubble--chat');
+      } else {
+        bubble.classList.remove('npc-bubble--ai');
       const cp = BlossomCareer.path(state);
       if (nearInteract.kind === 'exit') bubble.textContent = nearInteract.label + ' (walk into it)';
       else if (nearInteract.kind === 'npc' && nearInteract.id === 'bonnie') {
@@ -883,6 +919,7 @@ window.BlossomGame = (function () {
       else if (BlossomHBLocal?.isRestaurant?.(nearInteract.shop)) {
         bubble.textContent = `E or tap ${nearInteract.label || 'restaurant'} for lunch`;
       }
+      }
     }
   }
 
@@ -901,6 +938,7 @@ window.BlossomGame = (function () {
         phaseFade,
         moving: playerMoving,
         running: playerRunning,
+        stamina,
         surface: footSurface,
         choresDone: state.choresDone || {},
         todaysChores: state.todaysChores,
@@ -1029,6 +1067,7 @@ window.BlossomGame = (function () {
   }
 
   async function sendChatMessage(text) {
+    BlossomAmbientChat?.clearOnUserChat?.();
     const result = await BlossomChat?.sendAsync?.(text, state, nearInteract, chatLog);
     if (result) {
       const bubble = document.getElementById('npcBubble');
