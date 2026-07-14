@@ -1,0 +1,35 @@
+name: Deploy Blossom AI Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/blossom-ai/**'
+      - '.github/workflows/deploy-blossom-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Deploy to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$XAI_API_KEY" ]; then
+            echo "::warning::Skip — add CLOUDFLARE_API_TOKEN + XAI_API_KEY to GitHub secrets"
+            exit 0
+          fi
+          npm install -g wrangler
+          cd workers/blossom-ai
+          echo "$XAI_API_KEY" | wrangler secret put XAI_API_KEY --name blossom-ai-proxy
+          wrangler deploy --name blossom-ai-proxy
+          sleep 3
+          curl -sf "https://blossom-ai-proxy.smart-horse.workers.dev/health" | grep -q '"ai":true'

@@ -5,12 +5,8 @@ Push-Location $PSScriptRoot
 try {
   $token = $env:XAI_API_KEY
   if (-not $token) {
-    $authPath = Join-Path $env:USERPROFILE '.grok\auth.json'
-    if (Test-Path $authPath) {
-      $auth = Get-Content $authPath -Raw | ConvertFrom-Json
-      $entry = $auth.PSObject.Properties | Select-Object -First 1
-      $token = $entry.Value.key
-    }
+    $token = node (Join-Path $PSScriptRoot 'refresh-xai-token.mjs') 2>&1
+    if ($LASTEXITCODE -ne 0) { Write-Host $token; exit 1 }
   }
   if (-not $token) {
     Write-Host 'Set XAI_API_KEY or log into Grok CLI (auth.json)' -ForegroundColor Yellow
