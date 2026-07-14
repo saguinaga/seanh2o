@@ -243,7 +243,7 @@ window.BlossomApp = (function () {
       const u = new URL(location.href);
       u.pathname = u.pathname.replace(/\/play\/?$/, '/play.html');
       u.searchParams.set('_fresh', Date.now().toString(36));
-      u.searchParams.set('b', '20');
+      u.searchParams.set('b', '22');
       location.replace(u.href);
     };
     document.body.appendChild(banner);
@@ -262,11 +262,16 @@ window.BlossomApp = (function () {
     }, 3500);
   }
 
-  function showTravelBanner(name) {
+  function showTravelBanner(name, locId) {
     const el = document.getElementById('travelBanner');
     const text = document.getElementById('travelBannerText');
+    const sub = document.getElementById('travelBannerSub');
     if (!el || !text) return;
     text.textContent = name;
+    const hb = BlossomHBLocal?.loc?.(locId);
+    if (sub) sub.textContent = hb?.blurb || '';
+    if (locId) el.dataset.zone = locId;
+    else delete el.dataset.zone;
     el.hidden = false;
     el.classList.remove('travel-banner--show');
     void el.offsetWidth;
@@ -275,7 +280,7 @@ window.BlossomApp = (function () {
     showTravelBanner._t = setTimeout(() => {
       el.classList.remove('travel-banner--show');
       setTimeout(() => { el.hidden = true; }, 500);
-    }, 1800);
+    }, 2200);
   }
 
   function showDayModal(result) {
@@ -359,16 +364,19 @@ window.BlossomApp = (function () {
     const text = input?.value?.trim();
     if (!text) return;
     input.value = '';
+    const sendBtn = document.getElementById('chatSend');
     input.disabled = true;
+    if (sendBtn) sendBtn.disabled = true;
     document.getElementById('chatLog')?.classList.add('chat-log--open');
     try {
       const result = await window.BlossomGame?.sendChatMessage?.(text);
       if (result) {
-        const tag = result.ai ? ' ✨' : '';
-        showToast(`${result.who}: ${result.body}${tag}`, 'info');
+        const tag = result.ai ? ' ✨ Grok' : '';
+        showToast(`${result.who}: ${result.body}${tag}`, result.ai ? 'good' : 'info');
       }
     } finally {
       input.disabled = false;
+      if (sendBtn) sendBtn.disabled = false;
       input.focus();
     }
   }

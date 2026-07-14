@@ -360,7 +360,7 @@ window.BlossomGame = (function () {
         fx().travelBurst();
         fx().screenFlash('#4ade80', 0.3);
       }
-      window.BlossomApp?.showTravelBanner(next.name);
+      window.BlossomApp?.showTravelBanner(next.name, next.id);
     }
     updateHud();
     onPersist(state);
@@ -379,7 +379,7 @@ window.BlossomGame = (function () {
     BlossomScene3DHud?.triggerZoneFlash?.(next.name);
     window.BlossomAudio?.playSfx('travel');
     fx().screenFlash('#38bdf8', 0.22);
-    window.BlossomApp?.showTravelBanner(next.name);
+    window.BlossomApp?.showTravelBanner(next.name, nextId);
     updateHud();
   }
 
@@ -706,7 +706,10 @@ window.BlossomGame = (function () {
     }
     if (levelEl) levelEl.textContent = `Lv ${state.level}`;
     if (phaseEl) phaseEl.textContent = BlossomDay.currentPhase(state).label;
-    if (locEl) locEl.textContent = loc.name;
+    if (locEl) {
+      locEl.textContent = loc.name;
+      locEl.dataset.zone = loc.id || '';
+    }
     if (careerEl) {
       const p = BlossomCareer.path(state);
       careerEl.textContent = `${p.emoji} ${BlossomCareer.rankLabel(state)}`;
@@ -822,7 +825,14 @@ window.BlossomGame = (function () {
     const goal = BlossomGuide.starsGoal(state);
     if (bubble && !nearInteract && (state.day || 1) <= 2 && state.stars < goal) {
       bubble.textContent = `📖 ${BlossomGuide.nextStep(state).hint}`;
+      bubble.classList.remove('npc-bubble--chat', 'npc-bubble--ai', 'npc-bubble--zone');
+    } else if (bubble && !nearInteract) {
+      const hb = BlossomHBLocal?.loc?.(loc.id);
+      bubble.textContent = hb?.blurb || 'Walk east toward Main Street and the pier.';
+      bubble.classList.add('npc-bubble--zone');
+      bubble.classList.remove('npc-bubble--chat', 'npc-bubble--ai');
     } else if (bubble && nearInteract) {
+      bubble.classList.remove('npc-bubble--zone');
       const cp = BlossomCareer.path(state);
       if (nearInteract.kind === 'exit') bubble.textContent = nearInteract.label + ' (walk into it)';
       else if (nearInteract.kind === 'npc' && nearInteract.id === 'bonnie') {
@@ -1004,6 +1014,8 @@ window.BlossomGame = (function () {
       if (bubble) {
         bubble.textContent = result.body;
         bubble.classList.add('npc-bubble--chat');
+        bubble.classList.toggle('npc-bubble--ai', Boolean(result.ai));
+        bubble.classList.remove('npc-bubble--zone');
       }
       window.BlossomAudio?.playSfx('chat');
     }

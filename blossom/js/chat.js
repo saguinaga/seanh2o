@@ -186,14 +186,16 @@ window.BlossomChat = (function () {
     if (!el) return;
     el.innerHTML = entries.map((e) => {
       const tail = e.streaming ? '<span class="chat-log__cursor">▌</span>' : '';
-      const ai = e.streaming ? ' chat-log__line--stream' : '';
-      return `<div class="chat-log__line${ai}"><span class="chat-log__who">${e.who}</span> ${e.text}${tail}</div>`;
+      let cls = '';
+      if (e.streaming) cls += ' chat-log__line--stream';
+      if (e.ai) cls += ' chat-log__line--ai';
+      return `<div class="chat-log__line${cls}"><span class="chat-log__who">${e.who}</span> ${e.text}${tail}</div>`;
     }).join('');
     el.scrollTop = el.scrollHeight;
   }
 
-  function appendLog(who, text, store) {
-    store.push({ who, text });
+  function appendLog(who, text, store, opts) {
+    store.push({ who, text, ai: Boolean(opts?.ai) });
     while (store.length > MAX_LOG) store.shift();
     renderLog(store);
   }
@@ -226,8 +228,9 @@ window.BlossomChat = (function () {
     return entry;
   }
 
-  function finishStreamLine(entry, reply, store) {
+  function finishStreamLine(entry, reply, store, ai) {
     entry.streaming = false;
+    entry.ai = Boolean(ai);
     entry.who = speakerFrom(reply);
     entry.text = bodyFrom(reply);
     renderLog(store);
@@ -266,7 +269,7 @@ window.BlossomChat = (function () {
           if (reply) onToken(reply);
         }
         if (reply) {
-          const parsed = finishStreamLine(streamLine, reply, logStore);
+          const parsed = finishStreamLine(streamLine, reply, logStore, true);
           usedAi = true;
           if (typingEl) typingEl.hidden = true;
           window.BlossomPet?.onChat?.(parsed.who);

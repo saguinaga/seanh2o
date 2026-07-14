@@ -142,12 +142,13 @@ window.BlossomScene3DHud = (function () {
     if (zoneFlash <= 0) return;
     zoneFlash = Math.max(0, zoneFlash - 0.028);
     const t = zoneFlash;
-    if (zoneFlashName && t > 0.35) {
-      const alpha = Math.min(1, (t - 0.35) * 2.2);
+    if (zoneFlashName && t > 0.3) {
+      const alpha = Math.min(1, (t - 0.3) * 2.4);
       ctx.globalAlpha = alpha;
-      wowTextCenter(ctx, zoneFlashName, w / 2, h * 0.32, 28, '#fff568');
+      const size = Math.min(32, w * 0.07);
+      wowTextCenter(ctx, zoneFlashName, w / 2, h * 0.3, size, '#fff568');
       ctx.globalAlpha = 1;
-      wowTextCenter(ctx, 'Discovered', w / 2, h * 0.32 + 34, 14, '#f0e6c8');
+      wowTextCenter(ctx, '✦ Discovered ✦', w / 2, h * 0.3 + size + 8, 13, '#f0e6c8');
     }
   }
 

@@ -4,6 +4,7 @@ window.BlossomAI = (function () {
   let streaming = false;
   let model = 'grok-4.5';
   let pending = false;
+  let probeRetried = false;
 
   function apiBase() {
     const base = window.BLOSSOM_CONFIG?.aiChatBase;
@@ -165,6 +166,13 @@ window.BlossomAI = (function () {
     } catch {
       enabled = false;
       setBadge(false);
+      if (!probeRetried) {
+        probeRetried = true;
+        setTimeout(() => {
+          enabled = null;
+          probe();
+        }, 2800);
+      }
       return false;
     }
   }
