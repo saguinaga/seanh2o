@@ -7,13 +7,13 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Sean Aguinaga | Product</title>
-    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
-    <link rel="icon" href="/favicon.ico" sizes="32x32">
-    <meta name="description" content="Sean Aguinaga: Product manager, 15+ years in marketplaces and transaction systems. Most of that at Auction.com. Case studies and underwriting tools.">
+    <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+    <link rel="icon" href="favicon.ico" sizes="32x32">
+    <meta name="description" content="Sean Aguinaga: Product and systems work for nearly 20 years. Fifteen of those at Auction.com on marketplace and transaction systems. Case studies and tools.">
 
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
-    <link rel="stylesheet" href="styles.css?v=41">
+    <link rel="stylesheet" href="styles.css?v=42">
     <!-- Privacy-friendly analytics by Plausible -->
     <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
     <script>
@@ -121,6 +121,91 @@
         .cta-secondary:hover {
             background: rgba(255,255,255,0.1);
             border-color: white;
+        }
+        .nav-links a.nav-cta {
+            margin-left: 24px;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            background: #f59e0b;
+            color: #0f172a;
+            font-weight: 700;
+        }
+        .nav-links a.nav-cta:hover {
+            background: #fbbf24;
+            color: #0f172a;
+        }
+        html {
+            scroll-padding-top: 88px;
+        }
+        .trust-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 0;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #94a3b8;
+        }
+        .trust-strip li {
+            display: flex;
+            align-items: center;
+        }
+        .trust-strip li:not(:last-child)::after {
+            content: "·";
+            margin: 0 14px;
+            color: #475569;
+        }
+        .work-block {
+            margin-bottom: 48px;
+        }
+        .work-block-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #67e8f9;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+        .work-block-intro {
+            color: #94a3b8;
+            font-size: 1.02rem;
+            margin: 0 0 20px;
+            max-width: 640px;
+            line-height: 1.5;
+        }
+        .project-card--static {
+            cursor: default;
+        }
+        .project-card--static:hover {
+            transform: none;
+        }
+        .project-card-body--static {
+            padding: 20px 22px 24px;
+        }
+        .contact-direct {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            margin: 0 0 28px;
+            font-size: 1rem;
+        }
+        .contact-direct a {
+            color: #0f766e;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .contact-direct a:hover,
+        .contact-direct a:focus-visible {
+            text-decoration: underline;
+        }
+        .contact-availability {
+            margin: 20px 0 0;
+            font-size: 0.95rem;
+            color: #64748b;
         }
 
         .project-expansion {
@@ -305,6 +390,10 @@
                 color: #e0f2fe;
             }
             .nav-links a:last-child { border-bottom: none; }
+            .nav-links a.nav-cta {
+                margin: 8px 16px 4px;
+                text-align: center;
+            }
         }
         @media (max-width: 768px) {
             .hero-brand {
@@ -334,18 +423,18 @@
     <nav>
         <div class="nav-container">
             <div class="logo">
-                <img src="/logo-mark.svg?v=3" alt="" width="28" height="28" aria-hidden="true">
+                <img src="logo-mark.svg?v=3" alt="" width="28" height="28" aria-hidden="true">
                 <strong>Sean Aguinaga</strong>
             </div>
             <button type="button" class="nav-toggle" id="navToggle" data-plausible-event="Nav - Mobile Menu" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
                 <span></span><span></span><span></span>
             </button>
             <div class="nav-links" id="navMenu">
+                <a href="#work" data-plausible-event="Nav - Work">Work</a>
+                <a href="#philosophy" data-plausible-event="Nav - How I work">How I work</a>
+                <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#about" data-plausible-event="Nav - About">About</a>
-                <a href="#philosophy" data-plausible-event="Nav - Approach">Approach</a>
-                <a href="calculators/" data-plausible-event="Nav - Calculators">Calculators</a>
-                <a href="#projects" data-plausible-event="Nav - Projects">Projects</a>
-                <a href="#contact" data-plausible-event="Nav - Contact">Contact</a>
+                <a href="#contact" class="nav-cta" data-plausible-event="Nav - Contact">Get in touch</a>
             </div>
         </div>
     </nav>
@@ -354,35 +443,43 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <div class="hero-brand">
-                <img src="/logo-mark.svg?v=3" alt="" class="hero-mark" width="96" height="96" aria-hidden="true">
+                <img src="logo-mark.svg?v=3" alt="" class="hero-mark" width="96" height="96" aria-hidden="true">
                 <h1>Sean Aguinaga</h1>
             </div>
-            <span class="tag">Product · Marketplaces · 15 years</span>
+            <span class="tag">Product · Systems · Nearly 20 years</span>
 
             <p class="hero-lead">I'm a product manager. I work on marketplace and transaction systems where operations and configuration have to scale together.</p>
 
-            <p>Most of my career has been at Auction.com. In-person foreclosure auctions started as a California pilot and grew into a major line of business. I built a lot of the backend configuration behind nationwide expansion and helped carry the platform through a stack modernization.</p>
+            <p>Almost two decades in software and product. The last 15 at Auction.com: a lot of that was the operational backbone (config, workflows, platform work that had to hold up as the business scaled). I also shipped user-facing pieces of that same system when the job needed it.</p>
 
-            <div class="hero-cta-row" style="margin-top: 12px;"><a href="#projects" class="cta-button" data-plausible-event="CTA - See what I built">See what I've built</a></div>
+            <div class="hero-cta-row" style="margin-top: 12px;">
+                <a href="#work" class="cta-button" data-plausible-event="CTA - See selected work">See selected work</a>
+                <a href="#contact" class="cta-button cta-secondary" data-plausible-event="CTA - Contact">Contact</a>
+            </div>
 
         </div>
     </section>
 
-    <!-- About + Experience (rewritten for clarity, emotion, and seriousness) -->
-    <section id="about" style="padding: 80px 24px; background: #f8fafc;">
+    <!-- Trust strip -->
+    <section aria-label="Experience" style="padding: 18px 24px; background: #0f172a; border-bottom: 1px solid #1e293b;">
+        <ul class="trust-strip" style="max-width: 1100px; margin: 0 auto;">
+            <li>Auction.com</li>
+            <li>Disney</li>
+            <li>Boeing</li>
+        </ul>
+    </section>
+
+    <!-- About (short) -->
+    <section id="about" style="padding: 72px 24px; background: #f8fafc;">
         <div style="max-width: 860px; margin: 0 auto; text-align: left;">
             <h2 style="font-size: 2.1rem; margin-bottom: 18px; letter-spacing: -.5px;">About</h2>
 
-            <p style="font-size: 1.15rem; line-height: 1.65; color: #1e2937; margin-bottom: 22px;">
-                I'm a product leader with 15+ years in marketplaces and transaction systems. Real estate and auctions have been the through-line, but the problems repeat: multi-sided platforms, messy operations, configuration and data that has to hold up across states and teams.
-            </p>
-
-            <p style="font-size: 1.05rem; line-height: 1.65; color: #334155; margin-bottom: 22px;">
-                I also spent time at Disney. Partner data rarely arrives in one clean format, even at scale. We normalized licensee feeds into a warehouse so analytics could be trusted. Good master data work starts with realistic ingestion, not expecting everyone on the same standard from day one.
+            <p style="font-size: 1.15rem; line-height: 1.65; color: #1e2937; margin-bottom: 18px;">
+                Nearly 20 years in software and product. Deep in the work, not high on the org chart. Real estate and auctions have been the long chapter, but the problems repeat: multi-sided platforms, messy operations, configuration and data that has to hold up across states and teams.
             </p>
 
             <p style="font-size: 1.05rem; line-height: 1.65; color: #334155;">
-                Most of my Auction.com work centered on the core internal platform that powers the marketplace: catalog rules, transaction configuration, and the ops workflows wrapped around them. I spent a lot of time with operators and internal teams on what actually moves a decision. Salesforce was part of that picture too (custom build upstream and downstream of core), but the through-line for me was making the marketplace system trustworthy at scale.
+                Earlier: Disney (partner data into a warehouse so analytics could be trusted) and Boeing (engineering-adjacent tooling). Good systems work starts with how data and work actually move, not a clean slide.
             </p>
         </div>
     </section>
@@ -408,113 +505,147 @@
         </div>
     </section>
 
-    <!-- Projects -->
-    <section id="projects" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
+    <!-- Work -->
+    <section id="work" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
         <div style="max-width: 1100px; margin: 0 auto;">
             <div class="projects-header">
                 <div>
-                    <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Projects</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Case studies and tools I've built.</p>
+                    <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Work</h2>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">What I actually spent time on, then case studies and tools.</p>
                 </div>
             </div>
 
-            <div class="projects-grid">
-
-                <article class="project-card glass-card">
-                    <a href="master-data/" class="project-card-link" data-plausible-event="Launch Case Study - Master Data">
+            <div class="work-block">
+                <p class="work-block-label">Auction.com · ~15 years</p>
+                <p class="work-block-intro">In-person foreclosure auctions grew from a California pilot into a major line of business. My seat was mostly the system underneath that growth, with real time on buyer and seller surfaces when the work required it.</p>
+                <div class="projects-grid">
+                    <article class="project-card glass-card project-card--static">
                         <div class="project-card-visual project-card-visual--blue">
-                            <span class="project-card-badge">PM case study</span>
-                            <span class="project-card-visual-title">Master Data Product</span>
+                            <span class="project-card-badge">Primary focus</span>
+                            <span class="project-card-visual-title">Marketplace platform</span>
                         </div>
-                        <div class="project-card-body">
-                            <h3 class="project-card-heading">Vendor and product data at enterprise scale</h3>
-                            <p class="project-card-text">Golden records, stewardship workflows, governance, and downstream sync. How I'd sequence the work without pretending vendors will standardize on their own.</p>
-                            <span class="project-card-cta">Read the write-up →</span>
+                        <div class="project-card-body project-card-body--static">
+                            <h3 class="project-card-heading">Operational backbone</h3>
+                            <p class="project-card-text">Catalog rules, transaction configuration, ops workflows, and the unglamorous backend office tools that keep daily work moving. Helped carry the platform through stack modernization and nationwide expansion. Operators and internal teams were the day-to-day customers.</p>
                         </div>
-                    </a>
-                </article>
-
-                <article class="project-card glass-card project-card--experiment">
-                    <a href="doc-intelligence/" class="project-card-link" data-plausible-event="Launch Case Study - Doc Intelligence">
+                    </article>
+                    <article class="project-card glass-card project-card--static">
                         <div class="project-card-visual project-card-visual--doc">
-                            <span class="project-card-badge">PM case study</span>
-                            <span class="project-card-visual-title">Doc Intelligence</span>
-                            <span class="project-card-flow" aria-hidden="true">
-                                <span>PDF</span><span class="project-card-flow-arrow">→</span><span>XLSX</span><span class="project-card-flow-arrow">→</span><span>DOC</span>
-                            </span>
+                            <span class="project-card-badge">Same system</span>
+                            <span class="project-card-visual-title">Customer-facing surfaces</span>
                         </div>
-                        <div class="project-card-body">
-                            <h3 class="project-card-heading">CRE document intelligence</h3>
-                            <p class="project-card-text">How I'd own extraction and delivery for brokers and lenders. Includes a client-side prototype to pressure-test workflow decisions.</p>
-                            <span class="project-card-cta">Read the write-up →</span>
+                        <div class="project-card-body project-card-body--static">
+                            <h3 class="project-card-heading">When the job needed the other seat</h3>
+                            <p class="project-card-text">User-facing work on the same marketplace: remote bidding, contracting and closing paths, self-serve seller flows, and related consumer surfaces. Not the whole job. Part of shipping a complete transaction system.</p>
                         </div>
-                    </a>
-                    <div class="project-card-footer">
-                        <a href="doc-intelligence/demo.html" class="project-card-secondary" data-plausible-event="Launch Tool - Doc Intelligence">Try the prototype →</a>
-                    </div>
-                </article>
-
-                <article class="project-card glass-card">
-                    <a href="calculators/#buy-hold-calculator" class="project-card-link" data-plausible-event="Launch Tool - Buy & Hold">
-                        <div class="project-card-visual project-card-visual--blue">
-                            <span class="project-card-visual-title">Buy &amp; Hold Calculator</span>
-                        </div>
-                        <div class="project-card-body">
-                            <h3 class="project-card-heading">Real-time rental underwriting</h3>
-                            <p class="project-card-text">Cash flow, CoC, cap rate, scenario comparison, HYSA opportunity cost. Built the way I'd actually use it.</p>
-                            <span class="project-card-cta">Open calculator →</span>
-                        </div>
-                    </a>
-                </article>
-
-                <article class="project-card glass-card">
-                    <a href="calculators/#fix-flip-calculator" class="project-card-link" data-plausible-event="Launch Tool - Fix & Flip">
-                        <div class="project-card-visual project-card-visual--rose">
-                            <span class="project-card-visual-title">Fix &amp; Flip Analyzer</span>
-                        </div>
-                        <div class="project-card-body">
-                            <h3 class="project-card-heading">Deal stress-testing &amp; modeling</h3>
-                            <p class="project-card-text">ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.</p>
-                            <span class="project-card-cta">Open analyzer →</span>
-                        </div>
-                    </a>
-                </article>
-
+                    </article>
+                </div>
             </div>
 
-
-            <div class="personal-tools">
-                <div class="personal-tools-header">
-                    <h3 class="personal-tools-title">Personal tools</h3>
-                    <p class="personal-tools-sub">Side projects I actually use — not interview case studies.</p>
-                </div>
-                <div class="personal-tools-grid">
+            <div class="work-block">
+                <p class="work-block-label">Case studies</p>
+                <p class="work-block-intro">How I'd approach problems in adjacent spaces. Not "I ran this exact org at Auction.com."</p>
+                <div class="projects-grid">
                     <article class="project-card glass-card">
-                        <a href="ebike-comparison/" class="project-card-link" data-plausible-event="Launch Tool - E-Bike Comparison">
+                        <a href="master-data/" class="project-card-link" data-plausible-event="Launch Case Study - Master Data">
                             <div class="project-card-visual project-card-visual--blue">
-                                <span class="project-card-badge">Family project</span>
-                                <span class="project-card-visual-title">E-Bike Comparison</span>
+                                <span class="project-card-badge">PM case study</span>
+                                <span class="project-card-visual-title">Master Data Product</span>
                             </div>
                             <div class="project-card-body">
-                                <h3 class="project-card-heading">Surf City HB e-bike research for school &amp; commute rides</h3>
-                                <p class="project-card-text">Safety scores, legal notes, and side-by-side compare for a 5'2" rider — pedal baseline vs 20+ options.</p>
-                                <span class="project-card-cta">Open comparison →</span>
+                                <h3 class="project-card-heading">Vendor and product data at enterprise scale</h3>
+                                <p class="project-card-text">Golden records, stewardship workflows, governance, and downstream sync. How I'd sequence the work without pretending vendors will standardize on their own.</p>
+                                <span class="project-card-cta">Read the write-up →</span>
                             </div>
                         </a>
                     </article>
+
+                    <article class="project-card glass-card project-card--experiment">
+                        <a href="doc-intelligence/" class="project-card-link" data-plausible-event="Launch Case Study - Doc Intelligence">
+                            <div class="project-card-visual project-card-visual--doc">
+                                <span class="project-card-badge">PM case study</span>
+                                <span class="project-card-visual-title">Doc Intelligence</span>
+                                <span class="project-card-flow" aria-hidden="true">
+                                    <span>PDF</span><span class="project-card-flow-arrow">→</span><span>XLSX</span><span class="project-card-flow-arrow">→</span><span>DOC</span>
+                                </span>
+                            </div>
+                            <div class="project-card-body">
+                                <h3 class="project-card-heading">CRE document intelligence</h3>
+                                <p class="project-card-text">How I'd own extraction and delivery for brokers and lenders. Includes a client-side prototype to pressure-test workflow decisions.</p>
+                                <span class="project-card-cta">Read the write-up →</span>
+                            </div>
+                        </a>
+                        <div class="project-card-footer">
+                            <a href="doc-intelligence/demo.html" class="project-card-secondary" data-plausible-event="Launch Tool - Doc Intelligence">Try the prototype →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="work-block" id="tools">
+                <p class="work-block-label">Tools</p>
+                <p class="work-block-intro">Things I built to use, not only to demo in an interview.</p>
+                <div class="projects-grid">
                     <article class="project-card glass-card">
-                        <a href="promo-tracker/" class="project-card-link" data-plausible-event="Launch Tool - Bonus Board">
-                            <div class="project-card-visual project-card-visual--cozy">
-                                <span class="project-card-badge">Personal tool</span>
-                                <span class="project-card-visual-title">Bonus Board</span>
+                        <a href="calculators/#buy-hold-calculator" class="project-card-link" data-plausible-event="Launch Tool - Buy & Hold">
+                            <div class="project-card-visual project-card-visual--blue">
+                                <span class="project-card-visual-title">Buy &amp; Hold Calculator</span>
                             </div>
                             <div class="project-card-body">
-                                <h3 class="project-card-heading">Credit card offer planner for household pacing</h3>
-                                <p class="project-card-text">Pin offers, model credit impact, and see trip upside from everyday spend. Built for our own queue — not financial advice.</p>
-                                <span class="project-card-cta">Open Bonus Board →</span>
+                                <h3 class="project-card-heading">Real-time rental underwriting</h3>
+                                <p class="project-card-text">Cash flow, CoC, cap rate, scenario comparison, HYSA opportunity cost. Built the way I'd actually use it.</p>
+                                <span class="project-card-cta">Open calculator →</span>
                             </div>
                         </a>
                     </article>
+
+                    <article class="project-card glass-card">
+                        <a href="calculators/#fix-flip-calculator" class="project-card-link" data-plausible-event="Launch Tool - Fix & Flip">
+                            <div class="project-card-visual project-card-visual--rose">
+                                <span class="project-card-visual-title">Fix &amp; Flip Analyzer</span>
+                            </div>
+                            <div class="project-card-body">
+                                <h3 class="project-card-heading">Deal stress-testing &amp; modeling</h3>
+                                <p class="project-card-text">ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.</p>
+                                <span class="project-card-cta">Open analyzer →</span>
+                            </div>
+                        </a>
+                    </article>
+                </div>
+
+                <div class="personal-tools" style="margin-top: 28px;">
+                    <div class="personal-tools-header">
+                        <h3 class="personal-tools-title">Personal tools</h3>
+                        <p class="personal-tools-sub">Side projects I actually use, not interview case studies.</p>
+                    </div>
+                    <div class="personal-tools-grid">
+                        <article class="project-card glass-card">
+                            <a href="ebike-comparison/" class="project-card-link" data-plausible-event="Launch Tool - E-Bike Comparison">
+                                <div class="project-card-visual project-card-visual--blue">
+                                    <span class="project-card-badge">Family project</span>
+                                    <span class="project-card-visual-title">E-Bike Comparison</span>
+                                </div>
+                                <div class="project-card-body">
+                                    <h3 class="project-card-heading">Surf City HB e-bike research for school &amp; commute rides</h3>
+                                    <p class="project-card-text">Safety scores, legal notes, and side-by-side compare for a 5'2" rider: pedal baseline vs 20+ options.</p>
+                                    <span class="project-card-cta">Open comparison →</span>
+                                </div>
+                            </a>
+                        </article>
+                        <article class="project-card glass-card">
+                            <a href="promo-tracker/" class="project-card-link" data-plausible-event="Launch Tool - Bonus Board">
+                                <div class="project-card-visual project-card-visual--cozy">
+                                    <span class="project-card-badge">Personal tool</span>
+                                    <span class="project-card-visual-title">Bonus Board</span>
+                                </div>
+                                <div class="project-card-body">
+                                    <h3 class="project-card-heading">Credit card offer planner for household pacing</h3>
+                                    <p class="project-card-text">Pin offers, model credit impact, and see trip upside from everyday spend. Built for our own queue, not financial advice.</p>
+                                    <span class="project-card-cta">Open Bonus Board →</span>
+                                </div>
+                            </a>
+                        </article>
+                    </div>
                 </div>
             </div>
         </div>
@@ -525,7 +656,12 @@
         <div class="contact-inner">
             <p class="contact-eyebrow">Contact</p>
             <h2 class="contact-title">Happy to hear what you're working on</h2>
-            <p class="contact-lead">Recruiting, a product question, or just thinking out loud — drop a note. A few sentences on what you're trying to accomplish is plenty.</p>
+            <p class="contact-lead">Recruiting, a product question, or just thinking out loud: drop a note. A few sentences on what you're trying to accomplish is plenty.</p>
+
+            <div class="contact-direct">
+                <a href="mailto:saguinag@gmail.com" data-plausible-event="Contact - Email">saguinag@gmail.com</a>
+                <a href="https://www.linkedin.com/in/sean-aguinaga-7a88243" target="_blank" rel="noopener noreferrer" data-plausible-event="Contact - LinkedIn">LinkedIn</a>
+            </div>
 
             <form class="contact-form" action="https://formspree.io/f/xgvzqlaa" method="POST">
                 <label class="contact-field">
@@ -543,11 +679,12 @@
                 <button type="submit" class="contact-submit">Send a note</button>
                 <p class="contact-footnote">I'll get back to you when I can.</p>
             </form>
+            <p class="contact-availability">Available for full-time product roles.</p>
         </div>
     </section>
 
     <footer style="text-align:center; padding:48px 20px; background:#0f172a; color:#64748b; font-size:0.9rem;">
-        <p>© <span id="copyrightYear"></span> Sean Aguinaga</p>
+        <p>© <span id="copyrightYear"></span> Sean Aguinaga · <a href="mailto:saguinag@gmail.com" style="color:#94a3b8;">saguinag@gmail.com</a> · <a href="https://www.linkedin.com/in/sean-aguinaga-7a88243" target="_blank" rel="noopener noreferrer" style="color:#94a3b8;">LinkedIn</a></p>
         <p class="footer-blossom"><a href="blossom/" data-plausible-event="Launch - Blossom Life">Blossom Life</a></p>
     </footer>
     <script>
