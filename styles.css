@@ -1363,20 +1363,8 @@ abbr {
   color: #9f1239;
 }
 
-.logo {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1e3a8a;
-  text-decoration: none;
-}
-
-.logo:hover {
-  color: #3b82f6;
-}
-
-.nav-links a:hover {
-  color: #3b82f6;
-}
+/* Intentionally no global .logo / .nav-links rules here.
+   Homepage header is fully styled under .site-header in index.html. */
 
 .project-card {
   background: white;
@@ -2088,6 +2076,12 @@ body {
   min-height: 100%;
 }
 
+/* Linked project cards: strong click affordance */
+.project-card--link {
+  border-color: rgba(103, 232, 249, 0.28);
+  box-shadow: 0 0 0 1px rgba(103, 232, 249, 0.06);
+}
+
 .project-card-link {
   display: flex;
   flex-direction: column;
@@ -2095,13 +2089,19 @@ body {
   text-decoration: none;
   color: inherit;
   transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
 }
 
 .project-card-link:hover,
 .project-card-link:focus-visible {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px -15px rgb(0 0 0 / 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px -12px rgb(0 0 0 / 0.55);
   outline: none;
+}
+
+.project-card--link:hover,
+.project-card--link:focus-within {
+  border-color: rgba(103, 232, 249, 0.55);
 }
 
 .project-card-visual {
@@ -2222,15 +2222,24 @@ body {
 }
 
 .project-card-cta {
-  margin-top: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #67e8f9;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 14px;
+  width: fit-content;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  background: #67e8f9;
+  border-radius: 999px;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .project-card-link:hover .project-card-cta,
 .project-card-link:focus-visible .project-card-cta {
-  color: #a5f3fc;
+  color: #0f172a;
+  background: #a5f3fc;
 }
 
 .project-card--experiment {
@@ -2402,6 +2411,115 @@ body {
   color: #fbcfe8;
   text-decoration: underline;
   outline: none;
+}
+
+/* Site footer / sitemap (beats main_style.css bare footer rule) */
+.site-footer {
+  background: #020617;
+  color: #94a3b8;
+  border-top: 1px solid #1e293b;
+  padding: 56px 24px 32px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.site-footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.site-footer-brand {
+  margin-bottom: 32px;
+}
+
+.site-footer-name {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.02em;
+}
+
+.site-footer-tag {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.site-footer-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 24px;
+  margin-bottom: 40px;
+  /* Explicitly not a fixed header — overrides any stray bare nav rules */
+  position: static;
+  width: auto;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  backdrop-filter: none;
+  z-index: auto;
+}
+
+.site-footer-heading {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.site-footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-footer-col li {
+  margin: 0 0 8px;
+}
+
+.site-footer-col a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.site-footer-col a:hover,
+.site-footer-col a:focus-visible {
+  color: #67e8f9;
+  text-decoration: underline;
+  outline: none;
+}
+
+.site-footer-bottom {
+  padding-top: 20px;
+  border-top: 1px solid #1e293b;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.site-footer-bottom p {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .site-footer-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .site-footer {
+    padding: 40px 18px 28px;
+  }
+
+  .site-footer-nav {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 
 @media (max-width: 768px) {
