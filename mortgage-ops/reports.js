@@ -716,14 +716,14 @@
       columns: ['Override reason', 'Count', '% of overrides'],
       rows: [
         ['Known partner escalation', '14', '32%'],
-        ['Compliance seat required', '11', '25%'],
+        ['Policy review needed', '11', '25%'],
         ['AI underweighted $ size', '8', '18%'],
         ['AI overweighted SLA noise', '7', '16%'],
         ['Other / training', '4', '9%'],
       ],
       chart: function () {
         return Charts.hbar(
-          ['Partner escalate', 'Compliance seat', 'Size underweight', 'SLA noise', 'Other'],
+          ['Broker escalate', 'Policy review', 'Size underweight', 'SLA noise', 'Other'],
           [14, 11, 8, 7, 4],
           { colors: [COLORS.blue, COLORS.red, COLORS.orange, COLORS.purple, COLORS.gray] }
         );
