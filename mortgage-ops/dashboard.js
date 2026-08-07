@@ -766,6 +766,7 @@
     render: render,
     init: init,
     setSkin: setSkin,
+    setProduct: setProduct,
     getState: function () {
       return {
         product: state.product,
