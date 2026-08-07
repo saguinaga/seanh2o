@@ -119,23 +119,25 @@ body {
   border-bottom-color: var(--sf-blue);
 }
 
+/* In-flow only — never fixed over sticky Lightning nav */
 .back-link {
-  position: fixed;
-  top: 52px;
-  left: 12px;
-  z-index: 30;
+  display: inline-flex;
+  align-items: center;
   color: var(--sf-blue);
   text-decoration: none;
   font-size: 0.8125rem;
   font-weight: 600;
-  padding: 6px 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  padding: 0;
+  margin: 0 0 12px;
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
-.back-link:hover { background: var(--sf-blue-light); }
+.back-link:hover {
+  text-decoration: underline;
+  background: none;
+}
 
 .case-study {
   max-width: 920px;
@@ -730,7 +732,6 @@ body {
   .sf-dashboard__grid { grid-template-columns: repeat(2, 1fr); }
   .sf-dashboard__lower { grid-template-columns: 1fr; }
   .phase-grid { grid-template-columns: 1fr; }
-  .back-link { top: auto; bottom: 16px; left: 12px; }
 }
 
 @media (max-width: 600px) {
