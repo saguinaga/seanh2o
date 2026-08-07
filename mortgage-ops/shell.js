@@ -286,6 +286,10 @@
 
     if (!el.waffle || !el.viewBtn) return;
 
+    // Force public landing every load (do not inherit a stale mental model from old builds)
+    state.appId = 'accelerator';
+    state.viewId = 'dashboard';
+
     el.waffle.addEventListener('click', () => {
       if (state.launcherOpen) closeMenus();
       else openLauncher();
