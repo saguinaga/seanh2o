@@ -233,7 +233,7 @@
       '<div class="ln-page-header__row">' +
       '<div class="ln-page-header__icon">DB</div>' +
       '<div class="ln-page-header__meta">' +
-      '<div class="ln-page-header__eyebrow">Dashboards</div>' +
+      '<div class="ln-page-header__eyebrow">Xtreme · Dashboards</div>' +
       '<h1 class="ln-page-header__title">' +
       title +
       '</h1>' +

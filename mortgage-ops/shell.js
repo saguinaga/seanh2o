@@ -16,7 +16,7 @@
     },
     accelerator: {
       id: 'accelerator',
-      name: 'Application Analytics',
+      name: 'Xtreme',
       blurb: 'Loan apps · time to yes · dashboards',
       icon: 'A',
       views: [
@@ -286,7 +286,7 @@
 
     if (!el.waffle || !el.viewBtn) return;
 
-    // Force public landing every load (do not inherit a stale mental model from old builds)
+    // Force public landing every load
     state.appId = 'accelerator';
     state.viewId = 'dashboard';
 

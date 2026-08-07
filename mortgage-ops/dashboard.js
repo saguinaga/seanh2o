@@ -169,12 +169,12 @@
       if (title) title.textContent = 'Leadership · outcomes';
       if (lead)
         lead.textContent =
-          'Board-room view: volume, time to yes, conversion, and product comparison. Not the act-now queue — that lives on Ops desk.';
+          'What leadership needs to see: volume, time to yes, conversion, product paths. Ops desk is where people clear stuck apps.';
     } else {
       if (title) title.textContent = 'Ops desk · work the queue';
       if (lead)
         lead.textContent =
-          'Working surface for people clearing applications today: stuck SLA, aging heat, act-now list, jump to the exception queue.';
+          'What I put in front of the people doing the work: stuck SLA, aging, act-now list, exception queue.';
     }
   }
 
@@ -201,7 +201,7 @@
           '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
       } else {
         text =
-          '<strong>Leadership mode.</strong> You are looking at outcomes and product health. For who touches which application today, switch to Ops desk.';
+          '<strong>Leadership view.</strong> Outcomes and product health. For who touches which application today, switch to Ops desk.';
         actions = '<button type="button" data-switch-ops>Open Ops desk</button>';
       }
     } else {
@@ -213,7 +213,7 @@
           '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
       } else if (state.focus === 'policy') {
         text =
-          '<strong>Docs / rules blockers.</strong> Completeness and eligibility holds — company-side checks so the broker sees progress, not silence.';
+          '<strong>Docs / rules blockers.</strong> Completeness and eligibility holds on the company side so the broker sees progress, not silence.';
         actions =
           '<button type="button" data-go-eq>Work exceptions</button>' +
           '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
@@ -225,7 +225,7 @@
           '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
       } else {
         text =
-          '<strong>Ops mode.</strong> Click a KPI, aging cell, or stall reason — then clear apps. Leadership mode hides the act-now list on purpose.';
+          '<strong>Ops view.</strong> Click a KPI, aging cell, or stall reason, then clear apps. Leadership hides the act-now list on purpose.';
         actions = '<button type="button" data-go-eq>Open Exception Queue</button>';
       }
     }
