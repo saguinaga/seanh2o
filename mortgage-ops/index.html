@@ -6,8 +6,9 @@
   <meta name="description" content="How Sean Aguinaga would approach Salesforce reports, dashboards, and pipeline truth for specialty mortgage ops: objects, stages, time to yes.">
   <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
   <title>Sean Aguinaga — Salesforce Analytics for Specialty Mortgage Ops</title>
-  <link rel="stylesheet" href="roadmap.css?v=4">
-  <link rel="stylesheet" href="flows.css?v=4">
+  <link rel="stylesheet" href="roadmap.css?v=5">
+  <link rel="stylesheet" href="flows.css?v=5">
+  <link rel="stylesheet" href="exception-queue.css?v=1">
   <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
   <script>
     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -28,9 +29,9 @@
         <path fill="#1b96ff" d="M8 18c-3 0-5.5-2.2-5.5-5S5 8 8 8c.4-2.8 2.8-5 5.7-5 2.6 0 4.8 1.7 5.5 4.1.5-.2 1-.3 1.6-.3 2.5 0 4.5 1.9 4.5 4.3 0 .2 0 .4-.1.6 2 .4 3.5 2.1 3.5 4.2 0 2.4-2 4.3-4.5 4.3H8z"/>
         <path fill="#fff" opacity=".9" d="M10.5 14.5h11M12 11.5h8"/>
       </svg>
-      <span class="app-name" id="chrome-app-name">Accelerator Analytics</span>
+      <span class="app-name" id="chrome-app-name">Exception Queue</span>
       <span class="header-spacer"></span>
-      <span class="header-pill">Demo org shell</span>
+      <span class="header-pill">Regulated ops demo</span>
     </header>
 
     <!-- App Launcher (waffle panel) -->
@@ -47,13 +48,14 @@
       <div class="view-picker">
         <button type="button" class="view-menu-btn" id="view-menu-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="view-menu">
           <span class="view-menu-kicker">View</span>
-          <span class="view-menu-label" id="view-menu-label">Dashboard: Time to Yes</span>
+          <span class="view-menu-label" id="view-menu-label">AI-prioritized queue</span>
           <span class="view-chevron" aria-hidden="true">▾</span>
         </button>
         <div class="view-menu" id="view-menu" role="listbox" hidden aria-label="Views in this app"></div>
       </div>
       <nav class="sf-context-nav" aria-label="Jump within demo">
-        <button type="button" class="nav-chip is-active" data-shell-app="accelerator" data-shell-view="dashboard">Dashboard</button>
+        <button type="button" class="nav-chip is-active" data-shell-app="exceptions" data-shell-view="queue">Exceptions</button>
+        <button type="button" class="nav-chip" data-shell-app="accelerator" data-shell-view="dashboard">Dashboard</button>
         <button type="button" class="nav-chip" data-shell-app="accelerator" data-shell-view="writeup">Write-up</button>
         <button type="button" class="nav-chip" data-shell-app="accelerator" data-shell-view="path">Path</button>
         <button type="button" class="nav-chip" data-shell-app="pipeline" data-shell-view="all-open">Loan files</button>
@@ -62,13 +64,102 @@
       </nav>
     </div>
 
-    <p class="demo-banner" id="demo-banner">Demo shell · click waffle or view menu · not a live org</p>
+    <p class="demo-banner" id="demo-banner">Demo shell · regulated specialty lending · AI ranks, humans decide · not a live org</p>
 
     <div class="chrome-backdrop" id="chrome-backdrop" hidden></div>
 
     <div class="shell-main">
+      <!-- PANEL: Exception Queue custom component -->
+      <div id="panel-exceptions" data-shell-panel class="shell-panel is-active-panel">
+        <div class="eq-wrap">
+          <header class="eq-hero">
+            <p class="case-label">Custom Lightning-style component · prototype</p>
+            <div class="eq-title-row">
+              <h1>Exception Queue</h1>
+              <div class="eq-badges">
+                <span class="eq-badge eq-badge--demo">Salesforce custom UI</span>
+                <span class="eq-badge eq-badge--ai">AI prioritizes</span>
+                <span class="eq-badge eq-badge--reg">Human acts · audit trail</span>
+              </div>
+            </div>
+            <p class="eq-lead">
+              Leighanne’s framing: dashboards and analytics while the book is live, in a
+              <strong>highly regulated</strong> specialty credit shop. This component is how I would spend scarce
+              human time: AI ranks the exception pile by compliance weight, SLA, and partner impact; people claim,
+              resolve, or escalate. Not auto-decisioning credit. Not legal advice. Demo data only.
+            </p>
+          </header>
+
+          <div class="eq-component" id="eq-component">
+            <div class="eq-component__header">
+              <h2>Ops Exception Queue</h2>
+              <p class="eq-sub">Object: Exception__c (illustrative) · related Loan File · field history + action log for exam readiness</p>
+            </div>
+
+            <div class="eq-ai-strip">
+              <div class="eq-ai-note">
+                <strong>AI role:</strong> score and sort open exceptions so the top of the list is where regulated risk and
+                business pain meet. <strong>Human role:</strong> claim ownership, escalate to compliance, resolve with a note
+                that would survive an audit sample. AI does not clear a hold by itself.
+              </div>
+            </div>
+
+            <div class="eq-toolbar">
+              <label>
+                Sort
+                <select id="eq-sort" aria-label="Sort exceptions">
+                  <option value="ai" selected>AI priority</option>
+                  <option value="sla">SLA breach first</option>
+                  <option value="manual">Manual order</option>
+                </select>
+              </label>
+              <button type="button" class="is-primary" id="eq-ai-toggle">AI ranking: On</button>
+              <button type="button" id="eq-refresh">Recalculate scores</button>
+              <span class="spacer"></span>
+            </div>
+
+            <div class="eq-stats">
+              <div class="eq-stat">
+                <div class="n" id="eq-stat-open">0</div>
+                <div class="l">Open</div>
+              </div>
+              <div class="eq-stat is-reg">
+                <div class="n" id="eq-stat-reg">0</div>
+                <div class="l">With compliance tags</div>
+              </div>
+              <div class="eq-stat is-hot">
+                <div class="n" id="eq-stat-sla">0</div>
+                <div class="l">SLA ≥ 2 days</div>
+              </div>
+              <div class="eq-stat">
+                <div class="n" id="eq-stat-claimed">0</div>
+                <div class="l">Claimed</div>
+              </div>
+            </div>
+
+            <div class="eq-body">
+              <div class="eq-list" id="eq-list" role="listbox" aria-label="Exception queue"></div>
+              <div class="eq-detail empty" id="eq-detail">
+                <p>Select an exception to review AI ranking and take action.</p>
+              </div>
+            </div>
+
+            <div class="eq-audit">
+              <h4>Action log · sample audit trail</h4>
+              <ul id="eq-audit-list"></ul>
+            </div>
+          </div>
+
+          <p class="eq-footer-note">
+            Why this for Accelerator / BA+: the JD and screen both stress Salesforce, analytics, regulated financial
+            services, and AI as leverage. The product problem is not “more charts.” It is trustworthy pipeline truth and
+            a queue people trust when legal, compliance, and ops all have a stake in the same file.
+          </p>
+        </div>
+      </div>
+
       <!-- PANEL: Dashboard -->
-      <div id="panel-dashboard" data-shell-panel class="shell-panel is-active-panel">
+      <div id="panel-dashboard" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
           <p class="case-label">Illustrative dashboard · sample metrics only</p>
           <h1 class="shell-panel-title">Ops: Time to Yes (pilot slice)</h1>
@@ -327,16 +418,17 @@
               <span>CRM system of work: Salesforce</span>
             </p>
             <p class="cs-lead">
-              Fifteen years at Auction.com on loan-centric, regulated systems with Salesforce as a product surface:
+              Fifteen years at Auction.com on loan-centric, <strong>highly regulated</strong> systems with Salesforce as a product surface:
               custom components, intake, source of truth across feeds, and SOQL when report builder was not enough.
-              Not an admin-first hire. The job here is pipeline truth in CRM language: stages, owners, aging, exceptions.
+              Not an admin-first hire. The job here is pipeline truth plus exception work people can defend under audit:
+              stages, owners, aging, compliance tags, action logs.
             </p>
             <div class="object-chips" aria-label="Salesforce concepts this page uses">
               <span class="object-chip"><em>Loan file</em> (custom or opp-shaped)</span>
+              <span class="object-chip"><em>Exception</em> queue</span>
               <span class="object-chip"><em>Stage</em> history</span>
-              <span class="object-chip"><em>Report</em> types</span>
-              <span class="object-chip"><em>Dashboard</em> components</span>
-              <span class="object-chip"><em>List view</em> queues</span>
+              <span class="object-chip"><em>Report</em> / dashboard</span>
+              <span class="object-chip"><em>Audit</em> trail</span>
               <span class="object-chip"><em>SOQL</em> when needed</span>
             </div>
           </header>
@@ -346,13 +438,25 @@
             <p>
               Specialty mortgage platforms do not win only on rate. Brokers, correspondents, and investors re-choose a firm
               when <strong>product fit</strong>, <strong>real speed to yes</strong>, and a <strong>low-friction path</strong>
-              hold. Those moments show up in CRM as stages, timestamps, owners, and conditions, if the org is instrumented.
+              hold. In a regulated shop those moments also have to be <strong>explainable</strong>: who changed what, which
+              disclosure or KYC hold is open, whether the CRM and the adjacent system still agree.
             </p>
             <p>
               The BA+ / Accelerator job is not Capital Markets theater. It is sitting with the business, locking what
-              “Application in,” “decisioned,” and “stuck” mean on the record, then using Salesforce reports and dashboards
-              so leadership sees friction early. When canned reports are wrong, dig (SOQL, field history, integration logs),
-              fix definitions, then rebuild the component.
+              “Application in,” “decisioned,” and “stuck” mean on the record, then using Salesforce reports, dashboards,
+              and custom components so leadership sees friction early. When canned reports are wrong, dig (SOQL, field history,
+              integration logs), fix definitions, then rebuild the component. Prefer human judgment on holds; use AI to
+              prioritize the queue, not to invent the decision.
+            </p>
+          </section>
+
+          <section class="cs-section">
+            <h2>Prototype: Exception Queue (custom component)</h2>
+            <p>
+              Open <strong>Exceptions</strong> in the chrome (or waffle → Exception Queue). AI scores open items by
+              compliance tags, SLA breach, partner tier, and size band. People claim, escalate to compliance, or resolve
+              with a note that lands in a sample action log. That is the regulated version of “time to yes”: speed where
+              it is safe, escalation where control requires a human.
             </p>
           </section>
 
@@ -385,7 +489,7 @@
               </div>
               <div class="wedge-card">
                 <h3>Regulated calm</h3>
-                <p>Auditability and consistent process. Field history and clean handoffs matter when counterparties are sophisticated.</p>
+                <p>Disclosures, KYC holds, dual-system status, reason codes. Field history and action logs matter when examiners or counterparties ask “who decided?”</p>
               </div>
             </div>
           </section>
@@ -424,13 +528,13 @@
                   </tr>
                   <tr>
                     <td>Highly regulated environment</td>
-                    <td>Loan-centric deals, multi-jurisdiction contracts, bank audit pressure with legal/security</td>
-                    <td>Career LOS originations PM or capital markets</td>
+                    <td>Loan-centric deals, multi-jurisdiction contracts/disclosures, bank audit pressure with legal/security; exception queues with a trail</td>
+                    <td>Career LOS originations PM, counsel, or capital markets</td>
                   </tr>
                   <tr>
                     <td>AI as leverage on SF work</td>
-                    <td>Draft stories, AC, and SOQL with human review; faster discovery notes</td>
-                    <td>Unreviewed AI into production report logic</td>
+                    <td>Prioritize queues; draft stories, AC, SOQL with human review. People still act on holds.</td>
+                    <td>Unreviewed AI clearing compliance holds or inventing credit policy</td>
                   </tr>
                 </tbody>
               </table>
@@ -614,7 +718,8 @@
     </div>
   </div>
 
-  <script src="shell.js?v=1"></script>
+  <script src="shell.js?v=2"></script>
+  <script src="exception-queue.js?v=1"></script>
   <script src="flows.js?v=3"></script>
 </body>
 </html>

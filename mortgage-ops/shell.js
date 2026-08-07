@@ -4,6 +4,16 @@
  */
 (function () {
   const APPS = {
+    exceptions: {
+      id: 'exceptions',
+      name: 'Exception Queue',
+      blurb: 'Custom component · AI ranks · humans act',
+      icon: 'E',
+      views: [
+        { id: 'queue', label: 'AI-prioritized queue', panel: 'panel-exceptions' },
+        { id: 'writeup', label: 'Case study write-up', panel: 'panel-writeup' },
+      ],
+    },
     accelerator: {
       id: 'accelerator',
       name: 'Accelerator Analytics',
@@ -44,8 +54,8 @@
   };
 
   const state = {
-    appId: 'accelerator',
-    viewId: 'dashboard',
+    appId: 'exceptions',
+    viewId: 'queue',
     launcherOpen: false,
     viewMenuOpen: false,
   };
@@ -185,13 +195,17 @@
       el.demoBanner.textContent =
         'Demo shell · ' + app.name + ' · click waffle or view menu · not a live org';
     }
-    // Highlight context chips: exact view for Accelerator; whole app for Pipeline / Reports
+    // Highlight context chips
     $all('.nav-chip[data-shell-app]').forEach((node) => {
       const app = node.getAttribute('data-shell-app');
       const view = node.getAttribute('data-shell-view');
       let on = false;
       if (app === 'pipeline' || app === 'reports') {
         on = state.appId === app;
+      } else if (app === 'exceptions' && view === 'queue') {
+        on = state.appId === 'exceptions' && state.viewId === 'queue';
+      } else if (view === 'writeup') {
+        on = state.viewId === 'writeup';
       } else {
         on = state.appId === app && state.viewId === view;
       }
