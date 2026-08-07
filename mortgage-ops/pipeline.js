@@ -525,7 +525,7 @@
       rows +
       '</ul>' +
       '<div class="app-cond-add">' +
-      '<input type="text" class="app-cond-input" id="app-cond-text" placeholder="New condition (e.g. 12-mo bank statements months 1–12)" maxlength="200" />' +
+      '<input type="text" class="app-cond-input" id="app-cond-text" placeholder="New condition (e.g. 12-mo bank statements months 1-12)" maxlength="200" />' +
       '<input type="text" class="app-cond-owner-input" id="app-cond-owner" placeholder="Owner" maxlength="40" value="Broker" />' +
       '<button type="button" class="app-cond-add-btn" data-cond-add>Add condition</button>' +
       '</div></div>'
@@ -538,7 +538,7 @@
       '<div class="app-notes-panel">' +
       '<h4>Notes</h4>' +
       '<p class="app-cond-panel__hint">Ops / UW working notes on this application. Stays with the file while you demo (session only).</p>' +
-      '<textarea class="app-notes-area" id="app-notes" rows="4" maxlength="2000" placeholder="Broker conversation, last ping, why a condition is stuck…">' +
+      '<textarea class="app-notes-area" id="app-notes" rows="4" maxlength="2000" placeholder="Broker conversation, last ping, why a condition is stuck...">' +
       escapeHtml(f.notes || '') +
       '</textarea>' +
       '<div class="app-notes-meta"><span id="app-notes-saved">Edits stick on this file until you refresh the page.</span></div>' +
