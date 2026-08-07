@@ -552,7 +552,9 @@
         .map(function (w) {
           const id = String(w.file).replace(/^LF-/, 'APP-');
           return (
-            '<button type="button" class="watch-row" data-go-eq><span><span class="id">' +
+            '<button type="button" class="watch-row" data-go-app="' +
+            id +
+            '"><span><span class="id">' +
             id +
             '</span><div class="why">' +
             w.why +
@@ -571,7 +573,7 @@
         '<div class="dash-card__b">' +
         agingHtml +
         '<p class="funnel-conv">Click a cell. 7d+ buckets need named owners.</p></div></div>' +
-        '<div class="dash-card"><div class="dash-card__h"><h2>Act now</h2><span class="sub">Opens Exception Queue</span></div>' +
+        '<div class="dash-card"><div class="dash-card__h"><h2>Act now</h2><span class="sub">Opens Applications (same APP ids)</span></div>' +
         '<div class="dash-card__b"><div class="watch-list">' +
         watch +
         '</div></div></div>' +
@@ -585,11 +587,12 @@
         '<div class="dash-card__b"><ul class="dash-exec-list">' +
         '<li>Claim past-SLA apps before new intake noise.</li>' +
         '<li>Conditions factory: oldest open conditions first.</li>' +
-        '<li>Docs/rules holds: clear or route — do not leave silent.</li>' +
+        '<li>Docs/rules holds: clear or route; do not leave silent.</li>' +
         '<li>Dual-system mismatch: fix source of truth before broker status.</li>' +
         '</ul>' +
         '<div class="drill-actions" style="margin-top:12px">' +
-        '<button type="button" class="is-primary" data-go-eq>Open Exception Queue</button>' +
+        '<button type="button" class="is-primary" data-go-apps>Open Applications</button>' +
+        '<button type="button" data-go-eq>Exception Queue</button>' +
         '</div></div></div>' +
         '</div>';
     }
@@ -683,6 +686,20 @@
     });
     document.querySelectorAll('#dash-body [data-go-eq]').forEach(function (el) {
       el.addEventListener('click', navigateExceptions);
+    });
+    document.querySelectorAll('#dash-body [data-go-apps]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (window.mortgageShell) window.mortgageShell.navigate('pipeline', 'all-open');
+      });
+    });
+    document.querySelectorAll('#dash-body [data-go-app]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var appId = el.getAttribute('data-go-app');
+        if (window.mortgageShell) window.mortgageShell.navigate('pipeline', 'all-open');
+        setTimeout(function () {
+          if (window.mortgagePipeline && appId) window.mortgagePipeline.selectFile(appId);
+        }, 60);
+      });
     });
     document.querySelectorAll('#dash-body [data-switch-ops]').forEach(function (el) {
       el.addEventListener('click', function () {

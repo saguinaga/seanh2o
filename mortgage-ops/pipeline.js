@@ -1,5 +1,5 @@
 /**
- * Loan Applications — connected working list for Xtreme demo.
+ * Loan Applications: connected working list for Xtreme demo.
  * Same product catalog as dashboard; same APP ids as exceptions/watchlists.
  */
 (function () {
@@ -281,7 +281,7 @@
   }
 
   function filtered() {
-    return APPS.filter(function (f) {
+    var rows = APPS.filter(function (f) {
       if (productFilter !== 'all' && f.productKey !== productFilter) return false;
       if (statusFilter === 'stuck') return f.tags.indexOf('stuck') !== -1;
       if (statusFilter === 'conditions') return f.tags.indexOf('conditions') !== -1;
@@ -290,6 +290,14 @@
       if (statusFilter === 'watch') return f.onWatch;
       return true;
     });
+    // Worklist order: hottest first (days desc, then SLA tags)
+    rows.sort(function (a, b) {
+      var aHot = a.tags.indexOf('stuck') !== -1 ? 1 : 0;
+      var bHot = b.tags.indexOf('stuck') !== -1 ? 1 : 0;
+      if (bHot !== aHot) return bHot - aHot;
+      return b.days - a.days;
+    });
+    return rows;
   }
 
   function stats(pool) {
@@ -428,7 +436,7 @@
       '<h4>Connected surfaces</h4>' +
       '<div class="drill-actions">' +
       (f.exceptionId
-        ? '<button type="button" class="is-primary" data-nav="exceptions:queue" data-ex="' +
+        ? '<button type="button" class="is-primary" data-open-ex="' +
           f.exceptionId +
           '">Open exception ' +
           f.exceptionId +
@@ -445,9 +453,18 @@
           '</button>'
         : '') +
       '</div>' +
-      '<p class="app-detail-note">This list is the system of work under the dashboards. Same applications, same products, same stuck work.</p>' +
+      '<p class="app-detail-note">System of work under the dashboards. Same APP records as Ops act-now and the exception queue. Same product DNA as the chips above.</p>' +
       '</div>'
     );
+  }
+
+  function openException(exId) {
+    go('exceptions', 'queue');
+    setTimeout(function () {
+      if (window.eqExceptionQueue && window.eqExceptionQueue.selectById && exId) {
+        window.eqExceptionQueue.selectById(exId);
+      }
+    }, 60);
   }
 
   function render() {
@@ -469,11 +486,12 @@
 
     var linkBar =
       '<div class="app-link-bar">' +
-      '<span class="app-link-bar__text"><strong>Xtreme applications</strong> — the working list behind Leadership / Ops dashboards and the exception queue.</span>' +
+      '<span class="app-link-bar__text"><strong>Xtreme applications</strong>: working list under Leadership / Ops dashboards and the exception queue. Same APP ids, same product chips.</span>' +
       '<div class="app-link-bar__actions">' +
       '<button type="button" data-nav="accelerator:dashboard">Dashboard</button>' +
       '<button type="button" data-nav="exceptions:queue">Exceptions</button>' +
       '<button type="button" data-nav="accelerator:path">Path</button>' +
+      '<button type="button" data-nav="reports:ops-folder">Reports</button>' +
       '</div></div>';
 
     root.innerHTML =
@@ -491,7 +509,7 @@
       '<div class="drill-list-card">' +
       '<div class="drill-list-card__h"><h2>Open applications</h2><span class="sub">' +
       rows.length +
-      ' shown · click to drill</span></div>' +
+      ' shown · hottest first</span></div>' +
       '<div class="drill-filters">' +
       chip('all', 'All status') +
       chip('stuck', 'Past SLA') +
@@ -500,36 +518,50 @@
       chip('watch', 'Act-now') +
       '</div>' +
       '<div class="drill-table-wrap"><table class="drill-table"><thead><tr>' +
-      '<th>Application</th><th>Product</th><th>Stage</th><th>Owner</th><th>Days</th><th></th>' +
+      '<th>Application</th><th>Product</th><th>Stage</th><th>Owner</th><th>Days</th><th>Signal</th>' +
       '</tr></thead><tbody>' +
       (rows.length
         ? rows
             .map(function (f) {
-              var badge =
-                f.tags.indexOf('stuck') !== -1
-                  ? '<span class="app-row-badge app-row-badge--hot">SLA</span>'
-                  : f.tags.indexOf('conditions') !== -1
-                    ? '<span class="app-row-badge app-row-badge--warn">COND</span>'
-                    : f.exceptionId
-                      ? '<span class="app-row-badge">EX</span>'
-                      : '';
+              var isHot = f.tags.indexOf('stuck') !== -1;
+              var badges = [];
+              if (isHot) badges.push('<span class="app-row-badge app-row-badge--hot">SLA</span>');
+              if (f.tags.indexOf('conditions') !== -1)
+                badges.push('<span class="app-row-badge app-row-badge--warn">COND</span>');
+              if (f.exceptionId)
+                badges.push(
+                  '<button type="button" class="app-row-badge app-row-badge--ex" data-ex="' +
+                    f.exceptionId +
+                    '" title="Open exception">' +
+                    f.exceptionId +
+                    '</button>'
+                );
+              if (f.onWatch && !isHot)
+                badges.push('<span class="app-row-badge">ACT</span>');
               return (
                 '<tr data-id="' +
                 f.id +
                 '" class="' +
                 (f.id === selectedId ? 'is-selected' : '') +
+                (isHot ? ' is-hot' : '') +
                 '"><td><strong>' +
                 f.id +
-                '</strong></td><td>' +
+                '</strong><div class="app-row-sub">' +
+                f.amount +
+                ' · ' +
+                f.broker +
+                '</div></td><td>' +
                 f.product +
                 '</td><td>' +
                 f.stage +
                 '</td><td>' +
                 f.owner +
-                '</td><td>' +
+                '</td><td class="' +
+                (isHot || f.days >= 7 ? 'app-days-hot' : '') +
+                '">' +
                 f.days +
-                '</td><td>' +
-                badge +
+                'd</td><td class="app-row-signals">' +
+                (badges.length ? badges.join(' ') : '<span class="app-row-quiet">ok</span>') +
                 '</td></tr>'
               );
             })
@@ -569,9 +601,16 @@
       });
     });
     root.querySelectorAll('tr[data-id]').forEach(function (el) {
-      el.addEventListener('click', function () {
+      el.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('[data-ex]')) return;
         selectedId = el.getAttribute('data-id');
         render();
+      });
+    });
+    root.querySelectorAll('[data-ex], [data-open-ex]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openException(el.getAttribute('data-ex') || el.getAttribute('data-open-ex'));
       });
     });
     root.querySelectorAll('[data-nav]').forEach(function (el) {

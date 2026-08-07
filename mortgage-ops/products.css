@@ -275,6 +275,50 @@
   color: #8c4b02;
 }
 
+.app-row-badge--ex {
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid #b8d0f5;
+  background: #eef4ff;
+  color: #014486;
+}
+
+.app-row-badge--ex:hover {
+  background: #0176d3;
+  color: #fff;
+  border-color: #0176d3;
+}
+
+.app-row-sub {
+  font-size: 0.68rem;
+  color: #706e6b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.app-row-signals {
+  white-space: nowrap;
+}
+
+.app-row-quiet {
+  font-size: 0.68rem;
+  color: #939393;
+  font-weight: 600;
+}
+
+.app-days-hot {
+  color: #ba0517;
+  font-weight: 700;
+}
+
+.drill-table tr.is-hot td {
+  background: #fff8f8;
+}
+
+.drill-table tr.is-hot.is-selected td {
+  background: #e8f3ff;
+}
+
 @media (max-width: 480px) {
   .prod-chip-rail {
     flex-wrap: nowrap;

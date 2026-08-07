@@ -663,5 +663,30 @@
     init();
   }
 
-  window.eqExceptionQueue = { refresh: renderAll, init: init };
+  window.eqExceptionQueue = {
+    refresh: renderAll,
+    init: init,
+    selectById: function (id) {
+      if (!id) return;
+      selectedId = id;
+      listFilter = 'all';
+      renderAll();
+    },
+    selectByApp: function (appId) {
+      if (!appId) return;
+      var hit = ITEMS.find(function (i) {
+        return i.appId === appId && i.status === 'open';
+      });
+      if (!hit) {
+        hit = ITEMS.find(function (i) {
+          return i.appId === appId;
+        });
+      }
+      if (hit) {
+        selectedId = hit.id;
+        listFilter = 'all';
+        renderAll();
+      }
+    },
+  };
 })();

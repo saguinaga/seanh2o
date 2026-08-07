@@ -194,7 +194,9 @@
       .map(function (w) {
         var id = String(w.file).replace(/^LF-/, 'APP-');
         return (
-          '<li><button type="button" data-go-eq><span>' +
+          '<li><button type="button" data-go-app="' +
+          id +
+          '"><span>' +
           id +
           ' · ' +
           w.why +
@@ -225,7 +227,9 @@
         '<article class="ln-comp ln-comp--6"><header class="ln-comp__header"><h3>Report · Open exceptions (sample)</h3><span class="ln-comp__menu">▾</span></header>' +
         '<div class="ln-comp__body"><ul class="ln-list">' +
         watch +
-        '</ul><button type="button" class="ln-btn ln-btn--brand" style="margin-top:10px" data-go-eq>Open Exception Queue</button></div></article>';
+        '</ul><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">' +
+        '<button type="button" class="ln-btn ln-btn--brand" data-go-apps>Open Applications</button>' +
+        '<button type="button" class="ln-btn" data-go-eq>Exception Queue</button></div></div></article>';
 
     root.innerHTML =
       '<div class="ln-root">' +
@@ -322,6 +326,20 @@
     });
     root.querySelectorAll('[data-go-eq]').forEach(function (btn) {
       btn.addEventListener('click', goEq);
+    });
+    root.querySelectorAll('[data-go-apps]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (window.mortgageShell) window.mortgageShell.navigate('pipeline', 'all-open');
+      });
+    });
+    root.querySelectorAll('[data-go-app]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var appId = btn.getAttribute('data-go-app');
+        if (window.mortgageShell) window.mortgageShell.navigate('pipeline', 'all-open');
+        setTimeout(function () {
+          if (window.mortgagePipeline && appId) window.mortgagePipeline.selectFile(appId);
+        }, 60);
+      });
     });
     root.querySelectorAll('[data-skin]').forEach(function (btn) {
       btn.addEventListener('click', function () {
