@@ -185,7 +185,8 @@
   const state = {
     product: 'all',
     window: '7d',
-    role: 'ops', // ops | exec
+    // First paint for hiring manager: outcomes, then they can flip to Ops
+    role: 'exec', // ops | exec
     focus: null, // kpi id or stage
     agingCell: null,
   };

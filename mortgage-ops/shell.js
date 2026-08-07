@@ -54,8 +54,9 @@
   };
 
   const state = {
-    appId: 'exceptions',
-    viewId: 'queue',
+    // Public first paint: dashboard WOWs; write-up is one click for the narrative
+    appId: 'accelerator',
+    viewId: 'dashboard',
     launcherOpen: false,
     viewMenuOpen: false,
   };
