@@ -1,129 +1,127 @@
-/** Loan Pipeline with row drill-down. Demo data. */
+/** Loan Applications pipeline with row drill-down. Demo data. */
 (function () {
-  const FILES = [
+  const APPS = [
     {
-      id: 'LF-10482',
+      id: 'APP-10482',
       product: 'Bridge',
       stage: 'In underwriting',
       owner: 'M. Chen',
       days: 9,
-      tags: ['stuck', 'reg'],
+      tags: ['stuck', 'policy'],
       amount: '890K',
-      seller: 'Summit Capital',
+      broker: 'Summit Capital',
       tier: 'A',
-      issues: ['Identity verification mismatch on co-borrower entity', 'SLA breached'],
+      issues: ['Entity/income docs do not match parties on application', 'SLA breached'],
       timeline: [
-        { t: 'Day 0', e: 'Application in · package received' },
+        { t: 'Day 0', e: 'Application submitted' },
         { t: 'Day 1', e: 'Moved to underwriting' },
-        { t: 'Day 3', e: 'KYC flag raised' },
-        { t: 'Day 9', e: 'Still open · no owner claim on exception' },
+        { t: 'Day 3', e: 'Policy check: party mismatch' },
+        { t: 'Day 9', e: 'Still open · exception unclaimed' },
       ],
       exceptionId: 'EX-2202',
     },
     {
-      id: 'LF-10491',
+      id: 'APP-10491',
       product: 'Rental term',
       stage: 'Approved w/ conditions',
       owner: 'J. Ortiz',
       days: 5,
-      tags: ['conditions', 'reg'],
+      tags: ['conditions'],
       amount: '2.4M',
-      seller: 'Harbor Investors',
+      broker: 'Harbor Investors',
       tier: 'B',
-      issues: ['State-specific disclosure not stamped'],
+      issues: ['Condition docs incomplete'],
       timeline: [
-        { t: 'Day 0', e: 'Application in' },
+        { t: 'Day 0', e: 'Application submitted' },
         { t: 'Day 4', e: 'Credit decision · approved w/ conditions' },
-        { t: 'Day 5', e: 'Disclosure stamp missing in package' },
+        { t: 'Day 5', e: 'Waiting on condition package' },
       ],
       exceptionId: 'EX-2203',
     },
     {
-      id: 'LF-10502',
+      id: 'APP-10502',
       product: 'Build-for-rent',
       stage: 'Application in',
       owner: 'A. Singh',
       days: 1,
       tags: [],
       amount: '3.1M',
-      seller: 'Pacific BFR LLC',
+      broker: 'Pacific BFR LLC',
       tier: 'C',
-      issues: ['Manual pricing overlay without reason code (watch)'],
+      issues: ['Pricing overlay missing reason code (internal)'],
       timeline: [
-        { t: 'Day 0', e: 'Application in · incomplete checklist 1 item' },
-        { t: 'Day 1', e: 'Overlay noted without structured code' },
+        { t: 'Day 0', e: 'Application in · checklist 1 item open' },
+        { t: 'Day 1', e: 'Intake review' },
       ],
       exceptionId: 'EX-2205',
     },
     {
-      id: 'LF-10455',
+      id: 'APP-10455',
       product: 'Bridge',
       stage: 'Approved w/ conditions',
       owner: 'M. Chen',
       days: 12,
-      tags: ['stuck', 'conditions', 'reg'],
+      tags: ['stuck', 'conditions'],
       amount: '1.2M',
-      seller: 'Summit Capital',
+      broker: 'Summit Capital',
       tier: 'A',
-      issues: ['Condition package incomplete', 'Disclosure gap'],
+      issues: ['Condition package incomplete after approval'],
       timeline: [
-        { t: 'Day 0', e: 'Application in' },
+        { t: 'Day 0', e: 'Application submitted' },
         { t: 'Day 5', e: 'Approved w/ conditions' },
-        { t: 'Day 8', e: 'Partner ping #1' },
-        { t: 'Day 12', e: 'Still incomplete · exception open' },
+        { t: 'Day 8', e: 'Broker ping #1' },
+        { t: 'Day 12', e: 'Still incomplete' },
       ],
       exceptionId: 'EX-2201',
     },
     {
-      id: 'LF-10510',
+      id: 'APP-10510',
       product: 'Rental term',
       stage: 'Clear to fund',
       owner: 'Funding desk',
       days: 0,
       tags: [],
       amount: '1.0M',
-      seller: 'Harbor Investors',
+      broker: 'Harbor Investors',
       tier: 'A',
       issues: [],
-      timeline: [
-        { t: 'Day 0', e: 'Clear to fund · waiting funding window' },
-      ],
+      timeline: [{ t: 'Day 0', e: 'Clear to fund · in funding window' }],
       exceptionId: null,
     },
     {
-      id: 'LF-10470',
+      id: 'APP-10470',
       product: 'Bridge',
       stage: 'In underwriting',
       owner: 'J. Ortiz',
       days: 7,
-      tags: ['stuck', 'reg'],
+      tags: ['stuck', 'data'],
       amount: '650K',
-      seller: 'Metro Hard Money',
+      broker: 'Metro Hard Money',
       tier: 'B',
-      issues: ['Integration write-back failed · dual status risk'],
+      issues: ['CRM vs LOS status mismatch'],
       timeline: [
-        { t: 'Day 0', e: 'Application in' },
+        { t: 'Day 0', e: 'Application submitted' },
         { t: 'Day 2', e: 'Underwriting' },
-        { t: 'Day 6', e: 'Stage flip attempted · adjacent system lag' },
-        { t: 'Day 7', e: 'CRM and LOS disagree' },
+        { t: 'Day 6', e: 'Stage flip · adjacent system lag' },
+        { t: 'Day 7', e: 'Dual status' },
       ],
       exceptionId: 'EX-2204',
     },
     {
-      id: 'LF-10518',
+      id: 'APP-10518',
       product: 'Bridge',
       stage: 'Application in',
       owner: 'A. Singh',
       days: 3,
-      tags: ['stuck', 'reg'],
+      tags: ['stuck', 'policy'],
       amount: '1.5M',
-      seller: 'Summit Capital',
+      broker: 'Summit Capital',
       tier: 'A',
-      issues: ['Wrong loan-type contract template on offer package'],
+      issues: ['Product eligibility rules failed; needs rework or product change'],
       timeline: [
-        { t: 'Day 0', e: 'Application in' },
-        { t: 'Day 1', e: 'Offer package generated' },
-        { t: 'Day 3', e: 'Template mismatch found · stop the line' },
+        { t: 'Day 0', e: 'Application submitted' },
+        { t: 'Day 1', e: 'Rules engine: eligibility fail' },
+        { t: 'Day 3', e: 'Waiting broker / ops path decision' },
       ],
       exceptionId: 'EX-2207',
     },
@@ -137,19 +135,19 @@
   }
 
   function filtered() {
-    if (filter === 'all') return FILES.slice();
-    if (filter === 'stuck') return FILES.filter((f) => f.tags.indexOf('stuck') !== -1);
-    if (filter === 'conditions') return FILES.filter((f) => f.tags.indexOf('conditions') !== -1);
-    if (filter === 'reg') return FILES.filter((f) => f.tags.indexOf('reg') !== -1);
-    return FILES.slice();
+    if (filter === 'all') return APPS.slice();
+    if (filter === 'stuck') return APPS.filter(function (f) { return f.tags.indexOf('stuck') !== -1; });
+    if (filter === 'conditions') return APPS.filter(function (f) { return f.tags.indexOf('conditions') !== -1; });
+    if (filter === 'policy') return APPS.filter(function (f) { return f.tags.indexOf('policy') !== -1 || f.tags.indexOf('data') !== -1; });
+    return APPS.slice();
   }
 
   function stats() {
     return {
-      all: FILES.length,
-      stuck: FILES.filter((f) => f.tags.indexOf('stuck') !== -1).length,
-      conditions: FILES.filter((f) => f.tags.indexOf('conditions') !== -1).length,
-      reg: FILES.filter((f) => f.tags.indexOf('reg') !== -1).length,
+      all: APPS.length,
+      stuck: APPS.filter(function (f) { return f.tags.indexOf('stuck') !== -1; }).length,
+      conditions: APPS.filter(function (f) { return f.tags.indexOf('conditions') !== -1; }).length,
+      policy: APPS.filter(function (f) { return f.tags.indexOf('policy') !== -1 || f.tags.indexOf('data') !== -1; }).length,
     };
   }
 
@@ -164,29 +162,29 @@
     if (!root) return;
     const s = stats();
     const rows = filtered();
-    if (!selectedId || !rows.some((r) => r.id === selectedId)) {
+    if (!selectedId || !rows.some(function (r) { return r.id === selectedId; })) {
       selectedId = rows[0] ? rows[0].id : null;
     }
-    const sel = FILES.find((f) => f.id === selectedId);
+    const sel = APPS.find(function (f) { return f.id === selectedId; });
 
     root.innerHTML =
       '<div class="drill-stat-row">' +
-      statBtn('all', s.all, 'All open') +
+      statBtn('all', s.all, 'All apps') +
       statBtn('stuck', s.stuck, 'Past SLA') +
       statBtn('conditions', s.conditions, 'W/ conditions') +
-      statBtn('reg', s.reg, 'Regulated flags') +
+      statBtn('policy', s.policy, 'Rules / data') +
       '</div>' +
       '<div class="drill-layout">' +
       '<div class="drill-list-card">' +
-      '<div class="drill-list-card__h"><h2>Loan files</h2><span class="sub">Click row to drill</span></div>' +
+      '<div class="drill-list-card__h"><h2>Loan applications</h2><span class="sub">Click row to drill</span></div>' +
       '<div class="drill-filters">' +
       chip('all', 'All') +
       chip('stuck', 'Past SLA') +
       chip('conditions', 'Conditions') +
-      chip('reg', 'Regulated') +
+      chip('policy', 'Rules / data') +
       '</div>' +
       '<div class="drill-table-wrap"><table class="drill-table"><thead><tr>' +
-      '<th>File</th><th>Product</th><th>Stage</th><th>Owner</th><th>Days</th>' +
+      '<th>Application</th><th>Product</th><th>Stage</th><th>Owner</th><th>Days</th>' +
       '</tr></thead><tbody>' +
       rows
         .map(function (f) {
@@ -195,8 +193,7 @@
             f.id +
             '" class="' +
             (f.id === selectedId ? 'is-selected' : '') +
-            '">' +
-            '<td><strong>' +
+            '"><td><strong>' +
             f.id +
             '</strong></td><td>' +
             f.product +
@@ -212,7 +209,7 @@
         .join('') +
       '</tbody></table></div></div>' +
       '<div class="drill-detail-card">' +
-      (sel ? detailHtml(sel) : '<div class="drill-empty">Select a loan file</div>') +
+      (sel ? detailHtml(sel) : '<div class="drill-empty">Select an application</div>') +
       '</div></div>';
 
     root.querySelectorAll('[data-stat]').forEach(function (el) {
@@ -242,7 +239,12 @@
 
     const cap = $('#pipeline-view-caption');
     if (cap) {
-      const labels = { all: 'All open files', stuck: 'Past SLA', conditions: 'Approved w/ conditions', reg: 'Regulated flags' };
+      const labels = {
+        all: 'All open applications',
+        stuck: 'Past SLA',
+        conditions: 'Approved w/ conditions',
+        policy: 'Rules / data holds',
+      };
       cap.textContent = (labels[filter] || 'List') + ' · click any row';
     }
   }
@@ -275,7 +277,7 @@
 
   function detailHtml(f) {
     return (
-      '<div class="drill-detail-card__h"><h2>File detail</h2><span class="sub">' +
+      '<div class="drill-detail-card__h"><h2>Application detail</h2><span class="sub">' +
       f.id +
       '</span></div><div class="drill-detail-card__b">' +
       '<h3>' +
@@ -289,18 +291,24 @@
       f.days +
       'd in stage · ' +
       f.amount +
-      ' · Seller ' +
-      f.seller +
-      ' (Tier ' +
+      ' · Broker ' +
+      f.broker +
+      ' (tier ' +
       f.tier +
       ') · Owner ' +
       f.owner +
       '</p>' +
-      '<h4>Why this file matters</h4>' +
+      '<h4>What is blocking time to yes</h4>' +
       (f.issues.length
-        ? '<ul>' + f.issues.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>'
-        : '<p>No open control flags. Funding handoff watch only.</p>') +
-      '<h4>Stage timeline (illustrative)</h4>' +
+        ? '<ul>' +
+          f.issues
+            .map(function (i) {
+              return '<li>' + i + '</li>';
+            })
+            .join('') +
+          '</ul>'
+        : '<p>No open blockers. In funding window.</p>') +
+      '<h4>Application timeline</h4>' +
       '<div class="drill-timeline">' +
       f.timeline
         .map(function (ev) {
@@ -313,16 +321,15 @@
       (f.exceptionId
         ? '<button type="button" class="is-primary" data-nav="exceptions:queue">Open related exception</button>'
         : '') +
-      '<button type="button" data-nav="accelerator:dashboard">See on dashboard</button>' +
-      '<button type="button" data-nav="accelerator:path">Path prototype</button>' +
+      '<button type="button" data-nav="accelerator:dashboard">Dashboard</button>' +
+      '<button type="button" data-nav="accelerator:path">Application path</button>' +
       '</div>' +
-      '<p style="margin-top:12px;font-size:0.78rem;color:var(--muted-soft)">Regulated angle: multi-party files need a trail (who owned the hold, what package went out). Same pattern as offer/contract automation across lenders.</p>' +
+      '<p style="margin-top:12px;font-size:0.78rem;color:var(--muted-soft)">Policy and rules checks sit on the company side so applications can move cleanly. The broker/borrower experience is progress toward a real yes.</p>' +
       '</div>'
     );
   }
 
   function applyShellFilter() {
-    // when shell switches list views
     if (window.mortgageShell && window.mortgageShell.getState) {
       const st = window.mortgageShell.getState();
       if (st.appId === 'pipeline') {

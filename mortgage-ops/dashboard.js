@@ -1,6 +1,6 @@
 /**
  * Interactive Time-to-Yes dashboard. Demo data only.
- * Filters, clickable KPIs/funnel/aging, compliance alerts → Exception Queue.
+ * Filters, clickable KPIs/funnel/aging, policy alerts → Exception Queue.
  */
 (function () {
   const PRODUCTS = {
@@ -21,7 +21,7 @@
       p90Delta: -0.6,
       stuck: 27,
       stuckDelta: 3,
-      complianceOpen: 11,
+      policyHold: 11,
       dualSystem: 4,
       sparkApps: [98, 105, 112, 118, 121, 130, 142],
       sparkDecision: [7.1, 6.9, 6.8, 6.5, 6.4, 6.3, 6.2],
@@ -51,9 +51,9 @@
         { name: 'Credit open item', n: 11, reg: false },
       ],
       watch: [
-        { file: 'LF-10455', why: 'Conditions + disclosure gap · Tier A', pill: 'Compliance', kind: 'reg' },
+        { file: 'LF-10455', why: 'Conditions + disclosure gap · Tier A', pill: 'policy', kind: 'reg' },
         { file: 'LF-10482', why: 'KYC co-borrower entity · 2d over SLA', pill: 'KYC', kind: 'reg' },
-        { file: 'LF-10518', why: 'Wrong loan-type contract template', pill: 'Contract', kind: 'reg' },
+        { file: 'LF-10518', why: 'Wrong loan-type App rules template', pill: 'App rules', kind: 'reg' },
         { file: 'LF-10470', why: 'CRM vs LOS stage mismatch', pill: 'Audit', kind: 'sla' },
       ],
     },
@@ -66,7 +66,7 @@
       p90Delta: -0.3,
       stuck: 14,
       stuckDelta: 2,
-      complianceOpen: 6,
+      policyHold: 6,
       dualSystem: 2,
       sparkApps: [44, 48, 50, 52, 55, 60, 64],
       sparkDecision: [6.0, 5.9, 5.7, 5.6, 5.5, 5.5, 5.4],
@@ -90,13 +90,13 @@
       reasons: [
         { name: 'Missing docs / disclosures', n: 16, reg: true },
         { name: 'Entity / KYC mismatch', n: 9, reg: true },
-        { name: 'Wrong contract template', n: 7, reg: true },
+        { name: 'Wrong App rules template', n: 7, reg: true },
         { name: 'Valuation hold', n: 6, reg: false },
         { name: 'Dual-system status', n: 5, reg: true },
       ],
       watch: [
-        { file: 'LF-10518', why: 'Wrong loan-type contract template', pill: 'Contract', kind: 'reg' },
-        { file: 'LF-10455', why: 'Conditions + disclosure gap', pill: 'Compliance', kind: 'reg' },
+        { file: 'LF-10518', why: 'Wrong loan-type App rules template', pill: 'App rules', kind: 'reg' },
+        { file: 'LF-10455', why: 'Conditions + disclosure gap', pill: 'policy', kind: 'reg' },
         { file: 'LF-10482', why: 'KYC mismatch', pill: 'KYC', kind: 'reg' },
       ],
     },
@@ -109,7 +109,7 @@
       p90Delta: 0.4,
       stuck: 9,
       stuckDelta: 1,
-      complianceOpen: 3,
+      policyHold: 3,
       dualSystem: 1,
       sparkApps: [40, 42, 44, 45, 47, 49, 51],
       sparkDecision: [6.8, 6.9, 7.0, 7.0, 7.1, 7.1, 7.1],
@@ -150,7 +150,7 @@
       p90Delta: -0.2,
       stuck: 4,
       stuckDelta: 0,
-      complianceOpen: 2,
+      policyHold: 2,
       dualSystem: 1,
       sparkApps: [18, 20, 21, 22, 24, 25, 27],
       sparkDecision: [8.2, 8.1, 8.1, 8.0, 8.0, 8.0, 8.0],
@@ -207,7 +207,7 @@
     const clone = JSON.parse(JSON.stringify(d));
     clone.appsIn = Math.round(d.appsIn * f);
     clone.stuck = Math.round(d.stuck * f * 0.9);
-    clone.complianceOpen = Math.round(d.complianceOpen * f * 0.85);
+    clone.policyHold = Math.round(d.policyHold * f * 0.85);
     clone.dualSystem = Math.round(d.dualSystem * f * 0.8);
     clone.funnel = d.funnel.map((s) =>
       Object.assign({}, s, {
@@ -274,17 +274,17 @@
 
     if (state.focus === 'stuck' || state.focus === 'cond') {
       text =
-        '<strong>Focus: stuck path.</strong> Conditions and compliance-tagged holds are where time-to-yes dies quietly. AI-ranked exception queue is the working list.';
+        '<strong>Focus: stuck path.</strong> Conditions and policy-tagged holds are where time-to-yes dies quietly. AI-ranked exception queue is the working list.';
       actions =
         '<button type="button" data-go-eq>Open Exception Queue</button>' +
         '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
-    } else if (state.focus === 'compliance') {
+    } else if (state.focus === 'policy') {
       text =
-        '<strong>Focus: regulated load.</strong> ' +
-        d.complianceOpen +
-        ' open items carry disclosure, KYC, contract, or audit tags. Same class of problem as multi-jurisdiction offer/contract generation: wrong artifact = stop the line.';
+        '<strong>Focus: docs / policy blockers.</strong> ' +
+        d.policyHold +
+        ' open applications need completeness or rules-engine attention. Company-side checks so the path to yes stays clean for the broker.';
       actions =
-        '<button type="button" data-go-eq>Work compliance exceptions</button>' +
+        '<button type="button" data-go-eq>Work application exceptions</button>' +
         '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
     } else if (state.focus === 'decision') {
       text =
@@ -292,7 +292,7 @@
       actions = '<button type="button" class="secondary" data-clear-focus>Clear focus</button>';
     } else if (state.role === 'exec') {
       text =
-        '<strong>Exec lens:</strong> Are we faster to a real yes without creating control gaps? Watch median decision, stuck count, and compliance-tagged exceptions, not raw app volume alone.';
+        '<strong>Exec lens:</strong> Are we faster to a real yes without creating control gaps? Watch median decision, stuck count, and policy-tagged exceptions, not raw app volume alone.';
       actions =
         '<button type="button" data-go-eq>See exception load</button>';
     } else {
@@ -333,15 +333,15 @@
         '</h3>' +
         '<p><strong>' +
         c.n +
-        ' files</strong> in this bucket for ' +
+        ' applications</strong> in this bucket for ' +
         PRODUCTS[state.product] +
-        '. In a regulated shop, long aging in conditions or underwriting is not only a speed story; it is where disclosure and KYC exceptions pile up.</p>' +
+        '. Long aging in conditions or underwriting is where time-to-yes dies. Put owners on 7d+ cells.</p>' +
         '<ul>' +
         '<li>Define the stage clock in writing (when it starts / pauses).</li>' +
-        '<li>Route 7d+ cells to the Exception Queue with an owner.</li>' +
-        '<li>If dual-system status appears, treat as audit risk until CRM is source of truth.</li>' +
+        '<li>Route 7d+ applications to the Exception Queue.</li>' +
+        '<li>If CRM and LOS disagree on stage, fix source of truth before status goes external.</li>' +
         '</ul>' +
-        '<p style="margin-top:8px"><button type="button" class="dash-inline-btn" id="dash-eq-from-aging">Send this pain to Exception Queue</button></p>';
+        '<p style="margin-top:8px"><button type="button" class="dash-inline-btn" id="dash-eq-from-aging">Open Exception Queue</button></p>';
       const btn = $('#dash-eq-from-aging');
       if (btn) btn.addEventListener('click', navigateExceptions);
       return;
@@ -351,7 +351,7 @@
       decision: 'Median time to decision is the “yes” clock. If it rises while apps rise, capacity or definition drift is likely.',
       fund: 'Clear-to-fund p90 is certainty of close. Spikes often mean funding handoff or integration write-back failures.',
       stuck: 'Stuck past SLA is the queue that should never be a vanity chart. Open Exception Queue and work by AI priority.',
-      compliance: 'Compliance-tagged load is the regulated layer. Same instinct as multi-lender contract automation: wrong package stops the line.',
+      policy: 'Docs and policy holds are company-side application blockers. Clear them so time-to-yes stays honest.',
       app: 'Application-in stage: watch incomplete package rate and file-complete time.',
       uw: 'Underwriting WIP: owner load and idle time matter more than last-modified.',
       cond: 'Approved-with-conditions is usually the real factory floor. Highest conversion leak in this demo.',
@@ -384,17 +384,17 @@
     // alerts
     const alerts =
       '<div class="dash-alert-rail">' +
-      '<button type="button" class="dash-alert dash-alert--reg" data-focus="compliance">' +
-      '<span class="kicker">Regulated load</span>' +
+      '<button type="button" class="dash-alert dash-alert--reg" data-focus="policy">' +
+      '<span class="kicker">Docs / rules blockers</span>' +
       '<span class="msg">' +
-      d.complianceOpen +
-      ' open with compliance tags</span>' +
+      d.policyHold +
+      ' apps need completeness or rules attention</span>' +
       '<span class="cta">Focus · then work Exception Queue →</span></button>' +
       '<button type="button" class="dash-alert dash-alert--sla" data-focus="stuck">' +
       '<span class="kicker">SLA pressure</span>' +
       '<span class="msg">' +
       d.stuck +
-      ' files past SLA</span>' +
+      ' apps past SLA</span>' +
       '<span class="cta">Focus stuck path →</span></button>' +
       '<button type="button" class="dash-alert dash-alert--ok" data-focus="fund">' +
       '<span class="kicker">Certainty of close</span>' +
@@ -537,7 +537,7 @@
       '</div></div>' +
       '</div>' +
       '<div class="dash-main">' +
-      '<div class="dash-card"><div class="dash-card__h"><h2>Why files stall</h2><span class="sub">Reg = control tag</span></div>' +
+      '<div class="dash-card"><div class="dash-card__h"><h2>Why apps stall</h2><span class="sub">Reg = control tag</span></div>' +
       '<div class="dash-card__b"><div class="sf-bars">' +
       reasons +
       '</div></div></div>' +
@@ -547,7 +547,7 @@
       '</div></div></div>' +
       '</div>' +
       '<div class="dash-detail-pane" id="dash-detail" hidden></div>' +
-      '<p class="dash-footer">Interactive demo only. Not client data. Designed as exception-first analytics for a regulated specialty lender: definitions and control tags before vanity volume. Contract/offer automation experience is the prior art for multi-party, multi-jurisdiction correctness.</p>';
+      '<p class="dash-footer">Interactive demo only. Not client data. Exception-first analytics on loan applications: stage definitions and stuck apps before vanity volume.</p>';
 
     setInsight(d);
     renderDetail(d);

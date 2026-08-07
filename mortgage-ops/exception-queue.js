@@ -1,29 +1,28 @@
 /**
- * Custom component prototype: Exception Queue with AI prioritization.
- * Human acts; AI ranks. Demo data only. Not legal advice / not a live org.
+ * Custom component: Application Exception Queue + AI prioritization.
+ * Unit of work = loan application. Policy/rules as company checks, not customer-facing compliance theater.
+ * Demo data only.
  */
 (function () {
-  const COMPLIANCE = {
-    disclosure: { label: 'Disclosure / docs', className: 'eq-tag--compliance' },
-    kyc: { label: 'KYC / identity', className: 'eq-tag--compliance' },
-    audit: { label: 'Audit trail', className: 'eq-tag--audit' },
-    state: { label: 'State / jurisdiction', className: 'eq-tag--compliance' },
-    fair: { label: 'Fair lending review', className: 'eq-tag--compliance' },
-    privacy: { label: 'Data handling', className: 'eq-tag--compliance' },
+  const TAGS = {
+    docs: { label: 'Missing docs', className: 'eq-tag--sla' },
+    incomplete: { label: 'Incomplete app', className: 'eq-tag--partner' },
+    policy: { label: 'Policy check', className: 'eq-tag--audit' },
+    data: { label: 'Data quality', className: 'eq-tag--audit' },
+    capacity: { label: 'Capacity', className: 'eq-tag--partner' },
   };
 
-  /** Seed exceptions — illustrative specialty lending ops */
   let items = [
     {
       id: 'EX-2201',
-      fileId: 'LF-10455',
+      appId: 'APP-10455',
       product: 'Bridge',
-      title: 'Condition package incomplete after approval',
+      title: 'Conditions open after approval; package incomplete',
       summary:
-        'File approved with conditions. Required entity docs still missing after two partner pings. Stage aging past internal SLA.',
-      compliance: ['disclosure', 'audit'],
+        'Application approved with conditions. Required docs still missing after two broker pings. Aging past internal SLA; time-to-yes at risk for a Tier A broker.',
+      tags: ['docs', 'incomplete'],
       slaDaysOver: 4,
-      partnerTier: 'A',
+      brokerTier: 'A',
       amountBand: '1.2M',
       owner: 'Unassigned',
       status: 'open',
@@ -33,14 +32,14 @@
     },
     {
       id: 'EX-2202',
-      fileId: 'LF-10482',
+      appId: 'APP-10482',
       product: 'Bridge',
-      title: 'Identity verification mismatch on co-borrower entity',
+      title: 'Entity / income docs do not match application parties',
       summary:
-        'Name / formation docs do not line up with CRM party record. Hold before further credit action until ops or compliance clears the match.',
-      compliance: ['kyc', 'audit'],
+        'Party records on the application do not line up with submitted entity docs. Internal policy check must clear before underwriting can finish. Applicant should not feel this as a black box; ops needs an owner.',
+      tags: ['policy', 'docs'],
       slaDaysOver: 2,
-      partnerTier: 'A',
+      brokerTier: 'A',
       amountBand: '890K',
       owner: 'Unassigned',
       status: 'open',
@@ -50,14 +49,14 @@
     },
     {
       id: 'EX-2203',
-      fileId: 'LF-10491',
+      appId: 'APP-10491',
       product: 'Rental term',
-      title: 'State-specific disclosure not stamped on package',
+      title: 'Required fields blank; application stuck in intake',
       summary:
-        'Jurisdiction requires additional disclosure language for this product path. Package generated without the state stamp flag set true. Same failure mode as multi-jurisdiction offer/contract automation: wrong rules for the location, wrong artifact in the file.',
-      compliance: ['state', 'disclosure'],
+        'Application advanced to underwriting without file-complete. Rules engine would normally block; data quality gap. Broker is waiting on a real status.',
+      tags: ['incomplete', 'data'],
       slaDaysOver: 1,
-      partnerTier: 'B',
+      brokerTier: 'B',
       amountBand: '2.4M',
       owner: 'Unassigned',
       status: 'open',
@@ -66,32 +65,15 @@
       aiWhy: '',
     },
     {
-      id: 'EX-2207',
-      fileId: 'LF-10518',
-      product: 'Bridge',
-      title: 'Offer package used wrong loan-type contract template',
-      summary:
-        'Illustrative: file advanced with a template tied to a different loan type. Multi-lender / multi-product shops break here when offer-level generation is not wired to loan type + jurisdiction rules. Needs human stop and regenerate with a logged reason.',
-      compliance: ['disclosure', 'state', 'audit'],
-      slaDaysOver: 3,
-      partnerTier: 'A',
-      amountBand: '1.5M',
-      owner: 'Unassigned',
-      status: 'open',
-      factors: null,
-      score: 0,
-      aiWhy: '',
-    },
-    {
       id: 'EX-2204',
-      fileId: 'LF-10470',
+      appId: 'APP-10470',
       product: 'Bridge',
-      title: 'Integration write-back failed after stage change',
+      title: 'CRM stage and LOS status disagree',
       summary:
-        'CRM shows Clear to fund; adjacent system still shows In underwriting. Dual status risks wrong external communication and weak audit story.',
-      compliance: ['audit', 'privacy'],
+        'Salesforce shows Clear to fund; LOS still In underwriting. Integration write-back failed. Wrong status to broker if anyone trusts the wrong system.',
+      tags: ['data'],
       slaDaysOver: 3,
-      partnerTier: 'B',
+      brokerTier: 'B',
       amountBand: '650K',
       owner: 'Unassigned',
       status: 'open',
@@ -101,14 +83,14 @@
     },
     {
       id: 'EX-2205',
-      fileId: 'LF-10502',
+      appId: 'APP-10502',
       product: 'Build-for-rent',
-      title: 'Manual pricing overlay applied without comment',
+      title: 'Pricing overlay without structured reason',
       summary:
-        'Overlay present with no structured reason code. Ops needs a logged rationale before the file advances (review trail for later questions).',
-      compliance: ['fair', 'audit'],
+        'Manual overlay on the application with no reason code. Internal control for the company; fix the data so the application can move cleanly.',
+      tags: ['policy', 'data'],
       slaDaysOver: 0,
-      partnerTier: 'C',
+      brokerTier: 'C',
       amountBand: '3.1M',
       owner: 'Unassigned',
       status: 'open',
@@ -118,15 +100,32 @@
     },
     {
       id: 'EX-2206',
-      fileId: 'LF-10510',
+      appId: 'APP-10510',
       product: 'Rental term',
-      title: 'Partner asked for status; queue had no owner',
+      title: 'Broker escalated; application has no owner in queue',
       summary:
-        'Repeat submitter escalated via email. Not a pure compliance break, but certainty of close and partner experience are on the line.',
-      compliance: [],
+        'Repeat broker asked for status. Application is not blocked on policy; it is blocked on attention. AI should surface this before the relationship cools.',
+      tags: ['capacity'],
       slaDaysOver: 2,
-      partnerTier: 'A',
+      brokerTier: 'A',
       amountBand: '1.0M',
+      owner: 'Unassigned',
+      status: 'open',
+      factors: null,
+      score: 0,
+      aiWhy: '',
+    },
+    {
+      id: 'EX-2207',
+      appId: 'APP-10518',
+      product: 'Bridge',
+      title: 'Product rules rejected path; application needs rework',
+      summary:
+        'Application submitted on a product path that fails eligibility rules (loan purpose / property type mismatch). Rules engine catch. Broker needs a clear next step, not a silent stall.',
+      tags: ['policy', 'incomplete'],
+      slaDaysOver: 3,
+      brokerTier: 'A',
+      amountBand: '1.5M',
       owner: 'Unassigned',
       status: 'open',
       factors: null,
@@ -137,9 +136,9 @@
 
   const auditLog = [];
   let selectedId = null;
-  let sortMode = 'ai'; // ai | sla | manual
+  let sortMode = 'ai';
   let aiEnabled = true;
-  let listFilter = 'all'; // all | reg | sla | claimed
+  let listFilter = 'all';
 
   function tierPts(t) {
     if (t === 'A') return 22;
@@ -155,24 +154,26 @@
   }
 
   function scoreItem(item) {
-    const compliancePts = Math.min(36, item.compliance.length * 14);
+    const policyPts = Math.min(28, item.tags.filter(function (t) {
+      return t === 'policy' || t === 'docs' || t === 'incomplete';
+    }).length * 12);
     const slaPts = Math.min(28, item.slaDaysOver * 7);
-    const partnerPts = tierPts(item.partnerTier);
+    const brokerPts = tierPts(item.brokerTier);
     const sizePts = amountPts(item.amountBand);
     const openBoost = item.status === 'open' ? 4 : 0;
-    const total = compliancePts + slaPts + partnerPts + sizePts + openBoost;
+    const total = policyPts + slaPts + brokerPts + sizePts + openBoost;
 
     const factors = [
-      { name: 'Regulatory / compliance tags', pts: compliancePts, max: 36 },
+      { name: 'App blockers (docs / incomplete / policy)', pts: policyPts, max: 28 },
       { name: 'SLA breach (days over)', pts: slaPts, max: 28 },
-      { name: 'Partner / seller tier', pts: partnerPts, max: 22 },
-      { name: 'File size band', pts: sizePts, max: 18 },
+      { name: 'Broker / channel tier', pts: brokerPts, max: 22 },
+      { name: 'Application size band', pts: sizePts, max: 18 },
     ];
 
     let why = 'Balanced';
-    if (compliancePts >= slaPts && compliancePts >= partnerPts) why = 'Compliance weight';
-    else if (slaPts >= partnerPts) why = 'SLA pressure';
-    else why = 'Partner impact';
+    if (policyPts >= slaPts && policyPts >= brokerPts) why = 'App blockers';
+    else if (slaPts >= brokerPts) why = 'SLA pressure';
+    else why = 'Broker impact';
 
     item.score = total;
     item.factors = factors;
@@ -185,31 +186,35 @@
   }
 
   function matchesFilter(item) {
-    if (listFilter === 'reg') return item.compliance.length > 0;
+    if (listFilter === 'policy') return item.tags.indexOf('policy') !== -1 || item.tags.indexOf('docs') !== -1;
     if (listFilter === 'sla') return item.slaDaysOver >= 2;
     if (listFilter === 'claimed') return item.owner !== 'Unassigned' && item.status === 'open';
     return true;
   }
 
   function sortedOpen() {
-    let open = items.filter((i) => i.status === 'open' && matchesFilter(i));
-    let done = items.filter((i) => i.status !== 'open' && matchesFilter(i));
-    if (listFilter === 'claimed') {
-      done = [];
-    }
+    let open = items.filter(function (i) {
+      return i.status === 'open' && matchesFilter(i);
+    });
+    let done = items.filter(function (i) {
+      return i.status !== 'open' && matchesFilter(i);
+    });
+    if (listFilter === 'claimed') done = [];
     if (sortMode === 'sla') {
-      open.sort((a, b) => b.slaDaysOver - a.slaDaysOver || b.score - a.score);
-    } else if (sortMode === 'manual') {
-      // keep array order for open; user can move up/down
-    } else {
-      open.sort((a, b) => b.score - a.score);
+      open.sort(function (a, b) {
+        return b.slaDaysOver - a.slaDaysOver || b.score - a.score;
+      });
+    } else if (sortMode !== 'manual') {
+      open.sort(function (a, b) {
+        return b.score - a.score;
+      });
     }
     return open.concat(done);
   }
 
   function log(msg) {
     const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    auditLog.unshift({ ts, msg });
+    auditLog.unshift({ ts: ts, msg: msg });
     if (auditLog.length > 40) auditLog.pop();
     renderAudit();
   }
@@ -219,21 +224,31 @@
   }
 
   function renderStats() {
-    const open = items.filter((i) => i.status === 'open');
-    const reg = open.filter((i) => i.compliance.length > 0);
-    const hot = open.filter((i) => i.slaDaysOver >= 2);
-    const claimed = open.filter((i) => i.owner !== 'Unassigned');
-    const set = (id, n) => {
+    const open = items.filter(function (i) {
+      return i.status === 'open';
+    });
+    const policy = open.filter(function (i) {
+      return i.tags.indexOf('policy') !== -1 || i.tags.indexOf('docs') !== -1;
+    });
+    const hot = open.filter(function (i) {
+      return i.slaDaysOver >= 2;
+    });
+    const claimed = open.filter(function (i) {
+      return i.owner !== 'Unassigned';
+    });
+    function set(id, n) {
       const el = $(id);
       if (el) el.textContent = String(n);
-    };
+    }
     set('#eq-stat-open', open.length);
-    set('#eq-stat-reg', reg.length);
+    set('#eq-stat-reg', policy.length);
     set('#eq-stat-sla', hot.length);
     set('#eq-stat-claimed', claimed.length);
+
+    // labels in HTML may still say compliance; fix via data attributes
     const map = {
       '#eq-stat-open': 'all',
-      '#eq-stat-reg': 'reg',
+      '#eq-stat-reg': 'policy',
       '#eq-stat-sla': 'sla',
       '#eq-stat-claimed': 'claimed',
     };
@@ -248,6 +263,12 @@
       parent.setAttribute('tabindex', '0');
       parent.title = 'Filter queue';
     });
+    const regLabel = document.querySelector('#eq-stat-reg + .l, .eq-stat.is-reg .l');
+    // update label text if present
+    document.querySelectorAll('.eq-stat .l').forEach(function (lab, i) {
+      const texts = ['Open apps', 'Docs / policy', 'SLA ≥ 2 days', 'Claimed'];
+      if (texts[i]) lab.textContent = texts[i];
+    });
   }
 
   function renderList() {
@@ -255,7 +276,7 @@
     if (!list) return;
     const rows = sortedOpen();
     list.innerHTML = '';
-    rows.forEach((item, idx) => {
+    rows.forEach(function (item, idx) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className =
@@ -264,9 +285,9 @@
         (item.status !== 'open' ? ' is-done' : '');
       btn.dataset.id = item.id;
 
-      const tags = item.compliance
-        .map((c) => {
-          const meta = COMPLIANCE[c];
+      const tags = item.tags
+        .map(function (c) {
+          const meta = TAGS[c] || { label: c, className: '' };
           return '<span class="eq-tag ' + meta.className + '">' + meta.label + '</span>';
         })
         .join('');
@@ -274,22 +295,33 @@
         item.slaDaysOver > 0
           ? '<span class="eq-tag eq-tag--sla">' + item.slaDaysOver + 'd over SLA</span>'
           : '';
-      const partnerTag =
-        '<span class="eq-tag eq-tag--partner">Tier ' + item.partnerTier + '</span>';
+      const brokerTag = '<span class="eq-tag eq-tag--partner">Broker tier ' + item.brokerTier + '</span>';
 
       btn.innerHTML =
-        '<span class="eq-rank">' + (item.status === 'open' ? idx + 1 : '✓') + '</span>' +
-        '<span class="eq-row-main">' +
-        '<span class="eq-row-id">' + item.id + ' · ' + item.fileId + '</span>' +
-        '<div class="eq-row-title">' + item.title + '</div>' +
-        '<div class="eq-row-meta">' + tags + slaTag + partnerTag + '</div>' +
+        '<span class="eq-rank">' +
+        (item.status === 'open' ? idx + 1 : '✓') +
         '</span>' +
-        '<span class="eq-score">' +
-        '<div class="val">' + (aiEnabled ? item.score : '—') + '</div>' +
-        '<div class="why">' + (aiEnabled ? item.aiWhy : 'AI off') + '</div>' +
-        '</span>';
+        '<span class="eq-row-main">' +
+        '<span class="eq-row-id">' +
+        item.id +
+        ' · ' +
+        item.appId +
+        '</span>' +
+        '<div class="eq-row-title">' +
+        item.title +
+        '</div>' +
+        '<div class="eq-row-meta">' +
+        tags +
+        slaTag +
+        brokerTag +
+        '</div></span>' +
+        '<span class="eq-score"><div class="val">' +
+        (aiEnabled ? item.score : '—') +
+        '</div><div class="why">' +
+        (aiEnabled ? item.aiWhy : 'AI off') +
+        '</div></span>';
 
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', function () {
         selectedId = item.id;
         renderList();
         renderDetail();
@@ -299,7 +331,9 @@
   }
 
   function selected() {
-    return items.find((i) => i.id === selectedId) || null;
+    return items.find(function (i) {
+      return i.id === selectedId;
+    }) || null;
   }
 
   function renderDetail() {
@@ -308,75 +342,115 @@
     const item = selected();
     if (!item) {
       pane.className = 'eq-detail empty';
-      pane.innerHTML = '<p>Select an exception to review AI ranking and take action.</p>';
+      pane.innerHTML = '<p>Select an application exception to see AI ranking and take action.</p>';
       return;
     }
     pane.className = 'eq-detail';
     const open = item.status === 'open';
     const factorsHtml = (item.factors || [])
-      .map((f) => {
+      .map(function (f) {
         const pct = Math.round((f.pts / f.max) * 100);
         return (
           '<div class="eq-factor">' +
-          '<span class="name">' + f.name + '</span>' +
-          '<span class="pts">+' + f.pts + '</span>' +
-          '<div class="eq-factor-bar"><i style="width:' + pct + '%"></i></div>' +
-          '</div>'
+          '<span class="name">' +
+          f.name +
+          '</span><span class="pts">+' +
+          f.pts +
+          '</span>' +
+          '<div class="eq-factor-bar"><i style="width:' +
+          pct +
+          '%"></i></div></div>'
         );
       })
       .join('');
 
-    const tags = item.compliance
-      .map((c) => {
-        const meta = COMPLIANCE[c];
-        return '<span class="eq-tag ' + meta.className + '">' + meta.label + '</span>';
-      })
-      .join(' ') || '<span class="eq-tag">Ops only</span>';
+    const tags =
+      item.tags
+        .map(function (c) {
+          const meta = TAGS[c] || { label: c, className: '' };
+          return '<span class="eq-tag ' + meta.className + '">' + meta.label + '</span>';
+        })
+        .join(' ') || '<span class="eq-tag">Ops only</span>';
 
     pane.innerHTML =
-      '<h3>' + item.title + '</h3>' +
+      '<h3>' +
+      item.title +
+      '</h3>' +
       '<p class="file-line">' +
-      item.id + ' · File <strong>' + item.fileId + '</strong> · ' + item.product +
-      ' · ' + item.amountBand + ' · Owner: <strong>' + item.owner + '</strong>' +
+      item.id +
+      ' · Application <strong>' +
+      item.appId +
+      '</strong> · ' +
+      item.product +
+      ' · ' +
+      item.amountBand +
+      ' · Owner: <strong>' +
+      item.owner +
+      '</strong>' +
       (item.status !== 'open' ? ' · <strong>Status: ' + item.status + '</strong>' : '') +
       '</p>' +
-      '<section><h4>Situation</h4><p>' + item.summary + '</p></section>' +
-      '<section><h4>Regulatory / control tags</h4><div class="eq-row-meta">' + tags + '</div>' +
-      '<p style="margin-top:8px">In a regulated shop, these tags are not decoration. They tell the queue why a human with the right seat should touch this before a pure speed-only file.</p></section>' +
-      '<section><h4>Drill further</h4><div class="eq-actions" style="padding-top:0">' +
-      '<button type="button" data-nav="pipeline" data-file="' + item.fileId + '">Open loan file</button>' +
-      '<button type="button" data-nav="dashboard">Dashboard context</button>' +
-      '<button type="button" data-nav="path">Path prototype</button>' +
-      '</div></section>' +
-      '<section><h4>AI priority breakdown' + (aiEnabled ? '' : ' (paused)') + '</h4>' +
+      '<section><h4>What is blocking this application</h4><p>' +
+      item.summary +
+      '</p></section>' +
+      '<section><h4>Tags</h4><div class="eq-row-meta">' +
+      tags +
+      '</div>' +
+      '<p style="margin-top:8px">Policy and data checks are the company\'s job (rules engine, completeness). The customer/broker experience is speed and a clear path to yes, not a compliance lecture.</p></section>' +
+      '<section><h4>AI priority breakdown' +
+      (aiEnabled ? '' : ' (paused)') +
+      '</h4>' +
       (aiEnabled
-        ? '<p style="margin-bottom:8px">Score <strong>' + item.score + '</strong> · ' + item.aiWhy +
-          '. AI proposes order only. People claim, resolve, or escalate.</p><div class="eq-factors">' +
-          factorsHtml + '</div>'
+        ? '<p style="margin-bottom:8px">Score <strong>' +
+          item.score +
+          '</strong> · ' +
+          item.aiWhy +
+          '. AI orders the queue. People claim and clear applications.</p><div class="eq-factors">' +
+          factorsHtml +
+          '</div>'
         : '<p>AI ranking is off. List order is manual / SLA sort.</p>') +
       '</section>' +
-      '<section><h4>Action note (logged)</h4>' +
-      '<textarea class="eq-note-input" id="eq-note" placeholder="What did you verify? Who did you loop in? Keep it audit-friendly." ' +
-      (open ? '' : 'disabled') + '></textarea></section>' +
+      '<section><h4>Drill further</h4><div class="eq-actions" style="padding-top:0">' +
+      '<button type="button" data-nav="pipeline" data-app="' +
+      item.appId +
+      '">Open application</button>' +
+      '<button type="button" data-nav="dashboard">Dashboard</button>' +
+      '<button type="button" data-nav="path">Application path</button>' +
+      '</div></section>' +
+      '<section><h4>Action note</h4>' +
+      '<textarea class="eq-note-input" id="eq-note" placeholder="What cleared? What still blocks the application?" ' +
+      (open ? '' : 'disabled') +
+      '></textarea></section>' +
       '<div class="eq-actions">' +
-      '<button type="button" class="is-primary" data-act="claim" ' + (open ? '' : 'disabled') + '>Claim for me</button>' +
-      '<button type="button" data-act="compliance" ' + (open ? '' : 'disabled') + '>Escalate to compliance</button>' +
-      '<button type="button" data-act="resolve" ' + (open ? '' : 'disabled') + '>Mark resolved</button>' +
-      '<button type="button" data-act="up" ' + (open && sortMode === 'manual' ? '' : 'disabled') + '>Move up</button>' +
-      '<button type="button" data-act="down" ' + (open && sortMode === 'manual' ? '' : 'disabled') + '>Move down</button>' +
+      '<button type="button" class="is-primary" data-act="claim" ' +
+      (open ? '' : 'disabled') +
+      '>Claim for me</button>' +
+      '<button type="button" data-act="policy" ' +
+      (open ? '' : 'disabled') +
+      '>Route to policy review</button>' +
+      '<button type="button" data-act="resolve" ' +
+      (open ? '' : 'disabled') +
+      '>Mark resolved</button>' +
+      '<button type="button" data-act="up" ' +
+      (open && sortMode === 'manual' ? '' : 'disabled') +
+      '>Move up</button>' +
+      '<button type="button" data-act="down" ' +
+      (open && sortMode === 'manual' ? '' : 'disabled') +
+      '>Move down</button>' +
       '</div>';
 
-    pane.querySelectorAll('[data-act]').forEach((btn) => {
-      btn.addEventListener('click', () => handleAction(btn.getAttribute('data-act'), item));
+    pane.querySelectorAll('[data-act]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        handleAction(btn.getAttribute('data-act'), item);
+      });
     });
-    pane.querySelectorAll('[data-nav]').forEach((btn) => {
-      btn.addEventListener('click', () => {
+    pane.querySelectorAll('[data-nav]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
         const nav = btn.getAttribute('data-nav');
-        const file = btn.getAttribute('data-file');
+        const app = btn.getAttribute('data-app');
         if (nav === 'pipeline' && window.mortgageShell) {
           window.mortgageShell.navigate('pipeline', 'all-open');
           setTimeout(function () {
-            if (window.mortgagePipeline && file) window.mortgagePipeline.selectFile(file);
+            if (window.mortgagePipeline && app) window.mortgagePipeline.selectFile(app);
           }, 50);
         } else if (nav === 'dashboard' && window.mortgageShell) {
           window.mortgageShell.navigate('accelerator', 'dashboard');
@@ -395,24 +469,28 @@
   function handleAction(act, item) {
     if (!item || item.status !== 'open') return;
     const note = noteText();
-
     if (act === 'claim') {
       item.owner = 'You (demo)';
-      log(item.id + ' claimed by You (demo)' + (note ? ' — ' + note : ''));
-    } else if (act === 'compliance') {
-      item.owner = 'Compliance queue';
-      item.status = 'escalated';
-      log(item.id + ' escalated to compliance' + (note ? ' — ' + note : '') + ' · audit trail entry created');
-      selectedId = item.id;
+      log(item.id + ' claimed · application ' + item.appId + (note ? ' — ' + note : ''));
+    } else if (act === 'policy') {
+      item.owner = 'Policy review';
+      item.status = 'routed';
+      log(item.id + ' routed to policy review' + (note ? ' — ' + note : ''));
     } else if (act === 'resolve') {
       item.status = 'resolved';
       item.owner = item.owner === 'Unassigned' ? 'You (demo)' : item.owner;
-      log(item.id + ' resolved by ' + item.owner + (note ? ' — ' + note : '') + ' · ready for sample audit export');
+      log(item.id + ' resolved · application unblocked by ' + item.owner + (note ? ' — ' + note : ''));
     } else if (act === 'up' || act === 'down') {
       if (sortMode !== 'manual') return;
-      const open = items.filter((i) => i.status === 'open');
-      const rest = items.filter((i) => i.status !== 'open');
-      const idx = open.findIndex((i) => i.id === item.id);
+      const open = items.filter(function (i) {
+        return i.status === 'open';
+      });
+      const rest = items.filter(function (i) {
+        return i.status !== 'open';
+      });
+      const idx = open.findIndex(function (i) {
+        return i.id === item.id;
+      });
       if (idx < 0) return;
       const swap = act === 'up' ? idx - 1 : idx + 1;
       if (swap < 0 || swap >= open.length) return;
@@ -420,9 +498,8 @@
       open[idx] = open[swap];
       open[swap] = tmp;
       items = open.concat(rest);
-      log(item.id + ' manually reordered (' + act + ') · AI order overridden for session');
+      log(item.id + ' manually reordered (' + act + ')');
     }
-
     rescoreAll();
     renderAll();
   }
@@ -431,11 +508,13 @@
     const ul = $('#eq-audit-list');
     if (!ul) return;
     if (!auditLog.length) {
-      ul.innerHTML = '<li><span class="ts">—</span>No actions yet. Claim, escalate, or resolve to write the trail.</li>';
+      ul.innerHTML = '<li><span class="ts">—</span>No actions yet. Claim or resolve to log work on an application.</li>';
       return;
     }
     ul.innerHTML = auditLog
-      .map((e) => '<li><span class="ts">' + e.ts + '</span>' + e.msg + '</li>')
+      .map(function (e) {
+        return '<li><span class="ts">' + e.ts + '</span>' + e.msg + '</li>';
+      })
       .join('');
   }
 
@@ -453,7 +532,11 @@
         listFilter = listFilter === f ? 'all' : f;
         log('Queue filter → ' + listFilter);
         const visible = sortedOpen();
-        if (!visible.some((i) => i.id === selectedId)) {
+        if (
+          !visible.some(function (i) {
+            return i.id === selectedId;
+          })
+        ) {
           selectedId = visible[0] ? visible[0].id : null;
         }
         renderAll();
@@ -462,23 +545,23 @@
 
     const sort = $('#eq-sort');
     if (sort) {
-      sort.addEventListener('change', () => {
+      sort.addEventListener('change', function () {
         sortMode = sort.value;
-        log('Sort mode → ' + sortMode + (sortMode === 'ai' ? ' (AI proposes order)' : ''));
+        log('Sort mode → ' + sortMode);
         renderAll();
       });
     }
 
     const aiToggle = $('#eq-ai-toggle');
     if (aiToggle) {
-      aiToggle.addEventListener('click', () => {
+      aiToggle.addEventListener('click', function () {
         aiEnabled = !aiEnabled;
         aiToggle.textContent = aiEnabled ? 'AI ranking: On' : 'AI ranking: Off';
         aiToggle.classList.toggle('is-primary', aiEnabled);
         if (aiEnabled) sortMode = 'ai';
         const sortEl = $('#eq-sort');
         if (sortEl && aiEnabled) sortEl.value = 'ai';
-        log(aiEnabled ? 'AI ranking enabled · scores refreshed' : 'AI ranking paused · humans own order');
+        log(aiEnabled ? 'AI ranking enabled' : 'AI ranking paused');
         rescoreAll();
         renderAll();
       });
@@ -486,9 +569,9 @@
 
     const refresh = $('#eq-refresh');
     if (refresh) {
-      refresh.addEventListener('click', () => {
+      refresh.addEventListener('click', function () {
         rescoreAll();
-        log('AI priorities recalculated against current open set');
+        log('AI priorities recalculated on open applications');
         renderAll();
       });
     }
@@ -497,10 +580,12 @@
   function init() {
     if (!$('#eq-component')) return;
     rescoreAll();
-    var firstOpen = sortedOpen().find(function (i) { return i.status === 'open'; });
+    const firstOpen = sortedOpen().find(function (i) {
+      return i.status === 'open';
+    });
     selectedId = firstOpen ? firstOpen.id : null;
     bindChrome();
-    log('Queue loaded · AI ranked open exceptions · demo data only');
+    log('Application exception queue loaded · AI ranked · demo data');
     renderAll();
   }
 
@@ -510,6 +595,5 @@
     init();
   }
 
-  // Re-init when shell shows panel (panel may start hidden)
   window.eqExceptionQueue = { refresh: renderAll, init: init };
 })();

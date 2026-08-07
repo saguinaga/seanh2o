@@ -6,11 +6,11 @@
   <meta name="description" content="How Sean Aguinaga would approach Salesforce reports, dashboards, and pipeline truth for specialty mortgage ops: objects, stages, time to yes.">
   <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
   <title>Sean Aguinaga — Salesforce Analytics for Specialty Mortgage Ops</title>
-  <link rel="stylesheet" href="roadmap.css?v=6">
-  <link rel="stylesheet" href="flows.css?v=5">
-  <link rel="stylesheet" href="exception-queue.css?v=1">
-  <link rel="stylesheet" href="dashboard.css?v=1">
-  <link rel="stylesheet" href="drill.css?v=2">
+  <link rel="stylesheet" href="roadmap.css?v=7">
+  <link rel="stylesheet" href="flows.css?v=6">
+  <link rel="stylesheet" href="exception-queue.css?v=2">
+  <link rel="stylesheet" href="dashboard.css?v=2">
+  <link rel="stylesheet" href="drill.css?v=3">
   <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
   <script>
     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -33,7 +33,7 @@
       </svg>
       <span class="app-name" id="chrome-app-name">Exception Queue</span>
       <span class="header-spacer"></span>
-      <span class="header-pill">Regulated ops demo</span>
+      <span class="header-pill">Loan applications demo</span>
     </header>
 
     <!-- App Launcher (waffle panel) -->
@@ -60,13 +60,13 @@
         <button type="button" class="nav-chip" data-shell-app="accelerator" data-shell-view="dashboard">Dashboard</button>
         <button type="button" class="nav-chip" data-shell-app="accelerator" data-shell-view="writeup">Write-up</button>
         <button type="button" class="nav-chip" data-shell-app="accelerator" data-shell-view="path">Path</button>
-        <button type="button" class="nav-chip" data-shell-app="pipeline" data-shell-view="all-open">Loan files</button>
+        <button type="button" class="nav-chip" data-shell-app="pipeline" data-shell-view="all-open">Applications</button>
         <button type="button" class="nav-chip" data-shell-app="reports" data-shell-view="recent">Reports</button>
         <a class="nav-chip nav-chip--link" href="../index.html#work" data-plausible-event="Nav - Back to Portfolio">← Portfolio</a>
       </nav>
     </div>
 
-    <p class="demo-banner" id="demo-banner">Demo shell · regulated specialty lending · AI ranks, humans decide · not a live org</p>
+    <p class="demo-banner" id="demo-banner">Demo shell · loan applications start to fund · AI ranks stuck apps · not a live org</p>
 
     <div class="chrome-backdrop" id="chrome-backdrop" hidden></div>
 
@@ -77,35 +77,33 @@
           <header class="eq-hero">
             <p class="case-label">Custom Lightning-style component · prototype</p>
             <div class="eq-title-row">
-              <h1>Exception Queue</h1>
+              <h1>Application Exception Queue</h1>
               <div class="eq-badges">
                 <span class="eq-badge eq-badge--demo">Salesforce custom UI</span>
                 <span class="eq-badge eq-badge--ai">AI prioritizes</span>
-                <span class="eq-badge eq-badge--reg">Human acts · audit trail</span>
+                <span class="eq-badge eq-badge--reg">Humans clear apps</span>
               </div>
             </div>
             <p class="eq-lead">
-              Leighanne’s framing: dashboards and analytics while the book is live, in a
-              <strong>highly regulated</strong> specialty credit shop. I have lived that pattern already: at Auction.com,
-              <strong>offer and contract generation</strong> had to stay correct by loan type and jurisdiction across a
-              large multi-lender seller base (~100+ lenders on the platform), with disclosures and audit pressure, not
-              one-off Word docs. This component is how I would spend scarce human time next: AI ranks the exception pile
-              by compliance weight, SLA, and partner impact; people claim, resolve, or escalate. Not auto-decisioning
-              credit. Not legal advice. Demo data only.
+              Unit of work is a <strong>loan application</strong>, start to fund. Leighanne’s framing: Salesforce
+              dashboards and analytics while the book is live (Accelerator / BA+). This queue is where incomplete packages,
+              stuck conditions, and rules-engine holds show up so ops can protect <strong>time to yes</strong> for brokers
+              and borrowers. Policy checks are the company’s job in the background, not the customer story. AI ranks;
+              people claim and clear. Demo data only.
             </p>
           </header>
 
           <div class="eq-component" id="eq-component">
             <div class="eq-component__header">
-              <h2>Ops Exception Queue</h2>
-              <p class="eq-sub">Object: Exception__c (illustrative) · related Loan File · field history + action log for exam readiness</p>
+              <h2>Application Exception Queue</h2>
+              <p class="eq-sub">Related to Application (illustrative) · stage, owner, SLA · action log for handoffs</p>
             </div>
 
             <div class="eq-ai-strip">
               <div class="eq-ai-note">
-                <strong>AI role:</strong> score and sort open exceptions so the top of the list is where regulated risk and
-                business pain meet. <strong>Human role:</strong> claim ownership, escalate to compliance, resolve with a note
-                that would survive an audit sample. AI does not clear a hold by itself.
+                <strong>AI role:</strong> score and sort stuck applications so the top of the list is where time-to-yes
+                and broker impact meet. <strong>Human role:</strong> claim, clear docs/conditions, or route a policy check.
+                AI does not approve loans.
               </div>
             </div>
 
@@ -130,7 +128,7 @@
               </div>
               <div class="eq-stat is-reg">
                 <div class="n" id="eq-stat-reg">0</div>
-                <div class="l">With compliance tags</div>
+                <div class="l">Docs / policy</div>
               </div>
               <div class="eq-stat is-hot">
                 <div class="n" id="eq-stat-sla">0</div>
@@ -150,15 +148,15 @@
             </div>
 
             <div class="eq-audit">
-              <h4>Action log · sample audit trail</h4>
+              <h4>Action log</h4>
               <ul id="eq-audit-list"></ul>
             </div>
           </div>
 
           <p class="eq-footer-note">
-            Why this for Accelerator / BA+: the JD and screen both stress Salesforce, analytics, regulated financial
-            services, and AI as leverage. The product problem is not “more charts.” It is trustworthy pipeline truth and
-            a queue people trust when legal, compliance, and ops all have a stake in the same file.
+            Why this for Accelerator / BA+: Salesforce analytics on the <strong>loan application lifecycle</strong>
+            (intake → underwriting → conditions → fund), exception-first so humans spend time where apps stall.
+            Rules and policy are a quiet engine so applications can move; the experience is speed and a clear yes.
           </p>
         </div>
       </div>
@@ -172,9 +170,9 @@
             <span class="dash-asof" id="dash-asof">As of demo clock</span>
           </div>
           <p class="shell-panel-lead" style="margin-bottom:10px">
-            Exception-first analytics for a regulated specialty lender. Filter product and window, click KPIs / funnel / aging,
-            then jump to the Exception Queue where humans spend time. Same instinct as multi-lender contract automation:
-            correctness and trail, not vanity volume.
+            Exception-first analytics on <strong>loan applications</strong>: volume, time to decision, stuck apps, funnel
+            by stage. Filter product and window, click to focus, then jump to the queue where people clear blockers.
+            Not vanity volume.
           </p>
 
           <div class="dash-controls">
@@ -208,12 +206,12 @@
       <!-- PANEL: Loan pipeline list views -->
       <div id="panel-pipeline" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
-          <p class="case-label">Loan Pipeline · interactive list + drill-down</p>
-          <h1 class="shell-panel-title">Loan files</h1>
-          <p class="shell-panel-lead" id="pipeline-view-caption">Click any row for timeline, issues, and jumps</p>
+          <p class="case-label">Loan applications · list + drill-down</p>
+          <h1 class="shell-panel-title">Loan applications</h1>
+          <p class="shell-panel-lead" id="pipeline-view-caption">Click any row for timeline, blockers, and jumps</p>
           <p class="shell-panel-lead">
-            Unit of work is a <strong>loan file</strong>, not classic Lead → Opp cosplay. Filters and shell View menu
-            stay in sync. Drill into exceptions, dashboard, or path from the detail pane.
+            Unit of work is a <strong>loan application</strong> from intake through fund, not classic Lead → Opp cosplay.
+            Filters and View menu stay in sync. Drill into exceptions, dashboard, or application path.
           </p>
           <div id="pipeline-root"></div>
         </div>
@@ -237,114 +235,95 @@
           <header class="cs-hero">
             <p class="case-label">Product case study · Sean Aguinaga</p>
             <div class="case-meta" aria-live="polite">
-              <span class="case-meta-badge">Salesforce · BA+ seat</span>
-              <span class="case-meta-updated">Objects · reports · dashboards · time to yes</span>
+              <span class="case-meta-badge">Salesforce · BA+ · loan applications</span>
+              <span class="case-meta-updated">Origination path · dashboards · time to yes</span>
             </div>
-            <h1>How I would approach Salesforce analytics for specialty mortgage ops</h1>
+            <h1>How I would approach Salesforce analytics for loan applications</h1>
             <p class="platform-scope">
-              Business optimization next to the lending business: translate executive needs into
-              <strong>Salesforce reports, list views, and dashboards</strong> people open on Monday, plus a backlog
-              the platform team can ship while the book is live. Public market context:
-              <strong>Redwood Trust</strong> / <strong>CoreVest</strong> (business-purpose lending, Irvine).
-              Approach only. Not employment and not their org.
+              Accelerator / BA+ seat next to specialty lending: translate business needs into
+              <strong>Salesforce stages, reports, and dashboards on loan applications</strong>
+              (intake → underwriting → conditions → clear to fund → funded) while the book is live.
+              Public market context: <strong>Redwood Trust</strong> / <strong>CoreVest</strong> (business-purpose
+              products such as bridge, rental, build-for-rent). Approach only. Not employment and not their org.
             </p>
-            <div class="expansion-path" aria-label="Salesforce delivery sequence">
-              <span class="path-step path-active">Field &amp; stage defs</span>
+            <div class="expansion-path" aria-label="Application delivery sequence">
+              <span class="path-step path-active">App stage defs</span>
               <span class="path-arrow" aria-hidden="true">→</span>
-              <span class="path-step path-active">Reports / SOQL truth</span>
+              <span class="path-step path-active">Pipeline truth</span>
               <span class="path-arrow" aria-hidden="true">→</span>
-              <span class="path-step path-active">Dashboard components</span>
+              <span class="path-step path-active">Time to yes</span>
               <span class="path-arrow" aria-hidden="true">→</span>
-              <span class="path-step">Scale list views</span>
+              <span class="path-step">Exception queue</span>
             </div>
             <p class="context-strip" aria-label="Market context">
               <span>NYSE: RWT</span>
               <span>Specialty housing credit</span>
-              <span>CRM system of work: Salesforce</span>
+              <span>Salesforce on applications</span>
             </p>
             <p class="cs-lead">
-              Fifteen years at Auction.com on loan-centric, <strong>highly regulated</strong> systems. Deep work on
-              <strong>automated contract and offer generation</strong> that had to stay correct by loan type and
-              jurisdiction across a large multi-lender seller base, plus Salesforce as a product surface (custom
-              components, intake, SoT, SOQL when reports failed). Not an admin-first hire. This seat needs pipeline
-              truth and exception work people can defend under audit.
+              Fifteen years at Auction.com on loan-centric, multi-party transaction systems with Salesforce as a product
+              surface (custom components, intake, source of truth, SOQL when reports failed). Not an admin-first hire.
+              This seat is about application funnel truth and clearing stuck apps so brokers and borrowers get a real
+              yes faster. Policy and eligibility rules are a company-side engine, not the customer experience.
             </p>
             <div class="object-chips" aria-label="Salesforce concepts this page uses">
-              <span class="object-chip"><em>Loan file</em> (custom or opp-shaped)</span>
+              <span class="object-chip"><em>Application</em></span>
+              <span class="object-chip"><em>Stage</em> path</span>
               <span class="object-chip"><em>Exception</em> queue</span>
-              <span class="object-chip"><em>Stage</em> history</span>
               <span class="object-chip"><em>Report</em> / dashboard</span>
-              <span class="object-chip"><em>Audit</em> trail</span>
+              <span class="object-chip"><em>Rules</em> / validation</span>
               <span class="object-chip"><em>SOQL</em> when needed</span>
             </div>
             <div class="writeup-nav" aria-label="Jump to interactive demos">
               <button type="button" data-wu-nav="exceptions:queue">Exception Queue</button>
               <button type="button" data-wu-nav="accelerator:dashboard">Dashboard</button>
-              <button type="button" data-wu-nav="pipeline:all-open">Loan files</button>
-              <button type="button" data-wu-nav="reports:ops-folder">Ops reports</button>
-              <button type="button" data-wu-nav="accelerator:path">Path stages</button>
+              <button type="button" data-wu-nav="pipeline:all-open">Applications</button>
+              <button type="button" data-wu-nav="reports:ops-folder">App reports</button>
+              <button type="button" data-wu-nav="accelerator:path">App path</button>
             </div>
           </header>
 
           <section class="cs-section" data-wu-section="sf">
-            <h2>Why this seat is Salesforce-shaped</h2>
+            <h2>Why this seat is loan-application shaped</h2>
             <p>
-              Specialty mortgage platforms do not win only on rate. Brokers, correspondents, and investors re-choose a firm
-              when <strong>product fit</strong>, <strong>real speed to yes</strong>, and a <strong>low-friction path</strong>
-              hold. In a regulated shop those moments also have to be <strong>explainable</strong>: who changed what, which
-              disclosure or KYC hold is open, whether the CRM and the adjacent system still agree.
+              JD and recruiter framing both point at the <strong>mortgage application lifecycle</strong>: origination
+              through fulfillment, Salesforce as CRM/system of work, dashboards and analytics in flight, accelerate
+              time-to-yes, improve broker and borrower experience. Specialty products (bridge, fix-and-flip, DSCR-style
+              rental, build-for-rent) change the rules on the application; they do not change the unit of work.
             </p>
             <p>
-              The BA+ / Accelerator job is not Capital Markets theater. It is sitting with the business, locking what
-              “Application in,” “decisioned,” and “stuck” mean on the record, then using Salesforce reports, dashboards,
-              and custom components so leadership sees friction early. When canned reports are wrong, dig (SOQL, field history,
-              integration logs), fix definitions, then rebuild the component. Prefer human judgment on holds; use AI to
-              prioritize the queue, not to invent the decision.
+              The BA+ / Accelerator job is quarterback: discovery with the business, clear stage language on the
+              application, reports people trust, exception queues people open on Monday. When canned reports lie, dig
+              (SOQL, field history, integrations), fix definitions, ship the next increment. AI helps prioritize stuck
+              applications and draft requirements; humans still clear the app.
             </p>
           </section>
 
-          <section class="cs-section" data-wu-section="contracts" id="wu-contracts">
-            <h2>Proof I already did regulated at scale: contracts and offers</h2>
+          <section class="cs-section" data-wu-section="proof" id="wu-proof">
+            <h2>What I bring from prior work (honest map)</h2>
             <p>
-              At Auction.com we were not in a casual paperwork lane. The business ran on <strong>loans</strong>
-              (sellers were lenders and servicers putting inventory through the channel). Different loan types needed
-              different contracts, and those contracts had to generate at the <strong>offer</strong> level, not as a
-              one-size PDF someone edited by hand under pressure.
+              I am not a career LOS originations PM. I am a product person who has lived in loan-centric, multi-party
+              ops with heavy Salesforce use. At Auction.com the world was loans and cases, not a simple e-commerce cart:
+              intake, source of truth across feeds, custom SF surfaces, and process that had to keep running while we
+              changed the core platform underneath.
             </p>
             <p>
-              I worked heavily on <strong>automated contract generation</strong>: property situation, loan type, and
-              <strong>jurisdiction</strong> (state, county, city) drove which disclosures and language went into the
-              package. Nationwide volume only works if the rules engine and ops workflow stay aligned. That process had
-              to hold across a large multi-lender seller base (on the order of <strong>100+ lenders / institutional
-              sellers</strong> on the platform), each with their own expectations, audits, and “don’t break our
-              compliance posture” pressure.
-            </p>
-            <p>
-              Related regulated surface: auction <strong>cry language</strong> that varied by location, generated
-              dynamically, shown on a mobile path, recorded, and retrievable when legal needed the exact words that
-              were read. Same pattern as good CRM exception design: the system must produce the right artifact, leave a
-              trail, and let humans handle the exceptions that automation should not invent.
-            </p>
-            <p>
-              That is the bridge into specialty mortgage analytics. I am not claiming I ran CoreVest product guidelines.
-              I am claiming I have already lived multi-party, multi-jurisdiction, loan-type-driven document and process
-              rules under bank and counterparty scrutiny, and I know how easy it is for “just generate the package”
-              to become a compliance incident when definitions and data are wrong.
+              That maps here as: define application stages, measure where apps stall, put scarce people on the right
+              exceptions, and keep rules/eligibility as backend correctness so the path to yes feels clean to the broker
+              and borrower. Build while live is already in my history (core platform lift-and-shift).
             </p>
           </section>
 
           <section class="cs-section" data-wu-section="prototype">
-            <h2>Prototype: Exception Queue (custom component)</h2>
+            <h2>Prototype: Application Exception Queue</h2>
             <p>
-              Open <strong>Exceptions</strong> in the chrome (or waffle → Exception Queue). AI scores open items by
-              compliance tags, SLA breach, partner tier, and size band. People claim, escalate to compliance, or resolve
-              with a note that lands in a sample action log. That is the regulated version of “time to yes”: speed where
-              it is safe, escalation where control requires a human. Same muscle as contract/offer automation: rules and
-              data first, humans on the edge cases.
+              Open <strong>Exceptions</strong> in the chrome. AI scores stuck applications by blockers, SLA, broker tier,
+              and size. People claim, clear, or route a policy check. That is operational time-to-yes: not more charts,
+              a queue that moves applications.
             </p>
             <div class="section-drill">
               <h4>Try the loop</h4>
-              <p>Dashboard (see pain) → Exception Queue (act) → Loan file (timeline) → Report preview (prove it).</p>
+              <p>Dashboard (see stuck apps) → Exception Queue (act) → Application detail (timeline) → Report (prove it).</p>
               <div class="writeup-nav" style="margin:0">
                 <button type="button" data-wu-nav="accelerator:dashboard">Start on dashboard</button>
                 <button type="button" data-wu-nav="exceptions:queue">Jump to queue</button>
@@ -369,19 +348,19 @@
               </div>
               <div class="wedge-card">
                 <h3>Product fit</h3>
-                <p>Bridge, rental / DSCR, build-for-rent, specialty credit: product and channel fields must be reportable.</p>
+                <p>Bridge, rental / DSCR, build-for-rent: eligibility and channel fields on the application must be reportable.</p>
               </div>
               <div class="wedge-card">
-                <h3>Seller / broker path</h3>
-                <p>Submission completeness, kickbacks, status visibility. Experience issues should map to stage reasons in SF.</p>
+                <h3>Broker / borrower path</h3>
+                <p>Application completeness, kickbacks, status visibility. Experience issues should map to stage reasons in SF.</p>
               </div>
               <div class="wedge-card">
                 <h3>Definitional trust</h3>
-                <p>If sales, ops, and finance disagree on stage meaning, every dashboard becomes politics. Dictionary first.</p>
+                <p>If sales, ops, and finance disagree on what “application in” means, every dashboard becomes politics.</p>
               </div>
               <div class="wedge-card">
-                <h3>Regulated calm</h3>
-                <p>Disclosures, KYC holds, dual-system status, reason codes. Field history and action logs matter when examiners or counterparties ask “who decided?”</p>
+                <h3>Quiet rules engine</h3>
+                <p>Policy and eligibility checks are the company’s burden on the application. Customer experience is progress to yes.</p>
               </div>
             </div>
           </section>
@@ -419,14 +398,14 @@
                     <td>Solo hero narrative</td>
                   </tr>
                   <tr>
-                    <td>Highly regulated environment</td>
-                    <td>Automated offer/contract generation by loan type + jurisdiction; multi-lender seller base (~100+); cry language with legal retrieval; bank audit pressure with legal/security</td>
-                    <td>Career LOS originations PM, counsel, or capital markets; their exact product guidelines day one</td>
+                    <td>Loan application lifecycle</td>
+                    <td>Loan-centric multi-party ops; stages, intake, SoT; process maps and UAT; build while live</td>
+                    <td>Career LOS originations PM or capital markets; their exact product matrix day one</td>
                   </tr>
                   <tr>
                     <td>AI as leverage on SF work</td>
-                    <td>Prioritize queues; draft stories, AC, SOQL with human review. People still act on holds.</td>
-                    <td>Unreviewed AI clearing compliance holds or inventing credit policy</td>
+                    <td>Prioritize stuck applications; draft stories, AC, SOQL with human review</td>
+                    <td>AI approving credit or inventing policy</td>
                   </tr>
                 </tbody>
               </table>
@@ -566,9 +545,9 @@
             <h2>Bottom line</h2>
             <p>
               I am not selling capital-markets PM credentials. I am a systems and product person who has lived in
-              loan-centric, regulated operations with Salesforce in the middle. Value is turning “we need better dashboards”
-              into stage language, trustworthy reports, list-view queues, and a backlog that shortens real time to yes
-              for the people who choose a specialty lender over another.
+              loan-centric operations with Salesforce in the middle. Value is turning “we need better dashboards” into
+              application stage language, trustworthy funnel reports, an exception queue that moves stuck apps, and a
+              backlog that shortens real time to yes for brokers and borrowers.
             </p>
             <p class="cs-you">
               Portfolio: <a href="https://seanaguinaga.com">seanaguinaga.com</a> ·
@@ -582,25 +561,25 @@
       <div id="panel-path" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
           <section class="cs-section" id="flows" style="margin-top:0">
-            <h2>Path prototypes (illustrative)</h2>
+            <h2>Loan application path (illustrative)</h2>
             <p class="section-intro">
-              Not a client process map. External path to yes vs internal Salesforce instrumentation.
-              Click a stage for friction and what a report or list view should show.
+              Not a client process map. External application journey vs Salesforce stages on that application.
+              Click a stage for friction and where analytics should focus.
             </p>
 
             <div class="flow-tabs" role="tablist" aria-label="Path prototype">
-              <button type="button" class="flow-tab is-active" role="tab" aria-selected="true" data-panel="external" id="tab-external">External path to yes</button>
-              <button type="button" class="flow-tab" role="tab" aria-selected="false" data-panel="internal" id="tab-internal">Salesforce stage lens</button>
+              <button type="button" class="flow-tab is-active" role="tab" aria-selected="true" data-panel="external" id="tab-external">Broker / borrower path</button>
+              <button type="button" class="flow-tab" role="tab" aria-selected="false" data-panel="internal" id="tab-internal">SF application stages</button>
             </div>
 
             <div class="flow-panel is-active" id="panel-external" role="tabpanel" aria-labelledby="tab-external">
-              <p class="flow-caption">Broker / investor path. Amber = competitive friction. Maps later to CRM stages.</p>
+              <p class="flow-caption">Application journey. Amber = where time-to-yes usually breaks.</p>
               <div class="flow-rail" id="flow-external" data-flow="external"></div>
               <div class="flow-detail" id="detail-external" aria-live="polite"></div>
             </div>
 
             <div class="flow-panel" id="panel-internal" role="tabpanel" aria-labelledby="tab-internal" hidden>
-              <p class="flow-caption">Same journey as loan-file stages: fields, reports, list views, dashboard components.</p>
+              <p class="flow-caption">Same journey as application stages in Salesforce: fields, reports, list views, dashboards.</p>
               <div class="flow-rail" id="flow-internal" data-flow="internal"></div>
               <div class="flow-detail" id="detail-internal" aria-live="polite"></div>
             </div>
@@ -610,12 +589,12 @@
     </div>
   </div>
 
-  <script src="shell.js?v=4"></script>
-  <script src="exception-queue.js?v=2"></script>
-  <script src="dashboard.js?v=1"></script>
-  <script src="pipeline.js?v=1"></script>
-  <script src="reports.js?v=2"></script>
-  <script src="flows.js?v=4"></script>
-  <script src="writeup-nav.js?v=1"></script>
+  <script src="shell.js?v=5"></script>
+  <script src="exception-queue.js?v=3"></script>
+  <script src="dashboard.js?v=2"></script>
+  <script src="pipeline.js?v=2"></script>
+  <script src="reports.js?v=3"></script>
+  <script src="flows.js?v=5"></script>
+  <script src="writeup-nav.js?v=2"></script>
 </body>
 </html>

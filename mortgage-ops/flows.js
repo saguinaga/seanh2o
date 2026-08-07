@@ -1,26 +1,26 @@
-/** Illustrative Salesforce path prototypes. Not any client's real process or org. */
+/** Loan application path prototypes. Not offer management. */
 (function () {
   const external = [
     {
       id: 'e1',
-      label: 'Product match',
+      label: 'Start application',
       friction: false,
-      title: 'Deal shape meets product box',
-      body: 'Investor or broker has a strategy (bridge, rental term, build-for-rent, non-QM). First filter is eligibility. In CRM this should be product and channel fields you can report on.',
+      title: 'Broker / borrower starts an application',
+      body: 'Product selection (bridge, rental term, BFR, etc.) and channel. Goal: get a complete application in, not a marketing brochure.',
       points: [
-        'Competitive lever: product fit messaging',
-        'SF: product picklist / record type; report by product and channel',
+        'Competitive lever: easy start, clear product fit',
+        'SF: application record, product, channel, broker fields',
       ],
     },
     {
       id: 'e2',
-      label: 'Submit package',
+      label: 'Complete package',
       friction: true,
-      title: 'Submission friction',
-      body: 'Files stall when required docs or entity package rules are unclear. Correspondents multi-home. Painful intake loses the relationship before credit starts.',
+      title: 'Application completeness',
+      body: 'Files stall when required docs and fields are unclear. Brokers multi-home. Incomplete applications never get a real yes.',
       points: [
-        'Competitive lever: checklist clarity and fewer kickbacks',
-        'SF: file-complete flag; time from create to Application in; incomplete list view',
+        'Competitive lever: checklist clarity, fewer kickbacks',
+        'SF: file-complete flag; time to complete application',
       ],
     },
     {
@@ -28,43 +28,43 @@
       label: 'Credit decision',
       friction: true,
       title: 'Time to a real yes',
-      body: 'Core “time to yes” moment. Speed matters; certainty matters more. Re-trades push volume to competitors.',
+      body: 'Core time-to-yes moment on the application. Speed matters; a decision that sticks matters more.',
       points: [
         'Competitive lever: decision SLA that holds',
-        'SF: stage timestamps; median/p90 to decision; re-decision count',
+        'SF: stage timestamps; median/p90 to decision',
       ],
     },
     {
       id: 'e4',
-      label: 'Conditions clear',
+      label: 'Conditions',
       friction: true,
-      title: 'Condition clearing grind',
-      body: 'Where deals go quiet. Ownership, aging, and partner communication decide whether approved feels like progress.',
+      title: 'Clear conditions on the application',
+      body: 'Where applications go quiet. Ownership and aging decide whether approved feels like progress.',
       points: [
-        'Competitive lever: owned conditions and visible status',
-        'SF: related conditions or tasks; aging report; exception list view by owner',
+        'Competitive lever: owned conditions, visible status',
+        'SF: open conditions; aging; exception queue',
       ],
     },
     {
       id: 'e5',
-      label: 'Fund / close',
+      label: 'Fund',
       friction: false,
-      title: 'Certainty of close',
-      body: 'Funding handoff. Consistency at the finish earns repeat volume.',
+      title: 'Clear to fund / fund',
+      body: 'Funding handoff. Consistency at the finish earns the next application from that broker.',
       points: [
         'Competitive lever: clear-to-fund reliability',
-        'SF: clear-to-fund stage; fallout after approval; integration failure flags',
+        'SF: clear-to-fund stage; fallout after approval',
       ],
     },
     {
       id: 'e6',
-      label: 'Repeat / refer',
+      label: 'Next app',
       friction: false,
-      title: 'Why they come back',
-      body: 'Retention is the product. Whole-path experience decides the next file.',
+      title: 'Why they submit again',
+      body: 'Retention is whole-path experience on applications: speed, certainty, status clarity.',
       points: [
-        'Competitive lever: path experience + relationship memory',
-        'SF: account / contact rollups; repeat opportunity rate by seller',
+        'Competitive lever: path experience',
+        'SF: repeat applications by broker',
       ],
     },
   ];
@@ -72,13 +72,13 @@
   const internal = [
     {
       id: 'i1',
-      label: 'Lead / opp open',
+      label: 'App created',
       friction: false,
-      title: 'Capture with reportable fields',
-      body: 'Lead or Opportunity create. Minimum product, channel, and seller fields or later dashboards are fiction.',
+      title: 'Application create',
+      body: 'Minimum product, channel, and broker fields so later stages are analyzable.',
       points: [
-        'BA: which fields are required vs nice-to-have for stage analytics?',
-        'Artifacts: page layout notes; validation only where it protects data quality',
+        'BA: which fields block a useful stage model?',
+        'Artifacts: intake report by product and channel',
       ],
     },
     {
@@ -86,21 +86,21 @@
       label: 'Application in',
       friction: true,
       title: 'Stage: Application in',
-      body: 'Definition must be written. Sales and ops often mean different things by “in.” That poisons every summary report.',
+      body: 'Definition must be written. Incomplete vs complete applications poison every funnel chart.',
       points: [
-        'BA: what event sets the stage, and can users game it?',
-        'Artifacts: stage definition; report Apps Created / Incomplete package',
+        'BA: what event sets application-in?',
+        'Artifacts: incomplete rate; time to file complete',
       ],
     },
     {
       id: 'i3',
-      label: 'In underwriting',
+      label: 'Underwriting',
       friction: true,
       title: 'Stage: In underwriting',
-      body: 'Where leadership wants speed metrics. Instrument enter time, idle time, and owner. Not only last-modified.',
+      body: 'Where leadership wants decision speed. Rules/policy checks run here as company process, not as the product story to the customer.',
       points: [
-        'BA: when does the clock start and pause?',
-        'Artifacts: aging buckets; WIP by underwriter list view; SOQL if history is messy',
+        'BA: when does the decision clock start and pause?',
+        'Artifacts: aging buckets; WIP by underwriter',
       ],
     },
     {
@@ -108,10 +108,10 @@
       label: 'Approved w/ cond.',
       friction: true,
       title: 'Stage: Approved with conditions',
-      body: 'Often the real work queue. Dashboards should be exception-first with owners, not a single green pipeline chart.',
+      body: 'Often the real work queue on applications. Exception-first views with owners.',
       points: [
-        'BA: is each condition a related record, task, or free text?',
-        'Artifacts: open conditions report; p90 clear time; top condition codes chart',
+        'BA: is each condition tracked with an owner?',
+        'Artifacts: open conditions; p90 clear time',
       ],
     },
     {
@@ -119,50 +119,59 @@
       label: 'Clear to fund',
       friction: false,
       title: 'Stage: Clear to fund',
-      body: 'Handoff across credit, ops, funding. Integration failures show up as “CRM said yes but…”',
+      body: 'Handoff across credit, ops, funding. Integration failures show as dual status on the application.',
       points: [
-        'BA: system of truth for clear-to-fund status?',
-        'Artifacts: cycle time report; failed integration exception report',
+        'BA: system of truth for clear-to-fund?',
+        'Artifacts: cycle time; failed write-backs',
       ],
     },
     {
       id: 'i6',
-      label: 'Funded + backlog',
+      label: 'Funded + learn',
       friction: false,
       title: 'Funded and feed the backlog',
-      body: 'Close the loop: which frictions cost time to yes. That is Accelerator work with admin/platform partners.',
+      body: 'Close the loop: which frictions cost time to yes on applications. That is Accelerator work.',
       points: [
         'BA: what shipped last month because of the dashboard?',
-        'Artifacts: conversion vs baseline; user stories with AC for field or automation fixes',
+        'Artifacts: conversion vs baseline; stories with AC',
       ],
     },
   ];
 
-  function renderRail(container, steps, detailEl, selectedId) {
-    container.innerHTML = '';
-    steps.forEach((step, i) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'flow-step' + (step.friction ? ' is-friction' : '') + (step.id === selectedId ? ' is-selected' : '');
-      btn.dataset.id = step.id;
-      btn.innerHTML = '<span class="step-num">Stage ' + (i + 1) + (step.friction ? ' · friction' : '') + '</span>' + step.label;
-      btn.addEventListener('click', () => select(container, steps, detailEl, step.id));
-      container.appendChild(btn);
-    });
-  }
-
   function drillLinks(step) {
-    const friction = step.friction;
     const links = [];
-    if (friction) {
-      links.push({ nav: 'exceptions:queue', label: 'Open Exception Queue', primary: true });
-      links.push({ nav: 'pipeline:past-sla', label: 'Loan files past SLA' });
+    if (step.friction) {
+      links.push({ nav: 'exceptions:queue', label: 'Application exception queue', primary: true });
+      links.push({ nav: 'pipeline:past-sla', label: 'Applications past SLA' });
     } else {
       links.push({ nav: 'accelerator:dashboard', label: 'Dashboard', primary: true });
-      links.push({ nav: 'pipeline:all-open', label: 'Loan pipeline' });
+      links.push({ nav: 'pipeline:all-open', label: 'All applications' });
     }
-    links.push({ nav: 'reports:ops-folder', label: 'Ops reports' });
+    links.push({ nav: 'reports:ops-folder', label: 'App pipeline reports' });
     return links;
+  }
+
+  function renderRail(container, steps, detailEl, selectedId) {
+    container.innerHTML = '';
+    steps.forEach(function (step, i) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className =
+        'flow-step' +
+        (step.friction ? ' is-friction' : '') +
+        (step.id === selectedId ? ' is-selected' : '');
+      btn.dataset.id = step.id;
+      btn.innerHTML =
+        '<span class="step-num">Stage ' +
+        (i + 1) +
+        (step.friction ? ' · friction' : '') +
+        '</span>' +
+        step.label;
+      btn.addEventListener('click', function () {
+        select(container, steps, detailEl, step.id);
+      });
+      container.appendChild(btn);
+    });
   }
 
   function renderDetail(detailEl, step) {
@@ -171,7 +180,7 @@
       return;
     }
     const tagClass = step.friction ? 'tag tag-friction' : 'tag';
-    const tagLabel = step.friction ? 'Friction · instrument in SF' : 'Path moment · CRM';
+    const tagLabel = step.friction ? 'Friction on the application' : 'Application path moment';
     const links = drillLinks(step)
       .map(function (l) {
         return (
@@ -187,13 +196,26 @@
       .join('');
 
     detailEl.innerHTML =
-      '<span class="' + tagClass + '">' + tagLabel + '</span>' +
-      '<h3>' + step.title + '</h3>' +
-      '<p>' + step.body + '</p>' +
-      '<ul>' + step.points.map((p) => '<li>' + p + '</li>').join('') + '</ul>' +
-      '<div class="path-deep">' +
-      '<h4>Drill down from this stage</h4>' +
-      '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 8px">Same journey as the dashboard and exception queue. Jump into the working surface that would own this moment.</p>' +
+      '<span class="' +
+      tagClass +
+      '">' +
+      tagLabel +
+      '</span>' +
+      '<h3>' +
+      step.title +
+      '</h3>' +
+      '<p>' +
+      step.body +
+      '</p>' +
+      '<ul>' +
+      step.points
+        .map(function (p) {
+          return '<li>' + p + '</li>';
+        })
+        .join('') +
+      '</ul>' +
+      '<div class="path-deep"><h4>Drill down</h4>' +
+      '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 8px">Jump to the working surface for this step on the loan application journey.</p>' +
       '<div class="path-links drill-actions" style="margin-top:0">' +
       links +
       '</div></div>';
@@ -207,7 +229,7 @@
   }
 
   function select(container, steps, detailEl, id) {
-    const step = steps.find((s) => s.id === id) || steps[0];
+    const step = steps.find(function (s) { return s.id === id; }) || steps[0];
     renderRail(container, steps, detailEl, step.id);
     renderDetail(detailEl, step);
   }
@@ -220,15 +242,15 @@
   }
 
   function initTabs() {
-    document.querySelectorAll('.flow-tab').forEach((tab) => {
-      tab.addEventListener('click', () => {
+    document.querySelectorAll('.flow-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
         const panel = tab.getAttribute('data-panel');
-        document.querySelectorAll('.flow-tab').forEach((t) => {
+        document.querySelectorAll('.flow-tab').forEach(function (t) {
           const on = t === tab;
           t.classList.toggle('is-active', on);
           t.setAttribute('aria-selected', on ? 'true' : 'false');
         });
-        document.querySelectorAll('.flow-panel').forEach((p) => {
+        document.querySelectorAll('.flow-panel').forEach(function (p) {
           const on = p.id === 'panel-' + panel;
           p.classList.toggle('is-active', on);
           if (on) p.removeAttribute('hidden');
@@ -245,11 +267,5 @@
   }
 
   initAll();
-
-  window.mortgagePath = {
-    refresh: function () {
-      // re-bind if panel was hidden at first paint
-      initAll();
-    },
-  };
+  window.mortgagePath = { refresh: initAll };
 })();

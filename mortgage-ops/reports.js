@@ -466,13 +466,13 @@
           ['Unassigned', 'M. Chen', 'J. Ortiz', 'A. Singh'],
           [
             { name: 'Ops only', values: [2, 3, 3, 2], color: COLORS.blue2 },
-            { name: 'Regulated tags', values: [6, 5, 4, 2], color: COLORS.red },
+            { name: 'Docs / policy', values: [6, 5, 4, 2], color: COLORS.red },
           ]
         );
       },
       insight: 'Unassigned + regulated is the dangerous combo. Feed AI queue from this report.',
       links: [
-        { label: 'Loan files · Past SLA', nav: 'pipeline:past-sla' },
+        { label: 'Applications · Past SLA', nav: 'pipeline:past-sla' },
         { label: 'Exception queue', nav: 'exceptions:queue' },
       ],
     },
@@ -525,16 +525,16 @@
       insight: 'Conditions → clear-to-fund is the conversion cliff. Instrument owners and reason codes there.',
       links: [
         { label: 'Dashboard funnel', nav: 'accelerator:dashboard' },
-        { label: 'Loan files', nav: 'pipeline:conditions' },
+        { label: 'Applications', nav: 'pipeline:conditions' },
       ],
     },
 
     // —— Regulated / control ——
     {
       id: 'R-05',
-      name: 'Compliance-tagged exceptions',
-      folder: 'control',
-      folderLabel: 'Control & audit',
+      name: 'Application blockers by type',
+      folder: 'quality',
+      folderLabel: 'App quality',
       type: 'Summary chart',
       chartType: 'Lightning · Horizontal bar',
       desc: 'Open exceptions by control tag. Regulated load for Accelerator + compliance partners.',
@@ -553,20 +553,20 @@
           { colors: [COLORS.red, COLORS.orange, COLORS.purple, COLORS.blue, COLORS.navy] }
         );
       },
-      insight: 'Same instinct as multi-lender offer/contract automation: wrong artifact stops the line.',
+      insight: 'Same instinct as application rules: wrong artifact stops the line.',
       links: [
         { label: 'Exception Queue', nav: 'exceptions:queue' },
-        { label: 'Write-up · contracts', nav: 'accelerator:writeup' },
+        { label: 'Write-up', nav: 'accelerator:writeup' },
       ],
     },
     {
       id: 'R-06',
-      name: 'Package / contract generation defects',
-      folder: 'control',
-      folderLabel: 'Control & audit',
+      name: 'Product eligibility / rules fails',
+      folder: 'quality',
+      folderLabel: 'App quality',
       type: 'Summary chart',
       chartType: 'Lightning · Grouped idea · vbar',
-      desc: 'Offer/package failures by loan type: wrong template, missing jurisdiction disclosure, stamp not set. Bridges Auction-style contract automation to CRM exceptions.',
+      desc: 'Offer/package failures by loan type: wrong template, missing jurisdiction disclosure, stamp not set. Bridges application rules to CRM exceptions.',
       columns: ['Loan type', 'Wrong template', 'Missing disclosure', 'Stamp miss'],
       rows: [
         ['Bridge', '4', '7', '2'],
@@ -585,15 +585,15 @@
       },
       insight: 'Outside the usual “pipeline by stage” set. Product + BA gold: rules engine quality is a reportable control.',
       links: [
-        { label: 'Exception · contract row', nav: 'exceptions:queue' },
+        { label: 'Exception queue', nav: 'exceptions:queue' },
         { label: 'Write-up', nav: 'accelerator:writeup' },
       ],
     },
     {
       id: 'R-07',
       name: 'Dual-system status disagreement',
-      folder: 'control',
-      folderLabel: 'Control & audit',
+      folder: 'quality',
+      folderLabel: 'App quality',
       type: 'Tabular + trend',
       chartType: 'Lightning · Line',
       desc: 'CRM stage ≠ LOS / warehouse status. Audit and partner-comms risk. Integration health as a product metric.',
@@ -623,8 +623,8 @@
     {
       id: 'R-08',
       name: 'Audit-ready field completeness',
-      folder: 'control',
-      folderLabel: 'Control & audit',
+      folder: 'quality',
+      folderLabel: 'App quality',
       type: 'Summary chart',
       chartType: 'Lightning · Horizontal bar',
       desc: '% of funded files with required reason codes, condition outcomes, and owner history populated. Exam / internal audit posture.',
@@ -736,13 +736,13 @@
     },
     {
       id: 'R-12',
-      name: 'Partner / seller experience risk',
+      name: 'Broker experience risk',
       folder: 'insight',
       folderLabel: 'Outside the box',
       type: 'Matrix-ish · vbar',
       chartType: 'Lightning · Vertical bar',
-      desc: 'Tier A sellers with rising past-SLA or kickbacks. Competitive “why us” is not only rate.',
-      columns: ['Seller', 'Tier', 'Past SLA Δ', 'Kickback rate'],
+      desc: 'Tier A brokers with rising past-SLA or kickbacks. Competitive “why us” is not only rate.',
+      columns: ['broker', 'Tier', 'Past SLA Δ', 'Kickback rate'],
       rows: [
         ['Summit Capital', 'A', '+4', '12%'],
         ['Harbor Investors', 'A', '+1', '6%'],
@@ -818,13 +818,13 @@
     // —— Sales / volume (keep some classic) ——
     {
       id: 'R-15',
-      name: 'Volume by broker / seller',
+      name: 'Volume by broker',
       folder: 'sales',
       folderLabel: 'Sales',
       type: 'Summary chart',
       chartType: 'Lightning · Horizontal bar',
-      desc: 'In-flight and funded volume by seller. Classic, still useful next to experience risk.',
-      columns: ['Seller', 'In flight', 'Funded 30d', 'Tier'],
+      desc: 'In-flight and funded volume by broker. Classic, still useful next to experience risk.',
+      columns: ['broker', 'In flight', 'Funded 30d', 'Tier'],
       rows: [
         ['Summit Capital', '12', '9', 'A'],
         ['Harbor Investors', '8', '6', 'A'],
@@ -927,7 +927,7 @@
       '<div class="drill-filters" style="padding:0;border:none;margin-bottom:8px">' +
       chip('all', 'All (' + counts.all + ')') +
       chip('ops', 'Ops (' + counts.ops + ')') +
-      chip('control', 'Control & audit (' + counts.control + ')') +
+      chip('control', 'App quality (' + counts.control + ')') +
       chip('insight', 'Outside the box (' + counts.insight + ')') +
       chip('sales', 'Sales (' + counts.sales + ')') +
       '</div>' +

@@ -7,31 +7,31 @@
     exceptions: {
       id: 'exceptions',
       name: 'Exception Queue',
-      blurb: 'Custom component · AI ranks · humans act',
+      blurb: 'Stuck applications · AI ranks · humans clear',
       icon: 'E',
       views: [
-        { id: 'queue', label: 'AI-prioritized queue', panel: 'panel-exceptions' },
+        { id: 'queue', label: 'AI-prioritized app queue', panel: 'panel-exceptions' },
         { id: 'writeup', label: 'Case study write-up', panel: 'panel-writeup' },
       ],
     },
     accelerator: {
       id: 'accelerator',
       name: 'Accelerator Analytics',
-      blurb: 'Business optimization · time to yes',
+      blurb: 'Loan apps · time to yes · dashboards',
       icon: 'A',
       views: [
         { id: 'dashboard', label: 'Dashboard: Time to Yes', panel: 'panel-dashboard' },
         { id: 'writeup', label: 'Case study write-up', panel: 'panel-writeup' },
-        { id: 'path', label: 'Path & stages', panel: 'panel-path' },
+        { id: 'path', label: 'Application path', panel: 'panel-path' },
       ],
     },
     pipeline: {
       id: 'pipeline',
-      name: 'Loan Pipeline',
-      blurb: 'Working queues · files in flight',
+      name: 'Loan Applications',
+      blurb: 'Apps in flight · start to fund',
       icon: 'L',
       views: [
-        { id: 'all-open', label: 'All open files', panel: 'panel-pipeline' },
+        { id: 'all-open', label: 'All open applications', panel: 'panel-pipeline' },
         { id: 'past-sla', label: 'Past SLA', panel: 'panel-pipeline' },
         { id: 'conditions', label: 'Approved w/ conditions', panel: 'panel-pipeline' },
       ],
@@ -44,11 +44,11 @@
     reports: {
       id: 'reports',
       name: 'Reports',
-      blurb: 'Charts · ops · control · insight',
+      blurb: 'Application pipeline charts',
       icon: 'R',
       views: [
         { id: 'recent', label: 'All reports', panel: 'panel-reports' },
-        { id: 'ops-folder', label: 'Folder: Ops metrics', panel: 'panel-reports' },
+        { id: 'ops-folder', label: 'Folder: App pipeline', panel: 'panel-reports' },
       ],
     },
   };
