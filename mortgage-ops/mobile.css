@@ -1,0 +1,483 @@
+/**
+ * Mobile polish for mortgage-ops case study.
+ * Only max-width rules — desktop styles stay as defined in other sheets.
+ */
+
+/* —— Tablet and down —— */
+@media (max-width: 900px) {
+  .sf-global-header {
+    height: 44px;
+    padding: 0 10px 0 6px;
+    gap: 8px;
+  }
+
+  .sf-global-header .app-name {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 46vw;
+  }
+
+  .sf-global-header .header-pill {
+    display: none; /* frees header room; demo note still in banner */
+  }
+
+  .sf-global-header .cloud-mark {
+    display: none;
+  }
+
+  .sf-context-bar {
+    top: 44px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .view-picker {
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+    margin-right: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+
+  .view-menu-btn {
+    min-width: 0;
+    width: 100%;
+    padding: 10px 32px 10px 14px;
+  }
+
+  .view-menu-label {
+    max-width: none;
+  }
+
+  .view-menu {
+    left: 8px;
+    right: 8px;
+    min-width: 0;
+    width: auto;
+  }
+
+  .sf-context-nav {
+    padding: 6px 8px 8px;
+    gap: 4px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sf-context-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-chip {
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+
+  .nav-chip--link {
+    margin-left: 0;
+  }
+
+  .demo-banner {
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    line-height: 1.35;
+  }
+
+  .app-launcher {
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-height: min(70vh, 480px);
+    overflow-y: auto;
+  }
+
+  .app-launcher__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .launcher-tile--exit {
+    grid-column: auto;
+  }
+
+  .case-study {
+    padding: 20px 14px 56px;
+  }
+
+  .case-study--tight {
+    padding: 16px 12px 48px;
+  }
+
+  .cs-hero h1,
+  .shell-panel-title {
+    font-size: 1.4rem;
+    line-height: 1.25;
+  }
+
+  .platform-scope,
+  .shell-panel-lead,
+  .cs-lead {
+    font-size: 0.9rem;
+  }
+
+  .expansion-path {
+    gap: 6px;
+  }
+
+  .path-step {
+    font-size: 0.7rem;
+    padding: 5px 8px;
+  }
+
+  .path-arrow {
+    font-size: 0.75rem;
+  }
+
+  .phase-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fit-table {
+    font-size: 0.8rem;
+  }
+
+  .fit-table th,
+  .fit-table td {
+    padding: 8px 10px;
+  }
+
+  .writeup-nav {
+    gap: 6px;
+  }
+
+  .writeup-nav button {
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  /* Exception queue */
+  .eq-wrap {
+    padding: 14px 12px 48px;
+  }
+
+  .eq-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .eq-title-row h1 {
+    font-size: 1.35rem;
+  }
+
+  .eq-lead {
+    font-size: 0.9rem;
+  }
+
+  .eq-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .eq-toolbar label {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .eq-toolbar select,
+  .eq-toolbar button {
+    min-height: 40px;
+  }
+
+  .eq-toolbar .spacer {
+    display: none;
+  }
+
+  .eq-ai-strip {
+    font-size: 0.8rem;
+  }
+
+  .eq-body {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .eq-list {
+    max-height: 42vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .eq-detail {
+    max-height: none;
+  }
+
+  .eq-row {
+    grid-template-columns: 28px 1fr auto;
+    padding: 12px 10px;
+  }
+
+  .eq-score .why {
+    max-width: 72px;
+  }
+
+  .eq-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .eq-stat {
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .eq-stat:nth-child(odd) {
+    border-right: 1px solid var(--border-soft) !important;
+  }
+
+  .eq-actions {
+    flex-direction: column;
+  }
+
+  .eq-actions button {
+    width: 100%;
+    min-height: 42px;
+    justify-content: center;
+  }
+
+  /* Dashboard */
+  .dash {
+    padding: 14px 12px 48px;
+  }
+
+  .dash-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dash-controls .seg {
+    width: 100%;
+  }
+
+  .dash-controls .seg button {
+    flex: 1;
+    min-height: 40px;
+  }
+
+  .dash-controls label {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dash-controls select,
+  .dash-controls button {
+    min-height: 40px;
+  }
+
+  .dash-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .dash-kpi .value {
+    font-size: 1.25rem;
+  }
+
+  .dash-main {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-alert-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .funnel-step {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .funnel-step .meta {
+    text-align: left;
+  }
+
+  .aging-grid {
+    grid-template-columns: 72px repeat(4, minmax(0, 1fr));
+    font-size: 0.62rem;
+    overflow-x: auto;
+  }
+
+  .aging-cell {
+    padding: 10px 2px;
+    font-size: 0.72rem;
+  }
+
+  .dash-insight {
+    flex-direction: column;
+  }
+
+  .dash-insight button {
+    width: 100%;
+  }
+
+  /* Drill / pipeline / reports */
+  .drill-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .drill-stat-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .drill-list-card,
+  .drill-detail-card {
+    min-height: 0;
+  }
+
+  .drill-table-wrap {
+    max-height: 50vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .drill-table {
+    font-size: 0.75rem;
+    min-width: 480px; /* scroll horizontally instead of crushing */
+  }
+
+  .drill-actions {
+    flex-direction: column;
+  }
+
+  .drill-actions button,
+  .drill-actions a.drill-btn {
+    width: 100%;
+    min-height: 42px;
+    justify-content: center;
+  }
+
+  .rpt-chart-frame {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rpt-chart-svg {
+    min-width: 300px;
+  }
+
+  /* Path / flows */
+  .flow-tabs {
+    flex-direction: column;
+  }
+
+  .flow-tab {
+    width: 100%;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-soft);
+    text-align: left;
+  }
+
+  .flow-rail {
+    flex-direction: column;
+  }
+
+  .flow-step {
+    max-width: none;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .path-links.drill-actions,
+  .path-deep .path-links {
+    flex-direction: column;
+  }
+
+  .path-deep .path-links button {
+    width: 100%;
+  }
+}
+
+/* —— Phones —— */
+@media (max-width: 480px) {
+  .sf-global-header .app-name {
+    max-width: 58vw;
+  }
+
+  .dash-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .eq-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .eq-rank {
+    display: inline;
+  }
+
+  .eq-score {
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .eq-score .why {
+    max-width: none;
+  }
+
+  .wedge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .object-chips {
+    gap: 6px;
+  }
+
+  .object-chip {
+    font-size: 0.68rem;
+  }
+
+  .case-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fit-table-wrap {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+}
+
+/* Prefer less sticky chrome height on short screens */
+@media (max-width: 900px) and (max-height: 700px) {
+  .eq-list {
+    max-height: 34vh;
+  }
+
+  .sf-context-nav {
+    padding-top: 4px;
+    padding-bottom: 6px;
+  }
+}
+
+/* Safe area for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  @media (max-width: 900px) {
+    .case-study,
+    .eq-wrap,
+    .dash {
+      padding-bottom: calc(48px + env(safe-area-inset-bottom));
+    }
+
+    .sf-global-header {
+      padding-left: max(6px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
+    }
+  }
+}
