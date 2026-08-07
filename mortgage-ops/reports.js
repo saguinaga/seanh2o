@@ -537,7 +537,7 @@
       folderLabel: 'App quality',
       type: 'Summary chart',
       chartType: 'Lightning · Horizontal bar',
-      desc: 'Open exceptions by control tag. Regulated load for Accelerator + compliance partners.',
+      desc: 'Open application exceptions by blocker type so ops can protect time to yes.',
       columns: ['Tag', 'Open', 'Escalated'],
       rows: [
         ['Disclosure / docs', '6', '1'],

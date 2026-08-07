@@ -130,7 +130,7 @@
       label: 'Funded + learn',
       friction: false,
       title: 'Funded and feed the backlog',
-      body: 'Close the loop: which frictions cost time to yes on applications. That is Accelerator work.',
+      body: 'Close the loop: which frictions cost time to yes on applications. That is the product / BA backlog work.',
       points: [
         'BA: what shipped last month because of the dashboard?',
         'Artifacts: conversion vs baseline; stories with AC',

@@ -16,7 +16,7 @@
     },
     accelerator: {
       id: 'accelerator',
-      name: 'Accelerator Analytics',
+      name: 'Application Analytics',
       blurb: 'Loan apps · time to yes · dashboards',
       icon: 'A',
       views: [
