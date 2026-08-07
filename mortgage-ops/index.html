@@ -9,9 +9,10 @@
   <link rel="stylesheet" href="roadmap.css?v=8">
   <link rel="stylesheet" href="flows.css?v=6">
   <link rel="stylesheet" href="exception-queue.css?v=2">
-  <link rel="stylesheet" href="dashboard.css?v=3">
+  <link rel="stylesheet" href="dashboard.css?v=4">
   <link rel="stylesheet" href="drill.css?v=3">
   <link rel="stylesheet" href="mobile.css?v=2">
+  <link rel="stylesheet" href="products.css?v=1">
   <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
   <script>
     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -180,12 +181,7 @@
             </div>
             <label>
               Product
-              <select id="dash-product" aria-label="Product filter">
-                <option value="all">All products</option>
-                <option value="bridge">Bridge</option>
-                <option value="rental">Rental term</option>
-                <option value="bfr">Build-for-rent</option>
-              </select>
+              <select id="dash-product" aria-label="Product filter"></select>
             </label>
             <label>
               Window
@@ -196,6 +192,9 @@
             </label>
             <button type="button" id="dash-refresh">Refresh</button>
           </div>
+
+          <div class="prod-chip-rail" id="dash-product-chips" aria-label="Loan product filter"></div>
+          <div id="dash-product-dna" class="prod-dna-host" aria-live="polite"></div>
 
           <div id="dash-body"></div>
         </div>
@@ -241,8 +240,9 @@
               How I would approach specialty mortgage ops as a product / systems partner: translate business needs into
               <strong>Salesforce stages, reports, and dashboards on loan applications</strong>
               (intake → underwriting → conditions → clear to fund → funded) while the book is live.
-              Market context uses public specialty housing-credit language (for example business-purpose products such as
-              bridge, rental, build-for-rent). Approach only. Not a claim of employment at any named firm.
+              Specialty housing-credit product set in the demo: <strong>bridge</strong>, <strong>fix-and-flip</strong>,
+              <strong>DSCR rental</strong>, <strong>term rental / portfolio</strong>, <strong>build-for-rent</strong>, and
+              <strong>non-QM / alt docs</strong>. Approach only. Not a claim of employment at any named firm.
             </p>
             <div class="expansion-path" aria-label="Application delivery sequence">
               <span class="path-step path-active">App stage defs</span>
@@ -287,8 +287,8 @@
             <p>
               The work centers on the <strong>mortgage application lifecycle</strong>: origination through fulfillment,
               Salesforce as the system of work, dashboards and analytics in flight, faster time-to-yes, better broker and
-              borrower experience. Specialty products (bridge, fix-and-flip, DSCR-style rental, build-for-rent) change the
-              rules on the application; they do not change the unit of work.
+              borrower experience. Product type changes the rules and hot spots on the application (ARV/LTC on flip,
+              DSCR on investor rental, draws on BFR, bank statements on non-QM); the unit of work stays the application.
             </p>
             <p>
               The product job is quarterback: discovery with the business, clear stage language on the application,
@@ -590,9 +590,10 @@
     </div>
   </div>
 
+  <script src="products.js?v=1"></script>
   <script src="shell.js?v=6"></script>
   <script src="exception-queue.js?v=4"></script>
-  <script src="dashboard.js?v=4"></script>
+  <script src="dashboard.js?v=5"></script>
   <script src="pipeline.js?v=3"></script>
   <script src="reports.js?v=4"></script>
   <script src="flows.js?v=6"></script>

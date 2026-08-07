@@ -1,186 +1,15 @@
 /**
  * Interactive Time-to-Yes dashboard. Demo data only.
- * Filters, clickable KPIs/funnel/aging, policy alerts → Exception Queue.
+ * Product catalog lives in products.js (bridge, flip, DSCR, term rental, BFR, non-QM).
  */
 (function () {
-  const PRODUCTS = {
-    all: 'All products',
-    bridge: 'Bridge',
-    rental: 'Rental term',
-    bfr: 'Build-for-rent',
-  };
-
-  /** Base series by product (illustrative) */
-  const DATA = {
-    all: {
-      appsIn: 142,
-      appsDelta: 8,
-      medianDecision: 6.2,
-      medianDelta: 0.4,
-      p90Fund: 11,
-      p90Delta: -0.6,
-      stuck: 27,
-      stuckDelta: 3,
-      policyHold: 11,
-      dualSystem: 4,
-      sparkApps: [98, 105, 112, 118, 121, 130, 142],
-      sparkDecision: [7.1, 6.9, 6.8, 6.5, 6.4, 6.3, 6.2],
-      sparkStuck: [18, 20, 22, 21, 24, 25, 27],
-      funnel: [
-        { id: 'app', name: 'Application in', count: 38, conv: null, stuck: false },
-        { id: 'uw', name: 'In underwriting', count: 41, conv: 0.78, stuck: false },
-        { id: 'cond', name: 'Approved w/ conditions', count: 33, conv: 0.71, stuck: true },
-        { id: 'ctf', name: 'Clear to fund', count: 18, conv: 0.55, stuck: false },
-        { id: 'funded', name: 'Funded (7d)', count: 24, conv: 0.88, stuck: false },
-      ],
-      aging: {
-        // rows: stages, cols: 0-1d, 2-3d, 4-6d, 7d+
-        labels: ['App in', 'Underwriting', 'Conditions', 'Clear to fund'],
-        matrix: [
-          [12, 14, 8, 4],
-          [8, 11, 13, 9],
-          [5, 7, 10, 11],
-          [9, 5, 3, 1],
-        ],
-      },
-      reasons: [
-        { name: 'Missing docs / disclosures', n: 34, reg: true },
-        { name: 'Entity / KYC mismatch', n: 18, reg: true },
-        { name: 'Valuation hold', n: 16, reg: false },
-        { name: 'Dual-system status', n: 12, reg: true },
-        { name: 'Credit open item', n: 11, reg: false },
-      ],
-      watch: [
-        { file: 'LF-10455', why: 'Conditions + disclosure gap · Tier A', pill: 'policy', kind: 'reg' },
-        { file: 'LF-10482', why: 'KYC co-borrower entity · 2d over SLA', pill: 'KYC', kind: 'reg' },
-        { file: 'LF-10518', why: 'Wrong loan-type App rules template', pill: 'App rules', kind: 'reg' },
-        { file: 'LF-10470', why: 'CRM vs LOS stage mismatch', pill: 'Audit', kind: 'sla' },
-      ],
-    },
-    bridge: {
-      appsIn: 64,
-      appsDelta: 5,
-      medianDecision: 5.4,
-      medianDelta: 0.2,
-      p90Fund: 9.5,
-      p90Delta: -0.3,
-      stuck: 14,
-      stuckDelta: 2,
-      policyHold: 6,
-      dualSystem: 2,
-      sparkApps: [44, 48, 50, 52, 55, 60, 64],
-      sparkDecision: [6.0, 5.9, 5.7, 5.6, 5.5, 5.5, 5.4],
-      sparkStuck: [9, 10, 11, 11, 12, 13, 14],
-      funnel: [
-        { id: 'app', name: 'Application in', count: 16, conv: null, stuck: false },
-        { id: 'uw', name: 'In underwriting', count: 19, conv: 0.82, stuck: false },
-        { id: 'cond', name: 'Approved w/ conditions', count: 15, conv: 0.68, stuck: true },
-        { id: 'ctf', name: 'Clear to fund', count: 9, conv: 0.52, stuck: false },
-        { id: 'funded', name: 'Funded (7d)', count: 12, conv: 0.9, stuck: false },
-      ],
-      aging: {
-        labels: ['App in', 'Underwriting', 'Conditions', 'Clear to fund'],
-        matrix: [
-          [6, 5, 3, 2],
-          [4, 6, 5, 4],
-          [2, 3, 5, 5],
-          [5, 2, 1, 1],
-        ],
-      },
-      reasons: [
-        { name: 'Missing docs / disclosures', n: 16, reg: true },
-        { name: 'Entity / KYC mismatch', n: 9, reg: true },
-        { name: 'Wrong App rules template', n: 7, reg: true },
-        { name: 'Valuation hold', n: 6, reg: false },
-        { name: 'Dual-system status', n: 5, reg: true },
-      ],
-      watch: [
-        { file: 'LF-10518', why: 'Wrong loan-type App rules template', pill: 'App rules', kind: 'reg' },
-        { file: 'LF-10455', why: 'Conditions + disclosure gap', pill: 'policy', kind: 'reg' },
-        { file: 'LF-10482', why: 'KYC mismatch', pill: 'KYC', kind: 'reg' },
-      ],
-    },
-    rental: {
-      appsIn: 51,
-      appsDelta: 2,
-      medianDecision: 7.1,
-      medianDelta: 0.6,
-      p90Fund: 12.5,
-      p90Delta: 0.4,
-      stuck: 9,
-      stuckDelta: 1,
-      policyHold: 3,
-      dualSystem: 1,
-      sparkApps: [40, 42, 44, 45, 47, 49, 51],
-      sparkDecision: [6.8, 6.9, 7.0, 7.0, 7.1, 7.1, 7.1],
-      sparkStuck: [6, 7, 7, 8, 8, 9, 9],
-      funnel: [
-        { id: 'app', name: 'Application in', count: 14, conv: null, stuck: false },
-        { id: 'uw', name: 'In underwriting', count: 13, conv: 0.74, stuck: false },
-        { id: 'cond', name: 'Approved w/ conditions', count: 12, conv: 0.76, stuck: true },
-        { id: 'ctf', name: 'Clear to fund', count: 6, conv: 0.5, stuck: false },
-        { id: 'funded', name: 'Funded (7d)', count: 8, conv: 0.85, stuck: false },
-      ],
-      aging: {
-        labels: ['App in', 'Underwriting', 'Conditions', 'Clear to fund'],
-        matrix: [
-          [4, 5, 3, 2],
-          [3, 3, 4, 3],
-          [2, 3, 4, 3],
-          [3, 2, 1, 0],
-        ],
-      },
-      reasons: [
-        { name: 'State disclosure stamp', n: 11, reg: true },
-        { name: 'Missing docs / disclosures', n: 10, reg: true },
-        { name: 'Valuation hold', n: 8, reg: false },
-        { name: 'Credit open item', n: 5, reg: false },
-      ],
-      watch: [
-        { file: 'LF-10491', why: 'State disclosure not stamped', pill: 'State', kind: 'reg' },
-        { file: 'LF-10510', why: 'Funding handoff aging', pill: 'SLA', kind: 'sla' },
-      ],
-    },
-    bfr: {
-      appsIn: 27,
-      appsDelta: 1,
-      medianDecision: 8.0,
-      medianDelta: 0.1,
-      p90Fund: 14,
-      p90Delta: -0.2,
-      stuck: 4,
-      stuckDelta: 0,
-      policyHold: 2,
-      dualSystem: 1,
-      sparkApps: [18, 20, 21, 22, 24, 25, 27],
-      sparkDecision: [8.2, 8.1, 8.1, 8.0, 8.0, 8.0, 8.0],
-      sparkStuck: [3, 3, 4, 4, 4, 4, 4],
-      funnel: [
-        { id: 'app', name: 'Application in', count: 8, conv: null, stuck: false },
-        { id: 'uw', name: 'In underwriting', count: 9, conv: 0.7, stuck: false },
-        { id: 'cond', name: 'Approved w/ conditions', count: 6, conv: 0.65, stuck: true },
-        { id: 'ctf', name: 'Clear to fund', count: 3, conv: 0.48, stuck: false },
-        { id: 'funded', name: 'Funded (7d)', count: 4, conv: 0.8, stuck: false },
-      ],
-      aging: {
-        labels: ['App in', 'Underwriting', 'Conditions', 'Clear to fund'],
-        matrix: [
-          [2, 3, 2, 1],
-          [1, 2, 3, 3],
-          [1, 1, 2, 2],
-          [1, 1, 1, 0],
-        ],
-      },
-      reasons: [
-        { name: 'Overlay without reason code', n: 5, reg: true },
-        { name: 'Missing docs / disclosures', n: 4, reg: true },
-        { name: 'Valuation hold', n: 3, reg: false },
-      ],
-      watch: [
-        { file: 'LF-10502', why: 'Pricing overlay missing rationale', pill: 'Fair lending', kind: 'reg' },
-      ],
-    },
-  };
+  const LP = window.LoanProducts;
+  if (!LP) {
+    console.warn('LoanProducts missing — load products.js first');
+    return;
+  }
+  const PRODUCTS = LP.labels();
+  const DATA = LP.DATA;
 
   const state = {
     product: 'all',
@@ -288,12 +117,19 @@
   }
 
   function productCompareRows() {
-    // Leadership product scorecard from base DATA (not window-scaled noise)
-    return [
-      { name: 'Bridge', med: DATA.bridge.medianDecision, stuck: DATA.bridge.stuck, funded: 12, apps: DATA.bridge.appsIn },
-      { name: 'Rental term', med: DATA.rental.medianDecision, stuck: DATA.rental.stuck, funded: 8, apps: DATA.rental.appsIn },
-      { name: 'Build-for-rent', med: DATA.bfr.medianDecision, stuck: DATA.bfr.stuck, funded: 4, apps: DATA.bfr.appsIn },
-    ];
+    return LP.scorecardRows();
+  }
+
+  function setProduct(id) {
+    if (!DATA[id] && id !== 'all') return;
+    state.product = id;
+    state.focus = null;
+    state.agingCell = null;
+    var sel = $('#dash-product');
+    if (sel) sel.value = id;
+    LP.renderChips($('#dash-product-chips'), id, setProduct);
+    LP.renderDna($('#dash-product-dna'), id);
+    render();
   }
 
   function setChrome(d) {
@@ -535,10 +371,19 @@
       const compare = productCompareRows()
         .map(function (p) {
           const conv = Math.round((p.funded / p.apps) * 100);
+          const active = state.product === p.id ? ' class="is-selected"' : '';
           return (
-            '<tr><td><strong>' +
-            p.name +
-            '</strong></td><td>' +
+            '<tr data-pick-product="' +
+            p.id +
+            '"' +
+            active +
+            ' title="' +
+            p.tagline +
+            '"><td><strong>' +
+            p.label +
+            '</strong><div class="rpt-row-type">' +
+            p.tagline +
+            '</div></td><td>' +
             p.med +
             'd</td><td>' +
             p.stuck +
@@ -555,11 +400,11 @@
         '<div class="dash-card__b"><div class="funnel">' +
         funnelSteps +
         '</div><p class="funnel-conv">Leadership watches where volume dies between stages — not who claims the next ticket.</p></div></div>' +
-        '<div class="dash-card"><div class="dash-card__h"><h2>Product scorecard</h2><span class="sub">Compare paths</span></div>' +
+        '<div class="dash-card"><div class="dash-card__h"><h2>Product scorecard</h2><span class="sub">Click a row to filter</span></div>' +
         '<div class="dash-card__b"><div class="drill-table-wrap"><table class="drill-table" style="min-width:0">' +
         '<thead><tr><th>Product</th><th>Med. decision</th><th>Past SLA</th><th>Conv*</th></tr></thead><tbody>' +
         compare +
-        '</tbody></table></div><p class="funnel-conv">*Illustrative funded/apps in window. Ops desk has the aging heat and names.</p></div></div>' +
+        '</tbody></table></div><p class="funnel-conv">*Illustrative funded/apps. Click a product to drill the whole dashboard.</p></div></div>' +
         '</div>' +
         '<div class="dash-main">' +
         '<div class="dash-card"><div class="dash-card__h"><h2>What good looks like</h2><span class="sub">Questions to ask</span></div>' +
@@ -804,6 +649,11 @@
         render();
       });
     });
+    document.querySelectorAll('#dash-body [data-pick-product]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        setProduct(el.getAttribute('data-pick-product'));
+      });
+    });
   }
 
   function bindControls() {
@@ -811,13 +661,14 @@
     const win = $('#dash-window');
     const refresh = $('#dash-refresh');
     if (product) {
+      LP.fillSelect(product);
+      product.value = state.product;
       product.addEventListener('change', function () {
-        state.product = product.value;
-        state.focus = null;
-        state.agingCell = null;
-        render();
+        setProduct(product.value);
       });
     }
+    LP.renderChips($('#dash-product-chips'), state.product, setProduct);
+    LP.renderDna($('#dash-product-dna'), state.product);
     if (win) {
       win.addEventListener('change', function () {
         state.window = win.value;
