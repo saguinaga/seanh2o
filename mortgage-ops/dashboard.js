@@ -719,13 +719,18 @@
         render();
       });
     }
-    document.querySelectorAll('[data-role]').forEach(function (btn) {
+    document.querySelectorAll('.dash-controls [data-role]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         state.role = btn.getAttribute('data-role');
-        document.querySelectorAll('[data-role]').forEach(function (b) {
+        document.querySelectorAll('.dash-controls [data-role]').forEach(function (b) {
           b.classList.toggle('is-on', b === btn);
         });
         render();
+      });
+    });
+    document.querySelectorAll('[data-dash-skin]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setSkin(btn.getAttribute('data-dash-skin'));
       });
     });
     if (refresh) {
