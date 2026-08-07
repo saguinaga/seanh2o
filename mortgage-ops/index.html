@@ -84,9 +84,12 @@
             </div>
             <p class="eq-lead">
               Leighanne’s framing: dashboards and analytics while the book is live, in a
-              <strong>highly regulated</strong> specialty credit shop. This component is how I would spend scarce
-              human time: AI ranks the exception pile by compliance weight, SLA, and partner impact; people claim,
-              resolve, or escalate. Not auto-decisioning credit. Not legal advice. Demo data only.
+              <strong>highly regulated</strong> specialty credit shop. I have lived that pattern already: at Auction.com,
+              <strong>offer and contract generation</strong> had to stay correct by loan type and jurisdiction across a
+              large multi-lender seller base (~100+ lenders on the platform), with disclosures and audit pressure, not
+              one-off Word docs. This component is how I would spend scarce human time next: AI ranks the exception pile
+              by compliance weight, SLA, and partner impact; people claim, resolve, or escalate. Not auto-decisioning
+              credit. Not legal advice. Demo data only.
             </p>
           </header>
 
@@ -418,10 +421,11 @@
               <span>CRM system of work: Salesforce</span>
             </p>
             <p class="cs-lead">
-              Fifteen years at Auction.com on loan-centric, <strong>highly regulated</strong> systems with Salesforce as a product surface:
-              custom components, intake, source of truth across feeds, and SOQL when report builder was not enough.
-              Not an admin-first hire. The job here is pipeline truth plus exception work people can defend under audit:
-              stages, owners, aging, compliance tags, action logs.
+              Fifteen years at Auction.com on loan-centric, <strong>highly regulated</strong> systems. Deep work on
+              <strong>automated contract and offer generation</strong> that had to stay correct by loan type and
+              jurisdiction across a large multi-lender seller base, plus Salesforce as a product surface (custom
+              components, intake, SoT, SOQL when reports failed). Not an admin-first hire. This seat needs pipeline
+              truth and exception work people can defend under audit.
             </p>
             <div class="object-chips" aria-label="Salesforce concepts this page uses">
               <span class="object-chip"><em>Loan file</em> (custom or opp-shaped)</span>
@@ -451,12 +455,43 @@
           </section>
 
           <section class="cs-section">
+            <h2>Proof I already did regulated at scale: contracts and offers</h2>
+            <p>
+              At Auction.com we were not in a casual paperwork lane. The business ran on <strong>loans</strong>
+              (sellers were lenders and servicers putting inventory through the channel). Different loan types needed
+              different contracts, and those contracts had to generate at the <strong>offer</strong> level, not as a
+              one-size PDF someone edited by hand under pressure.
+            </p>
+            <p>
+              I worked heavily on <strong>automated contract generation</strong>: property situation, loan type, and
+              <strong>jurisdiction</strong> (state, county, city) drove which disclosures and language went into the
+              package. Nationwide volume only works if the rules engine and ops workflow stay aligned. That process had
+              to hold across a large multi-lender seller base (on the order of <strong>100+ lenders / institutional
+              sellers</strong> on the platform), each with their own expectations, audits, and “don’t break our
+              compliance posture” pressure.
+            </p>
+            <p>
+              Related regulated surface: auction <strong>cry language</strong> that varied by location, generated
+              dynamically, shown on a mobile path, recorded, and retrievable when legal needed the exact words that
+              were read. Same pattern as good CRM exception design: the system must produce the right artifact, leave a
+              trail, and let humans handle the exceptions that automation should not invent.
+            </p>
+            <p>
+              That is the bridge into specialty mortgage analytics. I am not claiming I ran CoreVest product guidelines.
+              I am claiming I have already lived multi-party, multi-jurisdiction, loan-type-driven document and process
+              rules under bank and counterparty scrutiny, and I know how easy it is for “just generate the package”
+              to become a compliance incident when definitions and data are wrong.
+            </p>
+          </section>
+
+          <section class="cs-section">
             <h2>Prototype: Exception Queue (custom component)</h2>
             <p>
               Open <strong>Exceptions</strong> in the chrome (or waffle → Exception Queue). AI scores open items by
               compliance tags, SLA breach, partner tier, and size band. People claim, escalate to compliance, or resolve
               with a note that lands in a sample action log. That is the regulated version of “time to yes”: speed where
-              it is safe, escalation where control requires a human.
+              it is safe, escalation where control requires a human. Same muscle as contract/offer automation: rules and
+              data first, humans on the edge cases.
             </p>
           </section>
 
@@ -528,8 +563,8 @@
                   </tr>
                   <tr>
                     <td>Highly regulated environment</td>
-                    <td>Loan-centric deals, multi-jurisdiction contracts/disclosures, bank audit pressure with legal/security; exception queues with a trail</td>
-                    <td>Career LOS originations PM, counsel, or capital markets</td>
+                    <td>Automated offer/contract generation by loan type + jurisdiction; multi-lender seller base (~100+); cry language with legal retrieval; bank audit pressure with legal/security</td>
+                    <td>Career LOS originations PM, counsel, or capital markets; their exact product guidelines day one</td>
                   </tr>
                   <tr>
                     <td>AI as leverage on SF work</td>
