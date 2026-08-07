@@ -55,7 +55,7 @@ body {
   font-size: 0.8125rem;
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 60;
 }
 
 .sf-global-header .cloud-mark {
@@ -119,7 +119,7 @@ body {
   position: fixed;
   top: 44px;
   left: 8px;
-  z-index: 50;
+  z-index: 70;
   width: min(420px, calc(100vw - 16px));
   background: var(--surface);
   border: 1px solid var(--border);
@@ -232,9 +232,15 @@ body {
   gap: 0 8px;
   position: sticky;
   top: 40px;
-  z-index: 30;
+  z-index: 65;
   box-shadow: var(--shadow);
   min-height: 44px;
+}
+
+/* Keep chrome above the dismiss backdrop while a menu is open */
+body.chrome-menu-open .sf-global-header,
+body.chrome-menu-open .sf-context-bar {
+  z-index: 80;
 }
 
 .view-picker {
@@ -298,7 +304,7 @@ body {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  z-index: 50;
+  z-index: 90;
   min-width: 260px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -388,7 +394,7 @@ body {
 .chrome-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 35;
+  z-index: 50;
   background: transparent;
 }
 

@@ -96,6 +96,7 @@
     if (el.waffle) el.waffle.setAttribute('aria-expanded', 'false');
     if (el.viewBtn) el.viewBtn.setAttribute('aria-expanded', 'false');
     if (el.backdrop) el.backdrop.hidden = true;
+    document.body.classList.remove('chrome-menu-open');
   }
 
   function openLauncher() {
@@ -117,6 +118,7 @@
     el.viewMenu.hidden = false;
     el.viewBtn.setAttribute('aria-expanded', 'true');
     el.backdrop.hidden = false;
+    document.body.classList.add('chrome-menu-open');
     renderViewMenu();
   }
 
@@ -162,9 +164,16 @@
       btn.setAttribute('role', 'option');
       btn.setAttribute('aria-selected', view.id === state.viewId ? 'true' : 'false');
       btn.textContent = view.label;
-      btn.addEventListener('click', () => {
+      // pointerdown so we win before backdrop click closes the menu
+      btn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         setView(view.id);
         closeMenus();
+      });
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
       });
       menu.appendChild(btn);
     });
