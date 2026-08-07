@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="How Sean Aguinaga would approach Salesforce analytics and business optimization for specialty mortgage ops: time to yes, definitions, internal and external flows.">
+  <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
+  <title>Sean Aguinaga — Specialty Mortgage Ops Analytics (PM case study)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="roadmap.css?v=1">
+  <link rel="stylesheet" href="flows.css?v=1">
+  <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+  <script src="../plausible-events.js?v=1"></script>
+</head>
+<body>
+  <a href="../index.html#work" class="back-link" data-plausible-event="Nav - Back to Portfolio">← Back to portfolio</a>
+  <article class="case-study">
+    <header class="cs-hero">
+      <p class="case-label">Product case study · Sean Aguinaga</p>
+      <div class="case-meta" aria-live="polite">
+        <span class="case-meta-badge">SF analytics · BA+ seat</span>
+        <span class="case-meta-updated">Time to yes · definitions · flows</span>
+      </div>
+      <h1>How I would approach specialty mortgage ops analytics</h1>
+      <p class="platform-scope">
+        Business optimization seat next to the lending business: translate executive needs into Salesforce-backed
+        analytics and a backlog people can ship while the book is live. Public framing uses
+        <strong>Redwood Trust</strong> platforms (including <strong>CoreVest</strong> business-purpose lending and
+        <strong>Aspire</strong> non-QM) as the market context. This is an approach, not a claim that I work there.
+      </p>
+      <div class="expansion-path" aria-label="Focus sequence">
+        <span class="path-step path-active">Definitions</span>
+        <span class="path-arrow" aria-hidden="true">→</span>
+        <span class="path-step path-active">Pipeline truth</span>
+        <span class="path-arrow" aria-hidden="true">→</span>
+        <span class="path-step path-active">Time to yes</span>
+        <span class="path-arrow" aria-hidden="true">→</span>
+        <span class="path-step">Scale views</span>
+      </div>
+      <p class="context-strip" aria-label="Market context">
+        <span>NYSE: RWT</span>
+        <span>Specialty housing credit</span>
+        <span>BPL · non-QM · jumbo / distribution</span>
+      </p>
+      <p class="cs-lead">
+        Fifteen years at Auction.com on loan-centric, highly regulated transaction systems. Salesforce as a product surface,
+        not as an admin craft. This page is how I would bring value in an Accelerator-style role: find blind spots,
+        lock metric definitions, and make internal dashboards serve the moments that decide whether a broker or investor
+        chooses your firm next time.
+      </p>
+    </header>
+
+    <section class="cs-section">
+      <h2>Why this seat matters</h2>
+      <p>
+        Specialty mortgage platforms do not win only on rate. In business-purpose and non-QM markets especially, people
+        choose (and re-choose) a firm when three things hold: <strong>product fit</strong> for the deal,
+        <strong>speed with certainty</strong> to a real yes, and a <strong>low-friction path</strong> for the broker,
+        correspondent, or investor who has to live in your process.
+      </p>
+      <p>
+        Rate and guidelines get you into the conversation. What loses deals after that is usually operational:
+        opaque status, slow condition clearing, inconsistent decisions, weak feedback when a file stalls, and internal
+        teams arguing about which report is true. Analytics that only count locked volume miss that story.
+      </p>
+      <p>
+        The product job in a business-optimization / BA+ seat is not to pretend you are Capital Markets. It is to
+        sit with the business, name the decision moments, and make Salesforce data trustworthy enough that leadership
+        can see friction early and engineering can fix the right bottlenecks.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>What I know about “why us vs them”</h2>
+      <p class="section-intro">
+        Not proprietary to any one lender. Pattern language from marketplace and transaction work, plus how specialty
+        housing credit publicly positions itself (liquidity, underserved segments, operational scale).
+      </p>
+      <div class="wedge-grid">
+        <div class="wedge-card">
+          <h3>Speed that is real</h3>
+          <p>Time to clear conditions, time to credit decision, time to fund. Fake speed (marketing SLAs with no data) erodes trust faster than a slow honest timeline.</p>
+        </div>
+        <div class="wedge-card">
+          <h3>Certainty of close</h3>
+          <p>Investors and brokers care whether “yes” sticks. Last-minute re-trades and surprise overlays push volume to the competitor who is boringly consistent.</p>
+        </div>
+        <div class="wedge-card">
+          <h3>Product fit</h3>
+          <p>Bridge, rental / DSCR, build-for-rent, non-QM income stories: the firm that understands the deal structure without forcing it into a consumer QM box wins the relationship.</p>
+        </div>
+        <div class="wedge-card">
+          <h3>Seller / broker experience</h3>
+          <p>Submission friction, status visibility, who to call, how exceptions get answered. Correspondents and brokers multi-home. Experience is a retention product.</p>
+        </div>
+        <div class="wedge-card">
+          <h3>Definitional trust</h3>
+          <p>If ops, sales, and finance disagree on “in pipeline,” “stuck,” or “time to yes,” dashboards become politics. Shared definitions are the product foundation.</p>
+        </div>
+        <div class="wedge-card">
+          <h3>Regulated calm</h3>
+          <p>Auditability, consistent disclosures, clean handoffs. In regulated credit, sloppy process is both a risk and a reputation cost with sophisticated counterparties.</p>
+        </div>
+      </div>
+      <p>
+        My hypothesis for an Accelerator seat: the competitive surface is external (broker, investor, borrower-adjacent
+        parties), but the leverage is internal. Salesforce analytics should answer
+        <em>where time and certainty break</em>, not only <em>how much we locked last week</em>.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Why I am a fit (honest map)</h2>
+      <div class="fit-table-wrap">
+        <table class="fit-table">
+          <thead>
+            <tr>
+              <th>What the seat needs</th>
+              <th>What I bring</th>
+              <th>What I will not overclaim</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Quarterback business needs into tech</td>
+              <td>15 years discovery, stories, AC, process maps, UAT with multi-party ops</td>
+              <td>Day-one expert on every CoreVest or Aspire product guideline</td>
+            </tr>
+            <tr>
+              <td>Salesforce product sense</td>
+              <td>Custom SF surfaces, intake, source-of-truth across feeds, SOQL when reports lie, integration debug</td>
+              <td>Full-time SF admin / flow factory / dashboard artist as primary craft</td>
+            </tr>
+            <tr>
+              <td>Build while the book is live</td>
+              <td>Core platform lift-and-shift while Auction.com kept running (engine swap metaphor)</td>
+              <td>That every modernization was glamorous or solo</td>
+            </tr>
+            <tr>
+              <td>Highly regulated environment</td>
+              <td>Loan-centric deals, jurisdiction-specific contracts and cry language, bank audit pressure with legal/security</td>
+              <td>Career LOS originations PM or capital markets trader</td>
+            </tr>
+            <tr>
+              <td>Analytics that change behavior</td>
+              <td>Funnel and stuck-point thinking; dig past canned reports; metric definitions before vanity charts</td>
+              <td>That I lived in SF report builder all day</td>
+            </tr>
+            <tr>
+              <td>AI as leverage</td>
+              <td>Stories, PRDs, SOQL assist with human review; prototype-first when it clarifies requirements</td>
+              <td>Unreviewed AI slop into production backlog</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>How I would bring value in the first stretch</h2>
+      <p class="section-intro">Sequencing by proof, not a calendar. Each phase earns the next when definitions hold and someone actually uses the view.</p>
+      <div class="roadmap-phases">
+        <div class="phase-card phase-1">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 0–1 — Foundation</span>
+            <h3>Decision moments and metric dictionary</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> One product line (or one funnel slice), agreed stage language, and a baseline that matches how the business talks.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>What I would do</h4>
+              <ul>
+                <li>Map who needs what decision weekly (exec, sales lead, ops, credit)</li>
+                <li>Write the dictionary: application in, credit decision, cleared to close, funded, dead, recycled</li>
+                <li>Pick one slice (example: business-purpose bridge path) and baseline aging + conversion from real SF data</li>
+                <li>List top 5 “stuck” reasons in human language, not only picklist codes</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Two leaders use the same stage definitions in a meeting without a side debate</li>
+                <li>Baseline time-in-stage and conversion published for the pilot slice</li>
+                <li>Backlog of 3–5 instrumentation or process gaps ranked by impact on time to yes</li>
+              </ul>
+            </div>
+            <div>
+              <h4>What I would report</h4>
+              <ul>
+                <li>Median / p90 time to decision and time to fund (pilot slice)</li>
+                <li>Volume of files past SLA by stage</li>
+                <li>% of files with missing critical fields that block stage advance</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card phase-2">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 2 — Operating views</span>
+            <h3>Dashboards people open on Monday</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Exception-first views for the pilot, not a wall of charts.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>What I would do</h4>
+              <ul>
+                <li>Aging and exception queues tied to owners, not anonymous pipeline charts</li>
+                <li>Funnel with drop-off reasons; partner with ops on root causes</li>
+                <li>Source-of-truth rules when SF and adjacent systems disagree</li>
+                <li>Light user interviews: where people still keep a spreadsheet</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Ops or sales lead stops maintaining a parallel tracker for the pilot slice</li>
+                <li>Weekly review runs off the SF-backed view</li>
+                <li>At least one process or field change shipped from the data</li>
+              </ul>
+            </div>
+            <div>
+              <h4>What I would report</h4>
+              <ul>
+                <li>Exception volume trend and time-to-clear</li>
+                <li>Conversion by stage vs baseline</li>
+                <li>Definition drift incidents (zero is the goal)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="phase-card phase-3">
+          <div class="phase-header">
+            <span class="phase-tag">Phase 3 — Expand</span>
+            <h3>Second product line and cleaner handoffs</h3>
+          </div>
+          <p class="phase-goal"><strong>Goal:</strong> Reuse the dictionary pattern; only then widen dashboards.</p>
+          <div class="phase-grid">
+            <div>
+              <h4>What I would do</h4>
+              <ul>
+                <li>Clone the method for a second path (example: term rental / DSCR or non-QM correspondent intake)</li>
+                <li>Handoff and status visibility requirements that serve external partners</li>
+                <li>Integration edge cases when numbers break trust (request/response, failed writes)</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Exit criteria</h4>
+              <ul>
+                <li>Shared components for stages and exception types where products truly share meaning</li>
+                <li>No silent redefinition of “time to yes” across lines</li>
+              </ul>
+            </div>
+            <div>
+              <h4>What I would report</h4>
+              <ul>
+                <li>Cross-product comparison only where definitions match</li>
+                <li>Partner-facing status accuracy (where measurable)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-section" id="flows">
+      <h2>Flow prototypes (illustrative)</h2>
+      <p class="section-intro">
+        Not CoreVest or Aspire process docs. Two simplified lenses: how an external party experiences “path to yes,”
+        and how an internal Accelerator seat would instrument that path in Salesforce-shaped stages.
+        Click a step to see friction and what analytics should surface.
+      </p>
+
+      <div class="flow-tabs" role="tablist" aria-label="Flow prototype">
+        <button type="button" class="flow-tab is-active" role="tab" aria-selected="true" data-panel="external" id="tab-external">External path to yes</button>
+        <button type="button" class="flow-tab" role="tab" aria-selected="false" data-panel="internal" id="tab-internal">Internal SF lens</button>
+      </div>
+
+      <div class="flow-panel is-active" id="panel-external" role="tabpanel" aria-labelledby="tab-external">
+        <p class="flow-caption">Broker / investor-facing path (business-purpose style). Competitive moments in amber.</p>
+        <div class="flow-rail" id="flow-external" data-flow="external"></div>
+        <div class="flow-detail" id="detail-external" aria-live="polite"></div>
+      </div>
+
+      <div class="flow-panel" id="panel-internal" role="tabpanel" aria-labelledby="tab-internal" hidden>
+        <p class="flow-caption">Internal instrumentation. Same journey, BA+ questions and dashboard objects.</p>
+        <div class="flow-rail" id="flow-internal" data-flow="internal"></div>
+        <div class="flow-detail" id="detail-internal" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Sample questions I would ask in the first weeks</h2>
+      <ul class="plain-list">
+        <li>Which decision is late most often: credit, conditions, or funding ops?</li>
+        <li>What does “time to yes” mean here in writing, and who owns the definition?</li>
+        <li>Where do people still leave Salesforce to track work?</li>
+        <li>Which partner complaints repeat, and can we see them in stage data?</li>
+        <li>When two systems disagree on a loan file, which one is allowed to win?</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>What I would not do on day one</h2>
+      <ul class="plain-list">
+        <li>Build an enterprise dashboard wall before stage definitions hold for one slice</li>
+        <li>Claim full mortgage lifecycle mastery I do not have; learn their products on purpose</li>
+        <li>Confuse admin config volume with product outcomes</li>
+        <li>Optimize vanity lock volume if certainty and cycle time are the real competitive story</li>
+      </ul>
+    </section>
+
+    <section class="cs-section cs-section--value">
+      <h2>Bottom line</h2>
+      <p>
+        I am not selling myself as a career capital-markets PM. I am a systems and product person who has lived in
+        loan-centric, regulated, multi-party operations with Salesforce in the middle. The value I would bring is
+        turning “we need better dashboards” into shared language, trustworthy pipeline truth, and a backlog that
+        shortens real time to yes for the people who choose a specialty lender over another.
+      </p>
+      <p class="cs-you">
+        Portfolio: <a href="https://seanaguinaga.com">seanaguinaga.com</a> ·
+        This write-up: <a href="https://seanaguinaga.com/mortgage-ops/">seanaguinaga.com/mortgage-ops/</a>
+      </p>
+    </section>
+  </article>
+
+  <script src="flows.js?v=1"></script>
+</body>
+</html>
