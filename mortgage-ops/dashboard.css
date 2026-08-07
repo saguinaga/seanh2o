@@ -535,6 +535,55 @@
   color: var(--muted);
 }
 
+/* Skin toggle (custom prototype vs Lightning layout) */
+.dash-skin-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin: 0 0 4px;
+  background: #16325c;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dash-skin-bar__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  margin-right: 4px;
+}
+
+.dash-skin-bar button {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.dash-skin-bar button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dash-skin-bar button.is-on {
+  background: #0176d3;
+  border-color: #0176d3;
+}
+
+.dash-skin-bar__hint {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  margin-left: auto;
+}
+
 .dash-exec-list {
   margin: 0 0 0 1.1rem;
   color: var(--muted);

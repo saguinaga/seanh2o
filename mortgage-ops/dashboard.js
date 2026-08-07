@@ -16,6 +16,7 @@
     window: '7d',
     // First paint for hiring manager: outcomes, then they can flip to Ops
     role: 'exec', // ops | exec
+    skin: 'custom', // custom | native — both versions kept; user toggles
     focus: null, // kpi id or stage
     agingCell: null,
   };
@@ -127,9 +128,38 @@
     state.agingCell = null;
     var sel = $('#dash-product');
     if (sel) sel.value = id;
-    LP.renderChips($('#dash-product-chips'), id, setProduct);
-    LP.renderDna($('#dash-product-dna'), id);
+    if (state.skin === 'custom') {
+      LP.renderChips($('#dash-product-chips'), id, setProduct);
+      LP.renderDna($('#dash-product-dna'), id);
+    }
     render();
+  }
+
+  function setSkin(skin) {
+    if (skin !== 'custom' && skin !== 'native') return;
+    // Pull filters from the other skin if available
+    if (skin === 'native' && window.mortgageDashNative && window.mortgageDashNative.getState) {
+      // keep current custom state when switching to native
+    }
+    if (skin === 'custom' && window.mortgageDashNative && window.mortgageDashNative.getState) {
+      var n = window.mortgageDashNative.getState();
+      if (n.product) state.product = n.product;
+      if (n.window) state.window = n.window;
+      if (n.role) state.role = n.role;
+    }
+    state.skin = skin;
+    render();
+  }
+
+  function applySkinVisibility() {
+    var customRoot = $('#dash-custom-root');
+    var nativeRoot = $('#dash-native-root');
+    var isNative = state.skin === 'native';
+    if (customRoot) customRoot.hidden = isNative;
+    if (nativeRoot) nativeRoot.hidden = !isNative;
+    document.querySelectorAll('[data-dash-skin]').forEach(function (btn) {
+      btn.classList.toggle('is-on', btn.getAttribute('data-dash-skin') === state.skin);
+    });
   }
 
   function setChrome(d) {
@@ -285,6 +315,20 @@
   function render() {
     const root = $('#dash-root');
     if (!root) return;
+    applySkinVisibility();
+
+    if (state.skin === 'native') {
+      if (window.mortgageDashNative) {
+        window.mortgageDashNative.syncFromCustom({
+          product: state.product,
+          window: state.window,
+          role: state.role,
+        });
+        window.mortgageDashNative.render();
+      }
+      return;
+    }
+
     const d = data();
     const maxFunnel = Math.max.apply(
       null,
@@ -713,5 +757,17 @@
     init();
   }
 
-  window.mortgageDash = { render: render, init: init };
+  window.mortgageDash = {
+    render: render,
+    init: init,
+    setSkin: setSkin,
+    getState: function () {
+      return {
+        product: state.product,
+        window: state.window,
+        role: state.role,
+        skin: state.skin,
+      };
+    },
+  };
 })();
