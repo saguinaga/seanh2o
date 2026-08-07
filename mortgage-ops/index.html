@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="roadmap.css?v=5">
   <link rel="stylesheet" href="flows.css?v=5">
   <link rel="stylesheet" href="exception-queue.css?v=1">
+  <link rel="stylesheet" href="dashboard.css?v=1">
   <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
   <script>
     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -161,110 +162,45 @@
         </div>
       </div>
 
-      <!-- PANEL: Dashboard -->
+      <!-- PANEL: Dashboard (interactive) -->
       <div id="panel-dashboard" data-shell-panel class="shell-panel" hidden>
-        <div class="case-study case-study--tight">
-          <p class="case-label">Illustrative dashboard · sample metrics only</p>
-          <h1 class="shell-panel-title">Ops: Time to Yes (pilot slice)</h1>
-          <p class="shell-panel-lead">
-            What I would put in front of leadership after stage definitions hold: exception-first, not vanity volume.
-            Switch apps with the waffle. Switch views with the dropdown.
+        <div class="dash" id="dash-root">
+          <p class="case-label">Interactive dashboard · demo data · not a live org</p>
+          <div class="dash-top">
+            <h1>Time to Yes · command center</h1>
+            <span class="dash-asof" id="dash-asof">As of demo clock</span>
+          </div>
+          <p class="shell-panel-lead" style="margin-bottom:10px">
+            Exception-first analytics for a regulated specialty lender. Filter product and window, click KPIs / funnel / aging,
+            then jump to the Exception Queue where humans spend time. Same instinct as multi-lender contract automation:
+            correctness and trail, not vanity volume.
           </p>
 
-          <section class="sf-dashboard" aria-label="Illustrative Salesforce dashboard mock">
-            <div class="sf-dashboard__chrome">
-              <span class="dash-title">Ops: Time to Yes (pilot slice)</span>
-              <span class="dash-badge">Mock dashboard</span>
-              <span class="dash-note">Not client data</span>
+          <div class="dash-controls">
+            <div class="seg" role="group" aria-label="Role lens">
+              <button type="button" data-role="ops" class="is-on">Ops desk</button>
+              <button type="button" data-role="exec">Exec lens</button>
             </div>
-            <div class="sf-dashboard__grid">
-              <div class="sf-metric">
-                <div class="label">Apps in (7d)</div>
-                <div class="value">142</div>
-                <div class="hint">Report: Applications Created</div>
-              </div>
-              <div class="sf-metric is-warn">
-                <div class="label">Median time to decision</div>
-                <div class="value">6.2d</div>
-                <div class="hint">Stage enter → Credit decision</div>
-              </div>
-              <div class="sf-metric is-ok">
-                <div class="label">Clear-to-fund p90</div>
-                <div class="value">11d</div>
-                <div class="hint">Approved → Funded</div>
-              </div>
-              <div class="sf-metric is-warn">
-                <div class="label">Stuck &gt; SLA</div>
-                <div class="value">27</div>
-                <div class="hint">List view: Exception queue</div>
-              </div>
-            </div>
-            <div class="sf-dashboard__lower">
-              <div class="sf-panel">
-                <div class="sf-panel__title">Report · Pipeline by stage</div>
-                <table class="sf-table">
-                  <thead>
-                    <tr>
-                      <th>Stage</th>
-                      <th>Count</th>
-                      <th>Owner focus</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><span class="stage">Application in</span></td>
-                      <td>38</td>
-                      <td>File complete %</td>
-                    </tr>
-                    <tr>
-                      <td><span class="stage">In underwriting</span></td>
-                      <td>41</td>
-                      <td>Decision aging</td>
-                    </tr>
-                    <tr>
-                      <td><span class="stage stage-stuck">Approved w/ conditions</span></td>
-                      <td>33</td>
-                      <td>Condition clear</td>
-                    </tr>
-                    <tr>
-                      <td><span class="stage">Clear to fund</span></td>
-                      <td>18</td>
-                      <td>Funding handoff</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="sf-panel">
-                <div class="sf-panel__title">Component · Top stuck reasons</div>
-                <div class="sf-bars">
-                  <div class="sf-bar-row">
-                    <span class="name">Missing docs</span>
-                    <div class="sf-bar-track"><div class="sf-bar-fill warn" style="width:78%"></div></div>
-                    <span class="num">78</span>
-                  </div>
-                  <div class="sf-bar-row">
-                    <span class="name">Valuation</span>
-                    <div class="sf-bar-track"><div class="sf-bar-fill" style="width:52%"></div></div>
-                    <span class="num">52</span>
-                  </div>
-                  <div class="sf-bar-row">
-                    <span class="name">Entity / KYC</span>
-                    <div class="sf-bar-track"><div class="sf-bar-fill" style="width:41%"></div></div>
-                    <span class="num">41</span>
-                  </div>
-                  <div class="sf-bar-row">
-                    <span class="name">Credit open item</span>
-                    <div class="sf-bar-track"><div class="sf-bar-fill" style="width:29%"></div></div>
-                    <span class="num">29</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p class="sf-dashboard__footer">
-              Dictionary first, then reports that feed dashboard components and list-view queues with owners.
-              SOQL / Inspector when the report type is lying.
-            </p>
-          </section>
+            <label>
+              Product
+              <select id="dash-product" aria-label="Product filter">
+                <option value="all">All products</option>
+                <option value="bridge">Bridge</option>
+                <option value="rental">Rental term</option>
+                <option value="bfr">Build-for-rent</option>
+              </select>
+            </label>
+            <label>
+              Window
+              <select id="dash-window" aria-label="Time window">
+                <option value="7d">Last 7 days</option>
+                <option value="30d">Last 30 days</option>
+              </select>
+            </label>
+            <button type="button" id="dash-refresh">Refresh</button>
+          </div>
+
+          <div id="dash-body"></div>
         </div>
       </div>
 
@@ -755,6 +691,7 @@
 
   <script src="shell.js?v=2"></script>
   <script src="exception-queue.js?v=1"></script>
+  <script src="dashboard.js?v=1"></script>
   <script src="flows.js?v=3"></script>
 </body>
 </html>
