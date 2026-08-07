@@ -535,6 +535,29 @@
   color: var(--muted);
 }
 
+.dash-exec-list {
+  margin: 0 0 0 1.1rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.dash-exec-list li {
+  margin-bottom: 8px;
+}
+
+.dash-trend-panel .spark-lg,
+.spark.spark-lg {
+  width: 100%;
+  height: 72px;
+  display: block;
+}
+
+.dash-alert:not(.dash-alert--reg):not(.dash-alert--sla):not(.dash-alert--ok) {
+  border-left: 4px solid var(--sf-blue);
+  background: var(--sf-blue-light);
+}
+
 @media (max-width: 900px) {
   .dash-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .dash-main { grid-template-columns: 1fr; }

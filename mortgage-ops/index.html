@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="roadmap.css?v=8">
   <link rel="stylesheet" href="flows.css?v=6">
   <link rel="stylesheet" href="exception-queue.css?v=2">
-  <link rel="stylesheet" href="dashboard.css?v=2">
+  <link rel="stylesheet" href="dashboard.css?v=3">
   <link rel="stylesheet" href="drill.css?v=3">
   <link rel="stylesheet" href="mobile.css?v=2">
   <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
@@ -166,19 +166,17 @@
         <div class="dash" id="dash-root">
           <p class="case-label">Interactive dashboard · demo data · not a live org</p>
           <div class="dash-top">
-            <h1>Time to Yes · command center</h1>
+            <h1 id="dash-title">Ops desk · work the queue</h1>
             <span class="dash-asof" id="dash-asof">As of demo clock</span>
           </div>
-          <p class="shell-panel-lead" style="margin-bottom:10px">
-            Exception-first analytics on <strong>loan applications</strong>: volume, time to decision, stuck apps, funnel
-            by stage. Filter product and window, click to focus, then jump to the queue where people clear blockers.
-            Not volume for its own sake.
+          <p class="shell-panel-lead" id="dash-lead" style="margin-bottom:10px">
+            Working surface for people who clear applications today: stuck SLA, aging heat, act-now list, jump to the exception queue.
           </p>
 
           <div class="dash-controls">
-            <div class="seg" role="group" aria-label="Role lens">
+            <div class="seg" role="group" aria-label="Dashboard mode">
               <button type="button" data-role="ops" class="is-on">Ops desk</button>
-              <button type="button" data-role="exec">Exec lens</button>
+              <button type="button" data-role="exec">Leadership</button>
             </div>
             <label>
               Product
@@ -594,7 +592,7 @@
 
   <script src="shell.js?v=5"></script>
   <script src="exception-queue.js?v=3"></script>
-  <script src="dashboard.js?v=2"></script>
+  <script src="dashboard.js?v=3"></script>
   <script src="pipeline.js?v=2"></script>
   <script src="reports.js?v=3"></script>
   <script src="flows.js?v=5"></script>
