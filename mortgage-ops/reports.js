@@ -778,7 +778,7 @@
       chart: function () {
         return Charts.donut(['Conditions', 'Exec pack', 'Partner status', 'Capacity'], [14, 9, 11, 6]);
       },
-      insight: 'If Excel wins, definitions or ownership are wrong. Kill the shadow with list views + this queue, not more vanity charts.',
+      insight: 'If Excel wins, the Salesforce view is probably missing ownership or freshness. Fix the working surface, not another unused chart.',
       links: [
         { label: 'Exception Queue', nav: 'exceptions:queue' },
         { label: 'Write-up', nav: 'accelerator:writeup' },

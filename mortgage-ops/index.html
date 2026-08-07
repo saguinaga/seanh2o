@@ -171,7 +171,7 @@
           <p class="shell-panel-lead" style="margin-bottom:10px">
             Exception-first analytics on <strong>loan applications</strong>: volume, time to decision, stuck apps, funnel
             by stage. Filter product and window, click to focus, then jump to the queue where people clear blockers.
-            Not vanity volume.
+            Not volume for its own sake.
           </p>
 
           <div class="dash-controls">
@@ -261,9 +261,10 @@
             </p>
             <p class="cs-lead">
               Fifteen years at Auction.com on loan-centric, multi-party transaction systems with Salesforce as a product
-              surface (custom components, intake, source of truth, SOQL when reports failed). Not an admin-first hire.
-              The approach below is application funnel truth and clearing stuck apps so brokers and borrowers get a real
-              yes faster. Policy and eligibility rules are a company-side engine, not the customer experience.
+              surface (custom components, intake, source of truth, and SOQL when I needed to dig past the standard report).
+              Not an admin-first hire. The approach below is application funnel truth and clearing stuck apps so brokers
+              and borrowers get a real yes faster. Policy and eligibility rules are a company-side engine, not the
+              customer experience.
             </p>
             <div class="object-chips" aria-label="Salesforce concepts this page uses">
               <span class="object-chip"><em>Application</em></span>
@@ -271,7 +272,7 @@
               <span class="object-chip"><em>Exception</em> queue</span>
               <span class="object-chip"><em>Report</em> / dashboard</span>
               <span class="object-chip"><em>Rules</em> / validation</span>
-              <span class="object-chip"><em>SOQL</em> when needed</span>
+              <span class="object-chip"><em>SOQL</em> to dig deeper</span>
             </div>
             <div class="writeup-nav" aria-label="Jump to interactive demos">
               <button type="button" data-wu-nav="exceptions:queue">Exception Queue</button>
@@ -292,9 +293,11 @@
             </p>
             <p>
               The product job is quarterback: discovery with the business, clear stage language on the application,
-              reports people trust, exception queues people open on Monday. When canned reports lie, dig (SOQL, field
-              history, integrations), fix definitions, ship the next increment. AI helps prioritize stuck applications
-              and draft requirements; humans still clear the app.
+              reports and dashboards people will open on Monday, exception queues that move stuck apps. Standard Salesforce
+              reports are fine for a lot of work. When I need the grain under a summary (stale filters, a definition that
+              drifted, an integration edge case), I dig with SOQL, field history, and logs, then tighten the definition or
+              rebuild the view if the business needs something different. AI helps prioritize stuck applications and draft
+              requirements; humans still clear the app.
             </p>
           </section>
 
@@ -383,12 +386,12 @@
                   </tr>
                   <tr>
                     <td>Salesforce product sense</td>
-                    <td>Custom surfaces, intake, SoT across feeds, list-view thinking, SOQL via Inspector when reports fail</td>
+                    <td>Custom surfaces, intake, SoT across feeds, list-view thinking, SOQL via Inspector when I need to dig under a summary</td>
                     <td>Full-time admin: flows, sharing rules, managed package wizard as primary craft</td>
                   </tr>
                   <tr>
                     <td>Reports &amp; dashboards with intent</td>
-                    <td>Funnel / stuck-point metrics; dig past vanity volume; define components after definitions hold</td>
+                    <td>Funnel / stuck-point metrics; dig for the row-level story when a summary is not enough</td>
                     <td>That I lived in Lightning report builder all day</td>
                   </tr>
                   <tr>
@@ -425,9 +428,9 @@
                   <div>
                     <h4>What I would do</h4>
                     <ul>
-                      <li>Map decision moments to the live loan-file object and key fields</li>
+                      <li>Map decision moments to the application object and key fields</li>
                       <li>Write the dictionary: app in, decisioned, cleared, funded, dead, recycled</li>
-                      <li>Baseline conversion and time-in-stage from real SF data (report or SOQL)</li>
+                      <li>Baseline conversion and time-in-stage from Salesforce data (reports first; SOQL if I need to dig)</li>
                       <li>Name top stuck reasons in human language, not only picklist codes</li>
                     </ul>
                   </div>
@@ -460,7 +463,7 @@
                     <h4>What I would do</h4>
                     <ul>
                       <li>Dashboard components: aging, funnel, stuck reasons, owner load</li>
-                      <li>List views as working queues (owner + SLA), not vanity charts only</li>
+                      <li>List views as working queues (owner + SLA), not charts nobody opens</li>
                       <li>SoT rules when SF and LOS / warehouse disagree</li>
                       <li>Find where people still export to Excel and why</li>
                     </ul>

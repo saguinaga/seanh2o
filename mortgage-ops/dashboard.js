@@ -350,7 +350,7 @@
       apps: 'Applications in is a volume signal only. Pair with conversion and stuck rate so growth does not hide control debt.',
       decision: 'Median time to decision is the “yes” clock. If it rises while apps rise, capacity or definition drift is likely.',
       fund: 'Clear-to-fund p90 is certainty of close. Spikes often mean funding handoff or integration write-back failures.',
-      stuck: 'Stuck past SLA is the queue that should never be a vanity chart. Open Exception Queue and work by AI priority.',
+      stuck: 'Stuck past SLA is a working queue, not a slide metric. Open Exception Queue and work by AI priority.',
       policy: 'Docs and policy holds are company-side application blockers. Clear them so time-to-yes stays honest.',
       app: 'Application-in stage: watch incomplete package rate and file-complete time.',
       uw: 'Underwriting WIP: owner load and idle time matter more than last-modified.',
@@ -547,7 +547,7 @@
       '</div></div></div>' +
       '</div>' +
       '<div class="dash-detail-pane" id="dash-detail" hidden></div>' +
-      '<p class="dash-footer">Interactive demo only. Not client data. Exception-first analytics on loan applications: stage definitions and stuck apps before vanity volume.</p>';
+      '<p class="dash-footer">Interactive demo only. Not client data. Exception-first analytics on loan applications: stage definitions and stuck apps, not volume for its own sake.</p>';
 
     setInsight(d);
     renderDetail(d);
