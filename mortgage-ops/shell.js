@@ -44,10 +44,10 @@
     reports: {
       id: 'reports',
       name: 'Reports',
-      blurb: 'Folders and report types',
+      blurb: 'Charts · ops · control · insight',
       icon: 'R',
       views: [
-        { id: 'recent', label: 'Recent reports', panel: 'panel-reports' },
+        { id: 'recent', label: 'All reports', panel: 'panel-reports' },
         { id: 'ops-folder', label: 'Folder: Ops metrics', panel: 'panel-reports' },
       ],
     },

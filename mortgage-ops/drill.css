@@ -367,6 +367,67 @@
   box-shadow: inset 0 0 0 2px rgba(1, 118, 211, 0.35);
 }
 
+/* Report chart previews (Lightning-ish) */
+.rpt-hero-note {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, #eef4ff, #f8f0ff);
+  border: 1px solid #c2d5f2;
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+
+.rpt-hero-note strong {
+  color: var(--sf-navy);
+}
+
+.rpt-row-type {
+  font-size: 0.7rem;
+  color: var(--muted-soft);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.rpt-chart-pill {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--sf-blue-light);
+  color: var(--sf-blue-dark);
+  border: 1px solid #b8d0f5;
+}
+
+.rpt-chart-frame {
+  margin: 10px 0 14px;
+  padding: 10px 12px 8px;
+  background: #fafaf9;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.rpt-chart-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-soft);
+  margin-bottom: 6px;
+}
+
+.rpt-chart-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  min-height: 120px;
+}
+
 @media (max-width: 860px) {
   .drill-layout { grid-template-columns: 1fr; }
   .drill-stat-row { grid-template-columns: repeat(2, 1fr); }
