@@ -186,6 +186,17 @@
     showPanel();
   }
 
+  function navigate(appId, viewId) {
+    if (!APPS[appId]) return;
+    state.appId = appId;
+    const app = APPS[appId];
+    const ok = app.views.some((v) => v.id === viewId);
+    state.viewId = ok ? viewId : app.views[0].id;
+    closeMenus();
+    syncChrome();
+    showPanel();
+  }
+
   function syncChrome() {
     const app = currentApp();
     const view = currentView();
@@ -221,38 +232,18 @@
       panel.classList.toggle('is-active-panel', on);
     });
 
-    // Pipeline list filter
-    if (view.panel === 'panel-pipeline') {
-      const filter = currentApp().queueFilter && currentApp().queueFilter[view.id];
-      $all('#pipeline-table tbody tr').forEach((row) => {
-        if (!filter) {
-          row.hidden = false;
-          return;
-        }
-        const tags = (row.getAttribute('data-queue') || '').split(/\s+/);
-        row.hidden = tags.indexOf(filter) === -1;
-      });
-      const caption = $('#pipeline-view-caption');
-      if (caption) caption.textContent = view.label + ' · sample rows only';
+    // Refresh interactive panels when shown
+    if (view.panel === 'panel-pipeline' && window.mortgagePipeline) {
+      window.mortgagePipeline.render();
     }
-
-    // Reports folder emphasis
-    if (view.panel === 'panel-reports') {
-      $all('[data-report-folder]').forEach((row) => {
-        if (view.id === 'ops-folder') {
-          row.hidden = row.getAttribute('data-report-folder') !== 'ops';
-        } else {
-          row.hidden = false;
-        }
-      });
+    if (view.panel === 'panel-reports' && window.mortgageReports) {
+      window.mortgageReports.render();
     }
-
-    // Scroll write-up/path into view when switching from other apps
-    if (view.panel === 'panel-writeup' || view.panel === 'panel-path' || view.panel === 'panel-dashboard') {
-      const target = document.getElementById(view.panel);
-      if (target && state.appId === 'accelerator') {
-        // keep scroll mild
-      }
+    if (view.panel === 'panel-dashboard' && window.mortgageDash) {
+      window.mortgageDash.render();
+    }
+    if (view.panel === 'panel-path' && window.mortgagePath) {
+      window.mortgagePath.refresh();
     }
   }
 
@@ -315,4 +306,11 @@
   } else {
     init();
   }
+
+  window.mortgageShell = {
+    navigate: navigate,
+    getState: function () {
+      return { appId: state.appId, viewId: state.viewId };
+    },
+  };
 })();

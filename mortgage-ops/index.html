@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="flows.css?v=5">
   <link rel="stylesheet" href="exception-queue.css?v=1">
   <link rel="stylesheet" href="dashboard.css?v=1">
+  <link rel="stylesheet" href="drill.css?v=1">
   <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
   <script>
     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -207,121 +208,26 @@
       <!-- PANEL: Loan pipeline list views -->
       <div id="panel-pipeline" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
-          <p class="case-label">Loan Pipeline app · list views (not Leads / Opps cosplay)</p>
+          <p class="case-label">Loan Pipeline · interactive list + drill-down</p>
           <h1 class="shell-panel-title">Loan files</h1>
-          <p class="shell-panel-lead" id="pipeline-view-caption">All open files · sample rows only</p>
+          <p class="shell-panel-lead" id="pipeline-view-caption">Click any row for timeline, issues, and jumps</p>
           <p class="shell-panel-lead">
-            Specialty lending often models the live unit of work as a loan file (custom object) rather than classic
-            Lead → Opportunity. Use the <strong>View</strong> menu for queue filters: All open, Past SLA, Approved w/ conditions.
+            Unit of work is a <strong>loan file</strong>, not classic Lead → Opp cosplay. Filters and shell View menu
+            stay in sync. Drill into exceptions, dashboard, or path from the detail pane.
           </p>
-          <div class="sf-panel" style="margin-top:12px">
-            <div class="sf-panel__title">List view · sample data</div>
-            <table class="sf-table" id="pipeline-table">
-              <thead>
-                <tr>
-                  <th>File</th>
-                  <th>Product</th>
-                  <th>Stage</th>
-                  <th>Owner</th>
-                  <th>Days in stage</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr data-queue="stuck">
-                  <td>LF-10482</td>
-                  <td>Bridge</td>
-                  <td><span class="stage stage-stuck">In underwriting</span></td>
-                  <td>M. Chen</td>
-                  <td>9</td>
-                </tr>
-                <tr data-queue="conditions">
-                  <td>LF-10491</td>
-                  <td>Rental term</td>
-                  <td><span class="stage stage-stuck">Approved w/ conditions</span></td>
-                  <td>J. Ortiz</td>
-                  <td>5</td>
-                </tr>
-                <tr data-queue="">
-                  <td>LF-10502</td>
-                  <td>Build-for-rent</td>
-                  <td><span class="stage">Application in</span></td>
-                  <td>A. Singh</td>
-                  <td>1</td>
-                </tr>
-                <tr data-queue="stuck conditions">
-                  <td>LF-10455</td>
-                  <td>Bridge</td>
-                  <td><span class="stage stage-stuck">Approved w/ conditions</span></td>
-                  <td>M. Chen</td>
-                  <td>12</td>
-                </tr>
-                <tr data-queue="">
-                  <td>LF-10510</td>
-                  <td>Rental term</td>
-                  <td><span class="stage">Clear to fund</span></td>
-                  <td>Funding desk</td>
-                  <td>0</td>
-                </tr>
-                <tr data-queue="stuck">
-                  <td>LF-10470</td>
-                  <td>Bridge</td>
-                  <td><span class="stage stage-stuck">In underwriting</span></td>
-                  <td>J. Ortiz</td>
-                  <td>7</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <div id="pipeline-root"></div>
         </div>
       </div>
 
       <!-- PANEL: Reports -->
       <div id="panel-reports" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
-          <p class="case-label">Reports app · folders</p>
+          <p class="case-label">Reports · library + preview drill-down</p>
           <h1 class="shell-panel-title">Reports</h1>
           <p class="shell-panel-lead">
-            Use the View menu for Recent vs Folder: Ops metrics. Rows are placeholders for how I would organize the library.
+            Click a report for a sample result set, the decision it supports, and links into dashboard / pipeline / exceptions.
           </p>
-          <div class="sf-panel" style="margin-top:12px">
-            <div class="sf-panel__title">Report list · sample</div>
-            <table class="sf-table">
-              <thead>
-                <tr>
-                  <th>Report</th>
-                  <th>Folder</th>
-                  <th>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr data-report-folder="ops">
-                  <td>Time to decision by product</td>
-                  <td>Ops metrics</td>
-                  <td>Summary</td>
-                </tr>
-                <tr data-report-folder="ops">
-                  <td>Files past SLA by owner</td>
-                  <td>Ops metrics</td>
-                  <td>Tabular</td>
-                </tr>
-                <tr data-report-folder="ops">
-                  <td>Condition clear cycle time</td>
-                  <td>Ops metrics</td>
-                  <td>Summary</td>
-                </tr>
-                <tr data-report-folder="sales">
-                  <td>Volume by broker / seller</td>
-                  <td>Sales</td>
-                  <td>Summary</td>
-                </tr>
-                <tr data-report-folder="sales">
-                  <td>Funded last 30 days</td>
-                  <td>Sales</td>
-                  <td>Tabular</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <div id="reports-root"></div>
         </div>
       </div>
 
@@ -371,9 +277,16 @@
               <span class="object-chip"><em>Audit</em> trail</span>
               <span class="object-chip"><em>SOQL</em> when needed</span>
             </div>
+            <div class="writeup-nav" aria-label="Jump to interactive demos">
+              <button type="button" data-wu-nav="exceptions:queue">Exception Queue</button>
+              <button type="button" data-wu-nav="accelerator:dashboard">Dashboard</button>
+              <button type="button" data-wu-nav="pipeline:all-open">Loan files</button>
+              <button type="button" data-wu-nav="reports:ops-folder">Ops reports</button>
+              <button type="button" data-wu-nav="accelerator:path">Path stages</button>
+            </div>
           </header>
 
-          <section class="cs-section">
+          <section class="cs-section" data-wu-section="sf">
             <h2>Why this seat is Salesforce-shaped</h2>
             <p>
               Specialty mortgage platforms do not win only on rate. Brokers, correspondents, and investors re-choose a firm
@@ -390,7 +303,7 @@
             </p>
           </section>
 
-          <section class="cs-section">
+          <section class="cs-section" data-wu-section="contracts" id="wu-contracts">
             <h2>Proof I already did regulated at scale: contracts and offers</h2>
             <p>
               At Auction.com we were not in a casual paperwork lane. The business ran on <strong>loans</strong>
@@ -420,7 +333,7 @@
             </p>
           </section>
 
-          <section class="cs-section">
+          <section class="cs-section" data-wu-section="prototype">
             <h2>Prototype: Exception Queue (custom component)</h2>
             <p>
               Open <strong>Exceptions</strong> in the chrome (or waffle → Exception Queue). AI scores open items by
@@ -429,6 +342,14 @@
               it is safe, escalation where control requires a human. Same muscle as contract/offer automation: rules and
               data first, humans on the edge cases.
             </p>
+            <div class="section-drill">
+              <h4>Try the loop</h4>
+              <p>Dashboard (see pain) → Exception Queue (act) → Loan file (timeline) → Report preview (prove it).</p>
+              <div class="writeup-nav" style="margin:0">
+                <button type="button" data-wu-nav="accelerator:dashboard">Start on dashboard</button>
+                <button type="button" data-wu-nav="exceptions:queue">Jump to queue</button>
+              </div>
+            </div>
           </section>
 
           <section class="cs-section">
@@ -689,9 +610,12 @@
     </div>
   </div>
 
-  <script src="shell.js?v=2"></script>
-  <script src="exception-queue.js?v=1"></script>
+  <script src="shell.js?v=3"></script>
+  <script src="exception-queue.js?v=2"></script>
   <script src="dashboard.js?v=1"></script>
-  <script src="flows.js?v=3"></script>
+  <script src="pipeline.js?v=1"></script>
+  <script src="reports.js?v=1"></script>
+  <script src="flows.js?v=4"></script>
+  <script src="writeup-nav.js?v=1"></script>
 </body>
 </html>

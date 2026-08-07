@@ -151,6 +151,20 @@
     });
   }
 
+  function drillLinks(step) {
+    const friction = step.friction;
+    const links = [];
+    if (friction) {
+      links.push({ nav: 'exceptions:queue', label: 'Open Exception Queue', primary: true });
+      links.push({ nav: 'pipeline:past-sla', label: 'Loan files past SLA' });
+    } else {
+      links.push({ nav: 'accelerator:dashboard', label: 'Dashboard', primary: true });
+      links.push({ nav: 'pipeline:all-open', label: 'Loan pipeline' });
+    }
+    links.push({ nav: 'reports:ops-folder', label: 'Ops reports' });
+    return links;
+  }
+
   function renderDetail(detailEl, step) {
     if (!step) {
       detailEl.innerHTML = '<p>Select a stage.</p>';
@@ -158,11 +172,38 @@
     }
     const tagClass = step.friction ? 'tag tag-friction' : 'tag';
     const tagLabel = step.friction ? 'Friction · instrument in SF' : 'Path moment · CRM';
+    const links = drillLinks(step)
+      .map(function (l) {
+        return (
+          '<button type="button" class="' +
+          (l.primary ? 'is-primary' : '') +
+          '" data-path-nav="' +
+          l.nav +
+          '">' +
+          l.label +
+          '</button>'
+        );
+      })
+      .join('');
+
     detailEl.innerHTML =
       '<span class="' + tagClass + '">' + tagLabel + '</span>' +
       '<h3>' + step.title + '</h3>' +
       '<p>' + step.body + '</p>' +
-      '<ul>' + step.points.map((p) => '<li>' + p + '</li>').join('') + '</ul>';
+      '<ul>' + step.points.map((p) => '<li>' + p + '</li>').join('') + '</ul>' +
+      '<div class="path-deep">' +
+      '<h4>Drill down from this stage</h4>' +
+      '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 8px">Same journey as the dashboard and exception queue. Jump into the working surface that would own this moment.</p>' +
+      '<div class="path-links drill-actions" style="margin-top:0">' +
+      links +
+      '</div></div>';
+
+    detailEl.querySelectorAll('[data-path-nav]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const parts = btn.getAttribute('data-path-nav').split(':');
+        if (window.mortgageShell) window.mortgageShell.navigate(parts[0], parts[1]);
+      });
+    });
   }
 
   function select(container, steps, detailEl, id) {
@@ -197,7 +238,18 @@
     });
   }
 
-  initFlow('flow-external', 'detail-external', external);
-  initFlow('flow-internal', 'detail-internal', internal);
-  initTabs();
+  function initAll() {
+    initFlow('flow-external', 'detail-external', external);
+    initFlow('flow-internal', 'detail-internal', internal);
+    initTabs();
+  }
+
+  initAll();
+
+  window.mortgagePath = {
+    refresh: function () {
+      // re-bind if panel was hidden at first paint
+      initAll();
+    },
+  };
 })();

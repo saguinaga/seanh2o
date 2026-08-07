@@ -139,6 +139,7 @@
   let selectedId = null;
   let sortMode = 'ai'; // ai | sla | manual
   let aiEnabled = true;
+  let listFilter = 'all'; // all | reg | sla | claimed
 
   function tierPts(t) {
     if (t === 'A') return 22;
@@ -183,9 +184,19 @@
     items.forEach(scoreItem);
   }
 
+  function matchesFilter(item) {
+    if (listFilter === 'reg') return item.compliance.length > 0;
+    if (listFilter === 'sla') return item.slaDaysOver >= 2;
+    if (listFilter === 'claimed') return item.owner !== 'Unassigned' && item.status === 'open';
+    return true;
+  }
+
   function sortedOpen() {
-    const open = items.filter((i) => i.status === 'open');
-    const done = items.filter((i) => i.status !== 'open');
+    let open = items.filter((i) => i.status === 'open' && matchesFilter(i));
+    let done = items.filter((i) => i.status !== 'open' && matchesFilter(i));
+    if (listFilter === 'claimed') {
+      done = [];
+    }
     if (sortMode === 'sla') {
       open.sort((a, b) => b.slaDaysOver - a.slaDaysOver || b.score - a.score);
     } else if (sortMode === 'manual') {
@@ -220,6 +231,23 @@
     set('#eq-stat-reg', reg.length);
     set('#eq-stat-sla', hot.length);
     set('#eq-stat-claimed', claimed.length);
+    const map = {
+      '#eq-stat-open': 'all',
+      '#eq-stat-reg': 'reg',
+      '#eq-stat-sla': 'sla',
+      '#eq-stat-claimed': 'claimed',
+    };
+    Object.keys(map).forEach(function (sel) {
+      const el = $(sel);
+      if (!el) return;
+      const parent = el.closest('.eq-stat');
+      if (!parent) return;
+      parent.classList.toggle('is-on', listFilter === map[sel]);
+      parent.setAttribute('data-eq-filter', map[sel]);
+      parent.setAttribute('role', 'button');
+      parent.setAttribute('tabindex', '0');
+      parent.title = 'Filter queue';
+    });
   }
 
   function renderList() {
@@ -315,6 +343,11 @@
       '<section><h4>Situation</h4><p>' + item.summary + '</p></section>' +
       '<section><h4>Regulatory / control tags</h4><div class="eq-row-meta">' + tags + '</div>' +
       '<p style="margin-top:8px">In a regulated shop, these tags are not decoration. They tell the queue why a human with the right seat should touch this before a pure speed-only file.</p></section>' +
+      '<section><h4>Drill further</h4><div class="eq-actions" style="padding-top:0">' +
+      '<button type="button" data-nav="pipeline" data-file="' + item.fileId + '">Open loan file</button>' +
+      '<button type="button" data-nav="dashboard">Dashboard context</button>' +
+      '<button type="button" data-nav="path">Path prototype</button>' +
+      '</div></section>' +
       '<section><h4>AI priority breakdown' + (aiEnabled ? '' : ' (paused)') + '</h4>' +
       (aiEnabled
         ? '<p style="margin-bottom:8px">Score <strong>' + item.score + '</strong> · ' + item.aiWhy +
@@ -335,6 +368,22 @@
 
     pane.querySelectorAll('[data-act]').forEach((btn) => {
       btn.addEventListener('click', () => handleAction(btn.getAttribute('data-act'), item));
+    });
+    pane.querySelectorAll('[data-nav]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const nav = btn.getAttribute('data-nav');
+        const file = btn.getAttribute('data-file');
+        if (nav === 'pipeline' && window.mortgageShell) {
+          window.mortgageShell.navigate('pipeline', 'all-open');
+          setTimeout(function () {
+            if (window.mortgagePipeline && file) window.mortgagePipeline.selectFile(file);
+          }, 50);
+        } else if (nav === 'dashboard' && window.mortgageShell) {
+          window.mortgageShell.navigate('accelerator', 'dashboard');
+        } else if (nav === 'path' && window.mortgageShell) {
+          window.mortgageShell.navigate('accelerator', 'path');
+        }
+      });
     });
   }
 
@@ -398,6 +447,19 @@
   }
 
   function bindChrome() {
+    document.querySelectorAll('.eq-stat').forEach(function (stat) {
+      stat.addEventListener('click', function () {
+        const f = stat.getAttribute('data-eq-filter') || 'all';
+        listFilter = listFilter === f ? 'all' : f;
+        log('Queue filter → ' + listFilter);
+        const visible = sortedOpen();
+        if (!visible.some((i) => i.id === selectedId)) {
+          selectedId = visible[0] ? visible[0].id : null;
+        }
+        renderAll();
+      });
+    });
+
     const sort = $('#eq-sort');
     if (sort) {
       sort.addEventListener('change', () => {
