@@ -28,25 +28,34 @@
   }
 
   .sf-context-bar {
+    --chrome-bar-h: 92px; /* view row 48 + chips row 44 — fixed so tabs never jump */
+    --view-picker-w: 100%;
     top: 44px;
     flex-direction: column;
     align-items: stretch;
     padding: 0;
-    min-height: 0;
+    height: var(--chrome-bar-h);
+    min-height: var(--chrome-bar-h);
+    max-height: var(--chrome-bar-h);
+    overflow: visible;
   }
 
   .view-picker {
+    flex: 0 0 48px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 48px;
     border-right: none;
     border-bottom: 1px solid var(--border-soft);
-    margin-right: 0;
-    padding-right: 0;
-    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .view-menu-btn {
-    min-width: 0;
     width: 100%;
-    padding: 10px 32px 10px 14px;
+    height: 48px;
+    padding: 0 32px 0 14px;
   }
 
   .view-menu-label {
@@ -56,14 +65,19 @@
   .view-menu {
     left: 8px;
     right: 8px;
-    min-width: 0;
     width: auto;
+    min-width: 0;
   }
 
   .sf-context-nav {
-    padding: 6px 8px 8px;
+    flex: 0 0 44px;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 8px;
     gap: 4px;
     overflow-x: auto;
+    overflow-y: hidden;
     flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -74,7 +88,8 @@
   }
 
   .nav-chip {
-    padding: 8px 12px;
+    height: 32px;
+    padding: 0 12px;
     font-size: 0.78rem;
     flex-shrink: 0;
   }

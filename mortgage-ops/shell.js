@@ -10,8 +10,8 @@
       blurb: 'Stuck applications · AI ranks · humans clear',
       icon: 'E',
       views: [
-        { id: 'queue', label: 'AI-prioritized app queue', panel: 'panel-exceptions' },
-        { id: 'writeup', label: 'Case study write-up', panel: 'panel-writeup' },
+        { id: 'queue', label: 'Exception queue', panel: 'panel-exceptions' },
+        { id: 'writeup', label: 'Write-up', panel: 'panel-writeup' },
       ],
     },
     accelerator: {
@@ -20,9 +20,9 @@
       blurb: 'Loan apps · time to yes · dashboards',
       icon: 'A',
       views: [
-        { id: 'dashboard', label: 'Dashboard: Time to Yes', panel: 'panel-dashboard' },
-        { id: 'writeup', label: 'Case study write-up', panel: 'panel-writeup' },
-        { id: 'path', label: 'Application path', panel: 'panel-path' },
+        { id: 'dashboard', label: 'Dashboard', panel: 'panel-dashboard' },
+        { id: 'writeup', label: 'Write-up', panel: 'panel-writeup' },
+        { id: 'path', label: 'App path', panel: 'panel-path' },
       ],
     },
     pipeline: {
@@ -31,9 +31,9 @@
       blurb: 'Apps in flight · start to fund',
       icon: 'L',
       views: [
-        { id: 'all-open', label: 'All open applications', panel: 'panel-pipeline' },
+        { id: 'all-open', label: 'All open', panel: 'panel-pipeline' },
         { id: 'past-sla', label: 'Past SLA', panel: 'panel-pipeline' },
-        { id: 'conditions', label: 'Approved w/ conditions', panel: 'panel-pipeline' },
+        { id: 'conditions', label: 'Conditions', panel: 'panel-pipeline' },
       ],
       queueFilter: {
         'all-open': null,
@@ -48,7 +48,7 @@
       icon: 'R',
       views: [
         { id: 'recent', label: 'All reports', panel: 'panel-reports' },
-        { id: 'ops-folder', label: 'Folder: App pipeline', panel: 'panel-reports' },
+        { id: 'ops-folder', label: 'App pipeline', panel: 'panel-reports' },
       ],
     },
   };
