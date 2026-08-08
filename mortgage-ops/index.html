@@ -6,7 +6,7 @@
   <meta name="description" content="How Sean Aguinaga would approach Salesforce reports, dashboards, and pipeline truth for specialty mortgage ops: objects, stages, time to yes.">
   <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
   <title>Sean Aguinaga — Salesforce Analytics for Specialty Mortgage Ops</title>
-  <link rel="stylesheet" href="roadmap.css?v=9">
+  <link rel="stylesheet" href="roadmap.css?v=10">
   <link rel="stylesheet" href="flows.css?v=6">
   <link rel="stylesheet" href="exception-queue.css?v=2">
   <link rel="stylesheet" href="dashboard.css?v=6">
@@ -69,8 +69,7 @@
       </nav>
     </div>
 
-    <p class="demo-banner" id="demo-banner">Xtreme · loan applications · High · Dashboard · same APP ids and products across screens · not a live org</p>
-    <div id="story-rail" class="story-rail" aria-live="polite"></div>
+    <p class="demo-banner" id="demo-banner">Xtreme · loan applications · same APP ids and products across screens · not a live org</p>
 
     <div class="chrome-backdrop" id="chrome-backdrop" hidden></div>
 
@@ -79,7 +78,7 @@
       <div id="panel-exceptions" data-shell-panel class="shell-panel" hidden>
         <div class="eq-wrap">
           <header class="eq-hero">
-            <p class="case-label">Work layer · same APP- records as Applications and Ops act-now</p>
+            <p class="case-label">Same APP- records as Applications and Ops act-now</p>
             <div class="eq-title-row">
               <h1>Application Exception Queue</h1>
               <div class="eq-badges">
@@ -156,8 +155,8 @@
           </div>
 
           <p class="eq-footer-note">
-            Work layer on the story rail: Dashboard (high) names the stall → Applications holds the file → this queue
-            spends people → Reports measure → Path maps stages → Write-up is the depth layer.
+            Working surface for stuck apps. Same APP- records as Dashboard act-now and Applications. AI ranks; people
+            claim and clear.
           </p>
         </div>
       </div>
@@ -181,7 +180,7 @@
                 builder in an afternoon.
               </p>
             </div>
-            <p class="case-label">Custom surface · High layer · sits on the same Salesforce book</p>
+            <p class="case-label">Custom surface · same Salesforce book as Applications and Exceptions</p>
             <div class="dash-top">
               <h1 id="dash-title">Leadership · outcomes</h1>
               <span class="dash-asof" id="dash-asof">As of demo clock</span>
@@ -223,7 +222,7 @@
       <!-- PANEL: Loan applications (connected to dashboard + exceptions) -->
       <div id="panel-pipeline" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
-          <p class="case-label">Work layer · system of work under Leadership / Ops dashboards</p>
+          <p class="case-label">System of work under Leadership / Ops dashboards</p>
           <h1 class="shell-panel-title">Loan applications</h1>
           <p class="shell-panel-lead" id="pipeline-view-caption">Click any row for timeline, product DNA, and jumps</p>
           <p class="shell-panel-lead">
@@ -237,7 +236,7 @@
       <!-- PANEL: Reports -->
       <div id="panel-reports" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
-          <p class="case-label">Measure layer · define the metric · dig when the summary is thin</p>
+          <p class="case-label">Define the metric · dig when the summary is thin</p>
           <h1 class="shell-panel-title">Reports</h1>
           <p class="shell-panel-lead">
             Sample result sets and the decision each chart supports. Links back into Dashboard, Applications, and Exceptions.
@@ -251,7 +250,7 @@
       <div id="panel-writeup" data-shell-panel class="shell-panel" hidden>
         <article class="case-study">
           <header class="cs-hero">
-            <p class="case-label">Deep layer · how I show up · same story as the interactive walk</p>
+            <p class="case-label">Case study · how I show up</p>
             <div class="case-meta" aria-live="polite">
               <span class="case-meta-badge">Loan apps · Salesforce · build while live</span>
               <span class="case-meta-updated">Sit with the business · dig when needed · clear stuck work</span>
@@ -272,12 +271,12 @@
               What I bring: sit with the business, name where work stalls, dig when a summary is not enough, ship the
               next clear change while production stays up.
             </p>
-            <div class="writeup-nav" aria-label="Story walk (same as top rail)">
-              <button type="button" data-wu-nav="accelerator:dashboard">1 Dashboard</button>
-              <button type="button" data-wu-nav="pipeline:all-open">2 Applications</button>
-              <button type="button" data-wu-nav="exceptions:queue">3 Exceptions</button>
-              <button type="button" data-wu-nav="reports:ops-folder">4 Reports</button>
-              <button type="button" data-wu-nav="accelerator:path">5 Path</button>
+            <div class="writeup-nav" aria-label="Open demos">
+              <button type="button" data-wu-nav="accelerator:dashboard">Dashboard</button>
+              <button type="button" data-wu-nav="pipeline:all-open">Applications</button>
+              <button type="button" data-wu-nav="exceptions:queue">Exceptions</button>
+              <button type="button" data-wu-nav="reports:ops-folder">Reports</button>
+              <button type="button" data-wu-nav="accelerator:path">Path</button>
             </div>
           </header>
 
@@ -351,16 +350,14 @@
               queue.
             </p>
             <div class="section-drill">
-              <h4>Suggested walk (same as the story rail)</h4>
+              <h4>Suggested walk</h4>
               <p>
-                Leadership dashboard → product chips → Ops desk / act-now → Applications (conditions + notes) →
-                Exception queue (AI ranks, humans clear) → Reports if you need a chart dig → Path for stage map →
-                this write-up for depth.
+                Leadership dashboard → product chips → Ops act-now → Applications → Exception queue → Reports or Path
+                if useful → this write-up for depth. Use the top nav; one path through the demo.
               </p>
               <div class="writeup-nav" style="margin:0">
-                <button type="button" data-wu-nav="accelerator:dashboard">Start at Dashboard</button>
-                <button type="button" data-wu-nav="pipeline:all-open">Applications</button>
-                <button type="button" data-wu-nav="exceptions:queue">Exceptions</button>
+                <button type="button" data-wu-nav="accelerator:dashboard">Open dashboard</button>
+                <button type="button" data-wu-nav="exceptions:queue">Open exceptions</button>
               </div>
             </div>
           </section>
@@ -426,11 +423,11 @@
       <div id="panel-path" data-shell-panel class="shell-panel" hidden>
         <div class="case-study case-study--tight">
           <section class="cs-section" id="flows" style="margin-top:0">
-            <p class="case-label">Map layer · intake to fund · friction opens the same queues</p>
+            <p class="case-label">Intake to fund · friction stages open the same queues</p>
             <h2 class="shell-panel-title" style="margin-top:0">Loan application path</h2>
             <p class="section-intro">
               Illustrative only. Broker path vs Salesforce stages on the application. Amber stages open Applications,
-              Exceptions, and Reports so the map is not a dead poster.
+              Exceptions, and Reports.
             </p>
 
             <div class="flow-tabs" role="tablist" aria-label="Path prototype">
@@ -456,7 +453,7 @@
   </div>
 
   <script src="products.js?v=1"></script>
-  <script src="shell.js?v=8"></script>
+  <script src="shell.js?v=9"></script>
   <script src="exception-queue.js?v=6"></script>
   <script src="dashboard-native.js?v=6"></script>
   <script src="dashboard.js?v=10"></script>
