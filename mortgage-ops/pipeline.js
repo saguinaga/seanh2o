@@ -1203,7 +1203,7 @@
       statusTabs +
       '<div class="drill-layout">' +
       '<div class="drill-list-card app-list-frame">' +
-      '<div class="drill-list-card__h"><h2>My applications</h2><span class="sub">' +
+      '<div class="drill-list-card__h"><h2>Open applications</h2><span class="sub">' +
       rows.length +
       ' shown · hottest first</span></div>' +
       '<div class="drill-table-wrap"><table class="drill-table app-list-table"><thead><tr>' +
