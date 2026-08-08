@@ -155,10 +155,19 @@
     var customRoot = $('#dash-custom-root');
     var nativeRoot = $('#dash-native-root');
     var dashRoot = $('#dash-root');
+    var hint = $('#dash-skin-hint');
     var isNative = state.skin === 'native';
     if (customRoot) customRoot.hidden = isNative;
     if (nativeRoot) nativeRoot.hidden = !isNative;
-    if (dashRoot) dashRoot.classList.toggle('is-native-skin', isNative);
+    if (dashRoot) {
+      dashRoot.classList.toggle('is-native-skin', isNative);
+      dashRoot.classList.toggle('is-custom-skin', !isNative);
+    }
+    if (hint) {
+      hint.textContent = isNative
+        ? 'Standard LEX: metrics + charts from reports · minutes to assemble · same demo numbers'
+        : 'Custom component: job-shaped UX · product DNA · aging · act-now · same demo numbers';
+    }
     document.querySelectorAll('[data-dash-skin]').forEach(function (btn) {
       btn.classList.toggle('is-on', btn.getAttribute('data-dash-skin') === state.skin);
     });
@@ -609,8 +618,8 @@
       '<div class="dash-detail-pane" id="dash-detail" hidden></div>' +
       '<p class="dash-footer">' +
       (isExec
-        ? 'Leadership view · demo data. Switch to Ops desk for aging heat, named apps, and the exception queue.'
-        : 'Ops desk · demo data. Switch to Leadership for outcomes, conversion, and product comparison — not the act-now list.') +
+        ? 'Custom Leadership surface · demo data. Ops desk has aging heat, named apps, and queue jumps. Toggle Standard LEX above to see the “built in minutes” version of the same numbers.'
+        : 'Custom Ops desk · demo data. Leadership is outcomes and product DNA, not the act-now list. Toggle Standard LEX above for stock dashboard widgets only.') +
       '</p>';
 
     setInsight(d);

@@ -188,76 +188,76 @@
     var prodLabel = LP.META[state.product] ? LP.META[state.product].label : 'All products';
     var asOf = 'As of demo clock · Running user Demo';
 
-    // Metric tiles: report name above number (LEX metric component pattern)
+    // Stock metric components: report titles look like out-of-box dashboard widgets
     var metrics = isExec
       ? metricCard(
-          'Applications in',
+          'Applications Created',
           d.appsIn,
-          'Apps by window (summary)',
-          'Intake volume · ' + state.window,
+          'Report: Applications by Created Date',
+          'Grand Total',
           '',
           3,
-          { cls: 'is-up', text: '+4% vs prior' }
+          { cls: 'is-up', text: '↑ 4%' }
         ) +
         metricCard(
-          'Median time to decision',
-          d.medianDecision + 'd',
-          'Decision aging (summary)',
-          'Stage enter to credit decision',
+          'Median Days to Decision',
+          d.medianDecision,
+          'Report: Application Aging Summary',
+          'Record Count · Days',
           'is-warn',
           3,
-          { cls: 'is-down', text: '+0.4d vs prior' }
+          { cls: 'is-down', text: '↑ 0.4' }
         ) +
         metricCard(
-          'Funded',
+          'Applications Funded',
           funded(d),
-          'Funded applications (summary)',
-          'Closed in window',
+          'Report: Funded Applications',
+          'Grand Total',
           'is-ok',
           3,
-          { cls: 'is-up', text: '+2 vs prior' }
+          { cls: 'is-up', text: '↑ 2' }
         ) +
         metricCard(
-          'App to funded',
+          'Conversion %',
           conv(d) + '%',
-          'Conversion (illustrative)',
-          'Funded / apps in',
+          'Report: App to Funded (formula)',
+          'Summary formula',
           '',
           3,
           null
         )
       : metricCard(
-          'Stuck past SLA',
+          'Apps Past SLA',
           d.stuck,
-          'Open exceptions (summary)',
-          'Primary worklist size',
+          'Report: Open Applications Past SLA',
+          'Grand Total',
           'is-hot',
           3,
-          { cls: 'is-down', text: '+3 vs prior' }
+          { cls: 'is-down', text: '↑ 3' }
         ) +
         metricCard(
-          'In conditions',
+          'Approved w/ Conditions',
           cond(d),
-          'Approved w/ conditions',
-          'Approved but not clear to fund',
+          'Report: Applications by Stage',
+          'Stage = Conditions',
           'is-warn',
           3,
           null
         ) +
         metricCard(
-          'Docs / rules holds',
+          'On Hold',
           d.policyHold,
-          'Holds by type (summary)',
-          'Completeness + eligibility',
+          'Report: Applications with Holds',
+          'Grand Total',
           '',
           3,
           null
         ) +
         metricCard(
-          'System mismatch',
+          'Status Mismatch',
           d.dualSystem,
-          'CRM vs LOS status',
-          'Source of truth conflicts',
+          'Report: CRM vs LOS Status',
+          'Grand Total',
           'is-warn',
           3,
           null
@@ -284,55 +284,53 @@
       })
       .join('');
 
-    var watch = (d.watch || [])
-      .map(function (w) {
-        var id = String(w.file).replace(/^LF-/, 'APP-');
-        return (
-          '<li><button type="button" data-go-app="' +
-          id +
-          '"><span>' +
-          id +
-          ' · ' +
-          w.why +
-          '</span><span class="ln-badge' +
-          (w.kind === 'sla' ? ' ln-badge--warn' : ' ln-badge--hot') +
-          '">' +
-          w.pill +
-          '</span></button></li>'
-        );
-      })
-      .join('');
-
+    // Stock LEX: report widgets only. No product DNA, no act-now worklist UX, no custom CTAs.
     var lower = isExec
       ? '<article class="ln-comp ln-comp--8">' +
-        compHeader('Product scorecard') +
-        '<div class="ln-comp__body"><div class="ln-table-wrap"><table class="ln-table"><thead><tr><th>Product</th><th>Med. decision</th><th>Past SLA</th><th>Conv*</th></tr></thead><tbody>' +
+        compHeader('Report: Applications by Product') +
+        '<div class="ln-comp__body"><div class="ln-table-wrap"><table class="ln-table"><thead><tr><th>Product</th><th>Med. decision</th><th>Past SLA</th><th>Conv</th></tr></thead><tbody>' +
         scoreRows +
-        '</tbody></table></div><p class="ln-comp-foot">*Illustrative. Click a product to filter dashboard components.</p></div></article>' +
+        '</tbody></table></div><p class="ln-comp-foot">Table component · source report (illustrative)</p></div></article>' +
         '<article class="ln-comp ln-comp--4">' +
-        compHeader('Leadership focus') +
-        '<div class="ln-comp__body"><ul class="ln-notes-list">' +
-        '<li>Is median decision moving for the right reason?</li>' +
-        '<li>Which product path is slowest for this book?</li>' +
-        '<li>Is stuck rising faster than apps in?</li>' +
-        '</ul><div class="ln-actions-row"><button type="button" class="ln-btn ln-btn--brand" data-role-switch="ops">Switch to Ops desk</button></div></div></article>'
+        compHeader('Report: Decision speed (chart)') +
+        '<div class="ln-comp__body">' +
+        hbar(
+          (d.reasons || []).slice(0, 4).map(function (r) {
+            return r;
+          })
+        ) +
+        '<p class="ln-comp-foot">Horizontal bar chart component</p></div></article>'
       : '<article class="ln-comp ln-comp--6">' +
-        compHeader('Why applications stall') +
+        compHeader('Report: Stall reasons') +
         '<div class="ln-comp__body">' +
         hbar(d.reasons) +
-        '<p class="ln-comp-foot">Horizontal bar · count of open stalls by theme</p></div></article>' +
+        '<p class="ln-comp-foot">Horizontal bar chart · from report</p></div></article>' +
         '<article class="ln-comp ln-comp--6">' +
-        compHeader('Act now (sample)') +
-        '<div class="ln-comp__body"><ul class="ln-list">' +
-        watch +
-        '</ul><div class="ln-actions-row">' +
-        '<button type="button" class="ln-btn ln-btn--brand" data-go-apps>Open Applications</button>' +
-        '<button type="button" class="ln-btn ln-btn--neutral" data-go-eq>Exception Queue</button></div></div></article>';
+        compHeader('Report: Open applications (sample)') +
+        '<div class="ln-comp__body"><div class="ln-table-wrap"><table class="ln-table"><thead><tr><th>Application</th><th>Status</th></tr></thead><tbody>' +
+        (d.watch || [])
+          .map(function (w) {
+            var id = String(w.file).replace(/^LF-/, 'APP-');
+            return (
+              '<tr><td>' +
+              id +
+              '</td><td>' +
+              w.pill +
+              '</td></tr>'
+            );
+          })
+          .join('') +
+        '</tbody></table></div><p class="ln-comp-foot">Read-only report table · not a work queue</p></div></article>';
 
     root.innerHTML =
       '<div class="ln-root">' +
+      '<div class="ln-build-banner">' +
+      '<span class="ln-build-banner__tag">Standard LEX</span>' +
+      '<p><strong>Dashboard builder, minutes not months.</strong> Metric + chart + table components on a dynamic dashboard. ' +
+      'Filters and refresh. No product DNA, no aging heat, no claim/clear queue. Same demo numbers as the custom build so the contrast is the surface, not the data.</p>' +
+      '</div>' +
       '<div class="ln-dash-top">' +
-      '<div class="ln-breadcrumb"><button type="button" data-skin="custom">Dashboards</button><span class="ln-breadcrumb__sep">›</span><span>' +
+      '<div class="ln-breadcrumb"><span>Dashboards</span><span class="ln-breadcrumb__sep">›</span><span>Private Dashboards</span><span class="ln-breadcrumb__sep">›</span><span>' +
       title +
       '</span></div>' +
       '<div class="ln-dash-top__row">' +
@@ -340,36 +338,32 @@
       '<h1 class="ln-dash-top__title">' +
       title +
       '</h1>' +
-      '<div class="ln-dash-top__meta">Dynamic dashboard · Xtreme · loan applications · demo data (not a live org)</div>' +
+      '<div class="ln-dash-top__meta">Dynamic Dashboard · Created by Demo User · Last refreshed demo clock</div>' +
       '</div>' +
       '<div class="ln-dash-top__actions">' +
-      '<div class="ln-btn-group" role="group" aria-label="Dashboard view">' +
+      '<div class="ln-btn-group" role="group" aria-label="Saved view">' +
       '<button type="button" class="' +
       (isExec ? 'is-on' : '') +
-      '" data-role="exec">Leadership</button>' +
+      '" data-role="exec">Folder: Leadership</button>' +
       '<button type="button" class="' +
       (!isExec ? 'is-on' : '') +
-      '" data-role="ops">Ops desk</button></div>' +
+      '" data-role="ops">Folder: Ops</button></div>' +
       '<button type="button" class="ln-btn ln-btn--neutral" id="ln-refresh">Refresh</button>' +
-      '<button type="button" class="ln-btn ln-btn--brand" data-go-eq">Open Queue</button>' +
+      '<button type="button" class="ln-btn ln-btn--neutral" data-skin="custom">Open custom build</button>' +
       '</div></div></div>' +
       '<div class="ln-filters">' +
       '<label>Product<select id="ln-product"></select></label>' +
       '<label>Date range<select id="ln-window"><option value="7d">Last 7 Days</option><option value="30d">Last 30 Days</option></select></label>' +
       '<span class="ln-filters__spacer"></span>' +
-      '<div class="ln-skin-toggle" role="group" aria-label="Dashboard skin">' +
-      '<button type="button" data-skin="custom">Custom prototype</button>' +
-      '<button type="button" class="is-on" data-skin="native">Lightning</button>' +
-      '</div></div>' +
-      '<div class="ln-chip-wrap"><div id="ln-product-chips" class="prod-chip-rail"></div></div>' +
-      '<div class="ln-dna-wrap"><div id="ln-product-dna" class="prod-dna-host"></div></div>' +
+      '<span class="ln-filters-note">Standard dashboard filters</span>' +
+      '</div>' +
       '<div class="ln-grid-wrap"><div class="ln-grid">' +
       metrics +
       '<article class="ln-comp ln-comp--12">' +
-      compHeader('Application path by stage') +
+      compHeader('Report: Applications by Stage') +
       '<div class="ln-comp__body">' +
       funnelChart(d.funnel) +
-      '<p class="ln-comp-foot">Click a stage to highlight · amber = friction on time to yes</p></div></article>' +
+      '<p class="ln-comp-foot">Bar chart component · grouped by stage picklist</p></div></article>' +
       lower +
       '</div></div>' +
       '<div class="ln-footer"><span><strong>Filters:</strong> ' +
@@ -378,7 +372,7 @@
       state.window +
       '</span><span>' +
       asOf +
-      '</span><span>Same metrics as Custom prototype skin</span></div></div>';
+      '</span><span>Standard components only · switch to Custom component for job-shaped UX</span></div></div>';
 
     var sel = $('#ln-product');
     if (sel) {
@@ -387,12 +381,6 @@
       sel.addEventListener('change', function () {
         setProduct(sel.value);
       });
-    }
-    if (LP.renderChips) {
-      LP.renderChips($('#ln-product-chips'), state.product, setProduct);
-    }
-    if (LP.renderDna) {
-      LP.renderDna($('#ln-product-dna'), state.product);
     }
     var win = $('#ln-window');
     if (win) {
