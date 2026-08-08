@@ -1169,45 +1169,49 @@
       return f.id === selectedId;
     });
 
-    var linkBar =
-      '<div class="app-link-bar">' +
-      '<span class="app-link-bar__text"><strong>Work layer</strong>: same APP ids as Ops act-now and Exceptions, same product chips as Dashboard. Conditions and notes on the file.</span>' +
-      '<div class="app-link-bar__actions">' +
-      '<button type="button" data-nav="accelerator:dashboard">Dashboard</button>' +
-      '<button type="button" data-nav="exceptions:queue">Exceptions</button>' +
-      '<button type="button" data-nav="reports:ops-folder">Reports</button>' +
-      '<button type="button" data-nav="accelerator:path">Path</button>' +
-      '</div></div>';
+    // Portal-style status counts (pattern from specialty lender app lists; not a client clone)
+    var statusTabs =
+      '<div class="app-status-tabs" role="tablist" aria-label="Application status">' +
+      statusTab('all', s.all, 'All open') +
+      statusTab('stuck', s.stuck, 'Past SLA') +
+      statusTab('conditions', s.conditions, 'In progress') +
+      statusTab('policy', s.policy, 'Rules / data') +
+      statusTab('watch', s.watch, 'Act-now') +
+      '<div class="app-status-tabs__filter">' +
+      '<label for="app-filter-select">Filter by</label>' +
+      '<select id="app-filter-select" class="app-filter-select" aria-label="Filter applications">' +
+      '<option value="all"' +
+      (statusFilter === 'all' ? ' selected' : '') +
+      '>All open</option>' +
+      '<option value="stuck"' +
+      (statusFilter === 'stuck' ? ' selected' : '') +
+      '>Past SLA</option>' +
+      '<option value="conditions"' +
+      (statusFilter === 'conditions' ? ' selected' : '') +
+      '>In progress / conditions</option>' +
+      '<option value="policy"' +
+      (statusFilter === 'policy' ? ' selected' : '') +
+      '>Rules / data</option>' +
+      '<option value="watch"' +
+      (statusFilter === 'watch' ? ' selected' : '') +
+      '>Act-now</option>' +
+      '</select></div></div>';
 
     root.innerHTML =
-      linkBar +
       '<div id="pipe-product-chips" class="prod-chip-rail"></div>' +
       '<div id="pipe-product-dna" class="prod-dna-host"></div>' +
-      '<div class="drill-stat-row">' +
-      statBtn('all', s.all, 'In filter') +
-      statBtn('stuck', s.stuck, 'Past SLA') +
-      statBtn('conditions', s.conditions, 'Conditions') +
-      statBtn('policy', s.policy, 'Rules / data') +
-      statBtn('watch', s.watch, 'On act-now') +
-      '</div>' +
+      statusTabs +
       '<div class="drill-layout">' +
-      '<div class="drill-list-card">' +
-      '<div class="drill-list-card__h"><h2>Open applications</h2><span class="sub">' +
+      '<div class="drill-list-card app-list-frame">' +
+      '<div class="drill-list-card__h"><h2>My applications</h2><span class="sub">' +
       rows.length +
       ' shown · hottest first</span></div>' +
-      '<div class="drill-filters">' +
-      chip('all', 'All status') +
-      chip('stuck', 'Past SLA') +
-      chip('conditions', 'Conditions') +
-      chip('policy', 'Rules / data') +
-      chip('watch', 'Act-now') +
-      '</div>' +
-      '<div class="drill-table-wrap"><table class="drill-table"><thead><tr>' +
-      '<th>Application</th><th>Product</th><th>Stage</th><th>Owner</th><th>Days</th><th>Signal</th>' +
+      '<div class="drill-table-wrap"><table class="drill-table app-list-table"><thead><tr>' +
+      '<th class="col-num">#</th><th>Loan type</th><th>Loan ID</th><th>Status</th><th>Broker</th><th>Days</th><th>Signal</th>' +
       '</tr></thead><tbody>' +
       (rows.length
         ? rows
-            .map(function (f) {
+            .map(function (f, idx) {
               var isHot = f.tags.indexOf('stuck') !== -1;
               var badges = [];
               if (isHot) badges.push('<span class="app-row-badge app-row-badge--hot">SLA</span>');
@@ -1223,28 +1227,33 @@
                 );
               if (f.onWatch && !isHot)
                 badges.push('<span class="app-row-badge">ACT</span>');
+              var statusLabel = f.stage;
+              if (f.stageId === 'cond')
+                statusLabel =
+                  'In progress · ' + openConditionCount(f) + ' open cond';
               return (
                 '<tr data-id="' +
                 f.id +
                 '" class="' +
                 (f.id === selectedId ? 'is-selected' : '') +
                 (isHot ? ' is-hot' : '') +
-                '"><td><strong>' +
+                '"><td class="col-num">' +
+                (idx + 1) +
+                '</td><td>' +
+                escapeHtml(f.product) +
+                '<div class="app-row-sub">' +
+                escapeHtml(f.amount) +
+                '</div></td><td><strong>' +
                 f.id +
-                '</strong><div class="app-row-sub">' +
-                f.amount +
-                ' · ' +
-                f.broker +
-                (f.stageId === 'cond'
-                  ? ' · ' + openConditionCount(f) + ' open cond'
-                  : '') +
+                '</strong></td><td>' +
+                escapeHtml(statusLabel) +
+                '<div class="app-row-sub">Owner ' +
+                escapeHtml(f.owner) +
                 '</div></td><td>' +
-                f.product +
-                '</td><td>' +
-                f.stage +
-                '</td><td>' +
-                f.owner +
-                '</td><td class="' +
+                escapeHtml(f.broker) +
+                ' <span class="app-tier">T' +
+                f.tier +
+                '</span></td><td class="' +
                 (isHot || f.days >= 7 ? 'app-days-hot' : '') +
                 '">' +
                 f.days +
@@ -1254,7 +1263,7 @@
               );
             })
             .join('')
-        : '<tr><td colspan="6">No applications in this filter. Clear product or status filters.</td></tr>') +
+        : '<tr><td colspan="7">No applications in this filter.</td></tr>') +
       '</tbody></table></div></div>' +
       '<div class="drill-detail-card">' +
       (sel ? detailHtml(sel) : '<div class="drill-empty">Select an application</div>') +
@@ -1276,18 +1285,19 @@
       }
     }
 
-    root.querySelectorAll('[data-stat]').forEach(function (el) {
-      el.addEventListener('click', function () {
-        statusFilter = el.getAttribute('data-stat');
-        render();
-      });
-    });
     root.querySelectorAll('[data-filter]').forEach(function (el) {
       el.addEventListener('click', function () {
         statusFilter = el.getAttribute('data-filter');
         render();
       });
     });
+    var filterSel = root.querySelector('#app-filter-select');
+    if (filterSel) {
+      filterSel.addEventListener('change', function () {
+        statusFilter = filterSel.value;
+        render();
+      });
+    }
     root.querySelectorAll('tr[data-id]').forEach(function (el) {
       el.addEventListener('click', function (e) {
         if (e.target.closest && e.target.closest('[data-ex]')) return;
@@ -1371,6 +1381,22 @@
       '">' +
       label +
       '</button>'
+    );
+  }
+
+  function statusTab(id, n, label) {
+    return (
+      '<button type="button" class="app-status-tab' +
+      (statusFilter === id ? ' is-on' : '') +
+      '" data-filter="' +
+      id +
+      '" role="tab" aria-selected="' +
+      (statusFilter === id ? 'true' : 'false') +
+      '">' +
+      label +
+      ' <span class="app-status-tab__n">(' +
+      n +
+      ')</span></button>'
     );
   }
 
