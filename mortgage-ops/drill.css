@@ -2,10 +2,12 @@
 
 .drill-layout {
   display: grid;
-  grid-template-columns: 1.15fr 0.9fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
   gap: 10px;
   margin-top: 12px;
   align-items: start;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .drill-list-card,
@@ -16,6 +18,8 @@
   box-shadow: var(--shadow);
   overflow: hidden;
   min-height: 280px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .drill-list-card__h,
@@ -121,6 +125,19 @@
 
 .drill-detail-card__b {
   padding: 14px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.drill-detail-card__b * {
+  max-width: 100%;
+}
+
+.drill-detail-card__b .app-cond-add-btn,
+.drill-detail-card__b button {
+  max-width: 100%;
 }
 
 .drill-detail-card__b h3 {
