@@ -75,23 +75,38 @@
     render();
   }
 
-  function metricCard(label, value, footer, tone, span) {
-    // span is columns of 12 (3 = quarter, 4 = third, 6 = half)
+  var MENU_SVG =
+    '<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="10" r="4"/><circle cx="26" cy="26" r="4"/><circle cx="26" cy="42" r="4"/></svg>';
+
+  function compHeader(title) {
+    return (
+      '<header class="ln-comp__header"><h3 title="' +
+      title.replace(/"/g, '') +
+      '">' +
+      title +
+      '</h3><button type="button" class="ln-comp__icon-btn" tabindex="-1" aria-hidden="true">' +
+      MENU_SVG +
+      '</button></header>'
+    );
+  }
+
+  function metricCard(title, value, reportName, footer, tone, span, delta) {
     var col = span || 3;
     return (
       '<article class="ln-comp ln-comp--metric ln-comp--' +
       col +
       '">' +
-      '<header class="ln-comp__header"><h3>' +
-      label +
-      '</h3><span class="ln-comp__menu" aria-hidden="true">▾</span></header>' +
+      compHeader(title) +
       '<div class="ln-comp__body"><div class="ln-metric">' +
-      '<div class="ln-metric__label">Report · Summary</div>' +
+      '<div class="ln-metric__report">' +
+      reportName +
+      '</div>' +
       '<div class="ln-metric__value' +
       (tone ? ' ' + tone : '') +
       '">' +
       value +
       '</div>' +
+      (delta ? '<div class="ln-metric__delta ' + delta.cls + '">' + delta.text + '</div>' : '') +
       '<div class="ln-metric__footer">' +
       footer +
       '</div></div></div></article>'
@@ -101,16 +116,18 @@
   function hbar(reasons) {
     var max = Math.max.apply(
       null,
-      reasons.map(function (r) {
-        return r.n;
-      }).concat([1])
+      reasons
+        .map(function (r) {
+          return r.n;
+        })
+        .concat([1])
     );
     return (
       '<div class="ln-hbar">' +
       reasons
         .slice(0, 6)
         .map(function (r) {
-          var w = Math.round((r.n / max) * 100);
+          var w = Math.max(4, Math.round((r.n / max) * 100));
           return (
             '<div class="ln-hbar__row"><span class="ln-hbar__name">' +
             r.name +
@@ -128,49 +145,123 @@
     );
   }
 
+  function funnelChart(funnel) {
+    var max = Math.max.apply(
+      null,
+      funnel
+        .map(function (s) {
+          return s.count;
+        })
+        .concat([1])
+    );
+    return (
+      '<div class="ln-funnel">' +
+      funnel
+        .map(function (s) {
+          var w = Math.max(6, Math.round((s.count / max) * 100));
+          return (
+            '<div class="ln-funnel__row' +
+            (s.stuck ? ' is-stuck' : '') +
+            (state.stage === s.id ? ' is-on' : '') +
+            '"><button type="button" data-stage="' +
+            s.id +
+            '"><span class="ln-funnel__label">' +
+            s.name +
+            '</span><span class="ln-funnel__track"><span class="ln-funnel__fill" style="width:' +
+            w +
+            '%"></span></span><span class="ln-funnel__n">' +
+            s.count +
+            '</span></button></div>'
+          );
+        })
+        .join('') +
+      '</div>'
+    );
+  }
+
   function render() {
     var root = $('#dash-native-root');
     if (!root) return;
     var d = data();
     var isExec = state.role === 'exec';
-    var title = isExec ? 'Time to Yes · Leadership' : 'Time to Yes · Ops Desk';
-    var subtitle = isExec
-      ? 'Dashboard · loan applications · outcomes'
-      : 'Dashboard · loan applications · worklist signals';
+    var title = isExec ? 'Time to Yes - Leadership' : 'Time to Yes - Ops Desk';
+    var prodLabel = LP.META[state.product] ? LP.META[state.product].label : 'All products';
+    var asOf = 'As of demo clock · Running user Demo';
 
-    // Four equal metric tiles (3/12 each = full row)
+    // Metric tiles: report name above number (LEX metric component pattern)
     var metrics = isExec
-      ? metricCard('Applications in', d.appsIn, 'This window · intake volume', '', 3) +
+      ? metricCard(
+          'Applications in',
+          d.appsIn,
+          'Apps by window (summary)',
+          'Intake volume · ' + state.window,
+          '',
+          3,
+          { cls: 'is-up', text: '+4% vs prior' }
+        ) +
         metricCard(
           'Median time to decision',
           d.medianDecision + 'd',
+          'Decision aging (summary)',
           'Stage enter to credit decision',
           'is-warn',
-          3
+          3,
+          { cls: 'is-down', text: '+0.4d vs prior' }
         ) +
-        metricCard('Funded', funded(d), 'Closed in window', 'is-ok', 3) +
-        metricCard('App to funded', conv(d) + '%', 'Illustrative conversion', '', 3)
-      : metricCard('Stuck past SLA', d.stuck, 'Primary worklist size', 'is-hot', 3) +
-        metricCard('In conditions', cond(d), 'Approved but not clear', 'is-warn', 3) +
-        metricCard('Docs / rules holds', d.policyHold, 'Completeness + eligibility', '', 3) +
-        metricCard('System mismatch', d.dualSystem, 'CRM vs LOS status', 'is-warn', 3);
-
-    var path = d.funnel
-      .map(function (s) {
-        return (
-          '<button type="button" class="ln-path__step' +
-          (s.stuck ? ' is-stuck' : '') +
-          (state.stage === s.id ? ' is-on' : '') +
-          '" data-stage="' +
-          s.id +
-          '"><span>' +
-          s.name +
-          '</span><span class="ln-path__n">' +
-          s.count +
-          '</span></button>'
+        metricCard(
+          'Funded',
+          funded(d),
+          'Funded applications (summary)',
+          'Closed in window',
+          'is-ok',
+          3,
+          { cls: 'is-up', text: '+2 vs prior' }
+        ) +
+        metricCard(
+          'App to funded',
+          conv(d) + '%',
+          'Conversion (illustrative)',
+          'Funded / apps in',
+          '',
+          3,
+          null
+        )
+      : metricCard(
+          'Stuck past SLA',
+          d.stuck,
+          'Open exceptions (summary)',
+          'Primary worklist size',
+          'is-hot',
+          3,
+          { cls: 'is-down', text: '+3 vs prior' }
+        ) +
+        metricCard(
+          'In conditions',
+          cond(d),
+          'Approved w/ conditions',
+          'Approved but not clear to fund',
+          'is-warn',
+          3,
+          null
+        ) +
+        metricCard(
+          'Docs / rules holds',
+          d.policyHold,
+          'Holds by type (summary)',
+          'Completeness + eligibility',
+          '',
+          3,
+          null
+        ) +
+        metricCard(
+          'System mismatch',
+          d.dualSystem,
+          'CRM vs LOS status',
+          'Source of truth conflicts',
+          'is-warn',
+          3,
+          null
         );
-      })
-      .join('');
 
     var scoreRows = LP.scorecardRows()
       .map(function (p) {
@@ -180,9 +271,9 @@
           (state.product === p.id ? ' is-on' : '') +
           '" data-product="' +
           p.id +
-          '"><td><strong>' +
+          '"><td><span class="ln-link">' +
           p.label +
-          '</strong></td><td>' +
+          '</span></td><td>' +
           p.med +
           'd</td><td>' +
           p.stuck +
@@ -213,73 +304,81 @@
       .join('');
 
     var lower = isExec
-      ? '<article class="ln-comp ln-comp--8"><header class="ln-comp__header"><h3>Product scorecard</h3><span class="ln-comp__menu">▾</span></header>' +
-        '<div class="ln-comp__body"><table class="ln-table"><thead><tr><th>Product</th><th>Med. decision</th><th>Past SLA</th><th>Conv*</th></tr></thead><tbody>' +
+      ? '<article class="ln-comp ln-comp--8">' +
+        compHeader('Product scorecard') +
+        '<div class="ln-comp__body"><div class="ln-table-wrap"><table class="ln-table"><thead><tr><th>Product</th><th>Med. decision</th><th>Past SLA</th><th>Conv*</th></tr></thead><tbody>' +
         scoreRows +
-        '</tbody></table><p class="ln-metric__footer" style="margin-top:8px">*Illustrative. Click a product row to filter this dashboard.</p></div></article>' +
-        '<article class="ln-comp ln-comp--4"><header class="ln-comp__header"><h3>Leadership notes</h3><span class="ln-comp__menu">▾</span></header>' +
+        '</tbody></table></div><p class="ln-comp-foot">*Illustrative. Click a product to filter dashboard components.</p></div></article>' +
+        '<article class="ln-comp ln-comp--4">' +
+        compHeader('Leadership focus') +
         '<div class="ln-comp__body"><ul class="ln-notes-list">' +
         '<li>Is median decision moving for the right reason?</li>' +
         '<li>Which product path is slowest for this book?</li>' +
         '<li>Is stuck rising faster than apps in?</li>' +
-        '</ul><div class="ln-actions-row"><button type="button" class="ln-btn ln-btn--brand" data-role-switch="ops">Open Ops desk</button></div></div></article>'
-      : '<article class="ln-comp ln-comp--6"><header class="ln-comp__header"><h3>Why applications stall</h3><span class="ln-comp__menu">▾</span></header>' +
+        '</ul><div class="ln-actions-row"><button type="button" class="ln-btn ln-btn--brand" data-role-switch="ops">Switch to Ops desk</button></div></div></article>'
+      : '<article class="ln-comp ln-comp--6">' +
+        compHeader('Why applications stall') +
         '<div class="ln-comp__body">' +
         hbar(d.reasons) +
-        '</div></article>' +
-        '<article class="ln-comp ln-comp--6"><header class="ln-comp__header"><h3>Act now · sample apps</h3><span class="ln-comp__menu">▾</span></header>' +
+        '<p class="ln-comp-foot">Horizontal bar · count of open stalls by theme</p></div></article>' +
+        '<article class="ln-comp ln-comp--6">' +
+        compHeader('Act now (sample)') +
         '<div class="ln-comp__body"><ul class="ln-list">' +
         watch +
         '</ul><div class="ln-actions-row">' +
         '<button type="button" class="ln-btn ln-btn--brand" data-go-apps>Open Applications</button>' +
-        '<button type="button" class="ln-btn" data-go-eq>Exception Queue</button></div></div></article>';
+        '<button type="button" class="ln-btn ln-btn--neutral" data-go-eq>Exception Queue</button></div></div></article>';
 
     root.innerHTML =
       '<div class="ln-root">' +
-      '<div class="ln-page-header">' +
-      '<div class="ln-page-header__row">' +
-      '<div class="ln-page-header__icon">DB</div>' +
-      '<div class="ln-page-header__meta">' +
-      '<div class="ln-page-header__eyebrow">Xtreme · Dashboards</div>' +
-      '<h1 class="ln-page-header__title">' +
+      '<div class="ln-dash-top">' +
+      '<div class="ln-breadcrumb"><button type="button" data-skin="custom">Dashboards</button><span class="ln-breadcrumb__sep">›</span><span>' +
+      title +
+      '</span></div>' +
+      '<div class="ln-dash-top__row">' +
+      '<div class="ln-dash-top__title-block">' +
+      '<h1 class="ln-dash-top__title">' +
       title +
       '</h1>' +
-      '<div class="ln-page-header__eyebrow">' +
-      subtitle +
-      ' · demo data · not a live org</div></div>' +
-      '<div class="ln-page-header__actions">' +
-      '<button type="button" class="ln-btn' +
-      (isExec ? ' is-on' : '') +
+      '<div class="ln-dash-top__meta">Dynamic dashboard · Xtreme · loan applications · demo data (not a live org)</div>' +
+      '</div>' +
+      '<div class="ln-dash-top__actions">' +
+      '<div class="ln-btn-group" role="group" aria-label="Dashboard view">' +
+      '<button type="button" class="' +
+      (isExec ? 'is-on' : '') +
       '" data-role="exec">Leadership</button>' +
-      '<button type="button" class="ln-btn' +
-      (!isExec ? ' is-on' : '') +
-      '" data-role="ops">Ops desk</button>' +
-      '<button type="button" class="ln-btn ln-btn--brand" data-go-eq>Exceptions</button>' +
-      '</div></div>' +
-      '<div class="ln-filter-bar">' +
-      '<label>Product<select id="ln-product"></select></label>' +
-      '<label>Date range<select id="ln-window"><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option></select></label>' +
+      '<button type="button" class="' +
+      (!isExec ? 'is-on' : '') +
+      '" data-role="ops">Ops desk</button></div>' +
       '<button type="button" class="ln-btn ln-btn--neutral" id="ln-refresh">Refresh</button>' +
+      '<button type="button" class="ln-btn ln-btn--brand" data-go-eq">Open Queue</button>' +
+      '</div></div></div>' +
+      '<div class="ln-filters">' +
+      '<label>Product<select id="ln-product"></select></label>' +
+      '<label>Date range<select id="ln-window"><option value="7d">Last 7 Days</option><option value="30d">Last 30 Days</option></select></label>' +
+      '<span class="ln-filters__spacer"></span>' +
       '<div class="ln-skin-toggle" role="group" aria-label="Dashboard skin">' +
       '<button type="button" data-skin="custom">Custom prototype</button>' +
-      '<button type="button" class="is-on" data-skin="native">Lightning layout</button>' +
-      '</div></div></div>' +
-      '<p class="ln-note">Lightning-style layout: page header, filters, 12-column components. Same demo metrics as the custom prototype. Not Salesforce-hosted.</p>' +
-      '<div id="ln-product-chips" class="ln-chip-host prod-chip-rail"></div>' +
-      '<div id="ln-product-dna" class="prod-dna-host"></div>' +
-      '<div class="ln-grid">' +
+      '<button type="button" class="is-on" data-skin="native">Lightning</button>' +
+      '</div></div>' +
+      '<div class="ln-chip-wrap"><div id="ln-product-chips" class="prod-chip-rail"></div></div>' +
+      '<div class="ln-dna-wrap"><div id="ln-product-dna" class="prod-dna-host"></div></div>' +
+      '<div class="ln-grid-wrap"><div class="ln-grid">' +
       metrics +
-      '<article class="ln-comp ln-comp--12"><header class="ln-comp__header"><h3>Application path · stage counts</h3><span class="ln-comp__menu">▾</span></header>' +
-      '<div class="ln-comp__body"><div class="ln-path">' +
-      path +
-      '</div></div></article>' +
+      '<article class="ln-comp ln-comp--12">' +
+      compHeader('Application path by stage') +
+      '<div class="ln-comp__body">' +
+      funnelChart(d.funnel) +
+      '<p class="ln-comp-foot">Click a stage to highlight · amber = friction on time to yes</p></div></article>' +
       lower +
-      '</div>' +
-      '<p class="ln-footer">As of demo clock · ' +
-      (LP.META[state.product] ? LP.META[state.product].label : 'All products') +
+      '</div></div>' +
+      '<div class="ln-footer"><span><strong>Filters:</strong> ' +
+      prodLabel +
       ' · ' +
       state.window +
-      ' · Running user: Demo</p></div>';
+      '</span><span>' +
+      asOf +
+      '</span><span>Same metrics as Custom prototype skin</span></div></div>';
 
     var sel = $('#ln-product');
     if (sel) {
