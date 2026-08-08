@@ -93,8 +93,9 @@
   }
 
   function navigateExceptions() {
-    const chip = document.querySelector('[data-shell-app="exceptions"][data-shell-view="queue"]');
-    if (chip) chip.click();
+    if (window.mortgageShell && window.mortgageShell.navigate) {
+      window.mortgageShell.navigate('exceptions', 'queue');
+    }
   }
 
   function condCount(d) {

@@ -79,6 +79,21 @@ body {
   font-weight: 600;
 }
 
+.sf-global-header .header-exit {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  opacity: 0.9;
+}
+
+.sf-global-header .header-exit:hover {
+  background: rgba(255, 255, 255, 0.12);
+  opacity: 1;
+}
+
 /* Waffle / App Launcher button */
 .waffle-btn {
   display: inline-flex;
@@ -221,142 +236,20 @@ body {
   line-height: 1.3;
 }
 
-/* Context bar: fixed geometry so view labels / apps never reflow the chrome */
+/* One tab bar under the header */
 .sf-context-bar {
-  --chrome-bar-h: 48px;
-  --view-picker-w: 200px;
+  --chrome-bar-h: 44px;
   background: var(--surface);
   border-bottom: 1px solid var(--border-soft);
-  padding: 0 12px 0 0;
+  padding: 0 8px;
   display: flex;
-  flex-wrap: nowrap;
   align-items: stretch;
-  gap: 0;
   position: sticky;
   top: 40px;
   z-index: 65;
   box-shadow: var(--shadow);
   height: var(--chrome-bar-h);
   min-height: var(--chrome-bar-h);
-  max-height: var(--chrome-bar-h);
-  overflow: visible; /* dropdown can paint outside */
-}
-
-/* Keep chrome above the dismiss backdrop while a menu is open */
-body.chrome-menu-open .sf-global-header,
-body.chrome-menu-open .sf-context-bar {
-  z-index: 80;
-}
-
-.view-picker {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  flex: 0 0 var(--view-picker-w);
-  width: var(--view-picker-w);
-  min-width: var(--view-picker-w);
-  max-width: var(--view-picker-w);
-  border-right: 1px solid var(--border-soft);
-  margin: 0;
-  padding: 0;
-}
-
-.view-menu-btn {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 1px;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  padding: 0 28px 0 12px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-  position: relative;
-  text-align: left;
-  box-sizing: border-box;
-}
-
-.view-menu-btn:hover,
-.view-menu-btn[aria-expanded="true"] {
-  background: var(--sf-blue-light);
-}
-
-.view-menu-kicker {
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted-soft);
-  line-height: 1;
-}
-
-.view-menu-label {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--sf-navy);
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.view-chevron {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted-soft);
-  font-size: 0.7rem;
-  pointer-events: none;
-}
-
-.view-menu {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
-  z-index: 90;
-  width: max(var(--view-picker-w), 200px);
-  min-width: var(--view-picker-w);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  padding: 4px 0;
-}
-
-.view-menu-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 10px 14px;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.view-menu-item:hover {
-  background: var(--sf-blue-light);
-  color: var(--sf-blue-dark);
-}
-
-.view-menu-item.is-current {
-  background: var(--sf-blue-light);
-  color: var(--sf-blue-dark);
-  box-shadow: inset 3px 0 0 var(--sf-blue);
 }
 
 .sf-context-nav {
@@ -364,7 +257,7 @@ body.chrome-menu-open .sf-context-bar {
   flex-wrap: nowrap;
   align-items: center;
   gap: 2px;
-  padding: 0 8px;
+  padding: 0 4px;
   flex: 1 1 auto;
   min-width: 0;
   height: 100%;
@@ -378,15 +271,16 @@ body.chrome-menu-open .sf-context-bar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
-  padding: 0 12px;
+  height: 100%;
+  padding: 0 14px;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--muted);
   background: transparent;
   border: none;
-  border-radius: var(--radius);
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
@@ -399,15 +293,10 @@ body.chrome-menu-open .sf-context-bar {
 }
 
 .nav-chip.is-active {
-  color: var(--sf-blue);
-  background: var(--sf-blue-light);
-  box-shadow: inset 0 -2px 0 var(--sf-blue);
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-
-.nav-chip--link {
-  margin-left: auto;
-  color: var(--sf-blue);
+  color: var(--sf-blue-dark);
+  background: transparent;
+  border-bottom-color: var(--sf-blue);
+  font-weight: 700;
 }
 
 .demo-banner {

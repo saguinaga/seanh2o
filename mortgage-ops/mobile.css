@@ -28,58 +28,14 @@
   }
 
   .sf-context-bar {
-    --chrome-bar-h: 92px; /* view row 48 + chips row 44 — fixed so tabs never jump */
-    --view-picker-w: 100%;
+    --chrome-bar-h: 44px;
     top: 44px;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
-    height: var(--chrome-bar-h);
-    min-height: var(--chrome-bar-h);
-    max-height: var(--chrome-bar-h);
-    overflow: visible;
-  }
-
-  .view-picker {
-    flex: 0 0 48px;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    height: 48px;
-    border-right: none;
-    border-bottom: 1px solid var(--border-soft);
-    margin: 0;
-    padding: 0;
-  }
-
-  .view-menu-btn {
-    width: 100%;
-    height: 48px;
-    padding: 0 32px 0 14px;
-  }
-
-  .view-menu-label {
-    max-width: none;
-  }
-
-  .view-menu {
-    left: 8px;
-    right: 8px;
-    width: auto;
-    min-width: 0;
+    padding: 0 4px;
   }
 
   .sf-context-nav {
-    flex: 0 0 44px;
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
-    padding: 0 8px;
-    gap: 4px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
+    padding: 0 4px;
+    gap: 0;
     scrollbar-width: none;
   }
 
@@ -88,14 +44,8 @@
   }
 
   .nav-chip {
-    height: 32px;
     padding: 0 12px;
     font-size: 0.78rem;
-    flex-shrink: 0;
-  }
-
-  .nav-chip--link {
-    margin-left: 0;
   }
 
   .demo-banner {
@@ -104,20 +54,9 @@
     line-height: 1.35;
   }
 
-  .app-launcher {
-    left: 8px;
-    right: 8px;
-    width: auto;
-    max-height: min(70vh, 480px);
-    overflow-y: auto;
-  }
-
-  .app-launcher__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .launcher-tile--exit {
-    grid-column: auto;
+  .sf-global-header .header-exit {
+    font-size: 0.75rem;
+    padding: 4px 8px;
   }
 
   .case-study {
