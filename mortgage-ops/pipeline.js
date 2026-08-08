@@ -311,6 +311,403 @@
     },
   ];
 
+  /**
+   * Expand demo book to ~100 apps with varied products, stages, and friction patterns.
+   * Seed apps above stay first (linked to Exceptions / act-now). Generated ids APP-50xxx+.
+   */
+  (function expandBook() {
+    var TARGET = 100;
+    // Seeded RNG so the book is stable across reloads (demo, not live data)
+    var _s = 0x2f6e2b1;
+    function rnd() {
+      _s = (_s * 1664525 + 1013904223) >>> 0;
+      return _s / 4294967296;
+    }
+    function ri(n) {
+      return Math.floor(rnd() * n);
+    }
+    var OWNERS = ['M. Chen', 'J. Ortiz', 'A. Singh', 'R. Patel', 'K. Brooks', 'Funding desk', 'L. Nguyen', 'S. Okonkwo'];
+    var BROKERS = [
+      { name: 'Summit Capital', tier: 'A' },
+      { name: 'Harbor Investors', tier: 'A' },
+      { name: 'Metro Hard Money', tier: 'B' },
+      { name: 'Pacific BFR LLC', tier: 'B' },
+      { name: 'Coastline Brokers', tier: 'B' },
+      { name: 'Inland Equity Desk', tier: 'C' },
+      { name: 'Northstar Lending Group', tier: 'A' },
+      { name: 'Valley Correspondent', tier: 'C' },
+      { name: 'Bay Area Private Credit', tier: 'B' },
+      { name: 'Sunbelt Capital Partners', tier: 'A' },
+    ];
+    var PRODUCTS = [
+      { key: 'bridge', label: 'Bridge', weight: 22 },
+      { key: 'fix_flip', label: 'Fix-and-flip', weight: 18 },
+      { key: 'dscr', label: 'DSCR (rental)', weight: 18 },
+      { key: 'term_rental', label: 'Term rental / portfolio', weight: 14 },
+      { key: 'bfr', label: 'Build-for-rent', weight: 12 },
+      { key: 'non_qm', label: 'Non-QM / alt docs', weight: 16 },
+    ];
+    var STAGES_GEN = [
+      { id: 'app', label: 'Application in', weight: 16 },
+      { id: 'uw', label: 'In underwriting', weight: 32 },
+      { id: 'cond', label: 'Approved w/ conditions', weight: 24 },
+      { id: 'ctf', label: 'Clear to fund', weight: 14 },
+      { id: 'funded', label: 'Funded', weight: 14 },
+    ];
+
+    var SCENARIOS = {
+      bridge: [
+        {
+          tags: ['stuck', 'policy'],
+          issues: ['Entity docs do not match parties on application'],
+          conds: [],
+          note: 'Policy path before decision. Owner needed on entity package.',
+        },
+        {
+          tags: ['stuck', 'conditions'],
+          issues: ['Interest reserve evidence incomplete'],
+          conds: [
+            { text: 'Interest reserve wire evidence', owner: 'Broker' },
+            { text: 'Updated payoff statement', owner: 'Ops' },
+          ],
+          note: 'Approved subject to reserves. Tier pressure if SLA slips.',
+        },
+        {
+          tags: ['data'],
+          issues: ['CRM stage lag vs LOS status'],
+          conds: [],
+          note: 'Dual-system noise. Fix source of truth before broker status.',
+        },
+        {
+          tags: [],
+          issues: [],
+          conds: [],
+          note: 'Clean bridge file in normal flow.',
+        },
+        {
+          tags: ['stuck'],
+          issues: ['Extension request with incomplete exit narrative'],
+          conds: [{ text: 'Exit / refinance LOI', owner: 'Broker' }],
+          note: 'Maturity risk. Exit story incomplete.',
+        },
+      ],
+      fix_flip: [
+        {
+          tags: ['stuck'],
+          issues: ['Draw inspection overdue', 'ARV depends on scope verification'],
+          conds: [],
+          note: 'Rehab capital stalled on inspection.',
+        },
+        {
+          tags: ['stuck', 'conditions'],
+          issues: ['Budget change after underwrite'],
+          conds: [
+            { text: 'Revised rehab budget signed', owner: 'Broker' },
+            { text: 'Inspection on draw #2', owner: 'Ops' },
+          ],
+          note: 'Scope creep after yes. Conditions factory owns the list.',
+        },
+        {
+          tags: ['policy'],
+          issues: ['LTC out of product box · exception path'],
+          conds: [],
+          note: 'Needs product exception or restructure.',
+        },
+        {
+          tags: [],
+          issues: [],
+          conds: [{ text: 'Permit package (cleared)', owner: 'Ops', status: 'cleared' }],
+          note: 'Flip progressing; prior conditions mostly clear.',
+        },
+      ],
+      dscr: [
+        {
+          tags: ['conditions', 'policy'],
+          issues: ['Rent roll vs DSCR underwrite mismatch'],
+          conds: [
+            { text: 'Signed rent roll supporting underwrite rents', owner: 'Broker' },
+            { text: 'Leases matching DSCR rent used', owner: 'Broker' },
+            { text: 'Re-run DSCR after package', owner: 'UW' },
+          ],
+          note: 'Coverage number is the decision. Package must support it.',
+        },
+        {
+          tags: ['stuck', 'conditions'],
+          issues: ['STR income package incomplete'],
+          conds: [{ text: '12-mo STR platform statements', owner: 'Broker' }],
+          note: 'Short-term rental path needs full income stack.',
+        },
+        {
+          tags: [],
+          issues: [],
+          conds: [],
+          note: 'Stabilized DSCR rental on track.',
+        },
+        {
+          tags: ['data'],
+          issues: ['Multi-unit lease stack missing unit'],
+          conds: [{ text: 'Lease for missing unit', owner: 'Broker' }],
+          note: 'Property-level data gap.',
+        },
+      ],
+      term_rental: [
+        {
+          tags: ['conditions'],
+          issues: ['Portfolio unit data incomplete'],
+          conds: [
+            { text: 'Unit schedule for property gap', owner: 'Broker' },
+            { text: 'Portfolio insurance endorsement', owner: 'Broker' },
+          ],
+          note: 'Multi-property package holds conversion.',
+        },
+        {
+          tags: ['stuck'],
+          issues: ['Occupancy schedule stale'],
+          conds: [{ text: 'Current occupancy cert', owner: 'Broker' }],
+          note: 'Stabilized term product; occupancy truth lagging.',
+        },
+        {
+          tags: [],
+          issues: [],
+          conds: [],
+          note: 'Term rental moving cleanly.',
+        },
+      ],
+      bfr: [
+        {
+          tags: ['stuck'],
+          issues: ['Construction milestone package incomplete'],
+          conds: [],
+          note: 'Draw blocked on milestone evidence.',
+        },
+        {
+          tags: ['stuck', 'conditions'],
+          issues: ['Draw schedule vs budget mismatch'],
+          conds: [
+            { text: 'Updated draw schedule', owner: 'Broker' },
+            { text: 'GC change order log', owner: 'Ops' },
+          ],
+          note: 'BFR economics + construction stack.',
+        },
+        {
+          tags: [],
+          issues: [],
+          conds: [],
+          note: 'BFR intake / UW normal course.',
+        },
+      ],
+      non_qm: [
+        {
+          tags: ['stuck', 'policy'],
+          issues: ['Bank-statement package incomplete (12-mo)'],
+          conds: [],
+          note: 'Alt docs incomplete; decision clock should not run.',
+        },
+        {
+          tags: ['conditions'],
+          issues: ['LOX on credit event missing'],
+          conds: [
+            { text: 'Letter of explanation · credit event', owner: 'Broker' },
+            { text: 'Guideline set confirmation v4', owner: 'Ops' },
+          ],
+          note: 'Non-QM post-decision conditions.',
+        },
+        {
+          tags: ['policy'],
+          issues: ['Guideline set version conflict'],
+          conds: [],
+          note: 'Internal guideline alignment before broker chase.',
+        },
+        {
+          tags: [],
+          issues: [],
+          conds: [],
+          note: 'Alt-doc package complete enough to progress.',
+        },
+      ],
+    };
+
+    function pickWeighted(list) {
+      var total = 0;
+      var i;
+      for (i = 0; i < list.length; i++) total += list[i].weight || 1;
+      var r = rnd() * total;
+      for (i = 0; i < list.length; i++) {
+        r -= list[i].weight || 1;
+        if (r <= 0) return list[i];
+      }
+      return list[list.length - 1];
+    }
+
+    function amountFor(productKey) {
+      var bands = {
+        bridge: [420, 650, 780, 890, 1100, 1250, 1500, 1800],
+        fix_flip: [380, 520, 680, 780, 920, 1100, 1400],
+        dscr: [550, 720, 900, 1100, 1350, 1600, 2100],
+        term_rental: [900, 1200, 1800, 2400, 2800, 3200, 4100],
+        bfr: [2100, 2800, 3100, 3800, 4200, 5500, 6800],
+        non_qm: [480, 620, 750, 920, 1050, 1280, 1550],
+      };
+      var arr = bands[productKey] || bands.bridge;
+      var n = arr[ri(arr.length)];
+      if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'M';
+      return n + 'K';
+    }
+
+    function daysFor(stageId, stuck) {
+      if (stageId === 'funded') return 0;
+      if (stageId === 'ctf') return ri(3);
+      if (stageId === 'app') return ri(4) + 1;
+      if (stuck) return ri(10) + 6;
+      if (stageId === 'cond') return ri(8) + 2;
+      return ri(7) + 2;
+    }
+
+    function timeline(stageId, days, scenarioIssue) {
+      var ev = [{ t: 'Day 0', e: 'Application submitted' }];
+      if (stageId === 'app') {
+        ev.push({ t: 'Day ' + Math.min(days, 1), e: 'Intake review' });
+        return ev;
+      }
+      ev.push({ t: 'Day 1', e: 'Moved to underwriting' });
+      if (stageId === 'uw') {
+        if (scenarioIssue) ev.push({ t: 'Day ' + Math.max(2, Math.min(days, 4)), e: scenarioIssue });
+        ev.push({ t: 'Day ' + days, e: days >= 7 ? 'Still open · aging' : 'In underwriting' });
+        return ev;
+      }
+      ev.push({ t: 'Day ' + Math.max(2, Math.min(5, days)), e: 'Credit decision · approved w/ conditions' });
+      if (stageId === 'cond') {
+        ev.push({ t: 'Day ' + days, e: 'Waiting on condition package' });
+        return ev;
+      }
+      ev.push({ t: 'Day ' + Math.max(4, Math.min(days + 1, 9)), e: 'Conditions cleared' });
+      if (stageId === 'ctf') {
+        ev.push({ t: 'Day ' + days, e: 'Clear to fund · funding window' });
+        return ev;
+      }
+      ev.push({ t: 'Day ' + (days + 1), e: 'Funded' });
+      return ev;
+    }
+
+    function buildConditions(sc, stageId) {
+      if (stageId !== 'cond' && stageId !== 'ctf' && stageId !== 'funded') {
+        if (!sc.conds || !sc.conds.length) return [];
+      }
+      var list = (sc.conds || []).map(function (c, i) {
+        var status =
+          c.status ||
+          (stageId === 'funded' || stageId === 'ctf'
+            ? 'cleared'
+            : i === 0 && stageId === 'cond'
+              ? 'open'
+              : rnd() > 0.45
+                ? 'open'
+                : 'cleared');
+        if (stageId === 'funded' || stageId === 'ctf') status = 'cleared';
+        return {
+          id: 'c' + (i + 1),
+          text: c.text,
+          owner: c.owner || 'Broker',
+          status: status,
+        };
+      });
+      if (stageId === 'cond' && list.length === 0 && sc.tags && sc.tags.indexOf('conditions') !== -1) {
+        list.push({
+          id: 'c1',
+          text: 'Outstanding condition package item',
+          owner: 'Broker',
+          status: 'open',
+        });
+      }
+      return list;
+    }
+
+    var used = {};
+    APPS.forEach(function (a) {
+      used[a.id] = true;
+    });
+
+    var n = 0;
+    var seq = 50001;
+    while (APPS.length < TARGET && n < TARGET * 3) {
+      n++;
+      var prod = pickWeighted(PRODUCTS);
+      var stage = pickWeighted(STAGES_GEN);
+      var scenarios = SCENARIOS[prod.key] || SCENARIOS.bridge;
+      var sc = scenarios[ri(scenarios.length)];
+
+      // Stage-appropriate tag cleanup
+      var tags = (sc.tags || []).slice();
+      if (stage.id === 'funded' || stage.id === 'ctf') {
+        tags = tags.filter(function (t) {
+          return t !== 'stuck' && t !== 'conditions';
+        });
+      }
+      if (stage.id === 'app' || stage.id === 'uw') {
+        tags = tags.filter(function (t) {
+          return t !== 'conditions';
+        });
+      }
+      if (stage.id === 'cond' && tags.indexOf('conditions') === -1 && rnd() > 0.35) {
+        tags.push('conditions');
+      }
+      var stuck = tags.indexOf('stuck') !== -1 || (stage.id === 'uw' && rnd() > 0.72);
+      if (stuck && tags.indexOf('stuck') === -1 && stage.id !== 'funded' && stage.id !== 'ctf') tags.push('stuck');
+      if (stage.id === 'funded' || stage.id === 'ctf') stuck = false;
+
+      var days = daysFor(stage.id, stuck);
+      var broker = BROKERS[ri(BROKERS.length)];
+      var owner =
+        stage.id === 'ctf' || stage.id === 'funded'
+          ? 'Funding desk'
+          : OWNERS[ri(OWNERS.length - 1)];
+
+      var id = 'APP-' + seq;
+      seq++;
+      if (used[id]) continue;
+      used[id] = true;
+
+      var issue0 = sc.issues && sc.issues[0] ? sc.issues[0] : '';
+      var issues = stage.id === 'funded' || stage.id === 'ctf' ? [] : (sc.issues || []).slice();
+      if (stuck && issues.length === 0) issues.push('Aging past internal SLA');
+
+      var onWatch = stuck && rnd() > 0.55;
+      var exceptionId = null;
+      // Seed apps keep real EX- queue links; only a few generated rows claim an EX id
+      if (stuck && rnd() > 0.82) {
+        exceptionId = 'EX-' + (3000 + (seq % 900));
+      }
+
+      var conds = buildConditions(sc, stage.id);
+      if (stage.id === 'cond' && conds.length === 0) {
+        conds = [
+          { id: 'c1', text: 'Condition package item outstanding', owner: 'Broker', status: 'open' },
+          { id: 'c2', text: 'Ops verification of cleared items', owner: 'Ops', status: 'open' },
+        ];
+      }
+
+      APPS.push({
+        id: id,
+        productKey: prod.key,
+        product: prod.label,
+        stage: stage.label,
+        stageId: stage.id,
+        owner: owner,
+        days: days,
+        tags: tags,
+        amount: amountFor(prod.key),
+        broker: broker.name,
+        tier: broker.tier,
+        issues: issues,
+        timeline: timeline(stage.id, days, issue0),
+        exceptionId: exceptionId,
+        onWatch: onWatch,
+        conditions: conds,
+        notes: sc.note || '',
+      });
+    }
+  })();
+
   var STAGES = [
     { id: 'app', label: 'App in' },
     { id: 'uw', label: 'Underwriting' },
@@ -336,6 +733,8 @@
   function filtered() {
     var rows = APPS.filter(function (f) {
       if (productFilter !== 'all' && f.productKey !== productFilter) return false;
+      // Default book = open pipeline (exclude funded); other filters can still surface them if tagged
+      if (statusFilter === 'all' && f.stageId === 'funded') return false;
       if (statusFilter === 'stuck') return f.tags.indexOf('stuck') !== -1;
       if (statusFilter === 'conditions') return f.tags.indexOf('conditions') !== -1;
       if (statusFilter === 'policy')
@@ -354,8 +753,10 @@
   }
 
   function stats(pool) {
-    var base = productFilter === 'all' ? APPS : APPS.filter(function (f) {
+    var base = (productFilter === 'all' ? APPS : APPS.filter(function (f) {
       return f.productKey === productFilter;
+    })).filter(function (f) {
+      return f.stageId !== 'funded';
     });
     return {
       all: base.length,
