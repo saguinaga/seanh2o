@@ -154,29 +154,92 @@
         })
         .concat([1])
     );
-    return (
-      '<div class="ln-funnel">' +
-      funnel
-        .map(function (s) {
-          var w = Math.max(6, Math.round((s.count / max) * 100));
-          return (
-            '<div class="ln-funnel__row' +
-            (s.stuck ? ' is-stuck' : '') +
-            (state.stage === s.id ? ' is-on' : '') +
-            '"><button type="button" data-stage="' +
-            s.id +
-            '"><span class="ln-funnel__label">' +
-            s.name +
-            '</span><span class="ln-funnel__track"><span class="ln-funnel__fill" style="width:' +
-            w +
-            '%"></span></span><span class="ln-funnel__n">' +
-            s.count +
-            '</span></button></div>'
-          );
-        })
-        .join('') +
-      '</div>'
-    );
+    var selected = null;
+    if (state.stage) {
+      selected = funnel.find(function (s) {
+        return s.id === state.stage;
+      });
+    }
+
+    var rows = funnel
+      .map(function (s, i) {
+        var w = Math.max(8, Math.round((s.count / max) * 100));
+        var convTxt =
+          s.conv != null
+            ? Math.round(s.conv * 100) + '% from prior stage'
+            : i === 0
+              ? 'Top of funnel · open WIP'
+              : '';
+        if (s.stuck) convTxt = (convTxt ? convTxt + ' · ' : '') + 'Friction stage';
+        return (
+          '<button type="button" class="ln-funnel__row' +
+          (s.stuck ? ' is-stuck' : '') +
+          (state.stage === s.id ? ' is-on' : '') +
+          '" data-stage="' +
+          s.id +
+          '" aria-pressed="' +
+          (state.stage === s.id ? 'true' : 'false') +
+          '">' +
+          '<span class="ln-funnel__label">' +
+          s.name +
+          '</span>' +
+          '<span class="ln-funnel__track" aria-hidden="true">' +
+          '<span class="ln-funnel__fill" style="width:' +
+          w +
+          '%"></span>' +
+          (w >= 18
+            ? '<span class="ln-funnel__fill-label">' + s.count + ' apps</span>'
+            : '') +
+          '</span>' +
+          '<span class="ln-funnel__n">' +
+          s.count +
+          '</span>' +
+          (convTxt
+            ? '<span class="ln-funnel__meta">' + convTxt + '</span>'
+            : '') +
+          '</button>'
+        );
+      })
+      .join('');
+
+    var detail = '';
+    if (selected) {
+      var stageHints = {
+        app: 'Intake volume. Incomplete packages here should not start a decision clock.',
+        uw: 'Underwriting WIP. Owner load and idle time matter more than last-modified.',
+        cond: 'Approved with conditions: the factory floor. Highest conversion leak in specialty books.',
+        ctf: 'Clear to fund. Watch dual-system status before external broker status.',
+        funded: 'Funded is the outcome metric. Compare to apps in for true funnel health.',
+      };
+      var hint = stageHints[selected.id] || 'Stage selected from report chart.';
+      var convLine =
+        selected.conv != null
+          ? ' Stage conversion from prior: <strong>' + Math.round(selected.conv * 100) + '%</strong>.'
+          : '';
+      detail =
+        '<div class="ln-funnel__detail">' +
+        '<h4>' +
+        selected.name +
+        ' · ' +
+        selected.count +
+        ' applications</h4>' +
+        '<p>' +
+        hint +
+        convLine +
+        ' Click again to clear selection.</p>' +
+        '<div class="ln-funnel__detail-actions">' +
+        '<button type="button" class="ln-btn ln-btn--brand" data-go-apps>Open applications</button>' +
+        (selected.stuck
+          ? '<button type="button" class="ln-btn ln-btn--neutral" data-go-eq>Exception queue</button>'
+          : '') +
+        '<button type="button" class="ln-btn ln-btn--neutral" data-stage-clear>Clear selection</button>' +
+        '</div></div>';
+    } else {
+      detail =
+        '<p class="ln-comp-foot" style="margin-top:8px">Click a stage bar to inspect counts and jump to applications.</p>';
+    }
+
+    return '<div class="ln-funnel">' + rows + detail + '</div>';
   }
 
   function render() {
@@ -363,7 +426,7 @@
       compHeader('Report: Applications by Stage') +
       '<div class="ln-comp__body">' +
       funnelChart(d.funnel) +
-      '<p class="ln-comp-foot">Bar chart component · grouped by stage picklist</p></div></article>' +
+      '</div></article>' +
       lower +
       '</div></div>' +
       '<div class="ln-footer"><span><strong>Filters:</strong> ' +
@@ -413,6 +476,12 @@
       btn.addEventListener('click', function () {
         var id = btn.getAttribute('data-stage');
         state.stage = state.stage === id ? null : id;
+        render();
+      });
+    });
+    root.querySelectorAll('[data-stage-clear]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.stage = null;
         render();
       });
     });

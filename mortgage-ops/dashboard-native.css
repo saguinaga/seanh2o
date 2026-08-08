@@ -474,6 +474,7 @@
 }
 
 .ln-hbar__fill {
+  display: block;
   height: 100%;
   background: var(--ln-cloud);
   border-radius: 0;
@@ -491,26 +492,42 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Stage funnel as chart component */
+/* Stage bar chart (LEX horizontal bar component) */
 .ln-funnel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
+  min-width: 0;
 }
 
 .ln-funnel__row {
   display: grid;
-  grid-template-columns: minmax(100px, 22%) 1fr 48px;
+  grid-template-columns: minmax(88px, 24%) minmax(0, 1fr) 52px;
   gap: 10px;
   align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  background: transparent;
+  font-family: inherit;
   font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+  color: inherit;
 }
 
-.ln-funnel__row button {
-  all: unset;
-  display: contents;
-  cursor: pointer;
+.ln-funnel__row:hover {
+  background: #f3f2f2;
+  border-color: #e5e5e5;
+}
+
+.ln-funnel__row:focus-visible {
+  outline: 2px solid var(--ln-brand);
+  outline-offset: 1px;
 }
 
 .ln-funnel__label {
@@ -518,28 +535,59 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 400;
+  font-weight: 600;
+  font-size: 0.78rem;
 }
 
 .ln-funnel__track {
-  height: 22px;
+  display: block;
+  height: 28px;
   background: #ecebea;
   position: relative;
   min-width: 0;
+  overflow: hidden;
+  border: 1px solid #dddbda;
+  box-sizing: border-box;
 }
 
 .ln-funnel__fill {
+  display: block;
   height: 100%;
-  background: linear-gradient(90deg, #1b96ff, #0176d3);
-  min-width: 4px;
+  background: #1b96ff;
+  min-width: 6px;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: width 0.2s ease;
+}
+
+.ln-funnel__fill-label {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .ln-funnel__row.is-stuck .ln-funnel__fill {
-  background: linear-gradient(90deg, #fe9339, #dd7a01);
+  background: #fe9339;
+}
+
+.ln-funnel__row.is-on {
+  background: #eef4ff;
+  border-color: #0176d3;
 }
 
 .ln-funnel__row.is-on .ln-funnel__fill {
-  background: linear-gradient(90deg, #014486, #032d60);
+  background: #0176d3;
+}
+
+.ln-funnel__row.is-on.is-stuck .ln-funnel__fill {
+  background: #dd7a01;
 }
 
 .ln-funnel__row.is-on .ln-funnel__label {
@@ -551,7 +599,42 @@
   text-align: right;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
   color: var(--ln-text);
+}
+
+.ln-funnel__meta {
+  grid-column: 2 / -1;
+  font-size: 0.68rem;
+  color: var(--ln-muted);
+  margin-top: -2px;
+}
+
+.ln-funnel__detail {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem;
+  background: #fafaf9;
+}
+
+.ln-funnel__detail h4 {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: var(--ln-navy);
+}
+
+.ln-funnel__detail p {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--ln-text-weak);
+}
+
+.ln-funnel__detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* Tables (report table component) */
