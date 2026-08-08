@@ -789,7 +789,7 @@
   display: none;
 }
 
-/* Outer shell when native skin active */
+/* Outer shell when native skin active (keep skin bar contrast; do not wash it white) */
 #dash-root.is-native-skin {
   background: var(--ln-canvas);
 }
@@ -800,7 +800,9 @@
   border-left: none;
   border-right: none;
   border-top: none;
-  background: #fff;
+  /* Keep navy bar so white button labels stay readable */
+  background: #032d60;
+  color: #fff;
 }
 
 #dash-native-root:not([hidden]) {
