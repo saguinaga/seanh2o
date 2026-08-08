@@ -757,8 +757,8 @@ body.chrome-menu-open .sf-context-bar {
   margin-bottom: 14px !important;
 }
 
-/* Lightning card sections */
-.slds-card {
+/* Salesforce Lightning-style card sections */
+.sf-card {
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
@@ -767,7 +767,7 @@ body.chrome-menu-open .sf-context-bar {
   overflow: hidden;
 }
 
-.slds-card__header {
+.sf-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -776,19 +776,19 @@ body.chrome-menu-open .sf-context-bar {
   background: #fafaf9;
 }
 
-.slds-card__header h3 {
+.sf-card__header h3 {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--sf-navy);
 }
 
-.slds-card__header .meta {
+.sf-card__header .meta {
   font-size: 0.72rem;
   color: var(--muted-soft);
   font-weight: 600;
 }
 
-.slds-card__body {
+.sf-card__body {
   padding: 14px;
 }
 
