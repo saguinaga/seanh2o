@@ -76,9 +76,11 @@
   }
 
   function metricCard(label, value, footer, tone, span) {
+    // span is columns of 12 (3 = quarter, 4 = third, 6 = half)
+    var col = span || 3;
     return (
-      '<article class="ln-comp ln-comp--' +
-      (span || 4) +
+      '<article class="ln-comp ln-comp--metric ln-comp--' +
+      col +
       '">' +
       '<header class="ln-comp__header"><h3>' +
       label +
@@ -131,22 +133,23 @@
     if (!root) return;
     var d = data();
     var isExec = state.role === 'exec';
-    var title = isExec ? 'Time to Yes — Leadership' : 'Time to Yes — Ops Desk';
+    var title = isExec ? 'Time to Yes · Leadership' : 'Time to Yes · Ops Desk';
     var subtitle = isExec
       ? 'Dashboard · loan applications · outcomes'
       : 'Dashboard · loan applications · worklist signals';
 
+    // Four equal metric tiles (3/12 each = full row)
     var metrics = isExec
       ? metricCard('Applications in', d.appsIn, 'This window · intake volume', '', 3) +
         metricCard(
           'Median time to decision',
           d.medianDecision + 'd',
-          'Stage enter → credit decision',
+          'Stage enter to credit decision',
           'is-warn',
           3
         ) +
         metricCard('Funded', funded(d), 'Closed in window', 'is-ok', 3) +
-        metricCard('App → funded', conv(d) + '%', 'Illustrative conversion', '', 3)
+        metricCard('App to funded', conv(d) + '%', 'Illustrative conversion', '', 3)
       : metricCard('Stuck past SLA', d.stuck, 'Primary worklist size', 'is-hot', 3) +
         metricCard('In conditions', cond(d), 'Approved but not clear', 'is-warn', 3) +
         metricCard('Docs / rules holds', d.policyHold, 'Completeness + eligibility', '', 3) +
@@ -213,21 +216,21 @@
       ? '<article class="ln-comp ln-comp--8"><header class="ln-comp__header"><h3>Product scorecard</h3><span class="ln-comp__menu">▾</span></header>' +
         '<div class="ln-comp__body"><table class="ln-table"><thead><tr><th>Product</th><th>Med. decision</th><th>Past SLA</th><th>Conv*</th></tr></thead><tbody>' +
         scoreRows +
-        '</tbody></table><p class="ln-metric__footer" style="margin-top:8px">*Illustrative. Click a product to filter this dashboard.</p></div></article>' +
+        '</tbody></table><p class="ln-metric__footer" style="margin-top:8px">*Illustrative. Click a product row to filter this dashboard.</p></div></article>' +
         '<article class="ln-comp ln-comp--4"><header class="ln-comp__header"><h3>Leadership notes</h3><span class="ln-comp__menu">▾</span></header>' +
-        '<div class="ln-comp__body"><ul class="ln-list" style="display:block">' +
-        '<li style="display:block;border:none;padding:4px 0">Is median decision moving for the right reason?</li>' +
-        '<li style="display:block;border:none;padding:4px 0">Which product path is slowest for this book?</li>' +
-        '<li style="display:block;border:none;padding:4px 0">Is stuck rising faster than apps in?</li>' +
-        '</ul><button type="button" class="ln-btn ln-btn--brand" style="margin-top:10px" data-role-switch="ops">Open Ops desk</button></div></article>'
+        '<div class="ln-comp__body"><ul class="ln-notes-list">' +
+        '<li>Is median decision moving for the right reason?</li>' +
+        '<li>Which product path is slowest for this book?</li>' +
+        '<li>Is stuck rising faster than apps in?</li>' +
+        '</ul><div class="ln-actions-row"><button type="button" class="ln-btn ln-btn--brand" data-role-switch="ops">Open Ops desk</button></div></div></article>'
       : '<article class="ln-comp ln-comp--6"><header class="ln-comp__header"><h3>Why applications stall</h3><span class="ln-comp__menu">▾</span></header>' +
         '<div class="ln-comp__body">' +
         hbar(d.reasons) +
         '</div></article>' +
-        '<article class="ln-comp ln-comp--6"><header class="ln-comp__header"><h3>Report · Open exceptions (sample)</h3><span class="ln-comp__menu">▾</span></header>' +
+        '<article class="ln-comp ln-comp--6"><header class="ln-comp__header"><h3>Act now · sample apps</h3><span class="ln-comp__menu">▾</span></header>' +
         '<div class="ln-comp__body"><ul class="ln-list">' +
         watch +
-        '</ul><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">' +
+        '</ul><div class="ln-actions-row">' +
         '<button type="button" class="ln-btn ln-btn--brand" data-go-apps>Open Applications</button>' +
         '<button type="button" class="ln-btn" data-go-eq>Exception Queue</button></div></div></article>';
 
@@ -245,10 +248,6 @@
       subtitle +
       ' · demo data · not a live org</div></div>' +
       '<div class="ln-page-header__actions">' +
-      '<div class="ln-skin-toggle" role="group" aria-label="Dashboard skin">' +
-      '<button type="button" data-skin="custom">Custom prototype</button>' +
-      '<button type="button" class="is-on" data-skin="native">Lightning layout</button>' +
-      '</div>' +
       '<button type="button" class="ln-btn' +
       (isExec ? ' is-on' : '') +
       '" data-role="exec">Leadership</button>' +
@@ -261,8 +260,13 @@
       '<label>Product<select id="ln-product"></select></label>' +
       '<label>Date range<select id="ln-window"><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option></select></label>' +
       '<button type="button" class="ln-btn ln-btn--neutral" id="ln-refresh">Refresh</button>' +
-      '</div></div>' +
-      '<p class="ln-note">Lightning-style layout study: page header, filter bar, and dashboard components (metric + report charts). Same underlying demo metrics as the custom prototype. Not Salesforce-hosted.</p>' +
+      '<div class="ln-skin-toggle" role="group" aria-label="Dashboard skin">' +
+      '<button type="button" data-skin="custom">Custom prototype</button>' +
+      '<button type="button" class="is-on" data-skin="native">Lightning layout</button>' +
+      '</div></div></div>' +
+      '<p class="ln-note">Lightning-style layout: page header, filters, 12-column components. Same demo metrics as the custom prototype. Not Salesforce-hosted.</p>' +
+      '<div id="ln-product-chips" class="ln-chip-host prod-chip-rail"></div>' +
+      '<div id="ln-product-dna" class="prod-dna-host"></div>' +
       '<div class="ln-grid">' +
       metrics +
       '<article class="ln-comp ln-comp--12"><header class="ln-comp__header"><h3>Application path · stage counts</h3><span class="ln-comp__menu">▾</span></header>' +
@@ -284,6 +288,12 @@
       sel.addEventListener('change', function () {
         setProduct(sel.value);
       });
+    }
+    if (LP.renderChips) {
+      LP.renderChips($('#ln-product-chips'), state.product, setProduct);
+    }
+    if (LP.renderDna) {
+      LP.renderDna($('#ln-product-dna'), state.product);
     }
     var win = $('#ln-window');
     if (win) {

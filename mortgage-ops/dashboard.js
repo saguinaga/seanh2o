@@ -154,9 +154,11 @@
   function applySkinVisibility() {
     var customRoot = $('#dash-custom-root');
     var nativeRoot = $('#dash-native-root');
+    var dashRoot = $('#dash-root');
     var isNative = state.skin === 'native';
     if (customRoot) customRoot.hidden = isNative;
     if (nativeRoot) nativeRoot.hidden = !isNative;
+    if (dashRoot) dashRoot.classList.toggle('is-native-skin', isNative);
     document.querySelectorAll('[data-dash-skin]').forEach(function (btn) {
       btn.classList.toggle('is-on', btn.getAttribute('data-dash-skin') === state.skin);
     });
