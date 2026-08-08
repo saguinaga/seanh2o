@@ -770,12 +770,12 @@
 
     var linkBar =
       '<div class="app-link-bar">' +
-      '<span class="app-link-bar__text"><strong>Xtreme applications</strong>: working list under Leadership / Ops dashboards and the exception queue. Same APP ids, same product chips.</span>' +
+      '<span class="app-link-bar__text"><strong>Work layer</strong>: same APP ids as Ops act-now and Exceptions, same product chips as Dashboard. Conditions and notes on the file.</span>' +
       '<div class="app-link-bar__actions">' +
       '<button type="button" data-nav="accelerator:dashboard">Dashboard</button>' +
       '<button type="button" data-nav="exceptions:queue">Exceptions</button>' +
-      '<button type="button" data-nav="accelerator:path">Path</button>' +
       '<button type="button" data-nav="reports:ops-folder">Reports</button>' +
+      '<button type="button" data-nav="accelerator:path">Path</button>' +
       '</div></div>';
 
     root.innerHTML =

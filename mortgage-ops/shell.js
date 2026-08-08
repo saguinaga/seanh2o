@@ -1,35 +1,84 @@
 /**
- * Illustrative Lightning chrome: App Launcher (waffle) + in-app view menu.
- * Demo only — not a live Salesforce org.
+ * Illustrative Lightning chrome: App Launcher + in-app view menu.
+ * One story spine across surfaces (interview walk: high → work → dig → deep).
+ * Demo only; not a live Salesforce org.
  */
 (function () {
-  const APPS = {
-    exceptions: {
-      id: 'exceptions',
-      name: 'Exception Queue',
-      blurb: 'Stuck applications · AI ranks · humans clear',
-      icon: 'E',
-      views: [
-        { id: 'queue', label: 'Exception queue', panel: 'panel-exceptions' },
-        { id: 'writeup', label: 'Write-up', panel: 'panel-writeup' },
-      ],
+  // Shared walk: same APP ids, same products, same time-to-yes story on every screen.
+  const STORY = [
+    {
+      key: 'dashboard',
+      appId: 'accelerator',
+      viewId: 'dashboard',
+      label: 'Dashboard',
+      altitude: 'High',
+      line: 'Leadership outcomes and Ops act-now. Same product chips everywhere.',
+      next: 'Open Applications for the working list under the charts.',
     },
+    {
+      key: 'applications',
+      appId: 'pipeline',
+      viewId: 'all-open',
+      label: 'Applications',
+      altitude: 'Work',
+      line: 'System of work: stages, conditions, notes. Same APP- records as Ops and Exceptions.',
+      next: 'Stuck file? Exception queue ranks it; people claim and clear.',
+    },
+    {
+      key: 'exceptions',
+      appId: 'exceptions',
+      viewId: 'queue',
+      label: 'Exceptions',
+      altitude: 'Work',
+      line: 'AI ranks stuck apps. Humans claim, clear conditions, or route. AI does not approve loans.',
+      next: 'Need the chart behind the stall? Reports dig; Path shows the stage map.',
+    },
+    {
+      key: 'reports',
+      appId: 'reports',
+      viewId: 'ops-folder',
+      label: 'Reports',
+      altitude: 'Measure',
+      line: 'Pipeline charts and digs. When a summary is thin, go to the row (SOQL story stays in write-up).',
+      next: 'Map stages on Path, or return to the dashboard you would put in front of leadership.',
+    },
+    {
+      key: 'path',
+      appId: 'accelerator',
+      viewId: 'path',
+      label: 'Path',
+      altitude: 'Map',
+      line: 'Intake to fund on the application. Friction stages open the same queues and lists.',
+      next: 'Write-up is the depth layer: how I show up while the book is live.',
+    },
+    {
+      key: 'writeup',
+      appId: 'accelerator',
+      viewId: 'writeup',
+      label: 'Write-up',
+      altitude: 'Deep',
+      line: 'Build while live · Salesforce dig when needed · multi-party loan work · AI as speed not authority.',
+      next: 'Back to Dashboard to feel it, not only read it.',
+    },
+  ];
+
+  const APPS = {
     accelerator: {
       id: 'accelerator',
       name: 'Xtreme',
-      blurb: 'Loan apps · time to yes · dashboards',
-      icon: 'A',
+      blurb: 'Time to yes · dashboards · path · story',
+      icon: 'X',
       views: [
         { id: 'dashboard', label: 'Dashboard', panel: 'panel-dashboard' },
-        { id: 'writeup', label: 'Write-up', panel: 'panel-writeup' },
         { id: 'path', label: 'App path', panel: 'panel-path' },
+        { id: 'writeup', label: 'Write-up', panel: 'panel-writeup' },
       ],
     },
     pipeline: {
       id: 'pipeline',
       name: 'Loan Applications',
-      blurb: 'Apps in flight · start to fund',
-      icon: 'L',
+      blurb: 'Working list · start to fund',
+      icon: 'A',
       views: [
         { id: 'all-open', label: 'All open', panel: 'panel-pipeline' },
         { id: 'past-sla', label: 'Past SLA', panel: 'panel-pipeline' },
@@ -41,10 +90,20 @@
         'conditions': 'conditions',
       },
     },
+    exceptions: {
+      id: 'exceptions',
+      name: 'Exception Queue',
+      blurb: 'Stuck apps · AI ranks · humans clear',
+      icon: 'E',
+      views: [
+        { id: 'queue', label: 'Exception queue', panel: 'panel-exceptions' },
+        { id: 'writeup', label: 'Write-up', panel: 'panel-writeup' },
+      ],
+    },
     reports: {
       id: 'reports',
       name: 'Reports',
-      blurb: 'Application pipeline charts',
+      blurb: 'Measure the funnel · dig when needed',
       icon: 'R',
       views: [
         { id: 'recent', label: 'All reports', panel: 'panel-reports' },
@@ -52,6 +111,15 @@
       ],
     },
   };
+
+  function storyFor(appId, viewId) {
+    if (viewId === 'writeup') return STORY.find(function (s) { return s.key === 'writeup'; });
+    if (appId === 'pipeline') return STORY.find(function (s) { return s.key === 'applications'; });
+    if (appId === 'exceptions') return STORY.find(function (s) { return s.key === 'exceptions'; });
+    if (appId === 'reports') return STORY.find(function (s) { return s.key === 'reports'; });
+    if (appId === 'accelerator' && viewId === 'path') return STORY.find(function (s) { return s.key === 'path'; });
+    return STORY.find(function (s) { return s.key === 'dashboard'; });
+  }
 
   const state = {
     // Public first paint: dashboard WOWs; write-up is one click for the narrative
@@ -207,26 +275,78 @@
     showPanel();
   }
 
+  function renderStoryRail() {
+    const rail = $('#story-rail');
+    if (!rail) return;
+    const here = storyFor(state.appId, state.viewId);
+    rail.innerHTML =
+      '<div class="story-rail__head">' +
+      '<span class="story-rail__kicker">Xtreme story</span>' +
+      '<span class="story-rail__you">You are here: <strong>' +
+      (here ? here.label : 'Dashboard') +
+      '</strong> · ' +
+      (here ? here.altitude : 'High') +
+      '</span></div>' +
+      '<div class="story-rail__steps" role="navigation" aria-label="Demo story path">' +
+      STORY.map(function (s, i) {
+        const on = here && s.key === here.key;
+        return (
+          '<button type="button" class="story-step' +
+          (on ? ' is-on' : '') +
+          '" data-story-app="' +
+          s.appId +
+          '" data-story-view="' +
+          s.viewId +
+          '"><span class="story-step__n">' +
+          (i + 1) +
+          '</span><span class="story-step__lab">' +
+          s.label +
+          '</span><span class="story-step__alt">' +
+          s.altitude +
+          '</span></button>'
+        );
+      }).join('<span class="story-step__arrow" aria-hidden="true">→</span>') +
+      '</div>' +
+      '<p class="story-rail__line">' +
+      (here ? here.line : '') +
+      '</p>' +
+      '<p class="story-rail__next"><strong>Next:</strong> ' +
+      (here ? here.next : '') +
+      '</p>';
+
+    rail.querySelectorAll('[data-story-app]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        navigate(btn.getAttribute('data-story-app'), btn.getAttribute('data-story-view'));
+      });
+    });
+  }
+
   function syncChrome() {
     const app = currentApp();
     const view = currentView();
+    const here = storyFor(state.appId, state.viewId);
     if (el.appName) el.appName.textContent = app.name;
     if (el.viewLabel) el.viewLabel.textContent = view.label;
     if (el.demoBanner) {
       el.demoBanner.textContent =
-        'Demo shell · ' + app.name + ' · click waffle or view menu · not a live org';
+        'Xtreme · loan applications · ' +
+        (here ? here.altitude + ' · ' + here.label : app.name) +
+        ' · same APP ids and products across screens · not a live org';
     }
+    renderStoryRail();
     // Highlight context chips
     $all('.nav-chip[data-shell-app]').forEach((node) => {
       const app = node.getAttribute('data-shell-app');
       const view = node.getAttribute('data-shell-view');
       let on = false;
-      if (app === 'pipeline' || app === 'reports') {
-        on = state.appId === app;
+      if (view === 'writeup') {
+        on = state.viewId === 'writeup';
+      } else if (app === 'pipeline') {
+        on = state.appId === 'pipeline';
+      } else if (app === 'reports') {
+        on = state.appId === 'reports';
       } else if (app === 'exceptions' && view === 'queue') {
         on = state.appId === 'exceptions' && state.viewId === 'queue';
-      } else if (view === 'writeup') {
-        on = state.viewId === 'writeup';
       } else {
         on = state.appId === app && state.viewId === view;
       }

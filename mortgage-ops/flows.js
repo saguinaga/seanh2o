@@ -140,14 +140,18 @@
 
   function drillLinks(step) {
     const links = [];
-    if (step.friction) {
-      links.push({ nav: 'exceptions:queue', label: 'Application exception queue', primary: true });
+    if (step.id === 'i4' || /condition/i.test(step.label || '') || /condition/i.test(step.title || '')) {
+      links.push({ nav: 'pipeline:conditions', label: 'Applications · conditions', primary: true });
+      links.push({ nav: 'exceptions:queue', label: 'Exception queue' });
+    } else if (step.friction) {
+      links.push({ nav: 'exceptions:queue', label: 'Exception queue', primary: true });
       links.push({ nav: 'pipeline:past-sla', label: 'Applications past SLA' });
     } else {
       links.push({ nav: 'accelerator:dashboard', label: 'Dashboard', primary: true });
-      links.push({ nav: 'pipeline:all-open', label: 'All applications' });
+      links.push({ nav: 'pipeline:all-open', label: 'Applications' });
     }
-    links.push({ nav: 'reports:ops-folder', label: 'App pipeline reports' });
+    links.push({ nav: 'reports:ops-folder', label: 'Reports' });
+    links.push({ nav: 'accelerator:writeup', label: 'Write-up (deep)' });
     return links;
   }
 
@@ -214,8 +218,8 @@
         })
         .join('') +
       '</ul>' +
-      '<div class="path-deep"><h4>Drill down</h4>' +
-      '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 8px">Jump to the working surface for this step on the loan application journey.</p>' +
+      '<div class="path-deep"><h4>Same story · next surface</h4>' +
+      '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 8px">Map layer opens Work / Measure surfaces. Same APP path as Dashboard and Applications.</p>' +
       '<div class="path-links drill-actions" style="margin-top:0">' +
       links +
       '</div></div>';

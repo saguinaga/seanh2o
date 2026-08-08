@@ -420,6 +420,153 @@ body.chrome-menu-open .sf-context-bar {
   margin: 0;
 }
 
+/* Shared story spine: high → work → measure → map → deep */
+.story-rail {
+  background: #fff;
+  border-bottom: 1px solid var(--border-soft);
+  padding: 10px 16px 12px;
+  box-shadow: 0 1px 0 rgba(3, 45, 96, 0.04);
+}
+
+.story-rail__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-bottom: 8px;
+}
+
+.story-rail__kicker {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sf-blue);
+}
+
+.story-rail__you {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.story-rail__you strong {
+  color: var(--sf-navy);
+}
+
+.story-rail__steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 4px 0;
+  margin-bottom: 8px;
+}
+
+.story-step {
+  font-family: inherit;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-soft);
+  background: #fafaf9;
+  color: var(--text);
+  cursor: pointer;
+  min-width: 88px;
+  text-align: left;
+  border-radius: 0;
+}
+
+.story-step:first-of-type {
+  border-radius: 4px 0 0 4px;
+}
+
+.story-step:last-of-type {
+  border-radius: 0 4px 4px 0;
+}
+
+.story-step:hover {
+  background: var(--sf-blue-light);
+  border-color: #b8d0f5;
+}
+
+.story-step.is-on {
+  background: var(--sf-blue);
+  border-color: var(--sf-blue);
+  color: #fff;
+  z-index: 1;
+}
+
+.story-step__n {
+  font-size: 0.65rem;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.story-step.is-on .story-step__n {
+  opacity: 0.9;
+}
+
+.story-step__lab {
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.story-step__alt {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.story-step__arrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  color: #c9c9c9;
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+.story-rail__line,
+.story-rail__next {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+  max-width: 920px;
+}
+
+.story-rail__line {
+  margin-bottom: 4px;
+  color: #3e3e3c;
+}
+
+.story-rail__next strong {
+  color: var(--sf-navy);
+}
+
+@media (max-width: 720px) {
+  .story-step {
+    min-width: 72px;
+    padding: 5px 8px;
+  }
+
+  .story-step__arrow {
+    display: none;
+  }
+
+  .story-rail__steps {
+    gap: 6px;
+  }
+
+  .story-step {
+    border-radius: 4px !important;
+  }
+}
+
 .chrome-backdrop {
   position: fixed;
   inset: 0;
