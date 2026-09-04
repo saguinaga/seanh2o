@@ -340,6 +340,93 @@
   color: #64748b;
 }
 
+.loan-type-row {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+
+.loan-type-btn,
+.dscr-target-btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #334155;
+  cursor: pointer;
+}
+
+.loan-type-btn.active,
+.dscr-target-btn.active {
+  background: #1e3a8a;
+  color: white;
+  border-color: #1e3a8a;
+}
+
+.loan-type-hint {
+  margin: 0 0 10px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.dscr-panel {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid #c7d2fe;
+  background: #eef2ff;
+  border-radius: 10px;
+}
+
+.dscr-panel[hidden] {
+  display: none;
+}
+
+.dscr-panel p {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #334155;
+}
+
+.dscr-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-bottom: 8px;
+}
+
+.dscr-target-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.dscr-io {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #334155;
+  cursor: pointer;
+}
+
+.dscr-status {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #1e293b;
+}
+
+.dscr-status.pass { color: #166534; }
+.dscr-status.warn { color: #a16207; }
+.dscr-status.fail { color: #b91c1c; }
+
 .financing-fields.is-disabled {
   opacity: 0.42;
   pointer-events: none;

@@ -7,7 +7,7 @@
     <meta name="description" content="Buy and hold and fix and flip underwriting calculators. Transparent math, live feedback.">
     <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
     <link rel="stylesheet" href="../files/main_style.css">
-    <link rel="stylesheet" href="../styles.css?v=39">
+    <link rel="stylesheet" href="../styles.css?v=46">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
@@ -36,7 +36,7 @@
     <div class="calc-header">
       <span class="calc-badge">Transaction Tool</span>
       <h3>Buy &amp; Hold Calculator</h3>
-      <p>Model rental investments in real time - cash flow, scenario comparison, HYSA opportunity cost. Drag a slider; the math updates instantly.</p>
+      <p>Model a rental in real time: cash flow, cap rate, cash-on-cash. Conventional or DSCR financing. DSCR qualifies on rent vs PITIA, not personal income.</p>
       <div class="calc-toolbar">
         <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
         <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
@@ -189,6 +189,28 @@
             <span class="cash-toggle-text">Cash purchase <span class="cash-toggle-hint">(no mortgage)</span></span>
           </label>
 
+          <div class="loan-type-row" id="loanTypeRow" role="group" aria-label="Loan type">
+            <button type="button" class="loan-type-btn" data-loan-type="conventional">Conventional</button>
+            <button type="button" class="loan-type-btn active" data-loan-type="dscr">DSCR</button>
+          </div>
+          <p class="loan-type-hint" id="loanTypeHint">DSCR qualifies on rent vs PITIA. Rate is usually higher. 20-25% down is typical.</p>
+
+          <div id="dscrPanel" class="dscr-panel">
+            <p>DSCR (debt service coverage) loans underwrite the property. Qualifying ratio is monthly rent divided by PITIA (principal and interest, taxes, insurance, HOA). Vacancy and management are your problem as the investor, not the lender's test. Typical down payment is 20-25%. Rate is usually higher than conventional.</p>
+            <div class="dscr-controls">
+              <div class="dscr-target-row">
+                <span>Target DSCR</span>
+                <button type="button" class="dscr-target-btn" data-dscr-target="1">1.00</button>
+                <button type="button" class="dscr-target-btn active" data-dscr-target="1.25">1.25</button>
+              </div>
+              <label class="dscr-io">
+                <input type="checkbox" id="dscrInterestOnly">
+                <span>Interest-only</span>
+              </label>
+            </div>
+            <div class="dscr-status" id="dscrStatus"></div>
+          </div>
+
           <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
             <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
             <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
@@ -326,6 +348,10 @@
               <span class="im-label"><abbr title="Cash-on-Cash Return - annual cash flow divided by the cash you actually invested (down payment + closing costs, etc.)">Cash-on-Cash</abbr></span>
               <span class="im-value" id="inlineCoC" data-sign="true">-</span>
             </div>
+            <div class="inline-metric">
+              <span class="im-label"><abbr title="Lender DSCR: monthly rent divided by PITIA (P&amp;I + taxes + insurance + HOA). This is how most residential DSCR loans are qualified.">Lender DSCR</abbr></span>
+              <span class="im-value" id="inlineDscr">-</span>
+            </div>
           </div>
           <div class="inline-note">Drag the rent &amp; expenses sliders on the left - watch these numbers move in real time.</div>
         </div>
@@ -370,6 +396,11 @@
             <div class="metric-label">Annual Cash Flow</div>
             <div class="metric-value" id="annualCashFlow">-</div>
             <div class="metric-sub">Year 1 net income</div>
+          </div>
+          <div class="metric-card accent" id="dscrMetricCard">
+            <div class="metric-label"><abbr title="Monthly rent divided by PITIA. Most DSCR lenders want 1.25; some programs accept 1.00 at a higher rate.">Lender DSCR</abbr></div>
+            <div class="metric-value" id="dscrValue">-</div>
+            <div class="metric-sub" id="dscrSub">Rent / PITIA</div>
           </div>
         </div>
 
@@ -678,7 +709,7 @@
         </div>
       </div>
     </div>
-  </section>    <script type="module" src="../calculator.js?v=38"></script>
+  </section>    <script type="module" src="../calculator.js?v=40"></script>
     <script src="../flip-calculator.js?v=6"></script>
 </body>
 </html>

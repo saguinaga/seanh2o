@@ -12,8 +12,8 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
   // Attractive but believable: positive cash flow, solid CoC for Midwest, low taxes/ins.
   const DEFAULTS = {
     purchasePrice: 179000,
-    downPayment: 20,
-    interestRate: 6.75,
+    downPayment: 25,
+    interestRate: 7.375,
     loanTerm: 30,
     monthlyRent: 1595,
     vacancyRate: 6,
@@ -75,6 +75,24 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (r === 0) return principal / n;
     return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
   }
+
+  function principalFromPmt(pmt, annualRatePct, years, interestOnly) {
+    if (pmt <= 0 || years <= 0) return 0;
+    const r = annualRatePct / 100 / 12;
+    if (interestOnly) {
+      if (r === 0) return 0;
+      return pmt / r;
+    }
+    const n = years * 12;
+    if (r === 0) return pmt * n;
+    return pmt * (Math.pow(1 + r, n) - 1) / (r * Math.pow(1 + r, n));
+  }
+
+  const DSCR_PRESET = { downPayment: 25, interestRate: 7.375 };
+  const CONV_PRESET = { downPayment: 20, interestRate: 6.75 };
+  let loanType = 'dscr';
+  let dscrTarget = 1.25;
+  let convSnapshot = null;
 
   function remainingBalance(principal, annualRatePct, totalYears, yearsElapsed) {
     if (principal <= 0) return 0;
@@ -156,11 +174,14 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const apprec = inputs.appreciation || DEFAULTS.appreciation;
     const holdY = inputs.holdingYears || DEFAULTS.holdingYears;
     const cash = inputs.cashPurchase || false;
+    const io = !cash && inputs.loanType === 'dscr' && !!inputs.dscrInterestOnly;
 
     const downAmt = cash ? price : price * (downPct / 100);
     const loan = Math.max(0, price - downAmt);
-    const pmt = monthlyPI(loan, rate, term);
+    const pmt = cash ? 0 : (io ? loan * (rate / 100 / 12) : monthlyPI(loan, rate, term));
     const debtAnnual = pmt * 12;
+    const pitia = pmt + (price * (taxR / 100) / 12) + (price * (insR / 100) / 12) + hoaMo;
+    const lenderDscr = cash || pitia <= 0 ? 0 : rent / pitia;
 
     const gross = rent * 12;
     const vacLoss = gross * (vac / 100);
@@ -181,7 +202,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const coc = downAmt > 0 ? (cfAnnual / downAmt) * 100 : 0;
 
     const futureVal = price * Math.pow(1 + apprec / 100, holdY);
-    const remBal = remainingBalance(loan, rate, term, holdY);
+    const remBal = io ? loan : remainingBalance(loan, rate, term, holdY);
     const futureEquity = Math.max(0, futureVal - remBal);
     const cumCF = cfAnnual * holdY;
     const initEquity = downAmt;
@@ -199,7 +220,8 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       futureEquity,
       totalWealth,
       mortgage: pmt,
-      noi
+      noi,
+      lenderDscr
     };
   }
 
@@ -440,12 +462,16 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const apprec = parseFloat($('appreciation')?.value) || DEFAULTS.appreciation;
     const holdY = parseFloat($('holdingYears')?.value) || DEFAULTS.holdingYears;
     const cash = $('cashPurchase')?.checked || false;
+    const io = !cash && loanType === 'dscr' && !!$('dscrInterestOnly')?.checked;
 
     // Financing
     const downAmt = cash ? price : price * (downPct / 100);
     const loan = Math.max(0, price - downAmt);
-    const pmt = monthlyPI(loan, rate, term);
+    const pmt = cash ? 0 : (io ? loan * (rate / 100 / 12) : monthlyPI(loan, rate, term));
     const debtAnnual = pmt * 12;
+    const pitia = pmt + (taxR / 100 * price) / 12 + (insR / 100 * price) / 12 + hoaMo;
+    const lenderDscr = cash || pitia <= 0 ? 0 : rent / pitia;
+
 
     // Income
     const gross = rent * 12;
@@ -463,13 +489,14 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const noi = effGross - opex;
     const cfAnnual = noi - debtAnnual;
     const cfMonthly = cfAnnual / 12;
+    const noiDscr = cash || debtAnnual <= 0 ? 0 : noi / debtAnnual;
 
     const capRate = price > 0 ? (noi / price) * 100 : 0;
     const coc = downAmt > 0 ? (cfAnnual / downAmt) * 100 : 0;
 
     // === Projections ===
     const futureVal = price * Math.pow(1 + apprec / 100, holdY);
-    const remBal = remainingBalance(loan, rate, term, holdY);
+    const remBal = io ? loan : remainingBalance(loan, rate, term, holdY);
     const futureEquity = Math.max(0, futureVal - remBal);
     const cumCF = cfAnnual * holdY;
     const initEquity = downAmt;
@@ -478,8 +505,12 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     const totalROI = initEquity > 0 ? (totalProfit / initEquity) * 100 : 0;
     const totalWealth = futureEquity + cumCF;
 
+    const tiaMo = (taxA + insA) / 12 + hoaMo;
+    const maxPitia = rent / dscrTarget;
+    const maxPi = maxPitia - tiaMo;
+    const maxLoan = cash || maxPi <= 0 ? 0 : principalFromPmt(maxPi, rate, term, io);
+
     // === POPULATE ALL VISIBLE FIELDS ===
-    // Main metrics
     setTextSafe('monthlyCashFlow', fmtMoney(cfMonthly));
     setTextSafe('annualCashFlow', fmtMoney(cfAnnual));
     setTextSafe('capRate', fmtPct(capRate, 1));
@@ -488,42 +519,43 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     setTextSafe('futureEquity', fmtMoney(futureEquity));
     setTextSafe('totalWealth', fmtMoney(totalWealth));
     setTextSafe('mortgagePayment', fmtMoney(pmt));
+    setTextSafe('dscrValue', cash ? 'N/A' : lenderDscr.toFixed(2));
+    setTextSafe('dscrSub', cash ? 'No debt' : 'Rent / PITIA · target ' + dscrTarget.toFixed(2));
+    setTextSafe('inlineDscr', cash ? 'N/A' : lenderDscr.toFixed(2));
 
-    // Computed annuals
     setTextSafe('propertyTaxDisplay', fmtMoney(taxA) + '/yr');
     setTextSafe('insuranceDisplay', fmtMoney(insA) + '/yr');
 
-    // Inline live impact (next to sliders)
     setTextSafe('inlineLoanAmount', cash ? 'None (cash)' : fmtMoney(loan));
-    setTextSafe('inlineMortgage', cash ? '—' : fmtMoney(pmt));
+    setTextSafe('inlineMortgage', cash ? '-' : fmtMoney(pmt));
     setTextSafe('inlineMonthlyCF', fmtMoney(cfMonthly));
     setTextSafe('inlineNOI', fmtMoney(noi));
     setTextSafe('inlineCoC', cash ? 'N/A' : fmtPct(coc, 1));
 
-    // Color classes for key live numbers
     colorize('inlineMonthlyCF', cfMonthly);
     colorize('monthlyCashFlow', cfMonthly);
     colorize('cashOnCash', coc);
+    colorizeDscr('inlineDscr', lenderDscr, cash);
+    colorizeDscr('dscrValue', lenderDscr, cash);
 
-    // Verdict banner
-    updateVerdictBanner(cfMonthly, coc, capRate);
+    updateDscrStatus({ cash, lenderDscr, pitia, loan, maxLoan, io, rent });
+    updateVerdictBanner(cfMonthly, coc, capRate, { cash, loanType, lenderDscr });
 
-    // Breakdown table
     renderBreakdownTable(gross, effGross, opex, noi, debtAnnual, cfAnnual, taxA, insA, maintA, mgmtA, hoaA, vacLoss);
 
-    // Benchmarks
-    renderBenchmarks(price, rent, cfMonthly, coc, capRate, noi, debtAnnual);
+    renderBenchmarks(price, rent, cfMonthly, coc, capRate, noi, debtAnnual, lenderDscr, noiDscr, cash);
 
-    // Sensitivity
     renderSensitivity(price, rent, downPct, rate, term, vac, maintPct, mgmtPct, taxR, insR, hoaMo, cfMonthly);
 
-    // Cash-on-cash sub label
     const cocSub = $('cashOnCashSub');
     if (cocSub) cocSub.textContent = cash ? 'Cash purchase (full equity)' : 'Annual return on down payment';
 
-    // Mortgage sub
     const mSub = $('mortgageSub');
-    if (mSub) mSub.textContent = cash ? 'No mortgage' : 'Principal & interest';
+    if (mSub) {
+      if (cash) mSub.textContent = 'No mortgage';
+      else if (io) mSub.textContent = 'Interest only · PITIA ' + fmtMoney(pitia) + '/mo';
+      else mSub.textContent = 'P&I · PITIA ' + fmtMoney(pitia) + '/mo';
+    }
 
     console.log('✅ Full calc complete — CF/mo:', Math.round(cfMonthly), 'CoC:', coc.toFixed(1) + '%');
   }
@@ -541,11 +573,62 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     else if (val < 0) el.classList.add('negative');
   }
 
-  function updateVerdictBanner(cfM, coc, cap) {
+  function colorizeDscr(id, ratio, cash) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.remove('positive', 'negative');
+    if (cash) return;
+    if (ratio >= dscrTarget) el.classList.add('positive');
+    else if (ratio < 1) el.classList.add('negative');
+  }
+
+  function updateDscrStatus(d) {
+    const el = $('dscrStatus');
+    if (!el) return;
+    if (d.cash || loanType !== 'dscr') {
+      el.textContent = '';
+      el.className = 'dscr-status';
+      return;
+    }
+    const ratio = d.lenderDscr;
+    let cls = 'fail';
+    let msg;
+    if (ratio >= dscrTarget) {
+      cls = 'pass';
+      msg = 'Lender DSCR ' + ratio.toFixed(2) + ' vs target ' + dscrTarget.toFixed(2) + '. This rent covers PITIA of ' + fmtMoney(d.pitia) + '/mo.';
+      if (d.maxLoan > 0) msg += ' At this rent and rate, about ' + fmtMoney(d.maxLoan) + ' of loan still clears ' + dscrTarget.toFixed(2) + '.';
+    } else if (ratio >= 1) {
+      cls = 'warn';
+      msg = 'Lender DSCR ' + ratio.toFixed(2) + '. Clears 1.00, short of 1.25. Some programs will do 1.00 at a higher rate. More down, lower price, or interest-only can lift coverage.';
+    } else {
+      msg = 'Lender DSCR ' + ratio.toFixed(2) + '. Rent does not cover PITIA (' + fmtMoney(d.pitia) + '/mo). Raise rent, put more down, cut price, or try interest-only.';
+    }
+    if (d.io) msg += ' Interest-only: principal does not pay down during the IO period.';
+    el.className = 'dscr-status ' + cls;
+    el.textContent = msg;
+  }
+
+  function updateVerdictBanner(cfM, coc, cap, extra) {
     const b = $('verdictBanner');
     if (!b) return;
+    extra = extra || {};
     let cls = 'moderate', icon = '📊', h = 'Solid Midwestern Deal', p = 'Decent cash flow for the market. Good for buy-and-hold accumulation.';
-    if (cfM >= 200 && coc >= 9) {
+    if (extra.loanType === 'dscr' && !extra.cash) {
+      const r = extra.lenderDscr || 0;
+      if (r >= 1.25 && cfM >= 0) {
+        cls = 'good'; icon = '✅'; h = 'DSCR covers at 1.25';
+        p = 'Rent covers PITIA at the common DSCR cutoff. Cash flow after vacancy and management is the investor test, not the lender test.';
+      } else if (r >= 1 && cfM >= 0) {
+        cls = 'moderate'; icon = '📊'; h = 'DSCR between 1.00 and 1.25';
+        p = 'Some DSCR programs accept 1.00. 1.25 usually prices better. Cash flow still has to work after vacancy and ops.';
+      } else if (r < 1) {
+        cls = 'poor'; icon = '⚠️'; h = 'DSCR below 1.00';
+        p = 'This rent does not cover PITIA. A DSCR lender will not like this structure without more down, a lower price, or more rent.';
+      } else {
+        cls = 'poor'; icon = '⚠️'; h = 'Qualifies, cash flow is tight';
+        p = 'Coverage can pass while the property still loses money after vacancy and management. Run both tests.';
+      }
+    } else if (cfM >= 200 && coc >= 9) {
       cls = 'good'; icon = '✅'; h = 'Strong Cash-Flow Value Play';
       p = 'Excellent monthly cash flow + CoC. Attractive Indiana risk/reward.';
     } else if (cfM < 50 || coc < 5) {
@@ -581,18 +664,21 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     `;
   }
 
-  function renderBenchmarks(price, rent, cfM, coc, cap, noi, debtAnnual) {
+  function renderBenchmarks(price, rent, cfM, coc, cap, noi, debtAnnual, lenderDscr, noiDscr, cash) {
     const grid = $('benchmarkGrid');
     if (!grid) return;
     grid.innerHTML = '';
+
+    const lenderVal = cash ? 'N/A' : (lenderDscr || 0).toFixed(2);
+    const noiVal = cash || !debtAnnual ? 'N/A' : (noiDscr || (noi / (debtAnnual || 1))).toFixed(2);
 
     const rules = [
       { label: '1% Rule', val: (rent / price * 100).toFixed(2) + '% of price', pass: rent >= price * 0.01, note: rent >= price * 0.01 ? 'Passes' : 'Below target' },
       { label: 'Cash-on-Cash', val: fmtPct(coc, 1), pass: coc >= 8, note: 'Target 8%+ for value-add' },
       { label: 'Cap Rate', val: fmtPct(cap, 1), pass: cap >= 6.5, note: 'Solid for Indy market' },
       { label: 'Monthly CF', val: fmtMoney(cfM), pass: cfM >= 150, note: 'Positive cash flow' },
-      { label: 'DSCR (rough)', val: (noi / (debtAnnual || 1)).toFixed(2), pass: (noi / (debtAnnual || 1)) >= 1.25, note: 'Lender comfort >1.25' },
-      { label: '50% Rule (opex+vac <50% gross)', val: (((price * 0.009 + (rent*12*0.07) + (rent*12*0.08)) / (rent*12)) * 100).toFixed(0) + '%', pass: true, note: 'Typical Midwest' }
+      { label: 'Lender DSCR', val: lenderVal, pass: cash || (lenderDscr || 0) >= 1.25, note: 'Rent / PITIA. Common cutoff 1.25' },
+      { label: 'NOI / debt service', val: noiVal, pass: cash || (noiDscr || 0) >= 1.25, note: 'Investor coverage after ops' }
     ];
 
     rules.forEach(r => {
@@ -701,11 +787,95 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
   function updateCashUI() {
     const cb = $('cashPurchase');
     const fin = $('financingFields');
+    const row = $('loanTypeRow');
     if (!cb || !fin) return;
     if (cb.checked) {
       fin.classList.add('is-disabled');
+      if (row) row.style.opacity = '0.45';
     } else {
       fin.classList.remove('is-disabled');
+      if (row) row.style.opacity = '1';
+    }
+    syncLoanTypeUI();
+  }
+
+  function snapshotConv() {
+    convSnapshot = {
+      downPayment: parseFloat($('downPayment')?.value) || DEFAULTS.downPayment,
+      interestRate: parseFloat($('interestRate')?.value) || DEFAULTS.interestRate
+    };
+  }
+
+  function applyFinancingPreset(preset) {
+    setVal('downPayment', preset.downPayment);
+    setVal('interestRate', preset.interestRate);
+    const ds = $('downPaymentSlider');
+    const is = $('interestRateSlider');
+    if (ds) ds.value = preset.downPayment;
+    if (is) is.value = preset.interestRate;
+    refreshAllDisplays();
+  }
+
+  function setLoanType(next, applyPresetRates) {
+    if (next === 'dscr') {
+      const cb = $('cashPurchase');
+      if (cb && cb.checked) {
+        cb.checked = false;
+        updateCashUI();
+      }
+    }
+    if (applyPresetRates && next !== loanType) {
+      if (loanType === 'conventional') snapshotConv();
+      if (next === 'dscr') applyFinancingPreset(DSCR_PRESET);
+      if (next === 'conventional') applyFinancingPreset(convSnapshot || CONV_PRESET);
+    }
+    loanType = next;
+    syncLoanTypeUI();
+    fullCalc();
+  }
+
+  function syncLoanTypeUI() {
+    const cash = $('cashPurchase')?.checked;
+    document.querySelectorAll('.loan-type-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.loanType === loanType);
+    });
+    const panel = $('dscrPanel');
+    if (panel) panel.hidden = cash || loanType !== 'dscr';
+    const hint = $('loanTypeHint');
+    if (hint) {
+      if (cash) hint.textContent = 'Cash purchase. No PITIA test.';
+      else if (loanType === 'dscr') hint.textContent = 'DSCR qualifies on rent vs PITIA. Rate is usually higher. 20-25% down is typical.';
+      else hint.textContent = 'P&I on a 30-year amortizing loan. Qualify on your income and DTI.';
+    }
+    document.querySelectorAll('.dscr-target-btn').forEach(btn => {
+      const t = parseFloat(btn.dataset.dscrTarget);
+      btn.classList.toggle('active', t === dscrTarget);
+    });
+  }
+
+  function wireLoanType() {
+    document.querySelectorAll('.loan-type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const next = btn.dataset.loanType;
+        if (next === loanType) return;
+        trackEvent('BuyHold - Loan Type ' + next);
+        setLoanType(next, true);
+      });
+    });
+    document.querySelectorAll('.dscr-target-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        dscrTarget = parseFloat(btn.dataset.dscrTarget) || 1.25;
+        trackEvent('BuyHold - DSCR Target ' + dscrTarget);
+        syncLoanTypeUI();
+        fullCalc();
+      });
+    });
+    const io = $('dscrInterestOnly');
+    if (io) {
+      io.addEventListener('change', () => {
+        trackEvent('BuyHold - DSCR IO ' + (io.checked ? 'on' : 'off'));
+        fullCalc();
+      });
     }
   }
 
@@ -726,11 +896,16 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (!btn) return;
     btn.addEventListener('click', () => {
       trackEvent('BuyHold - Reset Defaults');
+      loanType = 'dscr';
+      dscrTarget = 1.25;
+      convSnapshot = null;
+      const io = $('dscrInterestOnly');
+      if (io) io.checked = false;
       applyPreset('marion-default', true);
-      // ensure cash off for default
       const cb = $('cashPurchase');
       if (cb) cb.checked = false;
       updateCashUI();
+      syncLoanTypeUI();
       fullCalc();
     });
   }
@@ -757,6 +932,9 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         if (isFinite(v)) params.set(k.substring(0, 3), v);
       });
       if ($('cashPurchase')?.checked) params.set('cash', '1');
+      if (loanType === 'dscr') params.set('lt', 'dscr');
+      params.set('dt', String(dscrTarget));
+      if ($('dscrInterestOnly')?.checked) params.set('io', '1');
 
       const url = window.location.origin + window.location.pathname + '?' + params.toString() + '#buy-hold-calculator';
       try {
@@ -794,6 +972,15 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
     if (p.has('cash')) {
       const cb = $('cashPurchase');
       if (cb) cb.checked = true;
+    }
+    if (p.get('lt') === 'dscr') loanType = 'dscr';
+    if (p.has('dt')) {
+      const t = parseFloat(p.get('dt'));
+      if (t === 1 || t === 1.25) dscrTarget = t;
+    }
+    if (p.get('io') === '1') {
+      const io = $('dscrInterestOnly');
+      if (io) io.checked = true;
     }
     return true;
   }
@@ -1043,7 +1230,10 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       hoa: getValSafe('hoa'),
       management: getValSafe('management'),
       appreciation: getValSafe('appreciation'),
-      holdingYears: getValSafe('holdingYears')
+      holdingYears: getValSafe('holdingYears'),
+      loanType,
+      dscrTarget,
+      dscrInterestOnly: !!$('dscrInterestOnly')?.checked
     };
   }
   function getValSafe(id) { return parseFloat($(id)?.value) || 0; }
@@ -1061,7 +1251,10 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         ['Monthly Rent', $('monthlyRent').value],
         ['Monthly Cash Flow', $('monthlyCashFlow').textContent.replace(/[^0-9.-]/g,'')],
         ['CoC %', $('cashOnCash').textContent],
-        ['Cap Rate %', $('capRate').textContent]
+        ['Cap Rate %', $('capRate').textContent],
+        ['Loan type', loanType],
+        ['Lender DSCR', $('dscrValue') ? $('dscrValue').textContent : ''],
+        ['DSCR target', String(dscrTarget)]
       ];
       const csv = rows.map(r => r.join(',')).join('\n');
       const a = document.createElement('a');
@@ -1086,6 +1279,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
         doc.text('Cash-on-Cash: ' + $('cashOnCash').textContent, 20, 56);
         doc.text('Cap Rate: ' + $('capRate').textContent, 20, 64);
         doc.text('Total ROI (hold): ' + $('totalROI').textContent, 20, 72);
+        doc.text('Loan type: ' + loanType + '  Lender DSCR: ' + ($('dscrValue') && $('dscrValue').textContent), 20, 80);
         doc.text('Disclaimer: Educational only. Not advice. Do your own diligence.', 20, 90);
         doc.save('buyhold-indiana-report.pdf');
       });
@@ -1140,11 +1334,25 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
               const cb = $('cashPurchase'); if (cb) cb.checked = !!data[k];
               return;
             }
+            if (k === 'loanType') {
+              loanType = data[k] === 'dscr' ? 'dscr' : 'conventional';
+              return;
+            }
+            if (k === 'dscrTarget') {
+              dscrTarget = data[k] === 1 ? 1 : 1.25;
+              return;
+            }
+            if (k === 'dscrInterestOnly') {
+              const io = $('dscrInterestOnly');
+              if (io) io.checked = !!data[k];
+              return;
+            }
             setVal(k, data[k]);
             const s = $(k + 'Slider'); if (s) s.value = data[k];
           });
           refreshAllDisplays();
           updateCashUI();
+          syncLoanTypeUI();
           fullCalc();
         } catch (e) {}
       });
@@ -1197,7 +1405,9 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
 
     // 3. Cash UX + initial state
     wireCashToggle();
+    wireLoanType();
     updateCashUI();
+    syncLoanTypeUI();
 
     // 4. Load URL overrides if present (share links)
     const hadURL = loadFromURLParams();

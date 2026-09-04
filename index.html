@@ -6,10 +6,10 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Sean Aguinaga | Product</title>
+    <title>Sean Aguinaga</title>
     <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
     <link rel="icon" href="favicon.ico" sizes="32x32">
-    <meta name="description" content="Sean Aguinaga: Product and systems work for nearly 20 years. Fifteen of those at Auction.com on marketplace and transaction systems. Case studies and tools.">
+    <meta name="description" content="Sean Aguinaga. Tools I actually use, plus 15 years on marketplace and transaction systems at Auction.com.">
 
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
@@ -188,19 +188,21 @@
         }
         .experience-panel-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 28px 32px;
             margin-top: 22px;
+            padding-top: 22px;
             border-top: 1px solid #1e293b;
         }
+        @media (max-width: 980px) {
+            .experience-panel-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
         .experience-item {
-            padding: 22px 24px 8px 0;
+            padding: 0;
             border: none;
             background: transparent;
-        }
-        .experience-item + .experience-item {
-            padding-left: 28px;
-            border-left: 1px solid #1e293b;
         }
         .experience-kicker {
             display: block;
@@ -237,16 +239,7 @@
             }
             .experience-panel-grid {
                 grid-template-columns: 1fr;
-            }
-            .experience-item,
-            .experience-item + .experience-item {
-                padding: 18px 0 4px;
-                border-left: none;
-            }
-            .experience-item + .experience-item {
-                border-top: 1px solid #1e293b;
-                margin-top: 8px;
-                padding-top: 18px;
+                gap: 22px;
             }
         }
         .contact-direct {
@@ -516,9 +509,9 @@
                 <span></span><span></span><span></span>
             </button>
             <div class="nav-links" id="navMenu">
+                <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#work" data-plausible-event="Nav - Work">Work</a>
                 <a href="#philosophy" data-plausible-event="Nav - How I work">How I work</a>
-                <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#about" data-plausible-event="Nav - About">About</a>
                 <a href="#contact" class="nav-cta" data-plausible-event="Nav - Contact">Contact</a>
             </div>
@@ -532,15 +525,14 @@
                 <img src="logo-mark.svg?v=3" alt="" class="hero-mark" width="96" height="96" aria-hidden="true">
                 <h1>Sean Aguinaga</h1>
             </div>
-            <span class="tag">Product · Systems · Nearly 20 years</span>
+            <span class="tag">Product · Systems · Huntington Beach</span>
 
-            <p class="hero-lead">I'm a product manager. I work on marketplace and transaction systems where operations and configuration have to scale together.</p>
+            <p class="hero-lead">Marketplace and transaction systems where config and ops have to hold up together. Working prototypes with a real problem behind them.</p>
 
-            <p>Almost two decades in software and product. The last 15 at Auction.com: a lot of that was the operational backbone (config, workflows, platform work that had to hold up as the business scaled). I also shipped user-facing pieces of that same system when the job needed it.</p>
+            <p>Fifteen years at Auction.com while in-person foreclosure went from a California pilot to a national line of business. Intake, catalog, field tools, Salesforce, bidding, contracting, seller flows. Disney and Boeing before that. The tools below are how I go deep on a problem: rental and flip underwriting, household offer math, an e-bike compare. Built to think the decision through.</p>
 
             <div class="hero-cta-row" style="margin-top: 12px;">
-                <a href="#work" class="cta-button" data-plausible-event="CTA - See work">See work</a>
-                <a href="#contact" class="cta-button cta-secondary" data-plausible-event="CTA - Contact">Contact</a>
+                <a href="#tools" class="cta-button" data-plausible-event="CTA - Open tools">Open tools</a>
             </div>
 
         </div>
@@ -555,74 +547,127 @@
         </ul>
     </section>
 
-    <!-- About (short) -->
-    <section id="about" style="padding: 72px 24px; background: #f8fafc;">
-        <div style="max-width: 860px; margin: 0 auto; text-align: left;">
-            <h2 style="font-size: 2.1rem; margin-bottom: 18px; letter-spacing: -.5px;">About</h2>
-
-            <p style="font-size: 1.15rem; line-height: 1.65; color: #1e2937; margin-bottom: 18px;">
-                Nearly 20 years in software and product. Deep in the work, not high on the org chart. Real estate and auctions have been the long chapter, but the problems repeat: multi-sided platforms, messy operations, configuration and data that has to hold up across states and teams.
-            </p>
-
-            <p style="font-size: 1.05rem; line-height: 1.65; color: #334155;">
-                Earlier: Disney (partner data into a warehouse so analytics could be trusted) and Boeing (engineering-adjacent tooling). Good systems work starts with how data and work actually move, not a clean slide.
-            </p>
-        </div>
-    </section>
-
-    <!-- Philosophy / How I Work -->
-    <section id="philosophy" style="padding: 70px 24px; background: white; border-top: 1px solid #e2e8f0;">
-        <div style="max-width: 860px; margin: 0 auto;">
-            <h2 style="font-size: 1.65rem; margin-bottom: 16px;">How I work</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; font-size: 1rem; line-height: 1.6; color: #334155;">
+    <!-- Tools first -->
+    <section id="tools" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <div class="projects-header">
                 <div>
-                    <strong>The customer isn't just the login.</strong><br>
-                    Brokers, lenders, internal ops, and front-line operators all have to succeed for the product to stick. I design for the full chain, not a single persona slide.
+                    <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Tools</h2>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Working prototypes. Open them.</p>
                 </div>
-                <div>
-                    <strong>Talk to users before you scale.</strong><br>
-                    Especially for third-party tools: shadow the workflow, validate which fields move decisions, ship where pull rate proves adoption - not where a roadmap deck says you should.
-                </div>
-                <div>
-                    <strong>Meet people in their tools.</strong><br>
-                    Excel, Word, Salesforce, cloud folders. Not a new portal nobody asked for. Context should show up where work already happens.
+            </div>
+            <div class="work-block work-block--links" style="margin-bottom: 0;">
+                <div class="projects-grid">
+                    <article class="project-card glass-card project-card--link">
+                        <a href="calculators/#buy-hold-calculator" class="project-card-link" data-plausible-event="Launch Tool - Buy & Hold">
+                            <div class="project-card-visual project-card-visual--blue">
+                                <span class="project-card-visual-title">Buy &amp; Hold Calculator</span>
+                            </div>
+                            <div class="project-card-body">
+                                <h3 class="project-card-heading">Rental underwriting</h3>
+                                <p class="project-card-text">Cash flow, CoC, cap rate, conventional or DSCR financing. DSCR qualifies on rent vs PITIA.</p>
+                                <span class="project-card-cta">Open calculator <span aria-hidden="true">→</span></span>
+                            </div>
+                        </a>
+                    </article>
+
+                    <article class="project-card glass-card project-card--link">
+                        <a href="calculators/#fix-flip-calculator" class="project-card-link" data-plausible-event="Launch Tool - Fix & Flip">
+                            <div class="project-card-visual project-card-visual--rose">
+                                <span class="project-card-visual-title">Fix &amp; Flip Analyzer</span>
+                            </div>
+                            <div class="project-card-body">
+                                <h3 class="project-card-heading">Deal stress-testing</h3>
+                                <p class="project-card-text">ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.</p>
+                                <span class="project-card-cta">Open analyzer <span aria-hidden="true">→</span></span>
+                            </div>
+                        </a>
+                    </article>
+
+                    <article class="project-card glass-card project-card--link">
+                        <a href="ebike-comparison/" class="project-card-link" data-plausible-event="Launch Tool - E-Bike Comparison">
+                            <div class="project-card-visual project-card-visual--blue">
+                                <span class="project-card-badge">Family project</span>
+                                <span class="project-card-visual-title">E-Bike Comparison</span>
+                            </div>
+                            <div class="project-card-body">
+                                <h3 class="project-card-heading">Surf City HB school and commute rides</h3>
+                                <p class="project-card-text">Safety scores, legal notes, and side-by-side compare for a 5'2" rider: pedal baseline vs 20+ options.</p>
+                                <span class="project-card-cta">Open comparison <span aria-hidden="true">→</span></span>
+                            </div>
+                        </a>
+                    </article>
+
+                    <article class="project-card glass-card project-card--link">
+                        <a href="promo-tracker/" class="project-card-link" data-plausible-event="Launch Tool - Bonus Board">
+                            <div class="project-card-visual project-card-visual--cozy">
+                                <span class="project-card-badge">Household</span>
+                                <span class="project-card-visual-title">Bonus Board</span>
+                            </div>
+                            <div class="project-card-body">
+                                <h3 class="project-card-heading">Credit card offer planner</h3>
+                                <p class="project-card-text">Pin offers, model credit impact, trip upside from everyday spend. Not financial advice.</p>
+                                <span class="project-card-cta">Open Bonus Board <span aria-hidden="true">→</span></span>
+                            </div>
+                        </a>
+                    </article>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Work -->
-    <section id="work" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
+    <section id="work" style="padding: 80px 24px; background: #0b1220; color: #e0f2fe; position: relative;">
         <div style="max-width: 1100px; margin: 0 auto;">
             <div class="projects-header">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Work</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Auction.com experience, then case studies and tools you can open.</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Auction.com, then a few write-ups you can open.</p>
                 </div>
             </div>
 
             <div class="work-block work-block--experience">
-                <p class="work-block-label">Experience · Auction.com · ~15 years</p>
+                <p class="work-block-label">Auction.com · ~15 years</p>
                 <div class="experience-panel">
-                    <p class="work-block-intro" style="margin-bottom: 0;">In-person foreclosure auctions grew from a California pilot into a major line of business. My seat was mostly the system underneath that growth, with real time on buyer and seller surfaces when the work required it.</p>
+                    <p class="work-block-intro" style="margin-bottom: 0;">In-person foreclosure auctions grew from a California pilot into a major line of business. I worked the system underneath that growth, and the buyer and seller surfaces, as the transaction needed them. Same product, horizontal as required.</p>
                     <div class="experience-panel-grid">
                         <div class="experience-item">
-                            <span class="experience-kicker">Primary focus</span>
-                            <h3>Operational backbone</h3>
-                            <p>Catalog rules, transaction configuration, ops workflows, and the unglamorous backend office tools that keep daily work moving. Helped carry the platform through stack modernization and nationwide expansion. Operators and internal teams were the day-to-day customers.</p>
+                            <span class="experience-kicker">Calendar</span>
+                            <h3>Week of slots in 2-3 clicks</h3>
+                            <p>Templates with separate FCL and REO rules. About 26+ steps down to a handful. Crew on that work from about 5 to 2.</p>
                         </div>
                         <div class="experience-item">
-                            <span class="experience-kicker">Same system</span>
-                            <h3>When the job needed the other seat</h3>
-                            <p>User-facing work on the same marketplace: remote bidding, contracting and closing paths, self-serve seller flows, and related consumer surfaces. Not the whole job. Part of shipping a complete transaction system.</p>
+                            <span class="experience-kicker">Scheduling</span>
+                            <h3>~85% assigned by rules</h3>
+                            <p>FCL postponement vs REO relist as separate rules. First Look used the same engine so sellers did not run a second process.</p>
+                        </div>
+                        <div class="experience-item">
+                            <span class="experience-kicker">Intake</span>
+                            <h3>60+ servicers, 90%+ automated</h3>
+                            <p>They kept their file formats. Universal plus per-servicer rules. Publish in real time when requirements were met.</p>
+                        </div>
+                        <div class="experience-item">
+                            <span class="experience-kicker">Contracts</span>
+                            <h3>~4,000 permutations, in-house</h3>
+                            <p>Winning-bid packets with 100+ fill-in variables. Rebuilt so Auction owned the process instead of a third-party builder.</p>
+                        </div>
+                        <div class="experience-item">
+                            <span class="experience-kicker">Salesforce</span>
+                            <h3>Working system for listings</h3>
+                            <p>REO and FCL, real time with the core platform. Contracting and closing lived there. Internals managed the book by exception.</p>
+                        </div>
+                        <div class="experience-item">
+                            <span class="experience-kicker">0-to-1</span>
+                            <h3>SmartSale and Offer Path</h3>
+                            <p>Lead to listing published, including an offer path as an alternative to auction. Property marketing agreement through DocuSign. Same transaction system, different door in.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="work-block work-block--links">
-                <p class="work-block-label">Case studies · open write-ups</p>
-                <p class="work-block-intro">Working demos and a short write-up. Not a live org, not a client engagement.</p>
+                <p class="work-block-label">Write-ups · prototypes</p>
+                <p class="work-block-intro">Short write-up plus a working demo where there is one.</p>
                 <div class="projects-grid">
                     <article class="project-card glass-card project-card--link">
                         <a href="mortgage-ops/" class="project-card-link" data-plausible-event="Launch Case Study - Mortgage Ops">
@@ -635,7 +680,7 @@
                             </div>
                             <div class="project-card-body">
                                 <h3 class="project-card-heading">Salesforce for operators</h3>
-                                <p class="project-card-text">Dashboards, application lists, reports, and a queue for stuck work. Prototype plus write-up on how I sit with the business and dig when a summary is not enough.</p>
+                                <p class="project-card-text">Dashboards, application lists, reports, and a queue for stuck work. How I sit with the business and dig when a summary is not enough.</p>
                                 <span class="project-card-cta">Read the write-up <span aria-hidden="true">→</span></span>
                             </div>
                         </a>
@@ -644,7 +689,7 @@
                     <article class="project-card glass-card project-card--link">
                         <a href="master-data/" class="project-card-link" data-plausible-event="Launch Case Study - Master Data">
                             <div class="project-card-visual project-card-visual--blue">
-                                <span class="project-card-badge">PM case study</span>
+                                <span class="project-card-badge">Write-up</span>
                                 <span class="project-card-visual-title">Master Data Product</span>
                             </div>
                             <div class="project-card-body">
@@ -658,7 +703,7 @@
                     <article class="project-card glass-card project-card--link project-card--experiment">
                         <a href="doc-intelligence/" class="project-card-link" data-plausible-event="Launch Case Study - Doc Intelligence">
                             <div class="project-card-visual project-card-visual--doc">
-                                <span class="project-card-badge">PM case study</span>
+                                <span class="project-card-badge">Write-up</span>
                                 <span class="project-card-visual-title">Doc Intelligence</span>
                                 <span class="project-card-flow" aria-hidden="true">
                                     <span>PDF</span><span class="project-card-flow-arrow">→</span><span>XLSX</span><span class="project-card-flow-arrow">→</span><span>DOC</span>
@@ -666,7 +711,7 @@
                             </div>
                             <div class="project-card-body">
                                 <h3 class="project-card-heading">CRE document intelligence</h3>
-                                <p class="project-card-text">Extraction and delivery for messy CRE files. Client-side prototype to pressure-test the workflow, not a live product.</p>
+                                <p class="project-card-text">Extraction and delivery for messy CRE files. Client-side prototype to pressure-test the workflow.</p>
                                 <span class="project-card-cta">Read the write-up <span aria-hidden="true">→</span></span>
                             </div>
                         </a>
@@ -677,72 +722,40 @@
                 </div>
             </div>
 
-            <div class="work-block work-block--links" id="tools">
-                <p class="work-block-label">Tools · open apps</p>
-                <p class="work-block-intro">Things I built to use.</p>
-                <div class="projects-grid">
-                    <article class="project-card glass-card project-card--link">
-                        <a href="calculators/#buy-hold-calculator" class="project-card-link" data-plausible-event="Launch Tool - Buy & Hold">
-                            <div class="project-card-visual project-card-visual--blue">
-                                <span class="project-card-visual-title">Buy &amp; Hold Calculator</span>
-                            </div>
-                            <div class="project-card-body">
-                                <h3 class="project-card-heading">Real-time rental underwriting</h3>
-                                <p class="project-card-text">Cash flow, CoC, cap rate, scenario comparison, HYSA opportunity cost. Built the way I'd actually use it.</p>
-                                <span class="project-card-cta">Open calculator <span aria-hidden="true">→</span></span>
-                            </div>
-                        </a>
-                    </article>
+        </div>
+    </section>
 
-                    <article class="project-card glass-card project-card--link">
-                        <a href="calculators/#fix-flip-calculator" class="project-card-link" data-plausible-event="Launch Tool - Fix & Flip">
-                            <div class="project-card-visual project-card-visual--rose">
-                                <span class="project-card-visual-title">Fix &amp; Flip Analyzer</span>
-                            </div>
-                            <div class="project-card-body">
-                                <h3 class="project-card-heading">Deal stress-testing &amp; modeling</h3>
-                                <p class="project-card-text">ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.</p>
-                                <span class="project-card-cta">Open analyzer <span aria-hidden="true">→</span></span>
-                            </div>
-                        </a>
-                    </article>
+    <section id="philosophy" style="padding: 70px 24px; background: white; border-top: 1px solid #e2e8f0;">
+        <div style="max-width: 860px; margin: 0 auto;">
+            <h2 style="font-size: 1.65rem; margin-bottom: 16px;">How I work</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; font-size: 1rem; line-height: 1.6; color: #334155;">
+                <div>
+                    <strong>The customer isn't just the login.</strong><br>
+                    Brokers, lenders, ops, field crews. The product sticks when the whole chain can do the job.
                 </div>
-
-                <div class="personal-tools" style="margin-top: 28px;">
-                    <div class="personal-tools-header">
-                        <h3 class="personal-tools-title">Personal tools</h3>
-                        <p class="personal-tools-sub">Side projects I actually use.</p>
-                    </div>
-                    <div class="personal-tools-grid">
-                        <article class="project-card glass-card project-card--link">
-                            <a href="ebike-comparison/" class="project-card-link" data-plausible-event="Launch Tool - E-Bike Comparison">
-                                <div class="project-card-visual project-card-visual--blue">
-                                    <span class="project-card-badge">Family project</span>
-                                    <span class="project-card-visual-title">E-Bike Comparison</span>
-                                </div>
-                                <div class="project-card-body">
-                                    <h3 class="project-card-heading">Surf City HB e-bike research for school &amp; commute rides</h3>
-                                    <p class="project-card-text">Safety scores, legal notes, and side-by-side compare for a 5'2" rider: pedal baseline vs 20+ options.</p>
-                                    <span class="project-card-cta">Open comparison <span aria-hidden="true">→</span></span>
-                                </div>
-                            </a>
-                        </article>
-                        <article class="project-card glass-card project-card--link">
-                            <a href="promo-tracker/" class="project-card-link" data-plausible-event="Launch Tool - Bonus Board">
-                                <div class="project-card-visual project-card-visual--cozy">
-                                    <span class="project-card-badge">Personal tool</span>
-                                    <span class="project-card-visual-title">Bonus Board</span>
-                                </div>
-                                <div class="project-card-body">
-                                    <h3 class="project-card-heading">Credit card offer planner for household pacing</h3>
-                                    <p class="project-card-text">Pin offers, model credit impact, and see trip upside from everyday spend. Built for our own queue, not financial advice.</p>
-                                    <span class="project-card-cta">Open Bonus Board <span aria-hidden="true">→</span></span>
-                                </div>
-                            </a>
-                        </article>
-                    </div>
+                <div>
+                    <strong>Watch the work before you scale it.</strong><br>
+                    Sit with the workflow. See which fields actually move a decision. Ship where people pull it.
+                </div>
+                <div>
+                    <strong>Meet people in their tools.</strong><br>
+                    Excel, Word, Salesforce, cloud folders. Context where the work already happens.
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section id="about" style="padding: 72px 24px; background: #f8fafc;">
+        <div style="max-width: 860px; margin: 0 auto; text-align: left;">
+            <h2 style="font-size: 2.1rem; margin-bottom: 18px; letter-spacing: -.5px;">About</h2>
+
+            <p style="font-size: 1.15rem; line-height: 1.65; color: #1e2937; margin-bottom: 18px;">
+                Nearly 20 years in software and product. Real estate and auctions were the long chapter. The problems repeat: multi-sided platforms, messy operations, configuration and data that has to hold up across states and teams.
+            </p>
+
+            <p style="font-size: 1.05rem; line-height: 1.65; color: #334155;">
+                Earlier: Disney (partner data into a warehouse so analytics could be trusted) and Boeing (engineering-adjacent tooling). Good systems work starts with how data and work actually move.
+            </p>
         </div>
     </section>
 
@@ -751,7 +764,7 @@
         <div class="contact-inner">
             <p class="contact-eyebrow">Contact</p>
             <h2 class="contact-title">Say hello</h2>
-            <p class="contact-lead">Product problems, marketplace systems, or something adjacent you want a second set of eyes on. A few sentences is plenty.</p>
+            <p class="contact-lead">If something on the site is useful, or you want to talk shop, LinkedIn is the easiest path. The form also works.</p>
 
             <div class="contact-direct">
                 <a href="https://www.linkedin.com/in/sean-aguinaga-7a88243" target="_blank" rel="noopener noreferrer" data-plausible-event="Contact - LinkedIn">LinkedIn</a>
@@ -786,10 +799,10 @@
                 <div class="site-footer-col">
                     <p class="site-footer-heading">On this page</p>
                     <ul>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#philosophy">How I work</a></li>
-                        <li><a href="#work">Work</a></li>
                         <li><a href="#tools">Tools</a></li>
+                        <li><a href="#work">Work</a></li>
+                        <li><a href="#philosophy">How I work</a></li>
+                        <li><a href="#about">About</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
