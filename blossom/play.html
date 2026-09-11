@@ -14,11 +14,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="blossom-build" content="53">
-  <title>Play — Blossom Life · 3D Huntington Beach</title>
-  <meta name="description" content="Play Blossom Life — free 3D Huntington Beach open world.">
+  <meta name="blossom-build" content="56">
+  <title>Play — Blossom Life · Huntington Beach</title>
+  <meta name="description" content="Play Blossom Life — free Huntington Beach life sim in your browser.">
   <meta property="og:title" content="Blossom Life — Play Now">
-  <meta property="og:description" content="3D Surf City open world. Free in your browser.">
+  <meta property="og:description" content="Huntington Beach life sim. Free in your browser.">
   <meta property="og:image" content="https://seanaguinaga.com/blossom/assets/og-card.svg">
   <meta property="og:url" content="https://seanaguinaga.com/blossom/play.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
   <div class="create-screen" data-screen="create">
     <div class="create-card">
       <h1>✨ Create your blossom</h1>
-      <p>Pick a look, name yourself, and explore <strong>3D Huntington Beach</strong>. Takes 30 seconds.</p>
+      <p>Pick a look, name yourself, and explore <strong>Huntington Beach</strong>. Takes 30 seconds.</p>
       <form id="createForm" class="create-form-mii">
         <div class="create-layout">
           <div class="create-preview-col">
@@ -143,7 +143,7 @@
       <div class="game-play-area">
         <div class="canvas-glow" aria-hidden="true"></div>
         <div class="game-viewport" id="gameViewport">
-          <canvas id="gameCanvas" tabindex="0" aria-label="Blossom Life — downtown Huntington Beach 3D"></canvas>
+          <canvas id="gameCanvas" tabindex="0" aria-label="Blossom Life — downtown Huntington Beach"></canvas>
           <canvas id="gameHud" class="game-hud-canvas" aria-hidden="true"></canvas>
           <div class="game-load" id="gameLoad">
             <div class="game-load__inner">
@@ -363,21 +363,15 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script type="importmap">
-  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.module.js"}}
-  </script>
-  <script type="module">
-  import * as THREE from 'three';
-  window.THREE = THREE;
-  </script>
-  <script defer src="js/stability.js?v=53"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
+  <script defer src="js/stability.js?v=56"></script>
   <script defer src="js/boot.js?v=53"></script>
   <script defer src="js/config.js?v=53"></script>
   <script defer src="js/hb-local.js?v=53"></script>
   <script defer src="js/world.js?v=53"></script>
   <script defer src="js/world3d.js?v=53"></script>
-  <script defer src="js/hb-env.js?v=53"></script>
-  <script defer src="js/scene3d-juice.js?v=53"></script>
+  <script defer src="js/hb-env.js?v=56"></script>
+  <script defer src="js/scene3d-juice.js?v=56"></script>
   <script defer src="js/scene3d-hud.js?v=53"></script>
   <script defer src="js/art.js?v=53"></script>
   <script defer src="js/gfx.js?v=53"></script>
@@ -403,9 +397,9 @@
   <script defer src="js/meal.js?v=53"></script>
   <script defer src="js/shift.js?v=53"></script>
   <script defer src="js/controls.js?v=53"></script>
-  <script defer src="js/render.js?v=53"></script>
-  <script defer src="js/scene3d.js?v=53"></script>
-  <script defer src="js/game.js?v=53"></script>
+  <script defer src="js/render.js?v=55"></script>
+  <script defer src="js/scene3d.js?v=56"></script>
+  <script defer src="js/game.js?v=56"></script>
   <script defer src="js/app.js?v=53"></script>
 
 </body>

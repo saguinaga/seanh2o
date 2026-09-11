@@ -1,10 +1,6 @@
 /** Full 3D third-person — Huntington Beach Surf City (Three.js) */
 window.BlossomScene3D = (function () {
-  const T = window.THREE;
-  if (!T) {
-    console.error('BlossomScene3D: THREE not loaded');
-    return { isReady: () => false, init: () => false };
-  }
+  let T = window.THREE;
 
   const SX = BlossomWorld3D?.SX || 0.11;
   const SZ = BlossomWorld3D?.SZ || 0.13;
@@ -117,16 +113,20 @@ window.BlossomScene3D = (function () {
   }
 
   function addPalm(group, scale, x, z) {
+    if (BlossomHBEnv?.addPalm) {
+      BlossomHBEnv.addPalm(group, (scale || 1) * 1.15, x, z);
+      return;
+    }
     const g = new T.Group();
-    const s = scale || 1;
-    const trunk = cyl(0.2 * s, 0.28 * s, 5 * s, 0x8b4513, 8);
-    trunk.position.y = 2.5 * s;
+    const s = (scale || 1) * 2.4;
+    const trunk = cyl(0.18 * s, 0.26 * s, 14 * s, 0x8b4513, 8);
+    trunk.position.y = 7 * s;
     g.add(trunk);
-    for (let i = 0; i < 6; i++) {
-      const frond = mesh(new T.ConeGeometry(0.18 * s, 3.2 * s, 10), HB.palm, { rough: 0.68 });
-      frond.position.y = 4.8 * s;
-      frond.rotation.z = (i / 6) * Math.PI * 2;
-      frond.rotation.x = 0.55;
+    for (let i = 0; i < 5; i++) {
+      const frond = mesh(new T.ConeGeometry(0.22 * s, 4.4 * s, 8), HB.palm, { rough: 0.72 });
+      frond.position.y = 13.6 * s;
+      frond.rotation.z = (i / 5) * Math.PI * 2;
+      frond.rotation.x = 0.72;
       g.add(frond);
     }
     g.position.set(x, 0, z);
@@ -319,13 +319,10 @@ window.BlossomScene3D = (function () {
         break;
       }
       case 'pier':
-        root.add(place(box(2.8, 0.35, 8, HB.pier), 0, 0.18, -2));
         break;
       case 'rubys':
-        root.add(place(box(3.2, 2.8, 2.8, 0xdc2626), 0, 1.4, 0));
         break;
       case 'lifeguard':
-        root.add(place(box(1.4, 3.8, 1.4, 0xea580c), 0, 1.9, 0));
         break;
       case 'pchArch':
         break;
@@ -394,13 +391,16 @@ window.BlossomScene3D = (function () {
         break;
       }
       case 'houseFacade': {
-        const body = box(8.5, 4.2, 6.5, HB.shiplap);
-        body.position.y = 2.1;
-        root.add(body);
-        const roof = box(9.2, 0.45, 7.2, 0x78716c);
-        roof.position.y = 4.55;
-        root.add(roof);
-
+        if (BlossomHBEnv?.addCottageFacade) {
+          BlossomHBEnv.addCottageFacade(root, 0, 0);
+          break;
+        }
+        const main = box(7.2, 3.4, 5.4, HB.shiplap);
+        main.position.set(-1.4, 1.7, 0);
+        root.add(main);
+        const garage = box(4.6, 2.7, 5.2, HB.shiplap);
+        garage.position.set(4.2, 1.35, 0.2);
+        root.add(garage);
         break;
       }
       case 'npc':
@@ -589,6 +589,10 @@ window.BlossomScene3D = (function () {
   }
 
   function init(canvas, wrap, hudCvs) {
+    T = window.THREE;
+    if (!T) return false;
+    BlossomHBEnv?.bindThree?.();
+    BlossomScene3DJuice?.bindThree?.();
     if (ready) return true;
     try {
       container = wrap;
@@ -687,14 +691,15 @@ window.BlossomScene3D = (function () {
   }
 
   function snapCamera(p) {
-    const dist = BlossomWorld3D.isOverworld?.() ? 27 : 15;
-    const h = BlossomWorld3D.isOverworld?.() ? 14.5 : 9;
+    const open = BlossomWorld3D.isOverworld?.();
+    const dist = open ? 11 : 12;
+    const h = open ? 3.35 : 5.6;
     camera.position.set(
       p.x - Math.sin(camYaw) * dist,
       h,
       p.z - Math.cos(camYaw) * dist
     );
-    camera.lookAt(p.x, 2.8, p.z);
+    camera.lookAt(p.x, open ? 1.4 : 1.85, p.z);
   }
 
   function rebuildIfNeeded(loc, state) {
@@ -735,21 +740,21 @@ window.BlossomScene3D = (function () {
 
     const openWorld = BlossomWorld3D.isOverworld?.();
     let look = p.clone();
-    let dist = openWorld ? 27 : 15;
-    let h = openWorld ? 14.2 : 8.8;
+    let dist = openWorld ? 11 : 12;
+    let h = openWorld ? 3.25 : 5.4;
     if (running) {
-      dist -= openWorld ? 3 : 1.5;
-      camera.fov = T.MathUtils.lerp(camera.fov, 62, 0.08);
+      dist -= openWorld ? 1.4 : 0.8;
+      camera.fov = T.MathUtils.lerp(camera.fov, 60, 0.08);
     } else {
-      camera.fov = T.MathUtils.lerp(camera.fov, 58, 0.06);
+      camera.fov = T.MathUtils.lerp(camera.fov, 56, 0.06);
     }
     camera.updateProjectionMatrix();
 
     if (navState?.active && navState.waypoints?.length) {
       const wp = wpVec(navState.waypoints[0]);
       look.lerp(wp, 0.35);
-      dist = openWorld ? 26 : 17;
-      h = openWorld ? 13 : 9.5;
+      dist = openWorld ? 13 : 14;
+      h = openWorld ? 4.2 : 6;
     } else if (navState?.arrived && navState.target) {
       const t = navState.target.wx != null
         ? new T.Vector3(navState.target.wx, 0, navState.target.wz)
@@ -766,7 +771,7 @@ window.BlossomScene3D = (function () {
       look.z - Math.cos(camYaw) * (dist + swoop.dist)
     );
     camera.position.lerp(_v3a, 0.11);
-    _v3b.set(look.x, 2.9, look.z);
+    _v3b.set(look.x, openWorld ? 1.4 : 1.85, look.z);
     camera.lookAt(_v3b);
   }
 

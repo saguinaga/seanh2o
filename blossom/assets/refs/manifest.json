@@ -1,0 +1,20 @@
+{
+  "purpose": "Look targets for Blossom 3D reskin. Not mesh textures yet.",
+  "src": "assets/refs/src (original freeze list)",
+  "gen": "assets/refs/gen (image_edit simplifications)",
+  "items": [
+    { "id": "style-lock-strand", "zone": "pacCity/park", "role": "style lock" },
+    { "id": "main-street-volume", "zone": "street" },
+    { "id": "sugar-shack-storefront", "zone": "street" },
+    { "id": "wahoos-storefront", "zone": "street" },
+    { "id": "salon-strip", "zone": "street", "note": "Bonnie stand-in, not Nail Land branding" },
+    { "id": "cottage-exterior", "zone": "yard/house" },
+    { "id": "surf-museum", "zone": "pch" },
+    { "id": "rubys-on-pier", "zone": "park" },
+    { "id": "pier-piles-tower", "zone": "park" },
+    { "id": "pier-night", "zone": "park", "phase": "night" },
+    { "id": "volleyball-courts", "zone": "pacCity" },
+    { "id": "lifeguard-tower", "zone": "pacCity" },
+    { "id": "strand-wall-board", "zone": "pacCity", "role": "CMU wall material hint" }
+  ]
+}

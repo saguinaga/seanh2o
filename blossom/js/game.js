@@ -88,9 +88,11 @@ window.BlossomGame = (function () {
     BlossomPet?.reset?.(player);
     hudCanvas = document.getElementById('gameHud');
     window.BlossomBoot?.ensureLoadClears?.(7000);
-    if (!window.THREE || !BlossomScene3D?.init?.(canvas, canvas.parentElement, hudCanvas)) {
-      fallbackTo2D('Classic 2D mode — 3D unavailable on this device.');
-    } else {
+    function begin3d() {
+      if (use3d) return true;
+      if (!window.THREE || !BlossomScene3D?.init?.(canvas, canvas.parentElement, hudCanvas)) {
+        return false;
+      }
       use3d = true;
       ctx = hudCanvas?.getContext('2d') || null;
       if (hudCanvas) hudCanvas.style.display = '';
@@ -107,7 +109,19 @@ window.BlossomGame = (function () {
       } catch (err) {
         console.error('BlossomScene3D warmStart failed:', err);
         fallbackTo2D('Classic 2D mode — 3D had a hiccup. Game still works!');
+        return false;
       }
+      return true;
+    }
+    if (!begin3d()) {
+      let n = 0;
+      const wait = setInterval(() => {
+        n += 1;
+        if (begin3d() || n >= 40) {
+          clearInterval(wait);
+          if (!use3d) fallbackTo2D('Classic 2D mode — 3D unavailable on this device.');
+        }
+      }, 50);
     }
     if (!started) {
       started = true;

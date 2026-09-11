@@ -1,7 +1,6 @@
 /** 3D juice — dust, sparkles, seagulls, sun corona, breeze, travel swoop */
 window.BlossomScene3DJuice = (function () {
-  const T = window.THREE;
-  if (!T) return {};
+  let T = window.THREE;
 
   let dustPts = null;
   let dustGeo = null;
@@ -22,7 +21,14 @@ window.BlossomScene3DJuice = (function () {
   let dustIdx = 0;
   let sparkleIdx = 0;
 
+  function bindThree() {
+    T = window.THREE;
+    return Boolean(T);
+  }
+
   function init(scene) {
+    T = window.THREE;
+    if (!T) return;
     dustGeo = new T.BufferGeometry();
     const pos = new Float32Array(DUST_MAX * 3);
     const col = new Float32Array(DUST_MAX * 3);
@@ -312,6 +318,6 @@ window.BlossomScene3DJuice = (function () {
   }
 
   return {
-    init, update, triggerTravelSwoop, travelSwoopOffset, drawVignette,
+    bindThree, init, update, triggerTravelSwoop, travelSwoopOffset, drawVignette,
   };
 })();

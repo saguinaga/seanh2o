@@ -1,14 +1,13 @@
 /** Huntington Beach Main Street — shared 3D environment kit */
 window.BlossomHBEnv = (function () {
-  const T = window.THREE;
-  if (!T) return {};
+  let T = window.THREE;
 
   const P = {
-    ocean: 0x0077be,
-    oceanDeep: 0x005a8f,
+    ocean: 0x1a6f8a,
+    oceanDeep: 0x0e4a66,
     sky: 0x5eb8e8,
-    sand: 0xf0d78c,
-    sandDeep: 0xe4c76b,
+    sand: 0xe8d9c0,
+    sandDeep: 0xd4c4a8,
     walk: 0xc5c9d0,
     walkEdge: 0x6b7280,
     walkCurb: 0x9ca3af,
@@ -28,15 +27,46 @@ window.BlossomHBEnv = (function () {
   };
 
   function mat(color, opts) {
-    const m = new T.MeshLambertMaterial({
+    return new T.MeshStandardMaterial({
       color,
+      map: opts?.map || null,
+      roughness: opts?.rough ?? 0.84,
+      metalness: opts?.metal ?? 0.04,
       emissive: opts?.emissive || 0x000000,
       emissiveIntensity: opts?.emi ?? 0,
       transparent: opts?.transparent || false,
       opacity: opts?.opacity ?? 1,
-      map: opts?.map || null,
     });
-    return m;
+  }
+
+  const texLoader = new T.TextureLoader();
+  const photoSrc = {};
+  const photoFail = {};
+  function loadPhoto(name) {
+    if (photoFail[name]) return null;
+    if (photoSrc[name]) return photoSrc[name];
+    const t = texLoader.load(
+      'assets/tex/' + name + '.jpg',
+      (tex) => { tex.needsUpdate = true; },
+      undefined,
+      () => { photoFail[name] = true; }
+    );
+    t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.colorSpace = T.SRGBColorSpace;
+    t.minFilter = T.LinearMipmapLinearFilter;
+    t.magFilter = T.LinearFilter;
+    t.anisotropy = 8;
+    photoSrc[name] = t;
+    return t;
+  }
+  function photo(name) {
+    const src = loadPhoto(name);
+    if (!src || photoFail[name]) return null;
+    const t = src.clone();
+    t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.colorSpace = T.SRGBColorSpace;
+    t.needsUpdate = true;
+    return t;
   }
 
   function wowNameplate(text, _color, scale) {
@@ -117,6 +147,8 @@ window.BlossomHBEnv = (function () {
   }
 
   function texSand() {
+    const t = photo('sand');
+    if (t) return t;
     return canvasTex(512, 512, (ctx, w, h) => {
       ctx.fillStyle = '#f0d78c';
       ctx.fillRect(0, 0, w, h);
@@ -133,6 +165,8 @@ window.BlossomHBEnv = (function () {
   }
 
   function texSidewalk() {
+    const t = photo('sidewalk');
+    if (t) return t;
     const slab = 16;
     return canvasTex(128, 128, (ctx, w, h) => {
       ctx.fillStyle = '#b8bcc4';
@@ -162,6 +196,8 @@ window.BlossomHBEnv = (function () {
   }
 
   function texPCH() {
+    const t = photo('asphalt');
+    if (t) return t;
     return canvasTex(256, 128, (ctx, w, h) => {
       ctx.fillStyle = '#3f3f46';
       ctx.fillRect(0, 0, w, h);
@@ -202,7 +238,7 @@ window.BlossomHBEnv = (function () {
     const ocean = mesh(
       new T.PlaneGeometry(gw * 1.8, 72),
       P.ocean,
-      { emissive: 0x003d66, emi: 0.08 }
+      { emissive: 0x0a3d52, emi: 0.06, rough: 0.22, metal: 0.35 }
     );
     ocean.rotation.x = -Math.PI / 2;
     ocean.position.set(0, -0.08, z);
@@ -280,18 +316,24 @@ window.BlossomHBEnv = (function () {
 
   function pchLayer(root, gw, z) {
     const t = texPCH();
-    t.repeat.set(gw / 18, 1);
-    const road = mesh(new T.PlaneGeometry(gw, 20), P.pch, { map: t, rough: 0.45, metal: 0.15 });
+    t.repeat.set(gw / 18, 2);
+    const road = mesh(new T.PlaneGeometry(gw, 20), 0x9a9aa0, { map: t, rough: 0.72, metal: 0.08 });
     road.rotation.x = -Math.PI / 2;
     road.position.set(0, 0.025, z);
     root.add(road);
+    const lineA = box(gw, 0.02, 0.12, P.pchLine);
+    lineA.position.set(0, 0.04, z - 0.18);
+    root.add(lineA);
+    const lineB = box(gw, 0.02, 0.12, P.pchLine);
+    lineB.position.set(0, 0.04, z + 0.18);
+    root.add(lineB);
   }
 
   function sidewalkLayer(root, gw, z, depth) {
     const d = depth || 12;
     const t = texSidewalk();
     t.repeat.set(Math.max(2, gw / 8), Math.max(2, d / 8));
-    const walk = mesh(new T.PlaneGeometry(gw, d), P.walk, { map: t });
+    const walk = mesh(new T.PlaneGeometry(gw, d), 0xd8dce2, { map: t, rough: 0.86 });
     walk.rotation.x = -Math.PI / 2;
     walk.position.set(0, 0.045, z);
     root.add(walk);
@@ -331,7 +373,7 @@ window.BlossomHBEnv = (function () {
   function sandLayer(root, gw, z, depth) {
     const t = texSand();
     t.repeat.set(gw / 20, (depth || 14) / 20);
-    const sand = mesh(new T.PlaneGeometry(gw, depth || 14), P.sand, { map: t, rough: 0.96 });
+    const sand = mesh(new T.PlaneGeometry(gw, depth || 14), 0xf2ebe0, { map: t, rough: 0.96 });
     sand.rotation.x = -Math.PI / 2;
     sand.position.set(0, 0.015, z);
     root.add(sand);
@@ -492,7 +534,9 @@ window.BlossomHBEnv = (function () {
 
     const pierW = 13;
     const pierLen = 62;
-    const pierDeck = mesh(new T.PlaneGeometry(pierW, pierLen), P.pier, { rough: 0.92 });
+    const pierT = photo('pier-deck');
+    if (pierT) pierT.repeat.set(2, 8);
+    const pierDeck = mesh(new T.PlaneGeometry(pierW, pierLen), 0xd4d0c8, { map: pierT, rough: 0.9 });
     pierDeck.rotation.x = -Math.PI / 2;
     pierDeck.position.set(12, 0.12, -30);
     root.add(pierDeck);
@@ -567,14 +611,20 @@ window.BlossomHBEnv = (function () {
       floor.position.set(rx, 0.04, rz);
       root.add(floor);
 
-      const wall = box(rw, 5.4, 0.4, P.shiplap);
+      const slap = photo('shiplap');
+      if (slap) slap.repeat.set(Math.max(1.5, rw / 4), 2);
+      const wall = box(rw, 5.4, 0.4, P.shiplap, { map: slap, rough: 0.8 });
       wall.position.set(rx, 2.7, room.minZ + 0.2);
       root.add(wall);
 
-      const w1 = box(0.4, 5.4, rd, P.shiplap);
+      const slap2 = photo('shiplap');
+      if (slap2) slap2.repeat.set(2, Math.max(1.5, rd / 4));
+      const w1 = box(0.4, 5.4, rd, P.shiplap, { map: slap2, rough: 0.8 });
       w1.position.set(room.minX + 0.2, 2.7, rz);
       root.add(w1);
-      const w2 = box(0.4, 5.4, rd, P.shiplap);
+      const slap3 = photo('shiplap');
+      if (slap3) slap3.repeat.set(2, Math.max(1.5, rd / 4));
+      const w2 = box(0.4, 5.4, rd, P.shiplap, { map: slap3, rough: 0.8 });
       w2.position.set(room.maxX - 0.2, 2.7, rz);
       root.add(w2);
 
@@ -587,7 +637,9 @@ window.BlossomHBEnv = (function () {
 
     });
 
-    const porch = mesh(new T.PlaneGeometry(12, 7), P.pier, { rough: 0.88 });
+    const deckT = photo('pier-deck');
+    if (deckT) deckT.repeat.set(3, 2);
+    const porch = mesh(new T.PlaneGeometry(12, 7), P.pier, { map: deckT, rough: 0.88 });
     porch.rotation.x = -Math.PI / 2;
     porch.position.set(36, 0.08, 22);
     root.add(porch);
@@ -601,14 +653,14 @@ window.BlossomHBEnv = (function () {
   }
 
   const SHOPS = {
-    market: { wall: 0xfef08a, trim: 0xca8a04, awning: 0xfde047, sign: '🛒 Main St Market', accent: 0x16a34a },
-    boutique: { wall: 0xfce7f3, trim: 0xdb2777, awning: 0xf472b6, sign: '👗 Bloom Boutique', accent: 0xec4899 },
-    sugarShack: { wall: 0xfff7ed, trim: 0xb45309, awning: 0xfcd34d, sign: '☕ Sugar Shack Cafe', accent: 0xd97706 },
-    jans: { wall: 0xecfdf5, trim: 0x059669, awning: 0x6ee7b7, sign: "🥗 Jan's Health Bar", accent: 0x10b981 },
-    nokaoi: { wall: 0xfef3c7, trim: 0x0d9488, awning: 0x2dd4bf, sign: '🌺 No Ka Oi', accent: 0x14b8a6 },
-    cafe: { wall: 0xffedd5, trim: 0xc2410c, awning: 0xfb923c, sign: "🌮 Wahoo's · HB Original", accent: 0xea580c },
-    salon: { wall: 0xfae8ff, trim: 0xa21caf, awning: 0xe879f9, sign: "💇 Bonnie's · Main St", accent: 0xc026d3 },
-    wellness: { wall: 0xd1fae5, trim: 0x059669, awning: 0x6ee7b7, sign: '🧘 Main St Wellness', accent: 0x10b981 },
+    market: { wall: 0xfef08a, trim: 0xca8a04, awning: 0xfde047, sign: 'Main St Market', accent: 0x16a34a, map: 'stucco' },
+    boutique: { wall: 0xfce7f3, trim: 0xdb2777, awning: 0xf472b6, sign: 'Bloom Boutique', accent: 0xec4899, map: 'stucco' },
+    sugarShack: { wall: 0xc5c9ce, trim: 0x1f4d3a, awning: 0x1f6b4a, sign: 'Sugar Shack Cafe', accent: 0x14532d, map: 'brick-gray' },
+    jans: { wall: 0xecfdf5, trim: 0x059669, awning: 0x6ee7b7, sign: "Jan's Health Bar", accent: 0x10b981, map: 'stucco' },
+    nokaoi: { wall: 0xfef3c7, trim: 0x0d9488, awning: 0x2dd4bf, sign: 'No Ka Oi', accent: 0x14b8a6, map: 'stucco' },
+    cafe: { wall: 0xc4c4c4, trim: 0x7f1d1d, awning: 0x7f1d1d, sign: "Wahoo's Fish Tacos", accent: 0x991b1b, map: 'brick' },
+    salon: { wall: 0xe8dcc8, trim: 0xb91c1c, awning: 0xb91c1c, sign: "Bonnie's Salon", accent: 0xb91c1c, map: 'stucco' },
+    wellness: { wall: 0xd1fae5, trim: 0x059669, awning: 0x6ee7b7, sign: 'Main St Wellness', accent: 0x10b981, map: 'stucco' },
   };
 
   function buildShopfront(group, prop, theme) {
@@ -617,7 +669,9 @@ window.BlossomHBEnv = (function () {
     const d = 6;
     const t = theme || SHOPS[prop.shop] || SHOPS.cafe;
 
-    const body = box(w, h, d, t.wall);
+    const wallMap = photo(t.map || 'stucco');
+    if (wallMap) wallMap.repeat.set(2.2, 2);
+    const body = box(w, h, d, t.wall, { map: wallMap, rough: 0.88 });
     body.position.y = h / 2;
     group.add(body);
 
@@ -651,9 +705,7 @@ window.BlossomHBEnv = (function () {
     const w = bounds.maxX - bounds.minX + 40;
     const d = bounds.maxZ - bounds.minZ + 40;
 
-    const grassT = texSand();
-    grassT.repeat.set(w / 24, d / 24);
-    const base = mesh(new T.PlaneGeometry(w, d), 0x7cb868, { map: grassT });
+    const base = mesh(new T.PlaneGeometry(w, d), 0x6b8f54, { rough: 0.95 });
     base.rotation.x = -Math.PI / 2;
     base.position.set(cx, -0.02, cz);
     base.receiveShadow = true;
@@ -661,7 +713,7 @@ window.BlossomHBEnv = (function () {
 
     const pchT = texPCH();
     pchT.repeat.set((w * 0.92) / 18, 1);
-    const pch = mesh(new T.PlaneGeometry(w * 0.92, 14), 0x4a4a52, { map: pchT });
+    const pch = mesh(new T.PlaneGeometry(w * 0.92, 14), 0xb0b0b4, { map: pchT, rough: 0.72, metal: 0.08 });
     pch.rotation.x = -Math.PI / 2;
     pch.position.set(cx, 0.01, cz + 18);
     root.add(pch);
@@ -671,7 +723,7 @@ window.BlossomHBEnv = (function () {
     const walkD = 14;
     const walkT = texSidewalk();
     walkT.repeat.set(walkW / 8, walkD / 8);
-    const walk = mesh(new T.PlaneGeometry(walkW, walkD), P.walk, { map: walkT });
+    const walk = mesh(new T.PlaneGeometry(walkW, walkD), 0xd8dce2, { map: walkT, rough: 0.86 });
     walk.rotation.x = -Math.PI / 2;
     walk.position.set(cx, 0.045, walkZ);
     root.add(walk);
@@ -695,8 +747,14 @@ window.BlossomHBEnv = (function () {
     });
   }
 
+  function bindThree() {
+    T = window.THREE;
+    return Boolean(T);
+  }
+
   return {
     P,
+    bindThree,
     skyGradient,
     buildMainStreetStrip,
     buildPCHStrip,

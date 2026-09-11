@@ -854,9 +854,49 @@ window.BlossomRender = (function () {
     ctx.fillText(`${p.emoji} ${rank}`, 26, 72);
   }
 
+  const BACKDROP = {
+    park: 'assets/refs/gen/style-lock-strand.jpg',
+    yard: 'assets/refs/gen/cottage-exterior.jpg',
+    pch: 'assets/refs/gen/surf-museum.jpg',
+  };
+  const backdropImgs = {};
+  function backdropFor(locId) {
+    const src = BACKDROP[locId];
+    if (!src) return null;
+    if (!backdropImgs[locId]) {
+      const img = new Image();
+      img.src = src;
+      backdropImgs[locId] = img;
+    }
+    const img = backdropImgs[locId];
+    return img.complete && img.naturalWidth ? img : null;
+  }
+  function drawBackdrop(ctx, loc) {
+    const img = backdropFor(loc.id);
+    if (!img) return false;
+    const floor = loc.floorY || BlossomWorld.H * 0.78;
+    const dw = BlossomWorld.W;
+    const dh = floor + 24;
+    const ir = img.naturalWidth / img.naturalHeight;
+    const cr = dw / dh;
+    let sx = 0;
+    let sy = 0;
+    let sw = img.naturalWidth;
+    let sh = img.naturalHeight;
+    if (ir > cr) {
+      sw = img.naturalHeight * cr;
+      sx = (img.naturalWidth - sw) / 2;
+    } else {
+      sh = img.naturalWidth / cr;
+      sy = (img.naturalHeight - sh) * 0.35;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
+    return true;
+  }
+
   function drawSceneContent(ctx, loc, props, anim, choresDone, nearId, todaysChores, state) {
     const phaseId = state?.timeOfDay || 'morning';
-    drawSky(ctx, loc, anim, phaseId);
+    if (!drawBackdrop(ctx, loc)) drawSky(ctx, loc, anim, phaseId);
     const weather = BlossomWeather?.typeFor?.(loc.id, phaseId, state?.day) || 'none';
     if (weather !== 'none') {
       BlossomWeather.draw(ctx, BlossomWorld.W, BlossomWorld.H, loc.floorY, weather, anim);
