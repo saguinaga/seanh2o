@@ -1949,12 +1949,20 @@ button.guide-check__go:focus-visible {
 
 @media (max-width: 768px) {
   .quest-chip {
-    top: auto;
-    bottom: 88px;
+    top: 8px;
+    bottom: auto;
     left: 8px;
     transform: none;
     width: min(140px, 38vw);
     padding: 7px 9px;
+    z-index: 13;
+  }
+
+  .game-controls {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 16;
   }
 
   .quest-chip:hover,

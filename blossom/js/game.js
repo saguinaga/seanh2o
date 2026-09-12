@@ -90,7 +90,11 @@ window.BlossomGame = (function () {
     window.BlossomBoot?.ensureLoadClears?.(7000);
     function begin3d() {
       if (use3d) return true;
-      if (!window.THREE || !BlossomScene3D?.init?.(canvas, canvas.parentElement, hudCanvas)) {
+      if (!window.THREE) return false;
+      try {
+        if (!BlossomScene3D?.init?.(canvas, canvas.parentElement, hudCanvas)) return false;
+      } catch (err) {
+        console.error('BlossomScene3D.init failed:', err);
         return false;
       }
       use3d = true;

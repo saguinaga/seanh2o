@@ -585,7 +585,8 @@ window.BlossomScene3D = (function () {
   }
 
   function getDpr() {
-    return Math.min(window.devicePixelRatio || 1, 3);
+    const phone = window.matchMedia?.('(max-width: 768px)')?.matches || window.innerWidth <= 768;
+    return Math.min(window.devicePixelRatio || 1, phone ? 1.5 : 2);
   }
 
   function init(canvas, wrap, hudCvs) {
@@ -599,9 +600,16 @@ window.BlossomScene3D = (function () {
       hudCanvas = hudCvs;
       hudCtx = hudCvs?.getContext('2d');
 
-      renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+      const phone = window.matchMedia?.('(max-width: 768px)')?.matches || window.innerWidth <= 768;
+      renderer = new T.WebGLRenderer({
+        canvas,
+        antialias: !phone,
+        alpha: false,
+        powerPreference: phone ? 'low-power' : 'high-performance',
+        failIfMajorPerformanceCaveat: false,
+      });
       renderer.setPixelRatio(getDpr());
-      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.enabled = !phone;
       renderer.shadowMap.type = T.PCFShadowMap;
       renderer.outputColorSpace = T.SRGBColorSpace;
       renderer.toneMapping = T.ACESFilmicToneMapping || T.ReinhardToneMapping;
@@ -616,8 +624,8 @@ window.BlossomScene3D = (function () {
       scene.add(new T.HemisphereLight(0x87ceeb, 0xc4a574, 0.45));
       sunLight = new T.DirectionalLight(0xfff0d0, 1.28);
       sunLight.position.set(32, 54, 20);
-      sunLight.castShadow = true;
-      sunLight.shadow.mapSize.set(4096, 4096);
+      sunLight.castShadow = !phone;
+      sunLight.shadow.mapSize.set(phone ? 512 : 1024, phone ? 512 : 1024);
       sunLight.shadow.bias = -0.0004;
       sunLight.shadow.normalBias = 0.02;
       sunLight.shadow.camera.near = 2;
