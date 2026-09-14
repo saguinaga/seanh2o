@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-07T18:37:03.313Z",
-    "hash": "d0d4868c9ee5b008",
-    "previousHash": "f8268cca985b0d37",
+    "generatedAt": "2026-09-14T19:03:38.029Z",
+    "hash": "89fba48e1fdf106f",
+    "previousHash": "d0d4868c9ee5b008",
     "sources": [
       "catalog",
       "doctor_of_credit_rss",
@@ -39,7 +39,7 @@
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-csr",
@@ -65,7 +65,7 @@
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-cfu",
@@ -90,7 +90,7 @@
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-cff",
@@ -115,7 +115,7 @@
       "source": "catalog",
       "sourceUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-united",
@@ -140,7 +140,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-ihg",
@@ -165,7 +165,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-amazon",
@@ -192,7 +192,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-gold",
@@ -218,7 +218,7 @@
       "source": "catalog",
       "sourceUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-plat",
@@ -244,7 +244,7 @@
       "source": "catalog",
       "sourceUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-bbp",
@@ -270,7 +270,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-bcp",
@@ -295,7 +295,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-delta",
@@ -320,7 +320,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-hilton",
@@ -345,7 +345,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-citi-premier",
@@ -370,7 +370,7 @@
       "source": "catalog",
       "sourceUrl": "https://www.citi.com/credit-cards/citi-strata-premier-credit-card",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-citi-custom",
@@ -395,7 +395,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-citi-double",
@@ -420,7 +420,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-citi-costco",
@@ -448,7 +448,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-citi-strata-premier",
@@ -474,7 +474,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-discover-it",
@@ -500,7 +500,7 @@
       "source": "catalog",
       "sourceUrl": "https://www.discover.com/credit-cards/cash-back/it-card.html",
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-discover-miles",
@@ -525,7 +525,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-discover-secured",
@@ -551,7 +551,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-capone-venture",
@@ -576,7 +576,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-capone-savor",
@@ -601,7 +601,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-capone-quicksilver",
@@ -626,7 +626,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-bofa-premium",
@@ -651,7 +651,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-bofa-customized",
@@ -676,7 +676,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-bofa-unlimited",
@@ -701,7 +701,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-wf-autograph",
@@ -727,7 +727,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-wf-active-cash",
@@ -752,7 +752,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-usb-altitude",
@@ -777,7 +777,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-usb-shopper",
@@ -802,7 +802,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-usb-altitude-reserve",
@@ -828,7 +828,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-barc-jetblue",
@@ -853,7 +853,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-barc-wyndham",
@@ -878,7 +878,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-pnc-cash",
@@ -903,7 +903,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-pnc-points",
@@ -928,7 +928,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-td-double",
@@ -953,7 +953,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-td-target",
@@ -980,7 +980,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-truist-enjoy",
@@ -1005,7 +1005,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-truist-travel",
@@ -1030,7 +1030,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-regions-explore",
@@ -1055,7 +1055,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-regions-cash",
@@ -1080,7 +1080,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-53-cash",
@@ -1105,7 +1105,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-huntington-voice",
@@ -1130,7 +1130,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-bmo-cashback",
@@ -1155,7 +1155,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-nfcu-more",
@@ -1181,7 +1181,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-nfcu-cash",
@@ -1207,7 +1207,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-nfcu-flagship",
@@ -1233,7 +1233,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-penfed-pathfinder",
@@ -1259,7 +1259,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-penfed-power",
@@ -1285,7 +1285,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-dcu-platinum",
@@ -1311,7 +1311,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-dcu-cash",
@@ -1337,7 +1337,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-alliant-sig",
@@ -1363,7 +1363,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-andrews-globe",
@@ -1389,7 +1389,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-apple-card",
@@ -1415,7 +1415,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-sofi-unlimited",
@@ -1441,7 +1441,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-sofi-essential",
@@ -1466,7 +1466,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-sync-paypal",
@@ -1492,7 +1492,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-sync-venmo",
@@ -1518,7 +1518,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-sync-lowes",
@@ -1544,7 +1544,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-sync-sams",
@@ -1570,7 +1570,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-bread-bjs",
@@ -1596,7 +1596,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-comenity-ulta",
@@ -1622,7 +1622,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-elan-fidelity",
@@ -1649,7 +1649,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-ink-cash",
@@ -1675,7 +1675,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-chase-ink-unlimited",
@@ -1701,7 +1701,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-amex-bgr",
@@ -1726,7 +1726,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-fnbo-getaway",
@@ -1751,7 +1751,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-creditone-plat",
@@ -1777,7 +1777,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "card-firsttech-choice",
@@ -1802,7 +1802,7 @@
       "source": "catalog",
       "sourceUrl": null,
       "docUrl": "https://www.doctorofcredit.com/",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     }
   ],
   "banks": [
@@ -1821,7 +1821,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/chase-bank-bonus/",
       "notes": "Verify DD requirements on DOC.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-bofa-200",
@@ -1837,7 +1837,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/best-bank-account-bonuses/",
       "notes": "Amount varies by promo period.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-capone-400",
@@ -1853,7 +1853,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/capital-one-bank-bonus-360-checking360-savings/",
       "notes": "Often requires large deposit.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-wf-325",
@@ -1869,7 +1869,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/wells-fargo-checking-bonus/",
       "notes": "Promo varies; may require DD.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-pnc-400",
@@ -1885,7 +1885,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/pnc-bank-bonus/",
       "notes": "Often tiered by deposit + DD.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-td-300",
@@ -1901,7 +1901,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/td-bank-bonus/",
       "notes": "East-coast availability.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-truist-400",
@@ -1917,7 +1917,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/truist-bank-bonus/",
       "notes": "Verify regional eligibility.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-nfcu-250",
@@ -1934,7 +1934,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/navy-federal-credit-union-bonus/",
       "notes": "Membership required.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-dcu-100",
@@ -1951,7 +1951,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/dcu-bonus/",
       "notes": "CU membership required.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-sofi-300",
@@ -1968,7 +1968,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/sofi-money-bonus/",
       "notes": "Direct deposit tiers change often.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-ally-200",
@@ -1985,7 +1985,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/best-bank-account-bonuses/",
       "notes": "Online banks rotate offers.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "bank-schwab-100",
@@ -2001,7 +2001,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/best-brokerage-bonuses-and-free-trades/",
       "notes": "Referral / transfer promos.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     }
   ],
   "portals": [
@@ -2019,7 +2019,7 @@
       "source": "curated",
       "sourceUrl": "https://www.rakuten.com/",
       "notes": "Rate varies by merchant; stack with category bonus.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "portal-topcashback",
@@ -2034,7 +2034,7 @@
       "source": "curated",
       "sourceUrl": "https://www.topcashback.com/",
       "notes": "Compare vs Rakuten before large purchases.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     }
   ],
   "transferBonuses": [
@@ -2056,7 +2056,7 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/american-express-membership-rewards-transfer-bonuses/",
       "notes": "Periodic 20–30% bonuses — wait before large transfers.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     },
     {
       "feedId": "xfer-chase-hyatt",
@@ -2074,126 +2074,171 @@
       "source": "curated",
       "sourceUrl": "https://www.doctorofcredit.com/chase-ultimate-rewards-transfer-partners/",
       "notes": "Often best value without a promo.",
-      "updatedAt": "2026-09-07T18:37:03.313Z"
+      "updatedAt": "2026-09-14T19:03:38.029Z"
     }
   ],
   "docAlerts": [
     {
-      "feedId": "doc--ymmv-capital-one-shopping-get-300-with-squarespace-signup-f",
+      "feedId": "doc-wells-fargo-choice-privileges-60-000-points",
+      "type": "cc",
+      "issuer": "Wells Fargo",
+      "title": "Wells Fargo Choice Privileges 60,000 Points",
+      "valueUsd": 0,
+      "hardPull": true,
+      "source": "doctor_of_credit",
+      "sourceUrl": "https://www.doctorofcredit.com/wells-fargo-choice-privileges-60000-points/",
+      "pubDate": "Mon, 14 Sep 2026 17:00:32 +0000",
+      "description": "Wells Fargo is offering 60,000 points after $1,000 in spend within the first 3 months",
+      "tags": [
+        "doc-rss"
+      ]
+    },
+    {
+      "feedId": "doc--targeted-amex-offers-dish-network-spend-94-99-038-receive-8",
       "type": "cc",
       "issuer": "Amex",
-      "title": "(YMMV) Capital One Shopping: Get $300 With Squarespace Signup (Free With AmEx Business Gold)",
+      "title": "[Targeted] AmEx Offers: Dish Network, Spend $94.99+ &#038; Receive $80 Statement Credit",
       "valueUsd": 0,
       "hardPull": true,
       "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/ymmv-capital-one-shopping-get-300-with-squarespace-signup-free-with-amex-business-gold/",
-      "pubDate": "Mon, 07 Sep 2026 17:25:14 +0000",
-      "description": "(YMMV) Signup for Squarespace for $114 and get $300 back from Capital One Shopping. You'll get the $114 fully refunded with AmEx Business Gold benefit",
+      "sourceUrl": "https://www.doctorofcredit.com/targeted-amex-offers-dish-network-spend-89-99-receive-80-statement-credit/",
+      "pubDate": "Mon, 14 Sep 2026 16:25:10 +0000",
+      "description": "Earn a one-time $80 statement credit after using your enrolled eligible Card to spend a minimum of $89.99 on your DISH Network subscription",
       "tags": [
         "doc-rss"
       ]
     },
     {
-      "feedId": "doc--in-branch-regions-business-enhanced-visa-card-300-signup-bo",
+      "feedId": "doc-citi-dividend-5-categories-for-q4-2026-dining-citi-travel",
       "type": "cc",
-      "issuer": "Other",
-      "title": "(In-Branch) Regions Business Enhanced Visa Card $300 Signup Bonus + 0% APR",
+      "issuer": "Citi",
+      "title": "Citi Dividend 5% Categories For Q4 2026: Dining, Citi Travel",
       "valueUsd": 0,
       "hardPull": true,
       "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/in-branch-regions-business-enhanced-visa-card-300-signup-bonus-0-apr/",
-      "pubDate": "Mon, 07 Sep 2026 17:00:13 +0000",
-      "description": "Regions Bank in-branch: Business Enhanced Visa card gets a signup bonus of $300 after spending $3,000. No annual fee. 0% intro APR for 12 months on purchases. Earn 2% cashback",
+      "sourceUrl": "https://www.doctorofcredit.com/citi-dividend-5-categories-for-q4-2026-dining-citi-travel/",
+      "pubDate": "Mon, 14 Sep 2026 15:45:15 +0000",
+      "description": "Citi has&#160;announced the 5% categories on their Dividend card for Q4 2026. Already available to enroll (since 9/10/26): Restaurants&#160; – Dining is always a favorite category. Citi Travel &#8211; Eligible purchases include hotels, car rentals, and attractions booked through ",
       "tags": [
         "doc-rss"
       ]
     },
     {
-      "feedId": "doc-first-horizon-bank-private-client-checking-bonus-of-up-to-3-",
-      "type": "bank",
-      "issuer": "Other",
-      "title": "First Horizon Bank Private Client Checking Bonus Of Up To $3,000 [LA, NY, SC, TX, TN, AR, MS, AL, GA, FL, NC &#038; VA]",
-      "valueUsd": 0,
-      "hardPull": false,
-      "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/first-horizon-bank-private-client-checking-bonus-of-up-to-3000-la-ny-sc-tx-tn-ar-ms-al-ga-fl-nc-va/",
-      "pubDate": "Mon, 07 Sep 2026 16:00:22 +0000",
-      "description": "First Horizon Bank is offering a bonus of up to $3,000 when you meet with a private client relationship manager and open a new private client reserve checking account and complete the following requirements",
-      "tags": [
-        "doc-rss"
-      ]
-    },
-    {
-      "feedId": "doc-rakuten-adds-bank-of-america-cards-to-portal-8211-up-to-400",
-      "type": "shopping",
-      "issuer": "Bank of America",
-      "title": "Rakuten Adds Bank Of America Cards To Portal &#8211; Up To $400",
-      "valueUsd": 0,
-      "hardPull": false,
-      "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/rakuten-adds-bank-of-america-cards-to-portal-up-to-150/",
-      "pubDate": "Mon, 07 Sep 2026 15:15:05 +0000",
-      "description": "Update 6/22/26: Back up to $275/$175. CCR matches the highest ever and TR is close to highest ever.",
-      "tags": [
-        "doc-rss"
-      ]
-    },
-    {
-      "feedId": "doc-best-posts-last-week-bank-of-america-625-bonus-10-off-visa-g",
+      "feedId": "doc-chase-freedom-5-categories-for-q4-2026-grocery-dining-red-cr",
       "type": "cc",
-      "issuer": "Bank of America",
-      "title": "Best Posts Last Week: Bank of America $625 Bonus, 10% Off Visa Giftcards &#038; More",
+      "issuer": "Chase",
+      "title": "Chase Freedom 5% Categories For Q4 2026: Grocery, Dining, Red Cross (Up To 17x at Paze Restaurants)",
       "valueUsd": 0,
       "hardPull": true,
       "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/best-posts-last-week-bank-of-america-625-bonus-10-off-visa-giftcards-more/",
-      "pubDate": "Mon, 07 Sep 2026 13:00:55 +0000",
-      "description": "Bank of America is offering up to $625 on the Travel Rewards card with $375 coming from Rakuten. Chase Sapphire Reserve is adding a $15 monthly credit for DoorDash that can be used on anything. U.S. Bank is offering increased bonuses of up to 70,000 miles on the Korean Airlines c",
+      "sourceUrl": "https://www.doctorofcredit.com/chase-freedom-5-categories-for-q4-2026-grocery-dining-red-cross/",
+      "pubDate": "Mon, 14 Sep 2026 15:24:54 +0000",
+      "description": "The 5%/5x categories on the Chase Freedom and Freedom Flex cards for Q4 2026 will be: Grocery &#8211; Always an easy one to use. Can also buy gift cards at grocery stores to maximize. (Note: Walmart and Target are excluded in the terms.) Dining &#8211; Another easy favorite for 5",
       "tags": [
         "doc-rss"
       ]
     },
     {
-      "feedId": "doc--ms-members-exchange-federal-credit-union-200-checking-bonus",
-      "type": "bank",
-      "issuer": "Other",
-      "title": "[MS] Members Exchange Federal Credit Union $200 Checking Bonus",
+      "feedId": "doc-amex-offers-get-50-when-spending-250-at-national-car-rental",
+      "type": "cc",
+      "issuer": "Amex",
+      "title": "AmEx Offers: Get $50 When Spending $250 at National Car Rental",
       "valueUsd": 0,
-      "hardPull": false,
+      "hardPull": true,
       "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/ms-members-exchange-federal-credit-union-200-checking-bonus/",
-      "pubDate": "Sun, 06 Sep 2026 20:00:14 +0000",
-      "description": "Members Exchange Federal Credit Union is offering a $200 bonus when you open a new checking account and complete the following requirements",
+      "sourceUrl": "https://www.doctorofcredit.com/amex-offers-get-50-5000-when-spending-250-on-enterprise-national-car-rental/",
+      "pubDate": "Mon, 14 Sep 2026 15:15:43 +0000",
+      "description": "Check your AmEx offers for one or both of these deals:\r\n\r\nEarn $50 statement credit or 5,000 points after spending $250 at National Car Rental",
       "tags": [
         "doc-rss"
       ]
     },
     {
-      "feedId": "doc--mo-guaranty-bank-500-business-checking-bonus",
-      "type": "bank",
-      "issuer": "Other",
-      "title": "[MO] Guaranty Bank $500 Business Checking Bonus",
+      "feedId": "doc--update-amex-offers-youtube-tv-spend-39-99-038-get-20-back-c",
+      "type": "cc",
+      "issuer": "Amex",
+      "title": "(Update) AmEx Offers: YouTube TV, Spend $39.99 &#038; Get $20 Back (Can Be Done 3 Times; Ends 12/31/2026)",
       "valueUsd": 0,
-      "hardPull": false,
+      "hardPull": true,
       "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/mo-guaranty-bank-500-business-checking-bonus/",
-      "pubDate": "Sun, 06 Sep 2026 19:00:12 +0000",
-      "description": "Guaranty Bank is offering a $500 bonus when you open a new business checking account and complete the following requirements",
+      "sourceUrl": "https://www.doctorofcredit.com/amex-offers-youtube-tv-spend-57-99-get-20-back-3x/",
+      "pubDate": "Mon, 14 Sep 2026 15:13:44 +0000",
+      "description": "Check your AmEx Offers: Get a $20 statement credit by using your enrolled eligible Card to make a single subscription purchase of $57.99 or more online at tv.youtube.com by 12/10/2024. Limit of 3 statement credits",
       "tags": [
         "doc-rss"
       ]
     },
     {
-      "feedId": "doc--co-only-elevations-credit-union-500-checking-bonus",
-      "type": "bank",
-      "issuer": "Other",
-      "title": "[CO Only] Elevations Credit Union $500 Checking Bonus",
+      "feedId": "doc-amex-wells-usb-offers-get-10-off-cvs-max-5-back-",
+      "type": "cc",
+      "issuer": "Amex",
+      "title": "AmEx, Wells, USB Offers: Get 10% Off CVS (Max $5 Back)",
       "valueUsd": 0,
-      "hardPull": false,
+      "hardPull": true,
       "source": "doctor_of_credit",
-      "sourceUrl": "https://www.doctorofcredit.com/elevations-credit-union-350-checking-bonus/",
-      "pubDate": "Sun, 06 Sep 2026 18:30:16 +0000",
-      "description": "Elevations Credit Union is offering a $350 bonus when you open a new checking account and complete the following requirements:",
+      "sourceUrl": "https://www.doctorofcredit.com/amex-offers-get-10-off-cvs-max-10-back/",
+      "pubDate": "Mon, 14 Sep 2026 14:42:55 +0000",
+      "description": "AmEx Offer: Get 10% back at CVS, up to $10 back. Valid through 12/3025. Can also buy a gift card",
+      "tags": [
+        "doc-rss"
+      ]
+    },
+    {
+      "feedId": "doc--targeted-venmo-credit-card-extra-2-cashback-on-all-purchase",
+      "type": "cc",
+      "issuer": "Chase",
+      "title": "[Targeted] Venmo Credit Card: Extra 2% Cashback On All Purchases",
+      "valueUsd": 0,
+      "hardPull": true,
+      "source": "doctor_of_credit",
+      "sourceUrl": "https://www.doctorofcredit.com/targeted-venmo-credit-card/",
+      "pubDate": "Mon, 14 Sep 2026 14:00:31 +0000",
+      "description": "Venmo is offering an extra 2% cash back on all purchases. Valid until 10/11/26",
+      "tags": [
+        "doc-rss"
+      ]
+    },
+    {
+      "feedId": "doc-best-posts-last-week-200k-hilton-offer-refreshed-aeroplan-ca",
+      "type": "cc",
+      "issuer": "Chase",
+      "title": "Best Posts Last Week: 200k Hilton Offer, Refreshed Aeroplan Card &#038; $45 Credit When You Purchase $100+ In Baby Care Items",
+      "valueUsd": 0,
+      "hardPull": true,
+      "source": "doctor_of_credit",
+      "sourceUrl": "https://www.doctorofcredit.com/best-posts-last-week-200k-hilton-offer-refreshed-aeroplan-card-45-credit-when-you-purchase-100-in-baby-care-items/",
+      "pubDate": "Mon, 14 Sep 2026 13:00:39 +0000",
+      "description": "American Express is offering increased bonuses on the Hilton cards of up to 200,000 points. Capital One Venture Rewards is 75,000 points + $300 travel credit. Chase has made an unimpressive update to the Aeroplan card but it does have a new 115,000 point bonus. Barclays has launc",
+      "tags": [
+        "doc-rss"
+      ]
+    },
+    {
+      "feedId": "doc-citi-offers-bp-and-or-amoco-fuel-spend-40-038-get-5-back",
+      "type": "cc",
+      "issuer": "Citi",
+      "title": "Citi Offers: bp and/or Amoco Fuel, Spend $40+ &#038; Get $5 Back",
+      "valueUsd": 0,
+      "hardPull": true,
+      "source": "doctor_of_credit",
+      "sourceUrl": "https://www.doctorofcredit.com/citi-offers-shell-fuel-spend-35-get-5-back-limit-2/",
+      "pubDate": "Mon, 14 Sep 2026 02:05:23 +0000",
+      "description": "Citi Offers has an offer for $5 back when you spend $35+ on Shell Fuel.",
+      "tags": [
+        "doc-rss"
+      ]
+    },
+    {
+      "feedId": "doc-chase-ihg-premier-five-free-night-certificates-up-to-40-000-",
+      "type": "cc",
+      "issuer": "Chase",
+      "title": "Chase IHG Premier: Five Free Night Certificates (Up To 40,000 Points Per Night)",
+      "valueUsd": 0,
+      "hardPull": true,
+      "source": "doctor_of_credit",
+      "sourceUrl": "https://www.doctorofcredit.com/chase-ihg-premier-five-free-night-certificates-up-to-40000-points-per-night/",
+      "pubDate": "Sun, 13 Sep 2026 21:00:36 +0000",
+      "description": "Chase is offering a bonus of 5 Free Nights (each Free Night valued at up to 40,000 points) $4,000 in purchases within the first 3 months",
       "tags": [
         "doc-rss"
       ]
