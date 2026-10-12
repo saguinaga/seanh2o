@@ -1,5 +1,206 @@
 @import url('files/main_style.css');
 
+/* ── Standalone tool pages ─────────────────────────────────── */
+.tool-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 0 24px;
+  background: rgba(2, 6, 23, 0.92);
+  border-bottom: 1px solid #1e293b;
+  backdrop-filter: blur(10px);
+}
+
+.tool-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f1f5f9;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tool-nav-brand img {
+  border-radius: 6px;
+}
+
+.tool-nav-switch {
+  display: flex;
+  gap: 6px;
+}
+
+.tool-nav-switch a {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.tool-nav-switch a:hover {
+  color: #e2e8f0;
+}
+
+.tool-nav-switch a.is-active {
+  color: #f8fafc;
+  background: #1e3a8a;
+  border-color: #1e3a8a;
+}
+
+body.tool-app {
+  margin: 0;
+  min-height: 100vh;
+  background: #020617;
+  color: #e2e8f0;
+}
+
+body.tool-app .calc-section {
+  background: transparent;
+  padding: 28px 16px 72px;
+}
+
+body.tool-app .calc-section::before,
+body.tool-app .calc-section::after {
+  display: none;
+}
+
+body.tool-app .calc-header {
+  text-align: left;
+  max-width: 1100px;
+}
+
+body.tool-app .calc-header h3 {
+  font-family: inherit;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.03em;
+}
+
+body.tool-app .calc-header p {
+  color: #94a3b8;
+  max-width: 640px;
+}
+
+body.tool-app .calc-badge {
+  background: #1e293b;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+}
+
+body.tool-app .calc-panel {
+  background: #0b1220;
+  border: 1px solid #1e293b;
+  box-shadow: none;
+}
+
+body.tool-app .calc-panel h4,
+body.tool-app .chart-wrap h5,
+body.tool-app .metric-label,
+body.tool-app .calc-section.flip-section .calc-header h3,
+body.tool-app .calc-section.flip-section .calc-panel h4 {
+  color: #e2e8f0;
+}
+
+body.tool-app .input-group label,
+body.tool-app .cash-toggle-text,
+body.tool-app .chart-desc,
+body.tool-app .metric-sub,
+body.tool-app .loan-type-hint {
+  color: #94a3b8;
+}
+
+body.tool-app .metric-card {
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+
+body.tool-app .metric-value {
+  color: #f8fafc;
+}
+
+body.tool-app .calc-grid {
+  padding: 0;
+}
+
+.tool-chooser {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 72px 24px;
+}
+
+.tool-chooser-kicker {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.tool-chooser h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #f8fafc;
+}
+
+.tool-chooser-lead {
+  margin: 0 0 28px;
+  color: #94a3b8;
+}
+
+.tool-chooser-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tool-chooser-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px;
+  border-radius: 12px;
+  background: #0b1220;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  text-decoration: none;
+}
+
+.tool-chooser-card strong {
+  font-size: 1.2rem;
+  color: #f8fafc;
+}
+
+.tool-chooser-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #67e8f9;
+}
+
+.tool-chooser-card:hover {
+  border-color: #334155;
+}
+
+@media (max-width: 640px) {
+  .tool-chooser-grid {
+    grid-template-columns: 1fr;
+  }
+  .tool-nav {
+    flex-wrap: wrap;
+    padding: 10px 16px;
+  }
+}
+
 /* ── Buy & Hold Calculator ─────────────────────────────────── */
 .calc-section {
   padding: 72px 24px 84px;
@@ -2658,4 +2859,29 @@ body {
 
 .project-card-visual--cozy {
   background: linear-gradient(135deg, #fb7185 0%, #f472b6 45%, #fda4af 100%);
+}
+
+body.tool-app .calc-section.flip-section {
+  background: transparent;
+}
+
+body.tool-app .calc-section.flip-section .calc-header h3,
+body.tool-app .calc-section.flip-section .calc-panel h4,
+body.tool-app .calc-section.flip-section .chart-wrap h5 {
+  color: #e2e8f0;
+  font-size: inherit;
+}
+
+body.tool-app .calc-section.flip-section .calc-header h3 {
+  font-size: 1.7rem;
+}
+
+body.tool-app .calc-section.flip-section .calc-panel {
+  background: #0b1220;
+  border: 1px solid #1e293b;
+}
+
+body.tool-app .calc-section.flip-section .calc-header p,
+body.tool-app .calc-section.flip-section .chart-desc {
+  color: #94a3b8;
 }

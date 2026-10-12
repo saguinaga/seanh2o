@@ -781,7 +781,7 @@
     if (financeRehab) params.set('ffr', financeRehab.checked ? '1' : '0');
     const base = window.location.pathname;
     const clean = params.toString();
-    return base + (clean ? '?' + clean : '') + '#fix-flip-calculator';
+    return base + (clean ? '?' + clean : '');
   }
 
   function loadFromUrl() {
@@ -843,7 +843,7 @@
     if (slider) slider.value = targetProfit;
     const cb = $('#flipFinanceRehab');
     if (cb) cb.checked = true;
-    safeReplaceState(window.location.pathname + '#fix-flip-calculator');
+    safeReplaceState(window.location.pathname);
     render();
     showToast('Reset to Marion County flip defaults');
   }
@@ -897,10 +897,6 @@
     });
 
     loadFromUrl();
-    if (window.location.search && window.location.hash !== '#fix-flip-calculator') {
-      safeReplaceState(window.location.href.split('#')[0] + '#fix-flip-calculator');
-    }
-
     render();
   }
 

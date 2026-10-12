@@ -936,7 +936,7 @@ console.log("\uD83D\uDD25 FIXED INDIANA DEFAULTS + FULL LIVE CALC LOADED - " + n
       params.set('dt', String(dscrTarget));
       if ($('dscrInterestOnly')?.checked) params.set('io', '1');
 
-      const url = window.location.origin + window.location.pathname + '?' + params.toString() + '#buy-hold-calculator';
+      const url = window.location.origin + window.location.pathname + '?' + params.toString();
       try {
         await navigator.clipboard.writeText(url);
         if (toast) {
