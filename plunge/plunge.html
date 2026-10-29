@@ -8,16 +8,7 @@
 <link rel="icon" href="favicon.png" type="image/png" sizes="256x256">
 <link rel="apple-touch-icon" href="favicon.png">
 <style>
-  :root, html[data-theme="light"] {
-    --bg: #f4f6f8; --ink: #1a2330; --muted: #3d4654; --quiet: #5a6472;
-    --card: #fff; --line: #c5cdd6; --hair: #d4dbe3;
-    --input: #fff; --input-bd: #c5cdd6; --btn: #fff; --btn-bd: #8a94a0;
-    --verdict: #e8f1e6; --verdict-bd: #b7cbb4;
-    --bad: #f8e6e4; --bad-bd: #d4b0ac; --bad-ink: #8a2a22;
-    --mute-bg: #eef1f4; --tab: #e8ecf0; --tab-on: #1a2330; --tab-on-ink: #fff;
-    --row: #e8ecf0; --accent: #eef4f0; --svg: #fff;
-  }
-  html[data-theme="dark"] {
+  :root, html[data-theme="dark"] {
     --bg: #12151a; --ink: #e8e4dc; --muted: #b4b0a6; --quiet: #9a958c;
     --card: #1c2026; --line: #3a414b; --hair: #323840;
     --input: #15181d; --input-bd: #4a515c; --btn: #1c2026; --btn-bd: #6a717c;
@@ -25,6 +16,15 @@
     --bad: #2a1c1b; --bad-bd: #6a3a36; --bad-ink: #f0b4ae;
     --mute-bg: #22262c; --tab: #181c22; --tab-on: #e8e4dc; --tab-on-ink: #12151a;
     --row: #2a3038; --accent: #252018; --svg: #15181d;
+  }
+  html[data-theme="light"] {
+    --bg: #f4f6f8; --ink: #1a2330; --muted: #3d4654; --quiet: #5a6472;
+    --card: #fff; --line: #c5cdd6; --hair: #d4dbe3;
+    --input: #fff; --input-bd: #c5cdd6; --btn: #fff; --btn-bd: #8a94a0;
+    --verdict: #e8f1e6; --verdict-bd: #b7cbb4;
+    --bad: #f8e6e4; --bad-bd: #d4b0ac; --bad-ink: #8a2a22;
+    --mute-bg: #eef1f4; --tab: #e8ecf0; --tab-on: #1a2330; --tab-on-ink: #fff;
+    --row: #e8ecf0; --accent: #eef4f0; --svg: #fff;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", Calibri, sans-serif; font-size: 16px; padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
@@ -296,10 +296,10 @@
 </style>
 <script>
 (function () {
-  var t = localStorage.getItem("pool-ui-theme") || "light";
+  var t = localStorage.getItem("pool-ui-theme") || "dark";
   if (t === "night") t = "dark";
   else if (t === "sand" || t === "lagoon") t = "light";
-  else if (t !== "dark") t = "light";
+  else if (t !== "light") t = "dark";
   document.documentElement.setAttribute("data-theme", t);
 })();
 </script>
@@ -1340,19 +1340,25 @@
   (function themeBind() {
     const el = $("uiTheme");
     if (!el) return;
-    let t = document.documentElement.getAttribute("data-theme") || "light";
-    if (t !== "light" && t !== "dark") t = "light";
+    let t = document.documentElement.getAttribute("data-theme") || "dark";
+    if (t !== "light" && t !== "dark") t = "dark";
     el.value = t;
     el.addEventListener("change", () => {
       document.documentElement.setAttribute("data-theme", el.value);
       localStorage.setItem("pool-ui-theme", el.value);
     });
   })();
-  $("tabPower").addEventListener("click", () => show("power"));
-  $("tabChem").addEventListener("click", () => show("chem"));
-  $("tabPad").addEventListener("click", () => show("pad"));
-  $("tabLog").addEventListener("click", () => show("log"));
-  $("tabClock").addEventListener("click", () => show("clock"));
+  function bindTabs() {
+    const map = { tabChem: "chem", tabClock: "clock", tabLog: "log", tabPad: "pad", tabPower: "power" };
+    Object.keys(map).forEach(id => {
+      const el = $(id);
+      if (!el || el.dataset.bound === "1") return;
+      el.dataset.bound = "1";
+      el.addEventListener("click", () => show(map[id]));
+    });
+  }
+  bindTabs();
+  document.addEventListener("DOMContentLoaded", bindTabs);
   show("chem");
   const PINS = [
     { n: "1", x: 18, y: 24, col: "#7C8CFF", title: "JRT2500R heat pump", body: "116k BTU / 6.5 COP. Heat 10am-3pm only.", side: "L" },
@@ -1378,11 +1384,11 @@
   function pinCard(p) {
     return "<div class='pin-card' data-n='" + p.n + "'><b><span class='pin-n' style='background:" + p.col + "'>" + p.n + "</span>" + p.title + "</b>" + p.body + "</div>";
   }
-  $("padLeft").innerHTML = PINS.filter(p => p.side === "L").map(pinCard).join("");
-  $("padRight").innerHTML = PINS.filter(p => p.side === "R").map(pinCard).join("")
+  if ($("padLeft")) $("padLeft").innerHTML = PINS.filter(p => p.side === "L").map(pinCard).join("");
+  if ($("padRight")) $("padRight").innerHTML = PINS.filter(p => p.side === "R").map(pinCard).join("")
     + "<h2 style='margin:8px 0 0'>Presets</h2>"
     + PRESETS.map(p => "<div class='preset-card' style='border-left:6px solid " + p.col + "'><b>" + p.title + "</b>" + p.body + "</div>").join("");
-  PINS.forEach(p => {
+  if (stage) PINS.forEach(p => {
     const d = document.createElement("button");
     d.type = "button"; d.className = "pad-dot"; d.textContent = p.n;
     d.style.left = p.x + "%"; d.style.top = p.y + "%"; d.style.background = p.col; d.dataset.n = p.n;
