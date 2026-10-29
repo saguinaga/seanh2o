@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Plunge</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Operator sheet for a backyard pool. Chem, Clock, Log, Pad, Power. Local. No account.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png" sizes="256x256">
+<link rel="apple-touch-icon" href="favicon.png">
+<style>
+  :root {
+    --ink: #e8f4f2;
+    --muted: #9bb8b4;
+    --bg: #061018;
+    --card: rgba(10, 28, 34, 0.72);
+    --line: rgba(180, 230, 220, 0.18);
+    --teal: #3ee0c4;
+    --gold: #e6c27a;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", Calibri, sans-serif;
+    font-size: 17px;
+    line-height: 1.45;
+    overflow-x: hidden;
+  }
+  a { color: var(--teal); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .nav {
+    position: sticky; top: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px max(18px, env(safe-area-inset-left));
+    background: rgba(6, 16, 24, 0.86);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav b { letter-spacing: 0.08em; font-size: 13px; text-transform: uppercase; }
+  .nav-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+  .nav-links a { color: var(--muted); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 48px; padding: 0 22px;
+    background: var(--teal); color: #042018; font-weight: 700;
+    border: none; border-radius: 999px; cursor: pointer;
+    text-decoration: none; position: relative; overflow: hidden;
+  }
+  .btn::after {
+    content: ""; position: absolute; inset: -40% auto -40% -30%;
+    width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+    transform: skewX(-18deg); animation: shine 3.2s ease-in-out infinite;
+  }
+  .btn:hover { text-decoration: none; filter: brightness(1.08); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn.ghost::after { display: none; }
+  @keyframes shine { 0% { left: -40%; } 60%, 100% { left: 130%; } }
+
+  .hero-wrap { position: relative; min-height: 92vh; overflow: hidden; }
+  .hero-vid {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: 1;
+  }
+  .slides { position: absolute; inset: 0; z-index: 0; }
+  .slides img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0;
+    animation: ken 28s ease-in-out infinite, fadeSlide 28s ease-in-out infinite;
+  }
+  .slides img:nth-child(1) { animation-delay: 0s, 0s; }
+  .slides img:nth-child(2) { animation-delay: -7s, -7s; }
+  .slides img:nth-child(3) { animation-delay: -14s, -14s; }
+  .slides img:nth-child(4) { animation-delay: -21s, -21s; }
+  @keyframes ken {
+    0% { transform: scale(1.08) translate3d(0, 0, 0); }
+    50% { transform: scale(1.18) translate3d(-2%, 1%, 0); }
+    100% { transform: scale(1.08) translate3d(0, 0, 0); }
+  }
+  @keyframes fadeSlide {
+    0%, 18% { opacity: 1; }
+    25%, 93% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  .caustic {
+    position: absolute; inset: 0; pointer-events: none; z-index: 2; mix-blend-mode: screen; opacity: 0.35;
+    background:
+      radial-gradient(ellipse 40% 20% at 20% 80%, rgba(62,224,196,.35), transparent 60%),
+      radial-gradient(ellipse 30% 18% at 70% 70%, rgba(90,180,255,.25), transparent 55%),
+      radial-gradient(ellipse 50% 25% at 50% 100%, rgba(62,224,196,.2), transparent 70%);
+    animation: caustic 9s ease-in-out infinite alternate;
+  }
+  @keyframes caustic {
+    from { transform: translate3d(-3%, 2%, 0) scale(1); }
+    to { transform: translate3d(4%, -3%, 0) scale(1.12); }
+  }
+  .hero-shade {
+    position: absolute; inset: 0; z-index: 3;
+    background:
+      linear-gradient(180deg, rgba(6,16,24,0.2) 0%, rgba(6,16,24,0.5) 48%, rgba(6,16,24,0.96) 100%);
+  }
+  .hero-inner {
+    position: relative; z-index: 4;
+    min-height: 92vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 48px max(20px, env(safe-area-inset-left)) 40px;
+    max-width: 980px;
+  }
+  .kicker {
+    color: var(--gold); letter-spacing: 0.18em; text-transform: uppercase;
+    font-size: 12px; font-weight: 650; margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(42px, 8vw, 92px);
+    line-height: 0.92; letter-spacing: -0.03em;
+    margin: 0 0 16px; font-weight: 750;
+  }
+  .lede { font-size: clamp(18px, 2.4vw, 24px); max-width: 38em; color: #d7ece8; margin: 0 0 28px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .rpm {
+    display: flex; align-items: flex-end; gap: 4px; height: 72px; margin-top: 28px; max-width: 640px;
+  }
+  .rpm i {
+    flex: 1; display: block; border-radius: 3px 3px 0 0;
+    background: #3d5a80; transform-origin: bottom;
+    animation: bar 2.8s ease-in-out infinite;
+  }
+  .rpm i.peak { background: #8a2a22; }
+  .rpm i.heat { background: var(--teal); }
+  .rpm i.off { background: #22333a; min-height: 6px; animation: none; height: 6px; }
+  @keyframes bar {
+    0%, 100% { transform: scaleY(0.85); }
+    50% { transform: scaleY(1); }
+  }
+
+  section { padding: 72px max(20px, env(safe-area-inset-left)); max-width: 1120px; margin: 0 auto; }
+  h2 { font-size: clamp(26px, 4vw, 40px); letter-spacing: -0.02em; margin: 0 0 12px; }
+  .sub { color: var(--muted); max-width: 42em; margin: 0 0 28px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 0;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    opacity: 0; transform: translateY(18px);
+    animation: rise 0.7s ease forwards;
+  }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.12s; }
+  .card:nth-child(3) { animation-delay: 0.19s; }
+  .card:nth-child(4) { animation-delay: 0.26s; }
+  .card:nth-child(5) { animation-delay: 0.33s; }
+  .card:nth-child(6) { animation-delay: 0.4s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .card:hover { border-color: rgba(62,224,196,0.45); }
+  .card img { width: 100%; height: 160px; object-fit: cover; display: block; }
+  .card .body { padding: 18px 20px 20px; }
+  .card h3 { margin: 0 0 8px; font-size: 20px; }
+  .card p { margin: 0; color: #c5ddd9; }
+  .num {
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal); font-weight: 700; display: block; margin-bottom: 8px;
+  }
+  .split {
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; align-items: center;
+  }
+  .split img, .float-img {
+    width: 100%; height: 380px; object-fit: cover; border-radius: 18px;
+    border: 1px solid var(--line);
+    animation: floaty 6s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  table.compare { width: 100%; border-collapse: collapse; font-size: 15px; }
+  table.compare th, table.compare td {
+    text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top;
+  }
+  table.compare th { color: var(--muted); font-weight: 600; }
+  .band {
+    position: relative; overflow: hidden;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .band .bgmove {
+    position: absolute; inset: -8%;
+    background: url("home-water.jpg") center / cover;
+    animation: pan 28s linear infinite alternate;
+    filter: brightness(0.45) saturate(1.2);
+  }
+  @keyframes pan { from { transform: translate3d(-3%, 0, 0) scale(1.08); } to { transform: translate3d(3%, -2%, 0) scale(1.12); } }
+  .band .inner { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 72px max(20px, env(safe-area-inset-left)); }
+  .quote {
+    font-size: clamp(22px, 3.4vw, 34px); line-height: 1.25; max-width: 18em;
+    margin: 18px 0 0; font-weight: 650;
+  }
+  .mosaic {
+    display: grid; grid-template-columns: 1.4fr 1fr; grid-template-rows: 180px 180px; gap: 12px;
+  }
+  .mosaic img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); }
+  .mosaic img:first-child { grid-row: 1 / span 2; height: 100%; }
+  footer {
+    padding: 28px max(20px, env(safe-area-inset-left)) 48px;
+    color: var(--muted); font-size: 13px; border-top: 1px solid var(--line);
+  }
+  @media (max-width: 800px) {
+    .grid, .split, .mosaic { grid-template-columns: 1fr; }
+    .mosaic { grid-template-rows: 200px 140px 140px; }
+    .mosaic img:first-child { grid-row: auto; }
+    .nav-links { display: none; }
+    .hero-wrap, .hero-inner { min-height: 86vh; }
+    .split img { height: 220px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important; transition: none !important;
+    }
+    .slides img { opacity: 1; }
+    .slides img:not(:first-child) { display: none; }
+    .card { opacity: 1; transform: none; }
+    .hero-vid { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="nav">
+  <b>The Plunge</b>
+  <div class="nav-links">
+    <a href="#why">Why</a>
+    <a href="#tabs">Tabs</a>
+    <a href="#yours">Your unit</a>
+    <a href="#local">Local</a>
+  </div>
+  <a class="btn" href="plunge.html">Open the sheet</a>
+</header>
+
+<div class="hero-wrap">
+  <div class="slides">
+    <img src="home-hero.jpg" alt="">
+    <img src="home-night.jpg" alt="">
+    <img src="home-pad.jpg" alt="">
+    <img src="home-chem.jpg" alt="">
+  </div>
+  <video class="hero-vid" autoplay muted loop playsinline poster="home-hero.jpg">
+    <source src="home-hero.mp4" type="video/mp4">
+  </video>
+  <div class="caustic"></div>
+  <div class="hero-shade"></div>
+  <div class="hero-inner">
+    <p class="kicker">Operator sheet for a backyard pool</p>
+    <h1>Your pool.<br>This visit.<br>These jugs.</h1>
+    <p class="lede">Chem, clock, pad, power, and a log. One test, one pour, your equipment, your rate plan. Built to beat the SKU calculators at the water.</p>
+    <div class="cta-row">
+      <a class="btn" href="plunge.html">Open The Plunge</a>
+      <a class="btn ghost" href="#tabs">See what it does</a>
+    </div>
+    <div class="rpm" aria-hidden="true">
+      <i style="height:22%"></i><i style="height:22%"></i><i style="height:22%"></i>
+      <i style="height:28%"></i><i style="height:28%"></i>
+      <i class="heat" style="height:88%"></i><i class="heat" style="height:92%"></i>
+      <i class="heat" style="height:90%"></i><i class="heat" style="height:86%"></i>
+      <i style="height:40%"></i>
+      <i class="peak" style="height:18%"></i><i class="peak" style="height:18%"></i>
+      <i class="peak" style="height:18%"></i><i class="peak" style="height:18%"></i>
+      <i class="off"></i><i class="off"></i><i class="off"></i>
+      <i style="height:22%"></i><i style="height:22%"></i>
+    </div>
+  </div>
+</div>
+
+<section id="why">
+  <p class="kicker">Why it exists</p>
+  <h2>Those apps sell every SKU. This one runs your visit.</h2>
+  <p class="sub">Pool Math is a calculator. Pool Nerd is a store. The Plunge is the visit: test kit, cups, pump hours, time-of-use, and a map of the pad you actually stand at.</p>
+  <div class="mosaic" style="margin-bottom:28px">
+    <img src="home-drops.jpg" alt="FAS-DPD titration">
+    <img src="home-valve.jpg" alt="3-way valve handle">
+    <img src="home-power.jpg" alt="Power chart mood">
+  </div>
+  <table class="compare">
+    <thead>
+      <tr><th></th><th>The Plunge</th><th>The other two</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Dose</td><td>Your gallons, your jug strength, your acid %. Cups, not mystery scoops.</td><td>Every chemical on the shelf. Store-card FC.</td></tr>
+      <tr><td>FC</td><td>TFP FC/CYA band. Now is empty until you test this visit.</td><td>Last session can look like today.</td></tr>
+      <tr><td>Pump</td><td>Quiet skim, heat in the cheap sun hours, off in the peak window.</td><td>Turnover slogans. No utility TOU.</td></tr>
+      <tr><td>Pad</td><td>Numbered photo of your valves and gear.</td><td>No map of your equipment.</td></tr>
+      <tr><td>Power</td><td>Your heater class, L/W/D, your plan, kW chart on load.</td><td>Gallons locked. No TOU chart.</td></tr>
+      <tr><td>Memory</td><td>Local. History, drift, shelf. JSON backup.</td><td>Account, or a generic pool.</td></tr>
+      <tr><td>Startup</td><td>Fill, liquid chlorine, 28 days before the salt cell. No robot on fresh pebble. The sheet can count that rest.</td><td>Generic calculators skip the first weeks.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="tabs">
+  <p class="kicker">Five tabs</p>
+  <h2>Everything in one sheet</h2>
+  <p class="sub">Opens on Chem. Pad photo sits next to the file.</p>
+  <div class="grid">
+    <article class="card">
+      <img src="home-chem.jpg" alt="Test kit and cups">
+      <div class="body">
+        <span class="num">01 Chem</span>
+        <h3>This visit, then Save</h3>
+        <p>Type this kit's FC, pH, TA. Want stays. Now does not persist. Last test is a hint, not a fake reading. CSI waits on pH, TA, CH, and water temp. Soda or acid, not both. Chlorine last. Pump on.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="home-power.jpg" alt="Hourly power mood">
+      <div class="body">
+        <span class="num">02 Clock</span>
+        <h3>RPM cubed, hour by hour</h3>
+        <p>Rest, swim, spa, vac. Skim so weirs tick. Heat in the cheap window. Forced off at peak. Salt cell only rides hours with real flow.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="home-drops.jpg" alt="Drops in a sample">
+      <div class="body">
+        <span class="num">03 Log</span>
+        <h3>Tests, charts, and the shelf</h3>
+        <p>Every Save lands here: FC, pH, TA, pours. Charts so you can see if you are drifting, not just the last visit. Last / min / max on the same picture. Shelf and days-left so you know when to buy jugs. JSON download is the backup.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="home-pad.jpg" alt="Equipment pad">
+      <div class="body">
+        <span class="num">04 Pad</span>
+        <h3>Your pad, labeled</h3>
+        <p>Photo of the equipment. What each valve and unit is for. Daily vs spa vs vac as presets. Manual lines vs the ones the app should turn.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="home-valve.jpg" alt="Valve handle">
+      <div class="body">
+        <span class="num">05 Power</span>
+        <h3>Heat, gallons, your utility</h3>
+        <p>Heat type then model. Search a decade of heat pumps, gas, and pumps. Water from L/W/D. Attached spa is extra volume on one body. Pick a utility plan. Chart is house+pool kW with peak in pink.</p>
+      </div>
+    </article>
+  </div>
+  <p class="sub" style="margin-top:22px">First weeks after plaster: liquid chlorine, rest before the cell, robot later. The sheet can watch that clock. It is not a sixth tab.</p>
+</section>
+
+<div class="band" id="yours">
+  <div class="bgmove"></div>
+  <div class="inner split">
+    <div>
+      <p class="kicker">Personal</p>
+      <h2>Not locked to 6500 forever</h2>
+      <p class="sub">Name the pool. Surface. Sanitizer. Length, width, shallow, deep. Attached spa adds gallons to one body. Override dose gal if you measured. Utility and plan, or custom cents in Fine print.</p>
+      <p class="quote">Class rates, not your bill. Cups from your jugs, not Amazon SKUs.</p>
+    </div>
+    <img class="float-img" src="home-water.jpg" alt="Pool water surface">
+  </div>
+</div>
+
+<section id="local">
+  <p class="kicker">How it runs</p>
+  <h2>Local first. No login.</h2>
+  <p class="sub">Everything lives in the browser. No automation-app password. No account. Open the sheet. Mobile web is first: 44px taps, 16px type so the phone does not zoom. Native iOS and Android later. Mild themes on the sheet: sand, night, lagoon.</p>
+  <div class="cta-row">
+    <a class="btn" href="plunge.html">Open the sheet</a>
+    <a class="btn ghost" href="README.md">Living notes</a>
+  </div>
+</section>
+
+<footer>
+  The Plunge. Local operator sheet. Not a store, not a weekly service contract. Hero loops muted. Reduced-motion honors the OS.
+</footer>
+</body>
+</html>

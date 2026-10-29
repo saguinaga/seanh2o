@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Plunge</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png" sizes="256x256">
+<link rel="apple-touch-icon" href="favicon.png">
+<style>
+  :root, html[data-theme="light"] {
+    --bg: #f4f6f8; --ink: #1a2330; --muted: #3d4654; --quiet: #5a6472;
+    --card: #fff; --line: #c5cdd6; --hair: #d4dbe3;
+    --input: #fff; --input-bd: #c5cdd6; --btn: #fff; --btn-bd: #8a94a0;
+    --verdict: #e8f1e6; --verdict-bd: #b7cbb4;
+    --bad: #f8e6e4; --bad-bd: #d4b0ac; --bad-ink: #8a2a22;
+    --mute-bg: #eef1f4; --tab: #e8ecf0; --tab-on: #1a2330; --tab-on-ink: #fff;
+    --row: #e8ecf0; --accent: #eef4f0; --svg: #fff;
+  }
+  html[data-theme="dark"] {
+    --bg: #12151a; --ink: #e8e4dc; --muted: #b4b0a6; --quiet: #9a958c;
+    --card: #1c2026; --line: #3a414b; --hair: #323840;
+    --input: #15181d; --input-bd: #4a515c; --btn: #1c2026; --btn-bd: #6a717c;
+    --verdict: #1e2a22; --verdict-bd: #3d5a44;
+    --bad: #2a1c1b; --bad-bd: #6a3a36; --bad-ink: #f0b4ae;
+    --mute-bg: #22262c; --tab: #181c22; --tab-on: #e8e4dc; --tab-on-ink: #12151a;
+    --row: #2a3038; --accent: #252018; --svg: #15181d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", Calibri, sans-serif; font-size: 16px; padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+  .sheet-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 16px 24px 8px; }
+  h1 { margin: 0; font-size: 22px; font-weight: 650; }
+  .sheet-tab { font-size: 16px; font-weight: 650; color: var(--muted); }
+  .sub { margin: 0 24px 12px; color: var(--muted); max-width: 780px; line-height: 1.4; }
+  .theme-pick { font-size: 13px; font-weight: 400; color: var(--quiet); }
+  .theme-pick select { width: auto; min-width: 88px; min-height: 44px; }
+  .sheet-foot { margin: 24px; padding-top: 12px; border-top: 1px solid var(--hair); }
+  .wrap { display: grid; grid-template-columns: 300px 1fr; gap: 14px; padding: 0 18px 24px; align-items: start; }
+  @media (max-width: 960px) { .wrap { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); padding: 16px 16px; border-radius: 12px; }
+  h2 { margin: 14px 0 8px; font-size: 15px; }
+  h2:first-child { margin-top: 0; }
+  label.line {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(148px, 48%);
+    align-items: center; gap: 8px 10px; margin: 8px 0;
+  }
+  label.line > span { min-width: 0; }
+  label.line input, label.line select { width: 100%; max-width: none; min-width: 0; }
+  input[type="number"], select, input[type="text"], input[type="date"] {
+    font: inherit; padding: 8px 10px; border: 1px solid var(--input-bd);
+    background: var(--input); color: var(--ink); min-height: 44px;
+  }
+  input[type="number"] { font-size: 20px; font-variant-numeric: tabular-nums; }
+  input[type="checkbox"] { width: auto; margin-right: 6px; }
+  .check { display: flex; align-items: flex-start; gap: 6px; margin: 8px 0; }
+  details { margin-top: 12px; border-top: 1px solid var(--hair); padding-top: 8px; }
+  summary { cursor: pointer; }
+  .verdict { font-size: 16px; font-weight: 650; margin: 0 0 8px; padding: 10px 12px; background: var(--verdict); border: 1px solid var(--verdict-bd); border-radius: 8px; }
+  .verdict.bad { background: var(--bad); border-color: var(--bad-bd); color: var(--bad-ink); }
+  .verdict.mute { background: var(--mute-bg); border-color: var(--hair); font-weight: 500; }
+  .chem-phase {
+    margin: 0 18px 12px; padding: 12px 16px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: start;
+  }
+  .chem-phase .when { font-size: 12px; color: var(--quiet); }
+  #chemToday { margin: 0 18px 12px; }
+  #chemToday h2 { margin-top: 0; }
+  .chem-today-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+    padding: 0 18px 12px;
+  }
+  @media (max-width: 1100px) {
+    .chem-today-grid { grid-template-columns: 1fr; }
+    .chem-phase { grid-template-columns: 1fr; }
+    .chem-widgets { grid-template-columns: 1fr; }
+  }
+  .chem-widget { padding: 12px 12px; min-width: 0; display: flex; flex-direction: column; }
+  .chem-widget h2 { margin: 0 0 6px; font-size: 14px; display: block; }
+  .chem-widget h2 small { display: block; font-weight: 400; color: var(--quiet); font-size: 11px; margin-top: 1px; }
+  .chem-widget label.line { margin: 6px 0; gap: 4px; font-size: 13px; grid-template-columns: 1fr; }
+  .chem-widget input { width: 100%; }
+  .chem-widget .verdict { font-size: 13px; font-weight: 650; margin: 8px 0 0; padding: 6px 8px; flex: 1; }
+  .chem-widget .note { font-size: 12px; margin-top: 4px; }
+  .chem-plan { margin: 8px 0 0; padding-left: 22px; }
+  .chem-plan li { margin: 5px 0; line-height: 1.35; }
+  .chem-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: end; margin: 8px 0 0; font-size: 13px; }
+  .chem-meta label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--quiet); }
+  #chemCsi { margin-top: 8px; }
+  .chem-kit { margin: 0 18px 24px; }
+  .chem-ref { margin: 0 18px 12px; }
+  .chem-ref summary { font-weight: 650; font-size: 14px; }
+  .chem-ref .chem-kit { margin: 10px 0 0; }
+  .chem-widgets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .phase-liquid .salt-only { display: none; }
+  .chem-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px 14px; align-items: end; }
+  .chem-top label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--quiet); }
+  .chem-top input, .chem-top select { width: 100%; min-width: 0; }
+  svg { display: block; width: 100%; height: auto; background: var(--svg); border: 1px solid var(--hair); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+  .sw { display: inline-block; width: 12px; height: 9px; margin-right: 5px; vertical-align: -1px; border: 1px solid #bbb; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--hair); }
+  th:first-child, td:first-child { text-align: left; }
+  .peak td { background: var(--bad); }
+  .cheap td { background: var(--verdict); }
+  .note { margin: 6px 0 0; color: var(--quiet); font-size: 13px; line-height: 1.35; }
+  textarea { width: 100%; min-height: 56px; font: 12px Consolas, monospace; border: 1px solid var(--input-bd); padding: 6px; background: var(--input); color: var(--ink); }
+  button { font: inherit; padding: 8px 14px; border: 1px solid var(--btn-bd); background: var(--btn); color: var(--ink); cursor: pointer; min-height: 44px; }
+  .tip { position: relative; }
+  .tip i {
+    display: inline-block; margin-left: 3px; width: 14px; height: 14px; line-height: 14px;
+    text-align: center; font-style: normal; font-size: 11px; font-weight: 700;
+    color: var(--quiet); border: 1px solid var(--btn-bd); border-radius: 50%; cursor: help;
+  }
+  .tip em {
+    display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30;
+    width: 270px; padding: 8px 10px; background: #1c1c1c; color: #f3f1ec;
+    font-style: normal; font-weight: 400; font-size: 13px; line-height: 1.35;
+    pointer-events: none;
+  }
+  .tip i:hover + em { display: block; }
+  .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 0 0 10px; }
+  @media (max-width: 800px) { .strip { grid-template-columns: 1fr 1fr; } }
+  .strip div { background: var(--input); border: 1px solid var(--hair); padding: 6px 8px; }
+  .strip small { display: block; color: var(--quiet); font-size: 12px; }
+  .strip b { font-size: 18px; font-weight: 650; }
+  .extra-times { display: none; }
+  .extra-times.on { display: block; }
+  .plan { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 20;
+    display: flex; gap: 4px; margin: 0;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg); border: none; border-top: 1px solid var(--line);
+    box-shadow: 0 -8px 16px -12px rgba(26, 35, 48, 0.35);
+    overflow: hidden;
+  }
+  .tabs button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 8px; margin: 0; cursor: pointer; border-radius: 8px;
+    flex: 1 1 0; min-width: 0; min-height: 44px; font-size: 14px; font-weight: 650;
+  }
+  .tabs button.on { background: var(--tab-on); color: var(--tab-on-ink); font-weight: 700; border-color: var(--tab-on); }
+  .view { display: none; }
+  .view.on { display: block; }
+  .log-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 12px; }
+  @media (max-width: 800px) { .log-form { grid-template-columns: 1fr 1fr; } }
+  .log-form label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+  .log-form input[type="number"], .log-form input[type="date"], .log-form input[type="text"] {
+    width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--input-bd); background: var(--input); color: var(--ink); min-height: 44px;
+  }
+  .log-form .wide { grid-column: 1 / -1; }
+  .log-form .checks { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  #logTable td, #logTable th { text-align: left; }
+  #logTable td.num, #logTable th.num { text-align: right; }
+  .log-empty { color: var(--quiet); }
+  .inv-buy td { background: var(--bad); }
+  .trend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 800px) { .trend-grid { grid-template-columns: 1fr; } }
+  .trend-grid h3 { margin: 0 0 4px; font-size: 13px; font-weight: 650; }
+  .trend-grid svg { height: 188px; }
+  .trend-grid h3 span { font-weight: 400; color: var(--muted); font-size: 13px; }
+  .trend-cadence { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: end; margin: 0 0 10px; }
+  .trend-cadence label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--quiet); }
+  #trendProj td, #trendProj th { text-align: left; }
+  #trendProj td.num, #trendProj th.num { text-align: right; }
+  .inv-form { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: end; margin-top: 8px; }
+  .inv-form label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+  .inv-form input, .inv-form select { font: inherit; padding: 8px 10px; border: 1px solid var(--input-bd); background: var(--input); color: var(--ink); min-height: 44px; }
+  .salt-checks { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 0; }
+  .salt-checks .check { margin: 0; }
+  .pad-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(340px, 1.35fr) minmax(280px, 1fr);
+    gap: 12px; padding: 0 18px 24px; align-items: start;
+  }
+  @media (max-width: 1100px) { .pad-grid { grid-template-columns: 1fr; } }
+  .pad-col { display: flex; flex-direction: column; gap: 8px; }
+  .pad-stage { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .pad-stage img { width: 100%; display: block; }
+  .pad-stage.wire img { filter: grayscale(1) contrast(1.08) brightness(0.88); }
+  .pad-dot {
+    position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px;
+    border-radius: 50%; color: #fff; font-size: 13px; font-weight: 700;
+    border: 2px solid #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.35);
+  }
+  .pad-dot.on { outline: 3px solid #1c1c1c; }
+  .pin-card, .preset-card {
+    background: var(--card); border: 1px solid var(--line); padding: 10px 12px;
+    font-size: 14px; line-height: 1.35; cursor: pointer; border-radius: 10px;
+  }
+  .pin-card.on, .preset-card.on { border-color: var(--tab-on); background: var(--accent); }
+  .pin-card b, .preset-card b { display: block; font-size: 14px; margin: 0 0 3px; }
+  .pin-n {
+    display: inline-flex; width: 22px; height: 22px; border-radius: 50%;
+    color: #fff; font-size: 12px; font-weight: 700; align-items: center; justify-content: center;
+    margin-right: 6px; vertical-align: -3px;
+  }
+  .pad-tools { margin: 0 18px 10px; display: flex; gap: 8px; align-items: center; }
+  .day-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .day-chips button.on { background: var(--tab-on); color: var(--tab-on-ink); border-color: var(--tab-on); }
+  .rpm-bars { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; height: 72px; align-items: end; margin: 8px 0; }
+  .rpm-bars i { display: block; background: #2a6a32; min-height: 4px; }
+  .rpm-bars i.off { background: var(--hair); }
+  .rpm-bars i.peak { background: #c45c52; }
+  .rpm-bars i.heat { background: #e6a317; }
+  .rpm-bars i.spa { background: #7C8CFF; }
+  #clockTable td, #clockTable th { font-size: 12px; }
+  .clock-grid { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 14px; padding: 0 18px 24px; align-items: start; }
+  .clock-grid .card label.line { grid-template-columns: 1fr; }
+  @media (max-width: 900px) { .clock-grid { grid-template-columns: 1fr; } }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-bottom: 64px; }
+  .heat-hp .only-gas, .heat-gas .only-hp, .heat-none .only-hp, .heat-none .only-gas { display: none; }
+  .spa-off .spa-only { display: none; }
+  .power-gear {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    padding: 0 18px 14px; align-items: start;
+  }
+  #view-power .wrap { grid-template-columns: minmax(260px, 340px) 1fr; padding-top: 0; }
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+    align-items: start;
+  }
+  .field {
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+    margin: 0; min-width: 0;
+  }
+  .field > span {
+    font-size: 12px; color: var(--quiet); line-height: 1.2; min-height: 1.2em;
+  }
+  #view-power .field input:not([type="checkbox"]),
+  #view-power .field select,
+  #view-power .ac-box input {
+    width: 100%; max-width: none; min-width: 0; min-height: 44px; height: 44px;
+    font: inherit; padding: 8px 10px; border: 1px solid var(--input-bd); background: var(--input); color: var(--ink);
+  }
+  #view-power .field.check input[type="checkbox"] {
+    width: 18px; height: 18px; min-width: 18px; min-height: 18px;
+    max-width: 18px; padding: 0; margin: 0; flex: none;
+  }
+  #view-power .field input[type="number"] { -moz-appearance: textfield; }
+  #view-power .field input[type="number"]::-webkit-outer-spin-button,
+  #view-power .field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .field-span { grid-column: 1 / -1; }
+  .field.check { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; min-height: 44px; }
+  .field.check input { width: auto; height: auto; min-height: 22px; }
+  .ac-box { position: relative; width: 100%; }
+  .ac-list {
+    display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 40;
+    max-height: 240px; overflow: auto; margin: 0; padding: 0; list-style: none;
+    background: var(--input); border: 1px solid var(--input-bd); box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  }
+  .ac-list.on { display: block; }
+  .ac-list li { padding: 12px; cursor: pointer; font-size: 14px; line-height: 1.3; }
+  .ac-list li:hover, .ac-list li.on { background: var(--accent); }
+  .ac-list li small { display: block; color: var(--quiet); font-size: 12px; margin-top: 2px; }
+  .hp-this .only-hp-other, .pump-this .only-pump-other, .gas-std .only-gas-other { display: none; }
+  #view-power .wrap .card label.line {
+    display: grid; grid-template-columns: 1fr;
+    align-items: center; gap: 4px 10px; margin: 8px 0;
+  }
+  #view-power .wrap .card label.line > span { flex: none; }
+  #view-power .wrap .card label.line input,
+  #view-power .wrap .card label.line select {
+    width: 100%; max-width: none; min-width: 0; min-height: 44px; height: 44px;
+    font: inherit; padding: 6px 8px;
+  }
+  @media (max-width: 960px) {
+    .power-gear, #view-power .wrap, .clock-grid { grid-template-columns: 1fr; }
+    .sub, .power-gear, #view-power .wrap, .clock-grid, .pad-tools, .pad-grid {
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+    }
+    .sheet-head { margin: 12px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); }
+    .sheet-foot { margin: 16px max(12px, env(safe-area-inset-right)) 24px max(12px, env(safe-area-inset-left)); }
+    .tabs { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+  }
+  @media (max-width: 560px) {
+    #view-power .field input:not([type="checkbox"]),
+    #view-power .field select,
+    #view-power .ac-box input,
+    #view-power .wrap .card label.line input,
+    #view-power .wrap .card label.line select,
+    #view-clock select, #view-clock input[type="number"],
+    .tabs button { font-size: 16px; height: 44px; min-height: 44px; }
+    .strip { grid-template-columns: 1fr 1fr; }
+    #view-power .wrap .card label.line,
+    label.line { grid-template-columns: 1fr; }
+    #view-power .wrap .card label.line input,
+    #view-power .wrap .card label.line select { width: 100%; }
+  }
+</style>
+<script>
+(function () {
+  var t = localStorage.getItem("pool-ui-theme") || "light";
+  if (t === "night") t = "dark";
+  else if (t === "sand" || t === "lagoon") t = "light";
+  else if (t !== "dark") t = "light";
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
+</head>
+<body>
+<div class="sheet-head">
+  <h1>The Plunge <a href="index.html" style="font-size:13px;font-weight:500;margin-left:10px;color:inherit">Home</a></h1>
+  <span class="sheet-tab" id="sheetTab">Chem</span>
+</div>
+<div id="view-clock" class="view">
+  <p class="sub">VS FloPro 1.85. Power scales with RPM cubed. Skim at 1750. Heat ~2350 (about 48 gpm). 3450 is jets and vac, minutes. Never 4-9pm. Same clock in liquid month; cell 25% only rides the 1750+ hours.</p>
+  <div class="clock-grid">
+    <div class="card">
+      <h2>Today</h2>
+      <div class="day-chips" id="clockKinds">
+        <button type="button" data-kind="rest" class="on">Rest</button>
+        <button type="button" data-kind="swim">Swim / heat</button>
+        <button type="button" data-kind="spa">Spa soak</button>
+        <button type="button" data-kind="vac">Vac</button>
+      </div>
+      <label class="line"><span>Weekday</span>
+        <select id="clockDow">
+          <option value="0">Sunday</option>
+          <option value="1">Monday (theater)</option>
+          <option value="2">Tuesday (dance)</option>
+          <option value="3" selected>Wednesday (often swim)</option>
+          <option value="4">Thursday (theater, min day)</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday (theater)</option>
+        </select>
+      </label>
+      <label class="line"><span>Season</span>
+        <select id="clockSeason">
+          <option value="winter" selected>Winter (Oct-May)</option>
+          <option value="summer">Summer (Jun-Sep)</option>
+        </select>
+      </label>
+      <label class="line"><span>Spa start</span><select id="clockSpaStart"></select></label>
+      <label class="line"><span>Spa minutes</span><input id="clockSpaMin" type="number" min="10" max="90" value="30"></label>
+      <label class="line"><span>Vac minutes</span><input id="clockVacMin" type="number" min="10" max="60" value="20"></label>
+      <p id="clockFamily" class="note"></p>
+      <p class="note">Heat window is locked 10am-3pm on swim days. Pickup ~3pm. Rain cancels heat.</p>
+    </div>
+    <div>
+      <p class="verdict mute" id="clockVerdict">Pick a day type.</p>
+      <p class="plan" id="clockPlan"></p>
+      <div class="strip" id="clockStrip"></div>
+      <div class="rpm-bars" id="clockBars"></div>
+      <div class="card">
+        <h2>Hour by hour</h2>
+        <table id="clockTable"></table>
+        <p id="clockHow" class="note"></p>
+        <h2>Program in iAquaLink</h2>
+        <p id="clockPrograms" class="note"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="view-chem" class="view on">
+  <div class="card chem-kit" id="chemProfile" style="margin-top:0">
+    <h2>This pool</h2>
+    <p class="note">Personalize once. Doses, FC band, and CSI use this. Stays on this computer. Export JSON from Log if you want a backup.</p>
+    <div class="chem-top" style="padding:0">
+      <label>Name <input id="poolName" type="text" maxlength="40" value="The Plunge" style="min-width:140px"></label>
+      <label>Surface
+        <select id="poolSurface">
+          <option value="pebble" selected>Pebble / plaster</option>
+          <option value="vinyl">Vinyl</option>
+          <option value="fiberglass">Fiberglass</option>
+        </select>
+      </label>
+      <label>Sanitizer
+        <select id="poolSanitizer">
+          <option value="liquid" selected>Liquid chlorine</option>
+          <option value="swg">Salt cell (SWG)</option>
+        </select>
+      </label>
+      <label>Fill date <input id="saltStart" type="date" value="2026-10-13"></label>
+    </div>
+    <p class="note" id="profileHint"></p>
+    <p class="note" id="volReadout"></p>
+  </div>
+  <div class="chem-phase" id="chemPhase">
+    <div>
+      <p id="saltGateVerdict" class="verdict mute" style="margin:0 0 6px">Wait for the 28-day date.</p>
+      <p id="saltGateHow" class="note"></p>
+      <p id="chemCadence" class="note"></p>
+    </div>
+    <div class="when">
+      <p id="saltGateDays" class="note" style="margin:6px 0 0"></p>
+    </div>
+  </div>
+  <div class="card" id="chemToday">
+    <h2>This visit</h2>
+    <p id="chemSessionVerdict" class="verdict mute">Type FC (10 mL). Then pH. TA if it is a weekly day.</p>
+    <p id="chemLastHint" class="note"></p>
+    <p id="chemFcCya" class="note"></p>
+    <ol id="chemPlan" class="chem-plan"></ol>
+    <p id="chemSessionHow" class="note"></p>
+    <p id="chemCsi" class="note"></p>
+    <div class="chem-meta">
+      <label>Water temp F
+        <input id="chemWaterF" type="number" step="1" min="50" max="104" placeholder="this visit">
+      </label>
+      <button type="button" id="chemUseTfp">Use TFP FC want</button>
+      <button type="button" id="addFillTop">Fill Save from this plan</button>
+    </div>
+    <p class="note">One visit, your jugs. No trichlor, no dichlor, no cal-hypo. Acid strength is the one in Dose size, not a 31% default. Pool Math dumps every chemical. Pool Nerd sells Amazon SKUs. This page is your pool, then Save, then Log trends.</p>
+  </div>
+  <div class="chem-today-grid">
+    <div class="card chem-widget">
+      <h2>Free chlorine (FC) <small>10 mL: drops x 0.5</small></h2>
+      <label class="line"><span>Now, ppm</span><input id="chemFcNow" type="number" step="0.5" min="0" placeholder="kit"></label>
+      <label class="line"><span>Want</span><input id="chemFcWant" type="number" step="0.5" min="0" value="6"></label>
+      <p id="chemFcBand" class="note"></p>
+      <label class="line"><span>CC (optional)</span><input id="chemCcNow" type="number" step="0.5" min="0" placeholder="same tube"></label>
+      <p id="chemFcVerdict" class="verdict mute">Enter free chlorine.</p>
+      <p id="chemFcHow" class="note"></p>
+      <p id="chemCcVerdict" class="note"></p>
+    </div>
+    <div class="card chem-widget">
+      <h2>pH <small>color chip · not TA</small></h2>
+      <label class="line"><span>Now</span><input id="chemPhNow" type="number" step="0.1" min="6.8" max="8.4" placeholder="kit"></label>
+      <label class="line"><span>Want</span><input id="chemPhWant" type="number" step="0.1" min="7" max="8" value="7.5"></label>
+      <p id="chemPhVerdict" class="verdict mute">Enter pH.</p>
+      <p id="chemPhHow" class="note"></p>
+    </div>
+    <div class="card chem-widget">
+      <h2>Total alkalinity (TA) <small>drops x 10 · weekly</small></h2>
+      <label class="line"><span>Now, ppm</span><input id="chemTaNow" type="number" step="10" min="0" placeholder="kit"></label>
+      <label class="line"><span>Want</span><input id="chemTaWant" type="number" step="10" min="0" value="100"></label>
+      <p id="chemTaVerdict" class="verdict mute">Enter TA.</p>
+      <p id="chemTaHow" class="note"></p>
+    </div>
+  </div>
+  <details class="chem-ref">
+    <summary>More tests (CYA, CH, salt)</summary>
+    <div class="chem-widgets" style="padding:10px 0 0">
+      <div class="card chem-widget">
+        <h2>Cyanuric acid (CYA) <small>monthly unless FC dies overnight</small></h2>
+        <label class="line"><span>Now, ppm</span><input id="chemCyaNow" type="number" step="5" min="0" placeholder="kit"></label>
+        <label class="line"><span>Want</span><input id="chemCyaWant" type="number" step="5" min="0" value="40"></label>
+        <p id="chemCyaVerdict" class="verdict mute">Enter CYA.</p>
+        <p id="chemCyaHow" class="note"></p>
+      </div>
+      <div class="card chem-widget">
+        <h2>Calcium hardness (CH) <small>once this month, then monthly</small></h2>
+        <label class="line"><span>Now, ppm</span><input id="chemChNow" type="number" step="10" min="0" placeholder="kit"></label>
+        <label class="line"><span>Want</span><input id="chemChWant" type="number" step="10" min="0" value="300"></label>
+        <p id="chemChVerdict" class="verdict mute">Enter CH.</p>
+        <p id="chemChHow" class="note"></p>
+      </div>
+      <div class="card chem-widget salt-only">
+        <h2>Salt <small>K-1766 · not until salt day</small></h2>
+        <label class="line"><span>Now, ppm</span><input id="chemSaltNow" type="number" step="50" min="0" placeholder="kit"></label>
+        <label class="line"><span>Want</span><input id="chemSaltWant" type="number" step="50" min="2500" max="4000" value="3000"></label>
+        <p id="chemSaltVerdict" class="verdict mute">Enter Taylor salt.</p>
+        <p id="chemSaltHow" class="note"></p>
+      </div>
+    </div>
+  </details>
+  <div class="card chem-kit" id="rpmPlan">
+    <h2>Pump clock</h2>
+    <p id="rpmPlanVerdict" class="verdict mute"></p>
+    <table>
+      <thead><tr><th>Clock</th><th>RPM</th><th>Why</th></tr></thead>
+      <tbody id="rpmPlanBody"></tbody>
+    </table>
+    <p id="rpmPlanHow" class="note"></p>
+  </div>
+  <div class="card chem-kit">
+    <h2>Save this test</h2>
+    <p class="note">Pulls readings from the widgets. Added is what left the jug. Fill from dose, then change it if you poured a different amount.</p>
+    <label class="line"><span>Clean-filter psi (Sharpie from startup)</span>
+      <input id="cleanPsi" type="number" step="0.5" placeholder="e.g. 8">
+    </label>
+    <p class="note">Wash carts at +10 to 12 over this (CL IOM).</p>
+    <div class="log-form">
+      <label>Date <input id="logDate" type="date"></label>
+      <label>Salt ppm <input id="logSalt" type="number" step="50" min="0"></label>
+      <label>Filter psi <input id="logPsi" type="number" step="0.5" min="0"></label>
+      <label>Cl added, fl oz <input id="addCl" type="number" step="0.5" min="0" placeholder="0"></label>
+      <label>Acid added, fl oz <input id="addAcid" type="number" step="0.5" min="0" placeholder="0"></label>
+      <label>Soda added, lb <input id="addSoda" type="number" step="0.1" min="0" placeholder="0"></label>
+      <label>CYA added, lb <input id="addCya" type="number" step="0.1" min="0" placeholder="0"></label>
+      <label>Salt bags added <input id="addSalt" type="number" step="1" min="0" placeholder="0"></label>
+      <label class="wide">Note <input id="logNote" type="text" maxlength="160" placeholder="brushed, cloudy..."></label>
+      <div class="checks">
+        <label class="check"><input id="logBrush" type="checkbox" checked> Brushed</label>
+        <label class="check"><input id="logNet" type="checkbox"> Netted</label>
+        <label class="check"><input id="logBask" type="checkbox"> Skimmer baskets</label>
+        <button type="button" id="addFill">Fill added from dose</button>
+        <button type="button" id="logAdd">Save test</button>
+      </div>
+    </div>
+  </div>
+  <div id="chemRefSlot"></div>
+</div>
+<div id="view-log" class="view">
+  <p class="sub">History, trends, and shelf for this pool. Save a test on Chem first. Download JSON is the backup.</p>
+  <div class="card chem-kit" style="overflow-x:auto">
+    <h2>History</h2>
+    <p id="logEmpty" class="log-empty">Nothing yet. Save a test on Chem, then it shows up here.</p>
+    <table id="logTable"></table>
+  </div>
+  <div class="card chem-kit">
+    <h2>Trends</h2>
+    <p class="note">From History. Need about 3 treats before days-left is real. Bands are this pool's targets, not a 1-3 ppm store card.</p>
+    <div class="trend-cadence">
+      <label>Treats / week (guess)
+        <select id="trendCadence"><option value="2" selected>2</option><option value="3">3</option></select>
+      </label>
+    </div>
+    <div class="trend-grid">
+      <div><h3>Free chlorine <span id="trendFcStat"></span></h3><svg id="trendFc" viewBox="0 0 400 188"></svg></div>
+      <div><h3>pH <span id="trendPhStat"></span></h3><svg id="trendPh" viewBox="0 0 400 188"></svg></div>
+      <div><h3>Alkalinity <span id="trendTaStat"></span></h3><svg id="trendTa" viewBox="0 0 400 188"></svg></div>
+      <div><h3>Poured each treat (Cl oz) <span id="trendDoseStat"></span></h3><svg id="trendDose" viewBox="0 0 400 188"></svg></div>
+    </div>
+    <p id="trendHint" class="note"></p>
+    <table id="trendProj"></table>
+  </div>
+  <div class="card chem-kit" style="overflow-x:auto">
+    <h2>Shelf</h2>
+      <p class="note">Live stock on this computer. Save test knocks poured amounts off the jugs. Pink: buy. Taylor rows are S&amp;S every 6 months.</p>
+      <p id="invHint" class="note"></p>
+      <table id="invTable"></table>
+      <div class="inv-form">
+        <label>Restock <select id="invWhich"></select></label>
+        <label>Qty <input id="invQty" type="number" step="0.1" min="0"></label>
+        <label>Note <input id="invNote" type="text" maxlength="80" placeholder="Leslie's 1 gal"></label>
+        <button type="button" id="invAdd">Add to shelf</button>
+        <button type="button" id="invExport">Download JSON</button>
+      </div>
+  </div>
+</div>
+<div id="chemRefSource">
+  <details class="chem-ref salt-gate">
+    <summary>Salt switch (bags and cell %)</summary>
+    <div class="card chem-kit">
+      <div class="salt-checks">
+        <label class="check"><input id="saltChkPanel" type="checkbox"> Full Taylor panel plus the salt bottles</label>
+        <label class="check"><input id="saltChkBag" type="checkbox"> One 40 lb bag in the pool, brushed, 24 h</label>
+        <label class="check"><input id="saltChkPpm" type="checkbox"> Taylor salt in band (~2800-4000)</label>
+        <label class="check"><input id="saltChkCell" type="checkbox"> Cell at 25% in iAquaLink (phone). Pump 1750 while it makes chlorine</label>
+      </div>
+      <p class="note">NPT 28 days from fill. Outdoor AquaLink often says Standby. Set % in the phone: Web / Set AquaPure / Pool / 25%.</p>
+    </div>
+  </details>
+  <details class="chem-ref">
+    <summary>Taylor kit (what done looks like)</summary>
+    <div class="card chem-kit">
+      <table>
+        <thead><tr><th></th><th>Tube</th><th>Done</th><th>Math</th></tr></thead>
+        <tbody>
+          <tr><td>FC</td><td>10 mL</td><td>Pink to clear with R-0871</td><td>drops x 0.5 ppm</td></tr>
+          <tr><td>CC</td><td>same tube</td><td>R-0003. Stays clear = 0</td><td>same math</td></tr>
+          <tr><td>pH</td><td>block</td><td>Match phenol red chip</td><td>7.4-7.6</td></tr>
+          <tr><td>TA</td><td>25 mL</td><td>Green to red</td><td>drops x 10</td></tr>
+          <tr><td>CH</td><td>25 or 10 mL</td><td>Red to blue</td><td>x10 or x25</td></tr>
+          <tr><td>CYA</td><td>view tube</td><td>Black dot just gone</td><td>scale on tube</td></tr>
+          <tr><td>Salt</td><td>K-1766</td><td>When the banner says go</td><td>one bag, 24 h</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details class="chem-ref" id="yearRoadmap">
+    <summary>Year 1 roadmap</summary>
+    <div class="card chem-kit">
+      <table><thead><tr><th>When</th><th>What</th></tr></thead><tbody id="yearRoadmapBody"></tbody></table>
+    </div>
+  </details>
+  <details class="chem-ref">
+    <summary>Dose size (6500 gal)</summary>
+    <div class="chem-top" style="padding:10px 0 0">
+      <label>Pool gal <input id="chemPoolGal" type="number" step="10" min="0" value="5500"></label>
+      <label>Spa gal <input id="chemSpaGal" type="number" step="10" min="0" value="1000"></label>
+      <label>Dose gal <input id="chemGal" type="number" step="10" min="1000" value="6500" readonly></label>
+      <label>Leslie's liquid % <input id="chemClPct" type="number" step="0.1" min="5" max="15" value="12.5"></label>
+      <label>Muriatic %
+        <select id="chemAcidPct">
+          <option value="20" selected>20% Klean-Strip Green (SDS 10-30)</option>
+          <option value="14.5">14.5% weaker guess</option>
+          <option value="31.45">31% labeled full strength</option>
+        </select>
+      </label>
+    </div>
+  </details>
+  <p id="chemTargetsTip" class="note" style="display:none"></p>
+</div>
+
+<div id="view-pad" class="view">
+  <p class="sub">Equipment pad. Flow: skimmers/drains to pump to CL460 to JRT to TruClear to pool and spa returns. Photo 2026-10-17.</p>
+  <div class="pad-tools">
+    <button type="button" id="padColor" class="on">Photo</button>
+    <button type="button" id="padWire">Wire</button>
+  </div>
+  <div class="pad-grid">
+    <div class="pad-col" id="padLeft"></div>
+    <div class="pad-stage" id="padStage">
+      <img id="padImg" src="pad-20261017.jpg" alt="Equipment pad 2026-10-17">
+    </div>
+    <div class="pad-col" id="padRight"></div>
+  </div>
+</div>
+
+<div id="view-power" class="view">
+  <p class="sub">Heat type, then the model. Gallons from length, width, and depth. Attached spa is extra volume on the same water.</p>
+  <div class="power-gear">
+    <div class="card hp-this pump-this gas-std" id="gearCard">
+      <h2>Your unit</h2>
+      <div class="field-grid">
+        <label class="field field-span"><span>Heat</span>
+          <select id="heatKind">
+            <option value="hp" selected>Heat pump (electric)</option>
+            <option value="gas">Gas heater</option>
+            <option value="none">No heater</option>
+          </select>
+        </label>
+        <label class="field field-span only-hp"><span>Heat pump</span>
+          <select id="hpPreset">
+            <option value="jrt2500" selected>Jandy JRT2500R (this pad)</option>
+            <option value="hp-other">Other (search models)</option>
+          </select>
+        </label>
+        <label class="field field-span only-hp only-hp-other"><span>Model</span>
+          <div class="ac-box">
+            <input id="hpSearch" type="text" autocomplete="off" placeholder="Jandy, Pentair, Hayward...">
+            <ul class="ac-list" id="hpAc"></ul>
+          </div>
+        </label>
+        <label class="field only-hp"><span>Input kW</span><input id="hpKw" type="number" step="0.1" value="5.23"></label>
+        <label class="field only-hp"><span>COP</span><input id="cop" type="number" step="0.1" value="6.5"></label>
+        <label class="field field-span only-gas"><span>Gas heater</span>
+          <select id="gasPreset">
+            <option value="250">250k BTU class</option>
+            <option value="400" selected>400k BTU class</option>
+            <option value="200">200k BTU class</option>
+            <option value="other">Other (search models)</option>
+          </select>
+        </label>
+        <label class="field field-span only-gas only-gas-other"><span>Model</span>
+          <div class="ac-box">
+            <input id="gasSearch" type="text" autocomplete="off" placeholder="JXi, MasterTemp, H-Series...">
+            <ul class="ac-list" id="gasAc"></ul>
+          </div>
+        </label>
+        <label class="field only-gas"><span>BTU/h</span><input id="gasBtu" type="number" step="1000" value="400000"></label>
+        <label class="field only-gas"><span>Efficiency</span><input id="gasEff" type="number" step="0.01" min="0.5" max="0.98" value="0.82"></label>
+        <label class="field field-span only-gas"><span>$ / therm</span><input id="gasRate" type="number" step="0.05" value="2.10"></label>
+        <label class="field field-span"><span>Pump</span>
+          <select id="pumpKind">
+            <option value="vs185" selected>Jandy VS FloPro 1.85</option>
+            <option value="vs">Other variable speed</option>
+            <option value="1spd">Single speed</option>
+          </select>
+        </label>
+        <label class="field field-span only-pump-other"><span>Pump model</span>
+          <div class="ac-box">
+            <input id="pumpSearch" type="text" autocomplete="off" placeholder="IntelliFlo, TriStar, SuperFlo...">
+            <ul class="ac-list" id="pumpAc"></ul>
+          </div>
+        </label>
+      </div>
+      <p class="note" id="gearHint">JRT2500R: 116k BTU, 5.23 kW, COP 6.5. FloPro 1.85 on this pad.</p>
+      <h2>Power company</h2>
+      <div class="field-grid">
+        <label class="field field-span"><span>Utility</span>
+          <select id="utilCo">
+            <option value="sce" selected>SCE</option>
+            <option value="pge">PG&amp;E</option>
+            <option value="sdge">SDG&amp;E</option>
+            <option value="ladwp">LADWP</option>
+            <option value="smud">SMUD</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label class="field field-span"><span>Plan</span>
+          <select id="utilPlan"></select>
+        </label>
+      </div>
+      <p class="note" id="utilHint">SCE TOU-D-PRIME. Peak 4-9pm. Class rates, not your bill.</p>
+    </div>
+    <div class="card" id="volCard">
+      <h2>Water</h2>
+      <p class="note">Rectangle: L x W x average depth x 7.48. Oval 5.9. Round uses length as diameter. Spa adds gallons if it spills into the pool.</p>
+      <div class="field-grid">
+        <label class="field field-span"><span>Shape</span>
+          <select id="volShape">
+            <option value="rect" selected>Rectangle</option>
+            <option value="oval">Oval</option>
+            <option value="round">Round</option>
+          </select>
+        </label>
+        <label class="field"><span>Length ft</span><input id="volL" type="number" inputmode="decimal" step="0.1" value="17"></label>
+        <label class="field"><span>Width ft</span><input id="volW" type="number" inputmode="decimal" step="0.1" value="10"></label>
+        <label class="field"><span>Shallow ft</span><input id="volSh" type="number" inputmode="decimal" step="0.1" value="3.5"></label>
+        <label class="field"><span>Deep ft</span><input id="volDp" type="number" inputmode="decimal" step="0.1" value="6"></label>
+        <label class="field field-span check"><input id="volOneBody" type="checkbox" checked> Attached spa (same water)</label>
+        <label class="field spa-only"><span>Spa length ft</span><input id="volSpaL" type="number" inputmode="decimal" step="0.1" value="10"></label>
+        <label class="field spa-only"><span>Spa width ft</span><input id="volSpaW" type="number" inputmode="decimal" step="0.1" value="4"></label>
+        <label class="field field-span spa-only"><span>Spa depth ft</span><input id="volSpaD" type="number" inputmode="decimal" step="0.1" value="3.6"></label>
+        <label class="field field-span"><span>Override dose gal</span><input id="volOverride" type="number" inputmode="numeric" step="10" min="0" placeholder="blank = use math"></label>
+      </div>
+      <p class="note" id="volMath"></p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <h2>Day</h2>
+      <label class="line"><span>Season</span>
+        <select id="season"><option value="summer">Summer (Jun-Sep)</option><option value="winter" selected>Winter (Oct-May)</option></select>
+      </label>
+      <label class="line"><span>Weekday or weekend</span>
+        <select id="dow"><option value="wd">Weekday</option><option value="we">Weekend</option></select>
+      </label>
+      <label class="line"><span>Sky</span>
+        <select id="sun"><option value="40">Gloomy</option><option value="80" selected>Typical</option><option value="100">Bright</option></select>
+      </label>
+      <label class="line"><span>Solar produced (kWh)</span><input id="solarDay" type="number" step="1" min="0" value="31"></label>
+      <label class="line"><span>Air temp (F)</span><input id="airF" type="number" step="1" value="58"></label>
+      <h2>What we are doing</h2>
+      <label class="check"><input id="wantPool" type="checkbox" checked> Pool day (kids swim)</label>
+      <label class="check"><input id="wantSpa" type="checkbox"> Spa night</label>
+      <label class="line"><span>Pool target (F)</span><input id="poolTarget" type="number" min="70" max="86" value="84"></label>
+      <label class="line"><span>Spa target (F)</span><input id="spaTarget" type="number" min="95" max="104" value="99"></label>
+      <label class="line"><span>Never below (F)</span><input id="minHold" type="number" min="55" max="75" value="68"></label>
+      <label class="check"><input id="useSchool" type="checkbox" checked> After school (3pm-5pm)</label>
+      <label class="check"><input id="useDinner" type="checkbox"> After dinner (7pm-9pm)</label>
+      <label class="check"><input id="useExtra" type="checkbox"> Also this window</label>
+      <div class="extra-times" id="extraTimes">
+        <label class="line"><span>Also from</span><select id="extraStart"></select></label>
+        <label class="line"><span>Also until</span><select id="extraEnd"></select></label>
+      </div>
+      <label class="check"><input id="jetsDuringUse" type="checkbox"> Spa jets while soaking</label>
+      <h2>Heater / pump</h2>
+      <label class="check"><input id="autoHeat" type="checkbox" checked> Pick heat hours for me</label>
+      <label class="check"><input id="heatOn" type="checkbox" checked> Run the heater</label>
+      <label class="check"><input id="coldStart" type="checkbox"> First heat-up from the floor</label>
+      <label class="line"><span>Heat from</span><select id="heatStart"></select></label>
+      <label class="line"><span>Heat until</span><select id="heatEnd"></select></label>
+      <label class="check"><input id="waterSun" type="checkbox" checked> HB sun on the water</label>
+      <label class="line"><span>Filter pump</span>
+        <select id="pumpMode">
+          <option value="sun" selected>8h, 8am-4pm (min)</option>
+          <option value="all">24h quiet</option>
+          <option value="heat">Only while heating</option>
+        </select>
+      </label>
+      <label class="check"><input id="sora" type="checkbox"> Sora 10 (considering)</label>
+      <h2>This month</h2>
+      <label class="line"><span>Pool days / week</span><input id="weekPool" type="number" min="0" max="7" value="3"></label>
+      <label class="line"><span>Spa nights / week</span><input id="weekSpa" type="number" min="0" max="7" value="2"></label>
+      <p class="note" id="monthNote"></p>
+      <details>
+        <summary>Fine print</summary>
+        <label class="line"><span>Pool gallons (from L/W/D)</span><input id="poolGal" type="number" readonly></label>
+        <label class="line"><span>Spa gallons (from L/W/D)</span><input id="spaGal" type="number" readonly></label>
+        <label class="line"><span>Water sq ft</span><input id="poolSf" type="number" value="220"></label>
+        <label class="line"><span>Sun kept (0-1)</span><input id="absorb" type="number" step="0.05" value="0.70"></label>
+        <label class="line"><span>Powerwall kWh</span><input id="pwKwh" type="number" step="0.1" value="13.5"></label>
+        <label class="line"><span>PW start %</span><input id="pwStart" type="number" value="30"></label>
+        <label class="line"><span>PW max kW</span><input id="pwKw" type="number" step="0.1" value="5"></label>
+        <label class="line"><span>House idle kW</span><input id="houseKw" type="number" step="0.1" value="0.7"></label>
+        <label class="line"><span>Evening extra kW</span><input id="eveKw" type="number" step="0.1" value="2.0"></label>
+        <label class="check"><input id="pwOffpeak" type="checkbox"> Fill Powerwall after 9pm</label>
+        <label class="line"><span>Pump low kW</span><input id="pumpLow" type="number" step="0.05" value="0.25"></label>
+        <label class="line"><span>Jets kW</span><input id="pumpHigh" type="number" step="0.05" value="1.6"></label>
+        <label class="line"><span>Export $/kWh</span><input id="export" type="number" step="0.001" value="0.017"></label>
+        <label class="line"><span>Roof kW (shape only)</span><input id="solarKw" type="number" step="0.1" value="8.4"></label>
+        <label class="line"><span>Derate (shape only)</span><input id="derate" type="number" step="0.01" value="0.82"></label>
+        <label class="line"><span>After school from</span><select id="schoolStart"></select></label>
+        <label class="line"><span>After school until</span><select id="schoolEnd"></select></label>
+        <label class="line"><span>After dinner from</span><select id="dinnerStart"></select></label>
+        <label class="line"><span>After dinner until</span><select id="dinnerEnd"></select></label>
+        <label class="line"><span>Peak from</span><select id="peakStart"></select></label>
+        <label class="line"><span>Peak until</span><select id="peakEnd"></select></label>
+        <label class="line"><span>Summer peak wd $/kWh</span><input id="rSuPk" type="number" step="0.01" value="0.59"></label>
+        <label class="line"><span>Summer peak we $/kWh</span><input id="rSuMid" type="number" step="0.01" value="0.39"></label>
+        <label class="line"><span>Summer off $/kWh</span><input id="rSuOff" type="number" step="0.01" value="0.26"></label>
+        <label class="line"><span>Winter peak $/kWh</span><input id="rWiMid" type="number" step="0.01" value="0.59"></label>
+        <label class="line"><span>Winter off $/kWh</span><input id="rWiOff" type="number" step="0.01" value="0.25"></label>
+        <p class="note" id="rateFineNote">Plan sets these. Edit if your bill disagrees. Heat pump likes sun hours; stay off the peak window. Chem doses the one-body gallons from L/W/D.</p>
+        <textarea id="paste" placeholder="0,0,0.7"></textarea>
+        <p><button type="button" id="applyPaste">Use pasted day</button>
+           <button type="button" id="clearPaste">Clear paste</button></p>
+      </details>
+    </div>
+    <div>
+      <p class="verdict" id="verdict"></p>
+      <p class="plan" id="plan"></p>
+      <div class="strip" id="strip"></div>
+      <div class="card">
+        <svg id="chart" viewBox="0 0 920 360" role="img" aria-label="Electricity"></svg>
+        <p class="legend"><span><i class="sw" style="background:#f8e6e4"></i>Peak</span><span><i class="sw" style="background:#e8f1e6"></i>Heat</span><span><i class="sw" style="background:#3d5a80"></i>Load kW</span></p>
+        <details><summary>Hour table</summary><table id="hours"></table></details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const ids = [
+    "season","dow","sun","solarDay","airF","solarKw","derate","pwKwh","pwStart","pwKw","houseKw","eveKw","pwOffpeak","export",
+    "pumpLow","pumpHigh","pumpMode","sora","hpKw","heatStart","heatEnd","heatOn","autoHeat","coldStart",
+    "wantPool","wantSpa","poolTarget","spaTarget","minHold",
+    "useSchool","useDinner","useExtra","extraStart","extraEnd","jetsDuringUse",
+    "schoolStart","schoolEnd","dinnerStart","dinnerEnd",
+    "waterSun","cop","poolSf","absorb","poolGal","spaGal","weekPool","weekSpa",
+    "rSuPk","rSuMid","rSuOff","rWiMid","rWiOff","utilCo","utilPlan","peakStart","peakEnd",
+    "heatKind","hpPreset","gasPreset","gasBtu","gasEff","gasRate","pumpKind",
+    "hpSearch","gasSearch","pumpSearch",
+    "volShape","volL","volW","volSh","volDp","volOneBody","volSpaL","volSpaW","volSpaD","volOverride"
+  ];
+  function clock(h) {
+    h = ((h % 24) + 24) % 24;
+    if (h === 0) return "12am";
+    if (h === 12) return "12pm";
+    if (h < 12) return h + "am";
+    return (h - 12) + "pm";
+  }
+  function fillSelect(id, from, to) {
+    const el = $(id); if (!el) return;
+    const keep = el.value;
+    el.innerHTML = "";
+    for (let h = from; h <= to; h++) {
+      const o = document.createElement("option");
+      o.value = String(h);
+      o.textContent = clock(h % 24);
+      el.appendChild(o);
+    }
+    if (keep) el.value = keep;
+  }
+  ["heatStart","extraStart","schoolStart","dinnerStart","peakStart"].forEach(id => fillSelect(id, 0, 23));
+  ["heatEnd","extraEnd","schoolEnd","dinnerEnd"].forEach(id => fillSelect(id, 1, 24));
+  fillSelect("peakEnd", 0, 24);
+  if ($("peakEnd") && $("peakEnd").options[0]) $("peakEnd").options[0].textContent = "none";
+  $("heatStart").value = "10"; $("heatEnd").value = "15";
+  if ($("peakStart")) $("peakStart").value = "16";
+  if ($("peakEnd")) $("peakEnd").value = "21";
+  $("extraStart").value = "12"; $("extraEnd").value = "15";
+  $("schoolStart").value = "15"; $("schoolEnd").value = "17";
+  $("dinnerStart").value = "19"; $("dinnerEnd").value = "21";
+  function num(id) {
+    const el = $(id);
+    if (!el) return 0;
+    const v = parseFloat(el.value);
+    return Number.isFinite(v) ? v : 0;
+  }
+  function solarAt(h) {
+    const day = num("solarDay");
+    if (day <= 0) return 0;
+    const w = [0,0,0,0,0,0,0,0.02, 0.06,0.10,0.13,0.15, 0.16,0.14,0.11,0.08, 0.04,0.01,0,0,0,0,0,0];
+    return day * (w[h] || 0);
+  }
+  function checked(id) { return $(id) && $(id).checked; }
+  const HP_CATALOG = [
+    { name: "Jandy VersaTemp JRT2500R", kw: 5.23, cop: 6.5, note: "116k BTU heat/chill. This pad." },
+    { name: "Jandy VersaTemp JRT2000R", kw: 4.7, cop: 6.4, note: "103k BTU heat/chill." },
+    { name: "Jandy VersaTemp JRT3000R", kw: 6.37, cop: 6.3, note: "137k BTU heat/chill." },
+    { name: "Jandy JE1500T", kw: 3.83, cop: 5.5, note: "72k BTU. Older VersaTemp." },
+    { name: "Jandy JE2000T", kw: 5.03, cop: 6.0, note: "108k BTU." },
+    { name: "Jandy JE2500T", kw: 5.34, cop: 6.2, note: "119k BTU." },
+    { name: "Jandy JE3000T / JE3000TR", kw: 6.37, cop: 6.3, note: "137k BTU. TR is reverse." },
+    { name: "Pentair UltraTemp 90", kw: 4.8, cop: 5.5, note: "~90k BTU." },
+    { name: "Pentair UltraTemp 110", kw: 5.8, cop: 5.6, note: "~110k BTU." },
+    { name: "Pentair UltraTemp 120", kw: 6.4, cop: 5.7, note: "~125k BTU." },
+    { name: "Pentair UltraTemp 140", kw: 7.2, cop: 5.8, note: "143k BTU AHRI." },
+    { name: "Pentair UltraTemp 120 H/C", kw: 6.5, cop: 5.6, note: "Heat/cool." },
+    { name: "Pentair UltraTemp 140 H/C", kw: 7.2, cop: 5.7, note: "Heat/cool." },
+    { name: "Hayward HeatPro HP21004T", kw: 5.6, cop: 5.0, note: "95k BTU." },
+    { name: "Hayward HeatPro HP21104T", kw: 6.2, cop: 5.2, note: "110k BTU." },
+    { name: "Hayward HeatPro HP21404T / HP21405T", kw: 7.2, cop: 5.7, note: "140k BTU. Common 2018-2026." },
+    { name: "Hayward HeatPro HP31105T H/C", kw: 5.8, cop: 6.0, note: "110k heat/cool." },
+    { name: "Hayward HeatPro HP31405T H/C", kw: 7.0, cop: 6.1, note: "135k heat/cool." },
+    { name: "AquaCal HeatWave SuperQuiet SQ120R", kw: 6.2, cop: 5.6, note: "~110-120k." },
+    { name: "AquaCal HeatWave SuperQuiet SQ140R", kw: 7.0, cop: 5.7, note: "~125k." },
+    { name: "AquaCal HeatWave SuperQuiet SQ160R", kw: 7.4, cop: 5.7, note: "128k class." },
+    { name: "Raypak Crosswind V 65", kw: 4.2, cop: 5.8, note: "Inverter class ~65k." },
+    { name: "Raypak Crosswind V 115", kw: 6.0, cop: 6.0, note: "Inverter class ~115k." },
+    { name: "Raypak Crosswind V 165", kw: 7.5, cop: 6.2, note: "Inverter class ~165k." },
+    { name: "Gulfstream HE125", kw: 6.4, cop: 5.8, note: "~117k. Also badged Pentair." },
+    { name: "Gulfstream HE150", kw: 7.0, cop: 6.0, note: "~136k." }
+  ];
+  const GAS_CATALOG = [
+    { name: "Jandy JXi 200", btu: 199000, eff: 0.83, note: "Compact. 2015+." },
+    { name: "Jandy JXi 260", btu: 260000, eff: 0.83, note: "Mid." },
+    { name: "Jandy JXi 400", btu: 399000, eff: 0.84, note: "Full size." },
+    { name: "Jandy JXiQ 200", btu: 199000, eff: 0.84, note: "2024 smart JXi." },
+    { name: "Jandy JXiQ 260", btu: 260000, eff: 0.84, note: "2024 smart JXi." },
+    { name: "Jandy JXiQ 400", btu: 399000, eff: 0.84, note: "2024 smart JXi." },
+    { name: "Pentair MasterTemp 200", btu: 200000, eff: 0.82, note: "Workhorse." },
+    { name: "Pentair MasterTemp 250", btu: 250000, eff: 0.82, note: "Workhorse." },
+    { name: "Pentair MasterTemp 300", btu: 300000, eff: 0.82, note: "Workhorse." },
+    { name: "Pentair MasterTemp 400", btu: 400000, eff: 0.84, note: "Common 400k." },
+    { name: "Pentair ETi 250", btu: 250000, eff: 0.96, note: "Condensing. High efficiency." },
+    { name: "Pentair ETi 400", btu: 400000, eff: 0.96, note: "Condensing flagship." },
+    { name: "Hayward H250FD / Universal H-Series 250", btu: 250000, eff: 0.83, note: "H-Series." },
+    { name: "Hayward H400FD / Universal H-Series 400", btu: 400000, eff: 0.83, note: "H-Series." },
+    { name: "Hayward HC 400", btu: 400000, eff: 0.84, note: "Newer H-Series." },
+    { name: "Raypak Digital 266", btu: 266000, eff: 0.82, note: "Atmospheric/digital." },
+    { name: "Raypak Digital 336", btu: 336000, eff: 0.82, note: "Atmospheric/digital." },
+    { name: "Raypak Digital 404", btu: 399000, eff: 0.82, note: "404k class." },
+    { name: "Raypak AVIA 264", btu: 264000, eff: 0.84, note: "Newer Raypak." },
+    { name: "Raypak AVIA 404", btu: 399000, eff: 0.84, note: "Newer Raypak." }
+  ];
+  const PUMP_CATALOG = [
+    { name: "Jandy VS FloPro 1.85", low: 0.25, high: 1.6, note: "This pad. Dual voltage." },
+    { name: "Jandy VS FloPro 2.7", low: 0.30, high: 2.2, note: "Larger FloPro." },
+    { name: "Jandy ePump 1.65", low: 0.22, high: 1.5, note: "AquaLink native." },
+    { name: "Jandy ePump 2.7", low: 0.30, high: 2.2, note: "VSSHP270." },
+    { name: "Pentair IntelliFlo VF / VS 3HP (011018 era)", low: 0.25, high: 2.3, note: "2010s classic." },
+    { name: "Pentair IntelliFlo VSF", low: 0.22, high: 2.2, note: "Variable flow + speed." },
+    { name: "Pentair IntelliFlo3 VSF 1.5 HP", low: 0.18, high: 1.5, note: "Wi-Fi. 2022+." },
+    { name: "Pentair IntelliFlo3 VSF 3.0 HP", low: 0.25, high: 2.4, note: "Wi-Fi. 2022+." },
+    { name: "Pentair SuperFlo VS / VST", low: 0.20, high: 1.65, note: "SuperFlo footprint." },
+    { name: "Pentair WhisperFlo VST", low: 0.25, high: 2.0, note: "WhisperFlo footprint." },
+    { name: "Hayward TriStar VS 1.85 (SP3202VSP)", low: 0.25, high: 1.7, note: "OmniLogic common." },
+    { name: "Hayward TriStar VS 2.7", low: 0.30, high: 2.2, note: "Larger TriStar." },
+    { name: "Hayward Super Pump VS", low: 0.20, high: 1.5, note: "Super Pump footprint." },
+    { name: "Hayward MaxFlo VS", low: 0.18, high: 1.25, note: "Smaller VS." },
+    { name: "Sta-Rite IntelliPro VS", low: 0.25, high: 2.2, note: "Pentair sister." },
+    { name: "Century VGreen 270", low: 0.28, high: 2.0, note: "Aftermarket VS." },
+    { name: "Single speed 1.0 HP", low: 1.1, high: 1.1, note: "Always high watts." },
+    { name: "Single speed 1.5 HP", low: 1.5, high: 1.5, note: "Always high watts." },
+    { name: "Single speed 2.0 HP", low: 2.0, high: 2.0, note: "Always high watts." }
+  ];
+  const RATE_PLANS = [
+    { id: "sce-prime", co: "sce", name: "TOU-D-PRIME", peakStart: 16, peakEnd: 21, rSuPk: 0.59, rSuMid: 0.39, rSuOff: 0.26, rWiMid: 0.59, rWiOff: 0.25, note: "This house. Weekend summer is mid, not full peak. Class rates." },
+    { id: "sce-49", co: "sce", name: "TOU-D-4-9PM", peakStart: 16, peakEnd: 21, rSuPk: 0.55, rSuMid: 0.55, rSuOff: 0.32, rWiMid: 0.48, rWiOff: 0.32, note: "4-9 every day. Typical-class, not your bill." },
+    { id: "pge-eelec", co: "pge", name: "E-ELEC", peakStart: 16, peakEnd: 21, rSuPk: 0.61, rSuMid: 0.61, rSuOff: 0.36, rWiMid: 0.50, rWiOff: 0.40, note: "Heat-pump TOU. 4-9pm. Class rates." },
+    { id: "pge-etouc", co: "pge", name: "E-TOU-C", peakStart: 16, peakEnd: 21, rSuPk: 0.57, rSuMid: 0.57, rSuOff: 0.43, rWiMid: 0.47, rWiOff: 0.40, note: "4-9pm. Super-off not modeled." },
+    { id: "sdge-dr1", co: "sdge", name: "TOU-DR1", peakStart: 16, peakEnd: 21, rSuPk: 0.72, rSuMid: 0.72, rSuOff: 0.42, rWiMid: 0.48, rWiOff: 0.38, note: "Summer peak is steep. Class rates." },
+    { id: "ladwp-r1b", co: "ladwp", name: "R-1B (flat-ish)", peakStart: 0, peakEnd: 0, rSuPk: 0.24, rSuMid: 0.24, rSuOff: 0.24, rWiMid: 0.24, rWiOff: 0.24, note: "No 4-9 hammer. Still heat in the sun for COP." },
+    { id: "smud-tod", co: "smud", name: "Time-of-Day", peakStart: 17, peakEnd: 20, rSuPk: 0.36, rSuMid: 0.36, rSuOff: 0.16, rWiMid: 0.16, rWiOff: 0.12, note: "Peak about 5-8pm summer. Class rates." },
+    { id: "flat", co: "other", name: "Flat rate", peakStart: 0, peakEnd: 0, rSuPk: 0.18, rSuMid: 0.18, rSuOff: 0.18, rWiMid: 0.18, rWiOff: 0.18, note: "One price. Heat for COP, not TOU." },
+    { id: "custom", co: "other", name: "Custom (edit Fine print)", peakStart: 16, peakEnd: 21, rSuPk: 0.30, rSuMid: 0.30, rSuOff: 0.20, rWiMid: 0.25, rWiOff: 0.20, note: "Type your bill in Fine print. Plan only sets a starting peak window if those fields are empty." }
+  ];
+  function fillPlans() {
+    const el = $("utilPlan"); if (!el) return;
+    const co = $("utilCo") ? $("utilCo").value : "sce";
+    const keep = el.value;
+    const list = RATE_PLANS.filter(p => p.co === co);
+    el.innerHTML = list.map(p => "<option value='" + p.id + "'>" + p.name + "</option>").join("");
+    if (list.some(p => p.id === keep)) el.value = keep;
+    else if (list.length) el.value = list[0].id;
+  }
+  function currentPlan() {
+    const id = $("utilPlan") ? $("utilPlan").value : "sce-prime";
+    return RATE_PLANS.find(p => p.id === id) || RATE_PLANS[0];
+  }
+  function applyRatePlan(overwrite) {
+    const plan = currentPlan();
+    if (!plan) return;
+    if (overwrite && plan.id !== "custom") {
+      $("rSuPk").value = String(plan.rSuPk);
+      $("rSuMid").value = String(plan.rSuMid);
+      $("rSuOff").value = String(plan.rSuOff);
+      $("rWiMid").value = String(plan.rWiMid);
+      $("rWiOff").value = String(plan.rWiOff);
+      if ($("peakStart")) $("peakStart").value = String(plan.peakStart);
+      if ($("peakEnd")) $("peakEnd").value = String(plan.peakEnd);
+    }
+    if ($("utilHint")) $("utilHint").textContent = ($("utilCo").selectedOptions[0] ? $("utilCo").selectedOptions[0].text + " " : "") + plan.name + ". " + plan.note;
+  }
+  function peakWin() {
+    const a = $("peakStart") ? num("peakStart") : 16;
+    const b = $("peakEnd") ? num("peakEnd") : 21;
+    return { start: a, end: b };
+  }
+  function inPeak(h) {
+    const p = peakWin();
+    if (!(p.end > p.start)) return false;
+    return h >= p.start && h < p.end;
+  }
+  function peakLabel() {
+    const p = peakWin();
+    if (!(p.end > p.start)) return "no peak window";
+    return clock(p.start) + "-" + clock(p.end);
+  }
+  window.plungeInPeak = inPeak;
+  window.plungePeakLabel = peakLabel;
+  function bindAc(inputId, listId, catalog, apply) {
+    const inp = $(inputId), list = $(listId);
+    if (!inp || !list) return;
+    function hide() { list.classList.remove("on"); }
+    function show(q) {
+      const s = (q || "").toLowerCase();
+      const hits = catalog.filter(x => !s || x.name.toLowerCase().indexOf(s) >= 0).slice(0, 12);
+      list.innerHTML = hits.map((x, i) => "<li data-i='" + catalog.indexOf(x) + "' class='" + (i === 0 ? "on" : "") + "'>" + x.name + "<small>" + x.note + "</small></li>").join("");
+      list.classList.toggle("on", hits.length > 0);
+      list.querySelectorAll("li").forEach(li => {
+        li.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          const item = catalog[parseInt(li.getAttribute("data-i"), 10)];
+          inp.value = item.name;
+          apply(item);
+          hide();
+          persist(); run();
+        });
+      });
+    }
+    inp.addEventListener("focus", () => show(inp.value));
+    inp.addEventListener("input", () => show(inp.value));
+    inp.addEventListener("blur", () => setTimeout(hide, 150));
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const on = list.querySelector("li.on");
+        if (on) { on.dispatchEvent(new Event("mousedown")); e.preventDefault(); }
+      }
+    });
+  }
+  function heatClass() {
+    const kind = $("heatKind") ? $("heatKind").value : "hp";
+    ["view-power","gearCard"].forEach(id => {
+      const el = $(id); if (!el) return;
+      el.classList.remove("heat-hp","heat-gas","heat-none");
+      el.classList.add("heat-" + kind);
+    });
+    const g = $("gearCard");
+    if (g) {
+      g.classList.toggle("hp-this", kind !== "hp" || $("hpPreset").value === "jrt2500");
+      g.classList.toggle("hp-other", kind === "hp" && $("hpPreset").value === "hp-other");
+      g.classList.toggle("gas-std", kind !== "gas" || $("gasPreset").value !== "other");
+      g.classList.toggle("pump-this", $("pumpKind").value === "vs185");
+      g.classList.toggle("pump-other", $("pumpKind").value !== "vs185");
+    }
+    return kind;
+  }
+  function applyHeatPreset() {
+    const kind = heatClass();
+    if (kind === "hp" && $("hpPreset") && $("hpPreset").value === "jrt2500") {
+      $("hpKw").value = "5.23";
+      $("cop").value = "6.5";
+      if ($("hpSearch")) $("hpSearch").value = "Jandy VersaTemp JRT2500R";
+    }
+    if (kind === "gas" && $("gasPreset") && $("gasPreset").value !== "other") {
+      $("gasBtu").value = String(parseInt($("gasPreset").value, 10) * 1000);
+      $("gasEff").value = "0.82";
+    }
+    if (kind === "none" && $("heatOn")) $("heatOn").checked = false;
+    if ($("pumpKind") && $("pumpKind").value === "vs185") {
+      $("pumpLow").value = "0.25";
+      $("pumpHigh").value = "1.6";
+      if ($("pumpSearch")) $("pumpSearch").value = "Jandy VS FloPro 1.85";
+    }
+    if ($("pumpKind") && $("pumpKind").value === "1spd") {
+      $("pumpLow").value = "1.5";
+      $("pumpHigh").value = "1.5";
+    }
+    const hint = $("gearHint");
+    if (hint) {
+      if (kind === "hp") hint.textContent = ($("hpSearch") && $("hpSearch").value ? $("hpSearch").value + ". " : "") + $("hpKw").value + " kW in, COP " + $("cop").value + ".";
+      else if (kind === "gas") hint.textContent = "Gas " + Math.round(num("gasBtu")/1000) + "k BTU at " + Math.round(num("gasEff")*100) + "%. Pump still off 4-9pm.";
+      else hint.textContent = "No heater. Pump and solar only.";
+    }
+  }
+  function applyVolume() {
+    if (!$("volL")) return;
+    const shape = $("volShape").value;
+    const L = num("volL"), W = num("volW"), avg = (num("volSh") + num("volDp")) / 2;
+    let pool = L * W * avg * 7.48;
+    if (shape === "oval") pool = L * W * avg * 5.9;
+    if (shape === "round") pool = Math.PI * Math.pow(L / 2, 2) * avg * 7.48;
+    const one = checked("volOneBody");
+    if ($("volCard")) $("volCard").classList.toggle("spa-off", !one);
+    if ($("gearCard")) $("gearCard").classList.toggle("spa-off", !one);
+    let spa = one ? num("volSpaL") * num("volSpaW") * num("volSpaD") * 7.48 : 0;
+    pool = Math.round(pool);
+    spa = Math.round(spa);
+    if ($("poolGal")) $("poolGal").value = String(pool);
+    if ($("spaGal")) $("spaGal").value = String(spa);
+    if ($("poolSf")) $("poolSf").value = String(Math.round(shape === "round" ? Math.PI * Math.pow(L / 2, 2) : L * W));
+    const dose = pool + spa;
+    const raw = $("volOverride") && $("volOverride").value;
+    const over = raw === "" || raw == null ? null : parseFloat(raw);
+    const use = over > 0 ? over : dose;
+    if ($("chemPoolGal")) {
+      if (over > 0 && dose > 0) {
+        $("chemPoolGal").value = String(Math.round(use * (pool / dose)));
+        $("chemSpaGal").value = String(Math.round(use * (spa / dose)));
+      } else {
+        $("chemPoolGal").value = String(pool);
+        $("chemSpaGal").value = String(spa);
+      }
+    }
+    const msg = "Pool ~" + pool + " gal · spa ~" + spa + " gal · dose " + Math.round(use) + " gal"
+      + (over > 0 ? " (override)" : "") + ". "
+      + (one ? "One body: add chems to the pool, not the spa. Pool Math L/W/D is the pool box; spa gallons are extra." : "Spa off. Dose is pool only.");
+    if ($("volMath")) $("volMath").textContent = msg;
+    if ($("volReadout")) $("volReadout").textContent = msg;
+  }
+  function rateAt(h) {
+    const peak = inPeak(h);
+    const summer = $("season").value === "summer";
+    const wd = $("dow").value === "wd";
+    if (summer) {
+      if (peak && wd) return num("rSuPk");
+      if (peak && !wd) return num("rSuMid");
+      return num("rSuOff");
+    }
+    if (peak) return num("rWiMid");
+    return num("rWiOff");
+  }
+  function copEff() {
+    const air = num("airF");
+    const raw = num("cop") * (1 - 0.018 * (70 - air));
+    return Math.max(3.2, Math.min(6.2, raw));
+  }
+  function kWhPerF(gal) { return gal * 8.33 / 3412; }
+  function planHeat() {
+    const kind = $("heatKind") ? $("heatKind").value : "hp";
+    const cop = kind === "hp" ? copEff() : 1;
+    const kwTh = kind === "hp"
+      ? num("hpKw") * cop
+      : (kind === "gas" ? (num("gasBtu") * Math.max(0.5, num("gasEff"))) / 3412 : 0);
+    const tPool = num("poolTarget");
+    const tSpa = num("spaTarget");
+    const minH = num("minHold");
+    const dropPool = ($("season").value === "winter" ? 6 : 4);
+    const morningPool = checked("coldStart") ? Math.max(50, num("airF") - 8) : tPool - dropPool;
+    const morningSpa = checked("coldStart") ? Math.max(50, num("airF") - 8) : tSpa - dropPool - 6;
+    let poolTh = 0, spaTh = 0, body = "hold";
+    if (checked("wantPool")) { poolTh = kWhPerF(num("poolGal")) * Math.max(0, Math.max(tPool, minH) - morningPool); body = "pool"; }
+    if (checked("wantSpa")) { spaTh = kWhPerF(num("spaGal")) * Math.max(0, Math.max(tSpa, minH) - morningSpa); body = checked("wantPool") ? "pool+spa" : "spa"; }
+    const kWhTh = poolTh + spaTh;
+    const n = kwTh > 0.1 ? kWhTh / kwTh : 0;
+    const pk = peakWin();
+    const sunEnd = pk.start > 8 ? Math.min(15, pk.start) : 15;
+    let end = sunEnd, start = Math.max(8, end - Math.ceil(n));
+    if (kind === "none" || !checked("heatOn") || n <= 0.05) return { start: 10, end: 10, hours: 0, kWhTh, cop, body, n, morningPool, kind };
+    return { start, end, hours: Math.max(0, end - start), kWhTh, cop, body, n, morningPool, kind };
+  }
+  function heatingHours(hs, he, kind) {
+    if (!checked("heatOn") || kind === "none" || !(he > hs)) return 0;
+    return he - hs;
+  }
+  function drawChart(rows) {
+    const svg = $("chart");
+    if (!svg) return;
+    const W = 920, H = 360, L = 52, R = 18, T = 28, B = 36;
+    const iw = W - L - R, ih = H - T - B;
+    const maxY = Math.max(2, ...rows.map(d => d.load));
+    const x = (h) => L + (h / 24) * iw;
+    const y = (v) => T + ih - (v / maxY) * ih;
+    const bw = iw / 24;
+    let html = "";
+    rows.forEach(d => {
+      if (d.peak) html += "<rect x='" + x(d.h) + "' y='" + T + "' width='" + bw + "' height='" + ih + "' fill='#f8e6e4'/>";
+      else if (d.heat) html += "<rect x='" + x(d.h) + "' y='" + T + "' width='" + bw + "' height='" + ih + "' fill='#e8f1e6'/>";
+    });
+    rows.forEach(d => {
+      const top = y(d.load);
+      const hgt = Math.max(2, y(0) - top);
+      html += "<rect x='" + (x(d.h) + 3) + "' y='" + top + "' width='" + (bw - 6) + "' height='" + hgt + "' fill='" + (d.peak ? "#8a2a22" : "#3d5a80") + "'/>";
+    });
+    html += "<line x1='" + L + "' y1='" + y(0) + "' x2='" + (W - R) + "' y2='" + y(0) + "' stroke='#ccc'/>";
+    [0, 6, 10, 12, 16, 21].forEach(h => {
+      html += "<text x='" + x(h) + "' y='" + (H - 10) + "' font-size='12' fill='#444' text-anchor='middle'>" + clock(h) + "</text>";
+      html += "<line x1='" + x(h) + "' y1='" + T + "' x2='" + x(h) + "' y2='" + (T + ih) + "' stroke='#eee'/>";
+    });
+    html += "<text x='" + (L - 8) + "' y='" + (y(maxY) + 4) + "' font-size='11' fill='#444' text-anchor='end'>" + maxY.toFixed(1) + " kW</text>";
+    html += "<text x='" + (L + 6) + "' y='" + (T - 8) + "' font-size='13' fill='#1c1c1c' font-weight='700'>Grid kW after solar+PW · pink " + peakLabel() + "</text>";
+    svg.innerHTML = html;
+  }
+  function run() {
+    heatClass();
+    applyVolume();
+    $("extraTimes").classList.toggle("on", checked("useExtra"));
+    const p = planHeat();
+    if (checked("autoHeat")) {
+      $("heatStart").value = String(Math.floor(p.start));
+      $("heatEnd").value = String(Math.ceil(p.end));
+    }
+    const hs = num("heatStart"), he = num("heatEnd");
+    const kind = p.kind || ($("heatKind") && $("heatKind").value) || "hp";
+    let cost = 0, kWh = 0, peakK = 0, gasCost = 0, gridK = 0;
+    const rows = [];
+    const day = window.plungeBuildDay ? window.plungeBuildDay() : null;
+    const cap = Math.max(0, num("pwKwh"));
+    const pwMax = Math.max(0, num("pwKw"));
+    let soc = cap * Math.max(0, Math.min(100, num("pwStart"))) / 100;
+    let html = "<thead><tr><th>Hour</th><th>Load</th><th>Solar</th><th>Grid</th><th>$</th></tr></thead><tbody>";
+    for (let h = 0; h < 24; h++) {
+      let load = num("houseKw");
+      if (inPeak(h)) load += num("eveKw") * 0.4;
+      const heating = checked("heatOn") && kind !== "none" && he > hs && h >= hs && h < he;
+      if (day && day.hours[h]) {
+        load += day.hours[h].kw;
+        if (heating && kind === "hp") load += num("hpKw");
+        if (heating && kind === "gas") load += 0.12;
+      } else if (heating && kind === "hp") load += num("hpKw") + num("pumpLow");
+      else if (heating && kind === "gas") load += 0.12 + num("pumpLow");
+      else if ($("pumpMode") && $("pumpMode").value === "all") load += num("pumpLow");
+      else if ($("pumpMode") && $("pumpMode").value === "sun" && h >= 8 && h < 16) load += num("pumpLow");
+      if (heating && kind === "gas") {
+        gasCost += (num("gasBtu") / 100000) * num("gasRate");
+      }
+      const sun = solarAt(h);
+      let net = load - sun;
+      let grid = net;
+      if (cap > 0 && pwMax > 0) {
+        if (net > 0 && inPeak(h)) {
+          const dch = Math.min(net, pwMax, soc);
+          soc -= dch;
+          grid = net - dch;
+        } else if (net < 0) {
+          const ch = Math.min(-net, pwMax, cap - soc);
+          soc += ch;
+          grid = net + ch;
+        } else if (checked("pwOffpeak") && !inPeak(h) && (h >= 21 || h < 8) && soc < cap * 0.9) {
+          const ch = Math.min(pwMax, cap * 0.9 - soc);
+          soc += ch;
+          grid = net + ch;
+        }
+      }
+      const r = rateAt(h);
+      const exp = num("export");
+      const c = grid >= 0 ? grid * r : grid * exp;
+      cost += c; kWh += load; gridK += Math.max(0, grid);
+      if (inPeak(h)) peakK += Math.max(0, grid);
+      const bar = Math.max(0, grid);
+      rows.push({ h, load: bar, heat: heating, peak: inPeak(h), r, c });
+      html += "<tr class='" + (inPeak(h) ? "peak" : "cheap") + "'><td>" + clock(h) + "</td><td>" + load.toFixed(2) + "</td><td>" + sun.toFixed(2) + "</td><td>" + grid.toFixed(2) + "</td><td>" + c.toFixed(2) + "</td></tr>";
+    }
+    $("hours").innerHTML = html;
+    drawChart(rows);
+    const heatH = heatingHours(hs, he, kind);
+    const heatBit = heatH ? (clock(hs) + "-" + clock(he)) : "off";
+    const pkBit = peakLabel();
+    if (kind === "gas") {
+      $("verdict").textContent = "Elec ~$" + cost.toFixed(2) + " · gas ~$" + gasCost.toFixed(2) + " · " + kWh.toFixed(1) + " kWh · heat " + heatBit;
+      $("plan").textContent = p.body + " · gas " + Math.round(num("gasBtu")/1000) + "k BTU at " + Math.round(num("gasEff")*100) + "% · thermal " + p.kWhTh.toFixed(1) + " kWh. Pump still off " + pkBit + ".";
+    } else if (kind === "none") {
+      $("verdict").textContent = "About $" + cost.toFixed(2) + " · " + kWh.toFixed(1) + " kWh · no heater.";
+      $("plan").textContent = "Pump and solar only. Chem still uses the L/W/D gallons.";
+    } else {
+      $("verdict").textContent = "About $" + cost.toFixed(2) + " house+pool this day · " + kWh.toFixed(1) + " kWh · heat " + heatBit;
+      $("plan").textContent = p.body + " · COP ~" + p.cop.toFixed(1) + " · thermal " + p.kWhTh.toFixed(1) + " kWh. Never heat " + pkBit + ".";
+    }
+    $("strip").innerHTML = "<div><small>Day $</small><b>" + cost.toFixed(2) + "</b></div><div><small>Load kWh</small><b>" + kWh.toFixed(0) + "</b></div><div><small>Grid kWh</small><b>" + gridK.toFixed(0) + "</b></div><div><small>Peak kWh</small><b>" + peakK.toFixed(0) + "</b></div>";
+    $("monthNote").textContent = "Rough month if this is a typical swim mix: on the order of $" + (cost * 12).toFixed(0) + " on this plan. Not a bill.";
+  }
+  function persist() {
+    const o = {};
+    ids.forEach(id => { if ($(id)) o[id] = $(id).type === "checkbox" ? $(id).checked : $(id).value; });
+    localStorage.setItem("pool-power-v14", JSON.stringify(o));
+  }
+  fillPlans();
+  try {
+    const o = JSON.parse(localStorage.getItem("pool-power-v14") || localStorage.getItem("pool-power-v13") || "{}");
+    ids.forEach(id => {
+      if (!$(id) || o[id] == null) return;
+      if ($(id).type === "checkbox") $(id).checked = !!o[id];
+      else $(id).value = o[id];
+    });
+    if (!localStorage.getItem("pool-power-v14")) { $("hpKw").value = "5.23"; $("cop").value = "6.5"; }
+    fillPlans();
+    if (o.utilPlan && $("utilPlan")) $("utilPlan").value = o.utilPlan;
+  } catch (e) {}
+  applyRatePlan(false);
+  ids.forEach(id => {
+    if (!$(id)) return;
+    $(id).addEventListener("change", () => { persist(); run(); });
+    $(id).addEventListener("input", () => { persist(); run(); });
+  });
+  if ($("utilCo")) $("utilCo").addEventListener("change", () => { fillPlans(); applyRatePlan(true); persist(); run(); });
+  if ($("utilPlan")) $("utilPlan").addEventListener("change", () => { applyRatePlan(true); persist(); run(); });
+  $("applyPaste").addEventListener("click", run);
+  $("clearPaste").addEventListener("click", () => { $("paste").value = ""; run(); });
+  window.runPowerFromClock = run;
+  window.plungeApplyVolume = applyVolume;
+  ["heatKind","hpPreset","gasPreset","pumpKind"].forEach(id => {
+    if ($(id)) $(id).addEventListener("change", () => { applyHeatPreset(); persist(); run(); });
+  });
+  bindAc("hpSearch", "hpAc", HP_CATALOG, (item) => {
+    $("hpKw").value = String(item.kw);
+    $("cop").value = String(item.cop);
+  });
+  bindAc("gasSearch", "gasAc", GAS_CATALOG, (item) => {
+    $("gasBtu").value = String(item.btu);
+    $("gasEff").value = String(item.eff);
+  });
+  bindAc("pumpSearch", "pumpAc", PUMP_CATALOG, (item) => {
+    $("pumpLow").value = String(item.low);
+    $("pumpHigh").value = String(item.high);
+    if (item.low === item.high) $("pumpKind").value = "1spd";
+    else $("pumpKind").value = "vs";
+  });
+  heatClass();
+  applyVolume();
+  run();
+})();
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const slot = $("chemRefSlot");
+  const src = $("chemRefSource");
+  if (slot && src) {
+    while (src.firstChild) slot.appendChild(src.firstChild);
+    src.remove();
+  }
+  function show(which) {
+    const names = { power: "Power", chem: "Chem", pad: "Pad", log: "Log", clock: "Clock" };
+    ["power","chem","pad","log","clock"].forEach(w => {
+      const view = $("view-" + w);
+      const tab = $("tab" + w[0].toUpperCase() + w.slice(1));
+      if (view) view.classList.toggle("on", which === w);
+      if (tab) {
+        tab.classList.toggle("on", which === w);
+        if (which === w) tab.setAttribute("aria-current", "page");
+        else tab.removeAttribute("aria-current");
+      }
+    });
+    const st = $("sheetTab");
+    if (st) st.textContent = names[which] || "";
+    if (which === "power" && window.runPowerFromClock) window.runPowerFromClock();
+  }
+  (function themeBind() {
+    const el = $("uiTheme");
+    if (!el) return;
+    let t = document.documentElement.getAttribute("data-theme") || "light";
+    if (t !== "light" && t !== "dark") t = "light";
+    el.value = t;
+    el.addEventListener("change", () => {
+      document.documentElement.setAttribute("data-theme", el.value);
+      localStorage.setItem("pool-ui-theme", el.value);
+    });
+  })();
+  $("tabPower").addEventListener("click", () => show("power"));
+  $("tabChem").addEventListener("click", () => show("chem"));
+  $("tabPad").addEventListener("click", () => show("pad"));
+  $("tabLog").addEventListener("click", () => show("log"));
+  $("tabClock").addEventListener("click", () => show("clock"));
+  show("chem");
+  const PINS = [
+    { n: "1", x: 18, y: 24, col: "#7C8CFF", title: "JRT2500R heat pump", body: "116k BTU / 6.5 COP. Heat 10am-3pm only.", side: "L" },
+    { n: "2", x: 42, y: 32.7, col: "#FF8A4C", title: "Return 3-way (JVA)", body: "AquaLink pool / spillover / spa. Do not hand-crank.", side: "L" },
+    { n: "3", x: 43, y: 42.7, col: "#FF8A4C", title: "Check valve", body: "Pump > filter > heater > salt > returns.", side: "L" },
+    { n: "4", x: 49.5, y: 52.7, col: "#3DDC97", title: "VS FloPro 1.85", body: "Speed 2 ~1750 daily. ~2300 heat. 3450 jets/prime.", side: "L" },
+    { n: "5", x: 77, y: 24, col: "#F5C542", title: "CL460 cartridge", body: "Wash at +10-12 psi over clean. No backwash.", side: "L" },
+    { n: "7", x: 24.5, y: 52.7, col: "#7C8CFF", title: "Heater ball valve (manual)", body: "Vertical = full open. Leave the tilt unless FLO.", side: "L" },
+    { n: "6", x: 88, y: 49.3, col: "#5CC8FF", title: "TruClear 11K", body: "Salt cell after the heater. Needs flow.", side: "R" },
+    { n: "8", x: 37, y: 66, col: "#C9B8FF", title: "Skimmer / drain 3-ways (manual)", body: "Daily: skimmers ON, drains ON. Vac is pin 9, OFF.", side: "R" },
+    { n: "9", x: 30.5, y: 68, col: "#FF5C7A", title: "Vac line valve", body: "Default OFF. Hose in the wall first.", side: "R" },
+    { n: "11", x: 54.4, y: 63.2, col: "#C9B8FF", title: "Spa suction 3-way (JVA)", body: "Daily spa port closed so the cup overflows.", side: "R" },
+    { n: "10", x: 67, y: 56, col: "#FF8A4C", title: "Returns / risers", body: "Daily = one body, spillway on.", side: "R" }
+  ];
+  const PRESETS = [
+    { col: "#3DDC97", title: "A  Daily  one body", body: "Vac OFF, spa suction OFF, skimmers + drains ON. 1750." },
+    { col: "#FF8A4C", title: "B  Heat  10am-3pm", body: "Same valves. Pump ~2200-2400. Never 4-9pm." },
+    { col: "#7C8CFF", title: "C  Spa  (app)", body: "iAquaLink Spa turns pins 2 and 11. 3450 only for jets." },
+    { col: "#FF5C7A", title: "D  Vac  (manual)", body: "Hose in, valve ON, then OFF, pull hose." },
+    { col: "#F5C542", title: "E  Jets / prime", body: "3450 for minutes." }
+  ];
+  const stage = $("padStage");
+  function pinCard(p) {
+    return "<div class='pin-card' data-n='" + p.n + "'><b><span class='pin-n' style='background:" + p.col + "'>" + p.n + "</span>" + p.title + "</b>" + p.body + "</div>";
+  }
+  $("padLeft").innerHTML = PINS.filter(p => p.side === "L").map(pinCard).join("");
+  $("padRight").innerHTML = PINS.filter(p => p.side === "R").map(pinCard).join("")
+    + "<h2 style='margin:8px 0 0'>Presets</h2>"
+    + PRESETS.map(p => "<div class='preset-card' style='border-left:6px solid " + p.col + "'><b>" + p.title + "</b>" + p.body + "</div>").join("");
+  PINS.forEach(p => {
+    const d = document.createElement("button");
+    d.type = "button"; d.className = "pad-dot"; d.textContent = p.n;
+    d.style.left = p.x + "%"; d.style.top = p.y + "%"; d.style.background = p.col; d.dataset.n = p.n;
+    stage.appendChild(d);
+  });
+  function selectPin(n) {
+    stage.querySelectorAll(".pad-dot").forEach(el => el.classList.toggle("on", el.dataset.n === n));
+    $("view-pad").querySelectorAll(".pin-card").forEach(el => el.classList.toggle("on", el.getAttribute("data-n") === n));
+  }
+  stage.querySelectorAll(".pad-dot").forEach(el => el.addEventListener("click", () => selectPin(el.dataset.n)));
+  $("view-pad").querySelectorAll(".pin-card").forEach(el => el.addEventListener("click", () => selectPin(el.getAttribute("data-n"))));
+  $("padColor").addEventListener("click", () => { stage.classList.remove("wire"); $("padColor").classList.add("on"); $("padWire").classList.remove("on"); });
+  $("padWire").addEventListener("click", () => { stage.classList.add("wire"); $("padWire").classList.add("on"); $("padColor").classList.remove("on"); });
+})();
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  function clock(h) {
+    h = ((h % 24) + 24) % 24;
+    if (h === 0) return "12am";
+    if (h === 12) return "12pm";
+    if (h < 12) return h + "am";
+    return (h - 12) + "pm";
+  }
+  const spaSel = $("clockSpaStart");
+  if (spaSel && !spaSel.options.length) {
+    for (let h = 0; h < 24; h++) {
+      const o = document.createElement("option");
+      o.value = String(h);
+      o.textContent = clock(h);
+      spaSel.appendChild(o);
+    }
+    spaSel.value = "15";
+  }
+  let kind = "rest";
+  function pumpKw(rpm) {
+    if (rpm <= 0) return 0;
+    const pLow = parseFloat($("pumpLow") && $("pumpLow").value) || 0.25;
+    const pHigh = parseFloat($("pumpHigh") && $("pumpHigh").value) || 1.6;
+    const t = (Math.pow(rpm, 3) - Math.pow(1000, 3)) / (Math.pow(3450, 3) - Math.pow(1000, 3));
+    return pLow + Math.max(0, Math.min(1, t)) * (pHigh - pLow);
+  }
+  function gpmAt(rpm) {
+    if (rpm <= 0) return 0;
+    if (rpm <= 1000) return 12;
+    if (rpm <= 1750) return 12 + (rpm - 1000) / 750 * 10;
+    if (rpm <= 2350) return 22 + (rpm - 1750) / 600 * 26;
+    return 48 + (rpm - 2350) / 1100 * 24;
+  }
+  function inPeak(h) {
+    if (window.plungeInPeak) return window.plungeInPeak(h);
+    return h >= 16 && h < 21;
+  }
+  function rateAt(h) {
+    const peak = inPeak(h);
+    const summer = ($("clockSeason") && $("clockSeason").value === "summer") || ($("season") && $("season").value === "summer");
+    const dow = parseInt($("clockDow") && $("clockDow").value, 10);
+    const wd = dow >= 1 && dow <= 5;
+    if (summer) {
+      if (peak && wd) return parseFloat($("rSuPk") && $("rSuPk").value) || 0.59;
+      if (peak && !wd) return parseFloat($("rSuMid") && $("rSuMid").value) || 0.39;
+      return parseFloat($("rSuOff") && $("rSuOff").value) || 0.26;
+    }
+    if (peak) return parseFloat($("rWiMid") && $("rWiMid").value) || 0.59;
+    return parseFloat($("rWiOff") && $("rWiOff").value) || 0.25;
+  }
+  function familyNote(dow) {
+    const m = {
+      1: "Monday: Children's Theater 5:30-8:30. Heat is a morning/afternoon decision, not after pickup.",
+      2: "Tuesday: dance after school. Short window. Heat only if you will actually swim.",
+      3: "Wednesday: usually the free swim day.",
+      4: "Thursday: min day plus theater 5:30-8:30. Pickup earlier; still not a 4-9pm heat.",
+      5: "Friday: open. Peak still 4-9pm.",
+      6: "Saturday: theater 9-3. Heat fights the rehearsal. Rest or evening-after-9 soak.",
+      0: "Sunday: open. Heat 10am-3pm if you swim."
+    };
+    return m[dow] || "";
+  }
+  function buildDay() {
+    const cellOn = $("saltChkCell") && $("saltChkCell").checked;
+    const dow = parseInt($("clockDow") && $("clockDow").value, 10) || 3;
+    const spaStart = parseInt($("clockSpaStart") && $("clockSpaStart").value, 10);
+    const spaMin = Math.max(10, parseInt($("clockSpaMin") && $("clockSpaMin").value, 10) || 30);
+    const vacMin = Math.max(10, parseInt($("clockVacMin") && $("clockVacMin").value, 10) || 20);
+    const hours = [];
+    for (let h = 0; h < 24; h++) {
+      let rpm = 0, note = "Off. Covers 4-9pm peak.", tag = "off";
+      if (h >= 23 || h < 10) { rpm = 1000; note = "Night mix. Cheap. Below cell min flow (~20 gpm)."; tag = "night"; }
+      else if (h === 10) { rpm = 1750; note = "Skim starts. Weirs should tick."; tag = "skim"; }
+      else if (h >= 11 && h < 16) { rpm = 1750; note = cellOn ? "Skim + cell can make chlorine at 25%." : "Skim + filter. Cell 0%."; tag = "skim"; }
+      if (kind === "swim" && h >= 10 && h < 15) {
+        rpm = 2350; note = "Heat overlay. ~48 gpm for JRT. Never past 3pm."; tag = "heat";
+      }
+      if (kind === "swim" && h === 15) {
+        rpm = 1750; note = "Heater off. Skim until 4pm, then off."; tag = "skim";
+      }
+      if (kind === "spa") {
+        const spaEnd = spaStart + Math.ceil(spaMin / 60);
+        if (h >= spaStart && h < spaEnd) {
+          rpm = 3300; note = "Spa soak " + spaMin + " min. Then back to the clock."; tag = "spa";
+        }
+      }
+      if (kind === "vac" && h === 11) {
+        rpm = 3000; note = "Vac ~" + vacMin + " min. Hose in wall first. Valve off before you pull."; tag = "spa";
+      }
+      if (inPeak(h) && rpm > 0 && tag !== "spa") {
+        rpm = 0; note = "Forced off. Peak " + (window.plungePeakLabel ? window.plungePeakLabel() : "4-9pm") + ". Do not heat. Do not make chlorine here."; tag = "off";
+      }
+      const gpm = gpmAt(rpm);
+      const kw = pumpKw(rpm);
+      const cell = cellOn && gpm >= 20 && rpm >= 1750;
+      hours.push({ h, rpm, gpm, kw, cell, rate: rateAt(h), note, tag, peak: inPeak(h) });
+    }
+    return { kind, cellOn, dow, hours };
+  }
+  window.plungeBuildDay = buildDay;
+  function renderClock() {
+    const d = buildDay();
+    const v = $("clockVerdict"), plan = $("clockPlan"), strip = $("clockStrip"), bars = $("clockBars");
+    const table = $("clockTable"), how = $("clockHow"), prog = $("clockPrograms"), fam = $("clockFamily");
+    if (!v) return;
+    if (fam) fam.textContent = familyNote(d.dow);
+    let kWh = 0, cost = 0, clH = 0, peakK = 0, warn = "";
+    d.hours.forEach(x => {
+      kWh += x.kw;
+      cost += x.kw * x.rate;
+      if (x.cell) clH += 1;
+      if (x.peak) peakK += x.kw;
+      if (x.tag === "spa" && x.peak) warn = "Spa/vac sits in 4-9pm. Move it to 3pm or after 9pm.";
+    });
+    if (d.kind === "rest") {
+      v.className = "verdict";
+      v.textContent = "Rest day. 1000 night, 1750 10:30am-4pm, off 4-11pm.";
+    } else if (d.kind === "swim") {
+      v.className = "verdict";
+      v.textContent = "Swim day. Heat 10am-3pm at ~2350, then 1750 until 4pm.";
+    } else if (d.kind === "spa") {
+      v.className = warn ? "verdict bad" : "verdict";
+      v.textContent = warn || ("Spa soak at " + clock(parseInt($("clockSpaStart").value, 10)) + ", then the rest clock.");
+    } else {
+      v.className = "verdict";
+      v.textContent = "Vac at 11am high RPM, then skim. Valve off when the hose is out.";
+    }
+    plan.textContent = (d.cellOn ? "Cell 25% only in hours with ~20 gpm (1750+). " : "Liquid month. Same RPM. Cell 0%. ")
+      + "Power ~ RPM cubed. 3450 all day is the expensive way to filter 6500 gallons.";
+    strip.innerHTML = "<div><small>Pump kWh</small><b>" + kWh.toFixed(1) + "</b></div>"
+      + "<div><small>Pump $</small><b>" + cost.toFixed(2) + "</b></div>"
+      + "<div><small>Cl hours</small><b>" + clH + "</b></div>"
+      + "<div><small>4-9 pump kWh</small><b>" + peakK.toFixed(2) + "</b></div>";
+    bars.innerHTML = d.hours.map(x => {
+      const ht = Math.max(6, Math.round((x.rpm / 3450) * 72));
+      const cls = x.rpm <= 0 ? "off" : (x.peak ? "peak" : (x.tag === "heat" ? "heat" : (x.tag === "spa" ? "spa" : "")));
+      return "<i class='" + cls + "' style='height:" + (x.rpm <= 0 ? 6 : ht) + "px' title='" + clock(x.h) + " " + x.rpm + "'></i>";
+    }).join("");
+    let html = "<thead><tr><th>Hour</th><th>RPM</th><th>~gpm</th><th>kW</th><th>$</th><th>Cell</th><th></th></tr></thead><tbody>";
+    d.hours.forEach(x => {
+      html += "<tr class='" + (x.peak ? "peak" : (x.rpm && x.rate < 0.3 ? "cheap" : "")) + "'><td>" + clock(x.h) + "</td><td>" + (x.rpm || "OFF") + "</td><td>" + x.gpm.toFixed(0) + "</td><td>" + x.kw.toFixed(2) + "</td><td>" + (x.kw * x.rate).toFixed(2) + "</td><td>" + (x.cell ? "yes" : "no") + "</td><td>" + x.note + "</td></tr>";
+    });
+    table.innerHTML = html;
+    how.textContent = "Check: weirs ticking at 1750, no FLO on the heater at 2350, filter psi vs Sharpie at the same RPM. Outdoor AquaLink may say Standby. Speeds live in the phone programs.";
+    prog.innerHTML = "P1 11pm-10am speed ~1000 (night mix).<br>P2 10:30am-4pm speed ~1750 (skim"
+      + (d.cellOn ? " + chlorine" : "") + ").<br>No program 4pm-11pm.<br>"
+      + (d.kind === "swim" ? "Heater 10am-3pm. Pump speed 3 (~2350) while it runs. Then P2 until 4pm.<br>" : "Heater off today.<br>")
+      + "Spa/jets: speed 4 (3200-3450) as a one-shot, not a daily program.";
+  }
+  window.plungeRenderClock = renderClock;
+  $("clockKinds").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      kind = btn.getAttribute("data-kind");
+      $("clockKinds").querySelectorAll("button").forEach(b => b.classList.toggle("on", b === btn));
+      renderClock();
+      if (window.runPowerFromClock) window.runPowerFromClock();
+    });
+  });
+  ["clockDow","clockSeason","clockSpaStart","clockSpaMin","clockVacMin"].forEach(id => {
+    if ($(id)) $(id).addEventListener("change", () => { renderClock(); if (window.runPowerFromClock) window.runPowerFromClock(); });
+    if ($(id)) $(id).addEventListener("input", () => { renderClock(); });
+  });
+  renderClock();
+  if (window.runPowerFromClock) window.runPowerFromClock();
+})();
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const KEY = "pool-maint-v1";
+  const SEED_INV = [
+    { id: "cl", name: "Liquid chlorine 12.5%", unit: "fl oz", onHand: 512, buyBelow: 128, pack: 128, store: "Leslie's HB", notes: "4-pack 1 gal SKU 14239." },
+    { id: "acid", name: "Muriatic Green ~20%", unit: "fl oz", onHand: 128, buyBelow: 24, pack: 128, store: "Home Depot", notes: "Klean-Strip Green." },
+    { id: "soda", name: "Baking soda", unit: "lb", onHand: 11, buyBelow: 2, pack: 13.5, store: "Costco", notes: "Arm & Hammer 13.5 lb." },
+    { id: "cya", name: "CYA / conditioner", unit: "lb", onHand: 0, buyBelow: 0, pack: 4, store: "Leslie's", notes: "Buy after a low CYA test." },
+    { id: "salt", name: "Salt bags (do not add)", unit: "bag", onHand: 2, buyBelow: 0, pack: 1, store: "on pad", notes: "Wait fill+28. One bag, then Taylor." },
+    { id: "r0871", name: "Taylor R-0871-C FAS-DPD 2 oz", unit: "bottle", onHand: 1, buyBelow: 0, pack: 1, store: "Amazon S&S", kind: "ss", cadenceDays: 180, opened: "2026-10-17", notes: "Chlorine drops." },
+    { id: "r0870", name: "Taylor R-0870-I DPD powder 10 g", unit: "vial", onHand: 1, buyBelow: 0, pack: 1, store: "Amazon S&S", kind: "ss", cadenceDays: 180, opened: "2026-10-17", notes: "Pink scoop." },
+    { id: "r0004", name: "Taylor R-0004-C phenol red 2 oz", unit: "bottle", onHand: 1, buyBelow: 0, pack: 1, store: "Amazon S&S", kind: "ss", cadenceDays: 180, opened: "2026-10-17", notes: "pH." },
+    { id: "r0009", name: "Taylor R-0009-C TA titrant 2 oz", unit: "bottle", onHand: 1, buyBelow: 0, pack: 1, store: "Amazon S&S", kind: "ss", cadenceDays: 180, opened: "2026-10-17", notes: "TA." }
+  ];
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; }
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  let state = load() || { cleanPsi: "", rows: [], inv: null, restocks: [] };
+  if (!Array.isArray(state.rows)) state.rows = [];
+  if (!Array.isArray(state.inv) || !state.inv.length) state.inv = SEED_INV.map(x => Object.assign({}, x));
+  if (!Array.isArray(state.restocks)) state.restocks = [];
+  SEED_INV.forEach(seed => {
+    const have = state.inv.find(x => x.id === seed.id);
+    if (!have) state.inv.push(Object.assign({}, seed));
+  });
+  if (state.cleanPsi) $("cleanPsi").value = state.cleanPsi;
+  $("logDate").value = todayStr();
+  function bumpInv(id, qty) {
+    const it = state.inv.find(x => x.id === id);
+    if (!it) return;
+    it.onHand = Math.round((Number(it.onHand) + qty) * 100) / 100;
+  }
+  function usedSince(days, field) {
+    const cut = Date.now() - days * 86400000;
+    return state.rows.reduce((s, r) => {
+      if (new Date(r.date + "T12:00:00").getTime() < cut) return s;
+      return s + (parseFloat(r[field]) || 0);
+    }, 0);
+  }
+  function nextDue(it) {
+    if (it.kind !== "ss" || !it.opened) return "";
+    const d = new Date(it.opened + "T12:00:00");
+    d.setDate(d.getDate() + (it.cadenceDays || 180));
+    return d.toISOString().slice(0, 10);
+  }
+  function render() {
+    $("logEmpty").style.display = state.rows.length ? "none" : "block";
+    if (!state.rows.length) { $("logTable").innerHTML = ""; return; }
+    let html = "<thead><tr><th>Date</th><th class='num'>FC</th><th class='num'>pH</th><th class='num'>TA</th><th class='num'>Cl oz</th><th class='num'>Acid</th><th></th></tr></thead><tbody>";
+    state.rows.slice().reverse().forEach((r, i) => {
+      const idx = state.rows.length - 1 - i;
+      html += "<tr><td>" + r.date + "</td><td class='num'>" + (r.fc ?? "") + "</td><td class='num'>" + (r.ph ?? "") + "</td><td class='num'>" + (r.ta ?? "") + "</td><td class='num'>" + (r.addCl || "") + "</td><td class='num'>" + (r.addAcid || "") + "</td><td><button type='button' data-i='" + idx + "' class='del'>Remove</button></td></tr>";
+    });
+    $("logTable").innerHTML = html + "</tbody>";
+    $("logTable").querySelectorAll(".del").forEach(btn => btn.addEventListener("click", () => {
+      const i = parseInt(btn.getAttribute("data-i"), 10);
+      const r = state.rows[i];
+      if (!r) return;
+      bumpInv("cl", parseFloat(r.addCl) || 0);
+      bumpInv("acid", parseFloat(r.addAcid) || 0);
+      bumpInv("soda", parseFloat(r.addSoda) || 0);
+      bumpInv("cya", parseFloat(r.addCya) || 0);
+      bumpInv("salt", parseFloat(r.addSalt) || 0);
+      state.rows.splice(i, 1);
+      save(); render(); renderInv(); renderTrends();
+    }));
+  }
+  function renderInv() {
+    let html = "<thead><tr><th>Item</th><th class='num'>On hand</th><th>Unit</th><th>Next</th><th>Store</th></tr></thead><tbody>";
+    const sel = $("invWhich");
+    sel.innerHTML = "";
+    state.inv.forEach(it => {
+      const field = it.id === "cl" ? "addCl" : it.id === "acid" ? "addAcid" : it.id === "soda" ? "addSoda" : it.id === "cya" ? "addCya" : "";
+      const buy = Number(it.onHand) <= Number(it.buyBelow);
+      const due = nextDue(it);
+      html += "<tr class='" + (buy ? "inv-buy" : "") + "'><td>" + it.name + "</td><td class='num'>" + it.onHand + "</td><td>" + it.unit + "</td><td>" + (due || (buy ? "buy" : "")) + "</td><td>" + (it.store || "") + "</td></tr>";
+      const o = document.createElement("option"); o.value = it.id; o.textContent = it.name; sel.appendChild(o);
+    });
+    $("invTable").innerHTML = html + "</tbody>";
+    $("invHint").textContent = state.rows.length ? (state.rows.length + " tests saved.") : "No tests yet. Seeded shelf until you Save.";
+  }
+  function spark(id, pts, lo, hi, bandLo, bandHi, fmt) {
+    const el = $(id); if (!el) return;
+    const stat = $(id + "Stat");
+    fmt = fmt || function (v) { return String(Math.round(v * 10) / 10); };
+    if (stat) stat.textContent = "";
+    if (!pts.length) { el.innerHTML = "<text x='40' y='96' font-size='12' fill='#5a6472'>No numbers yet</text>"; return; }
+    const last = pts[pts.length - 1];
+    const mn = Math.min.apply(null, pts);
+    const mx = Math.max.apply(null, pts);
+    if (stat) stat.textContent = "last " + fmt(last) + "  min " + fmt(mn) + "  max " + fmt(mx);
+    const w = 400, h = 188, L = 40, R = 44, T = 14, B = 24;
+    const y = (v) => {
+      const t = (v - lo) / (hi - lo || 1);
+      return T + (1 - Math.max(0, Math.min(1, t))) * (h - T - B);
+    };
+    const n = pts.length;
+    const xs = pts.map((_, i) => L + (n === 1 ? (w - L - R) / 2 : i * (w - L - R) / (n - 1)));
+    let extra = "";
+    if (bandLo != null && bandHi != null) {
+      extra = "<rect x='" + L + "' y='" + y(bandHi) + "' width='" + (w - L - R) + "' height='" + Math.max(2, y(bandLo) - y(bandHi)) + "' fill='#e8f1e6'/>";
+    }
+    const ticks = [lo, hi];
+    if (bandLo != null) ticks.push(bandLo);
+    if (bandHi != null) ticks.push(bandHi);
+    const uniq = ticks.filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(function (a, b) { return b - a; });
+    uniq.forEach(function (tv) {
+      extra += "<line x1='" + L + "' y1='" + y(tv) + "' x2='" + (w - R) + "' y2='" + y(tv) + "' stroke='#e2ddd4'/>";
+      extra += "<text x='" + (L - 4) + "' y='" + (y(tv) + 4) + "' font-size='11' fill='#5a6472' text-anchor='end'>" + fmt(tv) + "</text>";
+    });
+    let d = "";
+    xs.forEach((x, i) => { d += (i ? "L" : "M") + x.toFixed(1) + "," + y(pts[i]).toFixed(1); });
+    let dots = "";
+    xs.forEach((x, i) => {
+      dots += "<circle cx='" + x.toFixed(1) + "' cy='" + y(pts[i]).toFixed(1) + "' r='3' fill='#2a6a32'/>";
+      if (n <= 10 || i === n - 1 || i === 0) {
+        dots += "<text x='" + x.toFixed(1) + "' y='" + (y(pts[i]) - 6).toFixed(1) + "' font-size='11' fill='#1c1c1c' text-anchor='middle'>" + fmt(pts[i]) + "</text>";
+      }
+    });
+    el.innerHTML = extra
+      + (n > 1 ? "<path d='" + d + "' fill='none' stroke='#2a6a32' stroke-width='2'/>" : "")
+      + dots;
+  }
+  function renderTrends() {
+    const rows = state.rows.filter(r => r.fc != null || r.ph != null || r.addCl);
+    spark("trendFc", rows.map(r => parseFloat(r.fc)).filter(Number.isFinite), 0, 10, 4, 6, function (v) { return v.toFixed(1); });
+    spark("trendPh", rows.map(r => parseFloat(r.ph)).filter(Number.isFinite), 7, 8.2, 7.4, 7.6, function (v) { return v.toFixed(2); });
+    spark("trendTa", rows.map(r => parseFloat(r.ta)).filter(Number.isFinite), 40, 160, 80, 120, function (v) { return String(Math.round(v)); });
+    const doses = rows.map(r => parseFloat(r.addCl) || 0);
+    spark("trendDose", doses, 0, Math.max(16, ...doses, 0), null, null, function (v) { return v.toFixed(v % 1 ? 1 : 0); });
+    const wk = parseFloat($("trendCadence").value) || 2;
+    const cl = usedSince(28, "addCl");
+    const acid = usedSince(28, "addAcid");
+    const soda = usedSince(28, "addSoda");
+    const have = window.plungeInvOnHand ? window.plungeInvOnHand("cl") : null;
+    const perTreat = rows.length ? cl / Math.max(1, rows.filter(r => (r.addCl || 0) > 0).length) : 0;
+    const daysLeft = (have != null && wk > 0 && perTreat > 0) ? Math.floor(have / (perTreat * wk) * 7) : null;
+    $("trendHint").textContent = rows.length < 3
+      ? "Need ~3 treats before you trust days-left. Save tests on Chem."
+      : ("Last 4 weeks: " + cl.toFixed(0) + " fl oz chlorine, " + acid.toFixed(0) + " oz acid, " + soda.toFixed(1) + " lb soda.");
+    $("trendProj").innerHTML = "<thead><tr><th>Item</th><th class='num'>4 wk</th><th class='num'>Days left</th></tr></thead><tbody>"
+      + "<tr><td>Chlorine</td><td class='num'>" + cl.toFixed(0) + " oz</td><td class='num'>" + (daysLeft != null ? daysLeft : "—") + "</td></tr>"
+      + "<tr><td>Acid</td><td class='num'>" + acid.toFixed(0) + " oz</td><td class='num'></td></tr>"
+      + "<tr><td>Soda</td><td class='num'>" + soda.toFixed(1) + " lb</td><td class='num'></td></tr></tbody>";
+  }
+  function fillAdded() {
+    const d = window.plungeDose || {};
+    if (d.sodaLb > 0.05) { $("addSoda").value = d.sodaLb.toFixed(2); $("addAcid").value = ""; }
+    else if (d.acidOz > 0.4) { $("addAcid").value = d.acidOz.toFixed(1); $("addSoda").value = ""; }
+    if (d.clOz > 0.4) $("addCl").value = d.clOz.toFixed(1);
+    if (d.cyaLb > 0.05) $("addCya").value = d.cyaLb.toFixed(2);
+  }
+  $("addFill").addEventListener("click", fillAdded);
+  const fillTop = $("addFillTop");
+  if (fillTop) fillTop.addEventListener("click", fillAdded);
+  $("logAdd").addEventListener("click", () => {
+    const addCl = parseFloat($("addCl").value) || 0;
+    const addAcid = parseFloat($("addAcid").value) || 0;
+    const addSoda = parseFloat($("addSoda").value) || 0;
+    const addCya = parseFloat($("addCya").value) || 0;
+    const addSalt = parseFloat($("addSalt").value) || 0;
+    state.cleanPsi = $("cleanPsi").value;
+    function blank(id) { const v = $(id).value; return v === "" ? null : parseFloat(v); }
+    state.rows.push({
+      date: $("logDate").value || todayStr(),
+      fc: blank("chemFcNow"), cc: blank("chemCcNow"), ph: blank("chemPhNow"),
+      ta: blank("chemTaNow"), cya: blank("chemCyaNow"), ch: blank("chemChNow"),
+      salt: blank("logSalt") != null ? blank("logSalt") : blank("chemSaltNow"),
+      psi: blank("logPsi"), addCl, addAcid, addSoda, addCya, addSalt,
+      note: $("logNote").value, brush: $("logBrush").checked, net: $("logNet").checked, bask: $("logBask").checked
+    });
+    bumpInv("cl", -addCl); bumpInv("acid", -addAcid); bumpInv("soda", -addSoda); bumpInv("cya", -addCya); bumpInv("salt", -addSalt);
+    save();
+    $("logNote").value = ""; $("addCl").value = ""; $("addAcid").value = ""; $("addSoda").value = ""; $("addCya").value = ""; $("addSalt").value = "";
+    render(); renderInv(); renderTrends();
+    if (window.plungeClearChemNow) window.plungeClearChemNow();
+  });
+  $("invAdd").addEventListener("click", () => {
+    const id = $("invWhich").value;
+    const qty = parseFloat($("invQty").value);
+    if (!id || !Number.isFinite(qty) || qty <= 0) return;
+    bumpInv(id, qty);
+    state.restocks.push({ id: Date.now(), date: todayStr(), item: id, qty: qty, note: $("invNote").value || "" });
+    $("invQty").value = ""; $("invNote").value = "";
+    save(); renderInv(); renderTrends();
+  });
+  $("invExport").addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }));
+    a.download = "plunge-chem-" + todayStr() + ".json";
+    a.click();
+  });
+  $("trendCadence").addEventListener("change", renderTrends);
+  $("cleanPsi").addEventListener("change", () => { state.cleanPsi = $("cleanPsi").value; save(); });
+  window.plungeInvOnHand = function (id) {
+    const it = state.inv.find(x => x.id === id);
+    return it ? Number(it.onHand) : null;
+  };
+  window.plungeLastTest = function () {
+    if (!state.rows.length) return null;
+    return state.rows[state.rows.length - 1];
+  };
+  render(); renderInv(); renderTrends();
+})();
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const KEY = "pool-chem-v5";
+  function syncGal() {
+    const p = Math.max(0, parseFloat($("chemPoolGal").value) || 0);
+    const s = Math.max(0, parseFloat($("chemSpaGal").value) || 0);
+    $("chemGal").value = String(Math.round(p + s) || 6500);
+  }
+  function gal() { syncGal(); return Math.max(1000, parseFloat($("chemGal").value) || 6500); }
+  function scale() { return gal() / 10000; }
+  function n(id) { const v = parseFloat($(id).value); return Number.isFinite(v) ? v : null; }
+  function setDose(vid, hid, kind, text, how) {
+    const v = $(vid), h = $(hid);
+    v.className = "verdict" + (kind === "bad" ? " bad" : kind === "mute" ? " mute" : "");
+    v.textContent = text; h.textContent = how || "";
+  }
+  function fmtOz(oz) {
+    if (oz < 0.5) return (oz * 6).toFixed(1) + " tsp (not the 16 oz cup)";
+    const x = oz < 10 ? oz.toFixed(1) : oz.toFixed(0);
+    if (oz <= 16) return x + " fl oz (fill a 16 oz cup to " + x + ")";
+    return x + " fl oz (" + (oz / 16).toFixed(1) + " fills of a 16 oz cup)";
+  }
+  function fmtLb(lb) { return lb < 0.25 ? (lb * 16).toFixed(1) + " oz" : lb.toFixed(2) + " lb"; }
+  function acidFactor() { return 31.45 / (parseFloat($("chemAcidPct").value) || 31.45); }
+  function addDaysIso(iso, n) {
+    const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function todayIso() {
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function saltGateInfo() {
+    const start = $("saltStart").value || "2026-10-13";
+    const earliest = addDaysIso(start, 28);
+    const ms = new Date(earliest + "T12:00:00") - new Date(todayIso() + "T12:00:00");
+    return { start: start, earliest: earliest, days: Math.round(ms / 86400000) };
+  }
+  window.plungeDose = { clOz: 0, acidOz: 0, sodaLb: 0, cyaLb: 0 };
+  function fcCyaBand() {
+    const cyaRaw = n("chemCyaNow");
+    const cya = cyaRaw == null ? 40 : Math.max(20, Math.round(cyaRaw / 10) * 10);
+    const swg = $("saltChkCell").checked || ($("poolSanitizer") && $("poolSanitizer").value === "swg" && saltGateInfo().days <= 0);
+    const table = swg ? {
+      20: [2, 3, 4], 30: [2, 3, 5], 40: [3, 4, 5], 50: [3, 4, 6],
+      60: [4, 5, 7], 70: [4, 5, 7], 80: [5, 6, 8], 90: [5, 6, 8]
+    } : {
+      20: [2, 3, 5], 30: [3, 4, 6], 40: [4, 5, 7], 50: [5, 6, 8],
+      60: [6, 7, 9], 70: [7, 8, 10], 80: [8, 9, 12], 90: [9, 10, 13]
+    };
+    const row = table[Math.min(90, cya)] || table[40];
+    let want = row[1] + 1;
+    const cap = swg ? 6 : 8;
+    if (want > cap) want = cap;
+    if (!swg && want < 4) want = 4;
+    return { cya: cyaRaw, cyaUsed: cya, swg, min: row[0], lo: row[1], hi: Math.min(row[2], cap), want, cap, assumed: cyaRaw == null };
+  }
+  function csiNow() {
+    const ph = n("chemPhNow"), ta = n("chemTaNow"), ch = n("chemChNow"), tf = n("chemWaterF");
+    if (ph == null || ta == null || ch == null || tf == null) return null;
+    const cya = n("chemCyaNow") == null ? 0 : n("chemCyaNow");
+    const salt = n("chemSaltNow");
+    const tds = salt != null ? salt + 400 : 1000;
+    const tc = (tf - 32) * 5 / 9;
+    const carb = Math.max(10, ta - cya / 3);
+    const A = (Math.log(tds) / Math.LN10 - 1) / 10;
+    const B = -13.12 * (Math.log(tc + 273) / Math.LN10) + 34.55;
+    const C = Math.log(ch) / Math.LN10 - 0.4;
+    const D = Math.log(carb) / Math.LN10;
+    const csi = ph - ((9.3 + A + B) - (C + D));
+    return { csi: csi, carb: carb, tf: tf };
+  }
+  function shelfLine(id, need, unit) {
+    const have = window.plungeInvOnHand ? window.plungeInvOnHand(id) : null;
+    if (have == null) return "";
+    if (need <= 0) return "";
+    if (have >= need) return " Shelf " + have + " " + unit + ".";
+    return " Shelf only " + have + " " + unit + " (short).";
+  }
+  function runFc() {
+    const band = fcCyaBand();
+    const bandEl = $("chemFcBand");
+    if (bandEl) {
+      bandEl.textContent = (band.swg ? "SWG " : "Liquid ") + "TFP band at CYA " + band.cyaUsed + ": min " + band.min + ", target " + band.lo + "-" + band.hi + (band.assumed ? " (CYA empty, assumed 40)" : "") + ". Cap " + band.cap + ".";
+    }
+    const now = n("chemFcNow"), want = n("chemFcWant");
+    if (now === null) return setDose("chemFcVerdict", "chemFcHow", "mute", "Enter free chlorine.");
+    if (want === null) return setDose("chemFcVerdict", "chemFcHow", "mute", "Enter a target.");
+    if (now >= band.cap) return setDose("chemFcVerdict", "chemFcHow", "bad", "FC is " + now + " ppm. Do not add chlorine. Cap is " + band.cap + ".");
+    const d = want - now;
+    if (d <= 0.2) return setDose("chemFcVerdict", "chemFcHow", "", "FC " + now + " is at or above " + want + ". No chlorine.");
+    const pct = parseFloat($("chemClPct").value) || 12.5;
+    const oz = d * 10.37 * (12.5 / pct) * scale();
+    window.plungeDose.clOz = oz;
+    const pour = "Pump on. 16 oz chlorine cup. Pool return, not spa. 12.5% liquid only. No tabs." + shelfLine("cl", oz, "fl oz");
+    if (now >= band.min) return setDose("chemFcVerdict", "chemFcHow", "", "FC " + now + " is at/above min " + band.min + ". Optional: " + fmtOz(oz) + " of " + pct + "% to land at " + want + ".", pour);
+    setDose("chemFcVerdict", "chemFcHow", "", "Add " + fmtOz(oz) + " of " + pct + "% to raise FC from " + now + " to " + want + ".", pour);
+  }
+  function runCc() {
+    const el = $("chemCcVerdict"); const cc = n("chemCcNow");
+    if (cc === null) { el.textContent = ""; return; }
+    el.textContent = cc <= 0.2 ? ("Combined chlorine " + cc + ". Good.") : ("Combined chlorine " + cc + ". Keep FC in range. Do not shock-dump this month.");
+  }
+  function runTa() {
+    const now = n("chemTaNow"), want = n("chemTaWant");
+    if (now === null) return setDose("chemTaVerdict", "chemTaHow", "mute", "Enter total alkalinity.");
+    const d = want - now;
+    if (Math.abs(d) < 8) return setDose("chemTaVerdict", "chemTaHow", "", "TA " + now + " is close to " + want + ". Leave it.");
+    if (d > 0) {
+      const lb = (d / 10) * 1.44 * scale();
+      window.plungeDose.sodaLb = lb;
+      return setDose("chemTaVerdict", "chemTaHow", "", "Add " + fmtLb(lb) + " baking soda to raise TA from " + now + " to " + want + ".", "Broadcast in the pool. Pump on. Skip acid this visit.");
+    }
+    const oz = (Math.abs(d) / 10) * 12.8 * scale() * acidFactor();
+    window.plungeDose.acidOz = Math.max(window.plungeDose.acidOz, oz);
+    setDose("chemTaVerdict", "chemTaHow", "bad", "Add " + fmtOz(oz) + " of " + $("chemAcidPct").value + "% muriatic to drop TA.", "Acid cup: water first. Goggles.");
+  }
+  function runPh() {
+    const now = n("chemPhNow"), want = n("chemPhWant");
+    if (now === null) return setDose("chemPhVerdict", "chemPhHow", "mute", "Enter pH.");
+    if (Math.abs(want - now) < 0.15) return setDose("chemPhVerdict", "chemPhHow", "", "pH " + now + " is close to " + want + ". Leave it.");
+    if (want - now > 0) return setDose("chemPhVerdict", "chemPhHow", "", "pH " + now + " is low. Do not add acid. If TA is low, use TA. Else wait; spillway raises pH.");
+    const ta = n("chemTaNow");
+    const drop = now - want;
+    const oz = (ta === null ? Math.min(12 * acidFactor(), drop * 12 * scale() * acidFactor()) : drop * (ta / 80) * 12 * scale() * acidFactor());
+    window.plungeDose.acidOz = Math.max(window.plungeDose.acidOz, oz);
+    setDose("chemPhVerdict", "chemPhHow", "bad", "About " + fmtOz(oz) + " of " + $("chemAcidPct").value + "% muriatic to move pH " + now + " toward " + want + ".", ta === null ? "TA is empty. Finish TA first if you can." : "Acid cup: water first.");
+  }
+  function runCya() {
+    const now = n("chemCyaNow"), want = n("chemCyaWant");
+    if (now === null) return setDose("chemCyaVerdict", "chemCyaHow", "mute", "Enter cyanuric acid.");
+    const d = want - now;
+    if (d <= 5) return setDose("chemCyaVerdict", "chemCyaHow", "", "CYA " + now + " vs " + want + ". No conditioner.");
+    const lb = (d / 10) * 0.81 * scale();
+    window.plungeDose.cyaLb = lb;
+    setDose("chemCyaVerdict", "chemCyaHow", "", "Add " + fmtLb(lb) + " CYA.", "Sock in a skimmer, pump on, overnight.");
+  }
+  function runCh() {
+    const now = n("chemChNow"), want = n("chemChWant");
+    if (now === null) return setDose("chemChVerdict", "chemChHow", "mute", "Enter calcium hardness.");
+    if (want - now <= 15) return setDose("chemChVerdict", "chemChHow", "", "CH " + now + " vs " + want + ". No calcium.");
+    setDose("chemChVerdict", "chemChHow", "", "Hardness only goes up. Confirm with the kit before any CaCl2.");
+  }
+  function runSalt() {
+    const now = n("chemSaltNow");
+    const want = n("chemSaltWant") == null ? 3000 : n("chemSaltWant");
+    const g = saltGateInfo();
+    const per = 40 * 120000 / gal();
+    if (now === null) return setDose("chemSaltVerdict", "chemSaltHow", "mute", g.days > 0 ? ("Salt bottles capped until " + g.earliest + ".") : "Enter Taylor salt.");
+    if (g.days > 0) return setDose("chemSaltVerdict", "chemSaltHow", "mute", "Wait. Fill + 28 is " + g.earliest + ".", "Bags stay by the equipment. Cell 0%.");
+    if (now >= 2800 && now <= 4000) return setDose("chemSaltVerdict", "chemSaltHow", "", "Salt " + now + " is in band. No bag.");
+    if (now > 4000) return setDose("chemSaltVerdict", "chemSaltHow", now >= 5000 ? "bad" : "", "Salt " + now + " is high. No bag.");
+    const need = Math.max(0, want - now);
+    setDose("chemSaltVerdict", "chemSaltHow", "bad", "Need about " + Math.round(need) + " ppm (" + (need / per).toFixed(1) + " bags).", "One bag, brush, 24 h, retest.");
+  }
+  function runRpmPlan() {
+    const g = saltGateInfo();
+    const cellOn = $("saltChkCell").checked;
+    const rows = [
+      ["11pm to 10am", "1000", "Night mix. Cell does not make chlorine."],
+      ["10:30am to 4pm", "1750", cellOn ? "Skim + filter + chlorine at 25%." : "Skim + filter. Cell 0%."],
+      ["4pm to 11pm", "OFF", "Covers 4-9pm peak."],
+      ["Heat / swim 10am to 3pm", "~2350", "Committed swim days only. Clock tab for the hour plan."],
+      ["Spa soak", "3200-3450", "Minutes, then back to the clock."]
+    ];
+    $("rpmPlanBody").innerHTML = rows.map(r => "<tr><td>" + r[0] + "</td><td>" + r[1] + "</td><td>" + r[2] + "</td></tr>").join("");
+    if (g.days > 0 && !cellOn) {
+      $("rpmPlanVerdict").className = "verdict mute";
+      $("rpmPlanVerdict").textContent = "Liquid month. Same RPM clock. Cell 0% in the phone.";
+      $("rpmPlanHow").textContent = "Hold 4-6 with the jug. After " + g.earliest + " turn 25% on and keep this clock. Open Clock for kW and iAquaLink programs.";
+    } else {
+      $("rpmPlanVerdict").className = "verdict";
+      $("rpmPlanVerdict").textContent = "Cell 25% in iAquaLink. Chlorine only while the pump is ~1750 (or heat ~2350).";
+      $("rpmPlanHow").textContent = "If FC climbs past 5: drop %. Night 1000 does not count. Clock tab has the 24h plan.";
+    }
+    if (window.plungeRenderClock) window.plungeRenderClock();
+  }
+  function runRoadmap() {
+    const g = saltGateInfo();
+    const rows = [
+      [g.start + " to " + g.earliest, "Liquid chlorine. Cell 0%. FC + pH 2x/week. TA weekly. No robot. No salt bags."],
+      [g.earliest + " (salt day)", "Full panel + K-1766. One 40 lb bag, 24 h, then 25% in iAquaLink."],
+      ["First 2 weeks of cell", "FC 3-5. Drop % if it climbs. Acid is the recurring buy."],
+      ["Winter / summer", "Lower % in winter. Heat still 10am-3pm. 90 is a soak, not the daily set."]
+    ];
+    $("yearRoadmapBody").innerHTML = rows.map(r => "<tr><td>" + r[0] + "</td><td>" + r[1] + "</td></tr>").join("");
+  }
+  function applyPhaseClass() {
+    const view = $("view-chem");
+    const g = saltGateInfo();
+    const p = $("saltChkCell").checked ? "cell" : (g.days > 0 ? "liquid" : "salt-day");
+    view.classList.remove("phase-liquid", "phase-salt-day", "phase-cell");
+    view.classList.add("phase-" + p);
+  }
+  function runSaltGate() {
+    const g = saltGateInfo();
+    const cellOn = $("saltChkCell").checked;
+    $("saltGateDays").textContent = "Earliest bag " + g.earliest + (g.days > 0 ? (" · " + g.days + " days left") : (g.days === 0 ? " · today" : " · date is in"));
+    applyPhaseClass();
+    if (cellOn) {
+      $("saltGateVerdict").className = "verdict";
+      $("saltGateVerdict").textContent = "Cell on. Liquid chlorine is backup.";
+      $("saltGateHow").textContent = "FC 3-5 · CYA 60-80 · TA 70-90 · salt ~3000. Acid is the recurring buy.";
+      $("chemCadence").textContent = "FC + pH every couple of days the first week, then 2x/week.";
+      return;
+    }
+    if (g.days > 0) {
+      $("saltGateVerdict").className = "verdict mute";
+      $("saltGateVerdict").textContent = "Liquid chlorine month. Cell 0%. Bags stay by the equipment.";
+      $("saltGateHow").textContent = "Taylor FC + pH 2x/week (10 mL, hold 4-6, cap 8). TA weekly. CH once. Salt bottles capped until " + g.earliest + ".";
+      $("chemCadence").textContent = "This visit: FC and pH. TA if it is the weekly day. CYA/CH folded under More tests.";
+      return;
+    }
+    $("saltGateVerdict").className = "verdict bad";
+    $("saltGateVerdict").textContent = "Salt day. Full panel, then one bag, then Taylor salt, then 25% in the app.";
+    $("saltGateHow").textContent = "One 40 lb bag in the pool, brush, 24 h. Cell 0% until ppm is in band. Then phone 25%.";
+    $("chemCadence").textContent = "Open More tests for salt. Check the Salt switch boxes as you go.";
+  }
+  function runSession() {
+    applyPhaseClass();
+    const v = $("chemSessionVerdict"), h = $("chemSessionHow");
+    const plan = $("chemPlan");
+    const cyaLine = $("chemFcCya");
+    const csiEl = $("chemCsi");
+    const band = fcCyaBand();
+    const fc = n("chemFcNow");
+    const d = window.plungeDose || {};
+    const soda = d.sodaLb > 0.05;
+    const acid = !soda && d.acidOz > 0.4;
+    const cl = d.clOz > 0.4;
+    const cyaAdd = d.cyaLb > 0.05;
+    if (cyaLine) {
+      cyaLine.textContent = "FC want vs CYA " + band.cyaUsed + ": TFP " + band.lo + "-" + band.hi + " (cap " + band.cap + "). Pool Nerd's 1-3 ppm is the store card, not this pool. Click Use TFP FC want to copy " + band.want + ".";
+    }
+    const csi = csiNow();
+    if (csiEl) {
+      if (!csi) csiEl.textContent = "CSI (pebble): needs this-visit pH, TA, CH, and water temp. Not last test.";
+      else {
+        const x = csi.csi;
+        let word = "in band for pebble (aim a bit negative).";
+        const surface = $("poolSurface") ? $("poolSurface").value : "pebble";
+        if (surface === "vinyl" || surface === "fiberglass") word = "Vinyl/fiberglass: CSI is optional. CH still useful.";
+        else {
+          if (x < -0.6) word = "low. Possible etch on pebble. Confirm CH before adding calcium.";
+          if (x > 0.6) word = "high. Scale risk. Acid/TA down, do not add CaCl2.";
+        }
+        csiEl.textContent = "CSI ~ " + x.toFixed(2) + " at " + csi.tf + " F (carbonate alk ~" + Math.round(csi.carb) + "). " + word;
+      }
+    }
+    const steps = [];
+    if (soda) steps.push("1. Baking soda: " + fmtLb(d.sodaLb) + " in the pool, pump on. Skip acid this visit even if pH looks high." + shelfLine("soda", d.sodaLb, "lb"));
+    else if (acid) steps.push("1. Acid: " + fmtOz(d.acidOz) + " of " + $("chemAcidPct").value + "% Green. Cup: water first, then acid. Goggles. Not 31% math." + shelfLine("acid", d.acidOz, "fl oz"));
+    if (cyaAdd) steps.push((steps.length + 1) + ". CYA: " + fmtLb(d.cyaLb) + " in a skimmer sock, overnight. Not with acid in the same hour.");
+    if (cl) {
+      const wait = (soda || acid) ? " After soda/acid has mixed. " : " ";
+      steps.push((steps.length + 1) + "." + wait + "Chlorine: " + fmtOz(d.clOz) + " of " + (parseFloat($("chemClPct").value) || 12.5) + "% liquid into a return. 16 oz cup. Not the spa." + shelfLine("cl", d.clOz, "fl oz"));
+    }
+    if (plan) plan.innerHTML = steps.map(s => "<li>" + s.replace(/^\d+\.\s*/, "") + "</li>").join("");
+    if (fc === null) {
+      v.className = "verdict mute";
+      v.textContent = "Type FC (10 mL, drops x 0.5). Then pH. TA if this is a weekly day.";
+      h.textContent = "Generic apps ask volume every time and sell tabs. This visit is 6500 gal, liquid only, Green acid.";
+      return;
+    }
+    if (!steps.length) {
+      v.className = "verdict";
+      v.textContent = "No pour. Brush, save the test, leave.";
+      h.textContent = "FC at/above want, or pH/TA still empty. CSI above is the pebble check Pool Nerd buries in a second page.";
+      return;
+    }
+    v.className = soda && d.acidOz > 0.4 ? "verdict" : "verdict";
+    v.textContent = soda && (window.plungeDose.acidOz > 0.4) ? "TA first: soda only. Acid cancelled this visit." : steps[0].replace(/^\d+\.\s*/, "");
+    h.textContent = "Never soda and acid together. Never mix acid and chlorine. Pump on. Save when the cups are empty.";
+  }
+  function run() {
+    window.plungeDose = { clOz: 0, acidOz: 0, sodaLb: 0, cyaLb: 0 };
+    applyProfile();
+    runFc(); runCc(); runTa(); runPh(); runCya(); runCh(); runSalt(); runRoadmap(); runRpmPlan(); runSession();
+  }
+  function persist() {
+    const o = {
+      pool: $("chemPoolGal").value, spa: $("chemSpaGal").value, cl: $("chemClPct").value, acid: $("chemAcidPct").value,
+      saltStart: $("saltStart").value,
+      saltChkPanel: $("saltChkPanel").checked, saltChkBag: $("saltChkBag").checked,
+      saltChkPpm: $("saltChkPpm").checked, saltChkCell: $("saltChkCell").checked,
+      poolName: $("poolName") ? $("poolName").value : "The Plunge",
+      surface: $("poolSurface") ? $("poolSurface").value : "pebble",
+      sanitizer: $("poolSanitizer") ? $("poolSanitizer").value : "liquid"
+    };
+    ["Fc","Ph","Ta","Cya","Ch","Salt"].forEach(k => { o["want" + k] = $("chem" + k + "Want").value; });
+    localStorage.setItem(KEY, JSON.stringify(o));
+  }
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || "{}");
+    if (o.pool) $("chemPoolGal").value = o.pool;
+    if (o.spa) $("chemSpaGal").value = o.spa;
+    if (o.cl) $("chemClPct").value = o.cl;
+    if (o.acid) $("chemAcidPct").value = o.acid;
+    ["Fc","Ph","Ta","Cya","Ch","Salt"].forEach(k => {
+      if (o["want" + k]) $("chem" + k + "Want").value = o["want" + k];
+    });
+    if (!o.wantFc || Number(o.wantFc) === 4) $("chemFcWant").value = "6";
+    if (o.poolName && $("poolName")) $("poolName").value = o.poolName;
+    if (o.surface && $("poolSurface")) $("poolSurface").value = o.surface;
+    if (o.sanitizer && $("poolSanitizer")) $("poolSanitizer").value = o.sanitizer;
+    $("saltStart").value = (o.saltStart && o.saltStart !== "2026-10-17") ? o.saltStart : "2026-10-13";
+    ["saltChkPanel","saltChkBag","saltChkPpm","saltChkCell"].forEach(id => { if (o[id]) $(id).checked = true; });
+    ["chemFcNow","chemCcNow","chemPhNow","chemTaNow","chemCyaNow","chemChNow","chemSaltNow","chemWaterF"].forEach(id => {
+      if ($(id)) $(id).value = "";
+    });
+  } catch (e) {}
+  function renderLastHint() {
+    const el = $("chemLastHint");
+    if (!el) return;
+    const last = window.plungeLastTest ? window.plungeLastTest() : null;
+    if (!last) { el.textContent = "Now is this kit only. Last test lives in Log."; return; }
+    const bits = [];
+    if (last.fc != null) bits.push("FC " + last.fc);
+    if (last.ph != null) bits.push("pH " + last.ph);
+    if (last.ta != null) bits.push("TA " + last.ta);
+    if (last.cya != null) bits.push("CYA " + last.cya);
+    el.textContent = "Last " + (last.date || "") + (bits.length ? ": " + bits.join(", ") : "") + ". Type this visit in Now. Do not copy from Last.";
+  }
+  window.plungeClearChemNow = function () {
+    ["chemFcNow","chemCcNow","chemPhNow","chemTaNow","chemCyaNow","chemChNow","chemSaltNow","chemWaterF"].forEach(id => {
+      if ($(id)) $(id).value = "";
+    });
+    persist(); run(); renderLastHint();
+  };
+  function applyProfile() {
+    const name = $("poolName") ? $("poolName").value.trim() : "";
+    if (name) document.querySelector("h1").textContent = name;
+    const gal = $("chemGal") ? $("chemGal").value : "6500";
+    const san = $("poolSanitizer") ? $("poolSanitizer").value : "liquid";
+    const surf = $("poolSurface") ? $("poolSurface").value : "pebble";
+    if ($("profileHint")) {
+      $("profileHint").textContent = gal + " gal · " + surf + " · " + (san === "swg" ? "salt cell" : "liquid chlorine") + " · acid " + ($("chemAcidPct") ? $("chemAcidPct").value : "20") + "%.";
+    }
+  }
+  syncGal(); applyProfile(); run(); runSaltGate(); renderLastHint();
+  if (window.plungeApplyVolume) window.plungeApplyVolume();
+  [
+    "chemPoolGal","chemSpaGal","chemClPct","chemAcidPct",
+    "chemFcNow","chemFcWant","chemCcNow","chemPhNow","chemPhWant",
+    "chemTaNow","chemTaWant","chemCyaNow","chemCyaWant","chemChNow","chemChWant",
+    "chemSaltNow","chemSaltWant","chemWaterF","poolName","poolSurface","poolSanitizer"
+  ].forEach(id => {
+    if (!$(id)) return;
+    $(id).addEventListener("input", () => { persist(); run(); });
+  });
+  $("chemUseTfp").addEventListener("click", () => {
+    $("chemFcWant").value = String(fcCyaBand().want);
+    persist(); run();
+  });
+  ["saltStart","saltChkPanel","saltChkBag","saltChkPpm","saltChkCell"].forEach(id => {
+    $(id).addEventListener("change", () => { persist(); runSaltGate(); run(); });
+  });
+})();
+</script>
+<footer class="sheet-foot">
+  <label class="theme-pick">Look
+    <select id="uiTheme">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>
+</footer>
+<nav class="tabs" aria-label="Sheet">
+  <button type="button" id="tabChem" class="on" aria-current="page">Chem</button>
+  <button type="button" id="tabClock">Clock</button>
+  <button type="button" id="tabLog">Log</button>
+  <button type="button" id="tabPad">Pad</button>
+  <button type="button" id="tabPower">Power</button>
+</nav>
+</body>
+</html>
