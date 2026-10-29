@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Plunge</title>
-<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.png" type="image/png" sizes="256x256">
 <link rel="apple-touch-icon" href="favicon.png">
@@ -802,6 +801,22 @@
     </div>
   </div>
 </div>
+
+<footer class="sheet-foot">
+  <label class="theme-pick">Look
+    <select id="uiTheme">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>
+</footer>
+<nav class="tabs" aria-label="Sheet">
+  <button type="button" id="tabChem" class="on" aria-current="page">Chem</button>
+  <button type="button" id="tabClock">Clock</button>
+  <button type="button" id="tabLog">Log</button>
+  <button type="button" id="tabPad">Pad</button>
+  <button type="button" id="tabPower">Power</button>
+</nav>
 
 <script>
 (function () {
@@ -2119,20 +2134,5 @@
   });
 })();
 </script>
-<footer class="sheet-foot">
-  <label class="theme-pick">Look
-    <select id="uiTheme">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-  </label>
-</footer>
-<nav class="tabs" aria-label="Sheet">
-  <button type="button" id="tabChem" class="on" aria-current="page">Chem</button>
-  <button type="button" id="tabClock">Clock</button>
-  <button type="button" id="tabLog">Log</button>
-  <button type="button" id="tabPad">Pad</button>
-  <button type="button" id="tabPower">Power</button>
-</nav>
 </body>
 </html>
