@@ -27,10 +27,26 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # upload-pages-artifact excludes every root name starting with a dot,
+      # which drops .well-known. Archive here and keep that directory.
+      - name: Archive site
+        shell: sh
+        run: |
+          tar \
+            --dereference --hard-dereference \
+            --directory "$GITHUB_WORKSPACE" \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            --exclude=.git \
+            --exclude=.github \
+            .
+
       - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          path: .
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
 
       - name: Deploy to GitHub Pages
         id: deployment
