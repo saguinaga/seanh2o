@@ -7,7 +7,8 @@
     <meta name="description" content="Rental underwriting: cash flow, cap rate, cash-on-cash, conventional or DSCR financing.">
     <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
     <link rel="stylesheet" href="../../files/main_style.css">
-    <link rel="stylesheet" href="../../styles.css?v=47">
+    <link rel="stylesheet" href="../../styles.css?v=48">
+    <link rel="stylesheet" href="hold-ui.css?v=1">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script async src="https://plausible.io/js/pa-NqgBL2GYJ2cpwmWjQjtMX.js"></script>
@@ -19,7 +20,7 @@
 </head>
 <body class="tool-app">
     <nav class="tool-nav">
-        <a class="tool-nav-brand" href="../../index.html" data-plausible-event="Nav - Home from Tool">
+        <a class="tool-nav-brand" href="/" data-plausible-event="Nav - Home from Tool">
             <img src="../../logo-mark.svg?v=3" alt="" width="28" height="28" aria-hidden="true">
             <strong>Sean Aguinaga</strong>
         </a>
@@ -28,42 +29,44 @@
             <a href="../fix-flip/" data-plausible-event="Nav - Tool Fix Flip" class="">Fix &amp; Flip</a>
         </div>
     </nav>
-  <!-- BUY & HOLD CALCULATOR -->
-  <section id="buy-hold-calculator" class="calc-section">
-    <div class="calc-header">
-      <h3>Buy &amp; Hold</h3>
-      <p>Model a rental in real time: cash flow, cap rate, cash-on-cash. Conventional or DSCR financing. DSCR qualifies on rent vs PITIA, not personal income.</p>
-      <div class="calc-toolbar">
-        <button type="button" class="calc-btn primary" id="shareScenario">Copy Share Link</button>
-        <button type="button" class="calc-btn ghost" id="resetScenario">Reset Defaults</button>
-        <button type="button" class="calc-btn ghost" id="configureAnalysis">Configure Analysis</button>
-        <button type="button" class="calc-btn ghost" id="compareBtn">Compare Scenarios</button>
-        <button type="button" class="calc-btn ghost" id="compareToHYSA">Compare to HYSA @ 4%</button>
-        <button type="button" class="calc-btn ghost" id="exportCSV" title="Download current inputs + results as CSV">Export CSV</button>
-        <button type="button" class="calc-btn ghost" id="exportPDF" title="Download professional PDF report">Export PDF</button>
+  <section id="buy-hold-calculator" class="hold-app">
+    <header class="hold-top">
+      <div>
+        <h1>Buy &amp; Hold</h1>
+        <p>Cash flow, cap rate, cash-on-cash. DSCR qualifies on rent vs PITIA. Midwest numbers as the starting point.</p>
+      </div>
+      <div class="hold-top-actions">
+        <button type="button" class="calc-btn primary" id="shareScenario">Copy link</button>
+        <button type="button" class="calc-btn ghost" id="resetScenario">Reset</button>
         <span class="calc-toast" id="shareToast" aria-live="polite"></span>
       </div>
+    </header>
 
-      <div class="saved-scenarios">
-        <input id="scenarioName" type="text" placeholder="Name this scenario (e.g. Indy Duplex Deal)">
+    <div class="priority-row">
+      <span>What matters most?</span>
+      <button type="button" class="priority-btn" data-priority="cashflow">Cash flow</button>
+      <button type="button" class="priority-btn" data-priority="risk">Low downside</button>
+      <button type="button" class="priority-btn" data-priority="management">Low management</button>
+      <button type="button" class="priority-btn" data-priority="horizon">Long hold</button>
+    </div>
+
+    <details class="hold-extras">
+      <summary>Save, compare, export</summary>
+      <div class="hold-extras-body">
+        <button type="button" class="calc-btn ghost" id="configureAnalysis">Configure</button>
+        <button type="button" class="calc-btn ghost" id="compareBtn">Compare</button>
+        <button type="button" class="calc-btn ghost" id="compareToHYSA">HYSA @ 4%</button>
+        <button type="button" class="calc-btn ghost" id="exportCSV">CSV</button>
+        <button type="button" class="calc-btn ghost" id="exportPDF">PDF</button>
+      </div>
+      <div class="saved-scenarios hold-extras-body">
+        <input id="scenarioName" type="text" placeholder="Name this scenario">
         <button type="button" class="calc-btn ghost" id="saveScenario">Save</button>
         <select id="savedScenarioSelect"></select>
         <button type="button" class="calc-btn ghost" id="loadScenario">Load</button>
         <button type="button" class="calc-btn ghost" id="deleteScenario">Delete</button>
       </div>
-
-      <!-- Light guidance questions (Phase 1) - presentational only for now.
-           Toggles highlight and can reorder metrics in main results and comparison cards.
-           Questions: cash flow priority, risk tolerance, management effort (as discussed).
-           No changes to calculations. -->
-      <div style="margin-top:8px; font-size:0.875rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <span style="font-weight:500; color:#334155;">What matters most?</span>
-        <button type="button" class="priority-btn" data-priority="cashflow" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Cash Flow Priority</button>
-        <button type="button" class="priority-btn" data-priority="risk" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Low Risk / Downside</button>
-        <button type="button" class="priority-btn" data-priority="management" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Low Management Effort</button>
-        <button type="button" class="priority-btn" data-priority="horizon" style="padding:4px 8px; font-size:0.75rem; border:1px solid #cbd5e1; border-radius:4px; background:white; cursor:pointer;">Long Time Horizon</button>
-      </div>
-    </div>
+    </details>
 
     <!-- Analysis Configuration Modal (Phase 1 start - placeholder structure using scoped Tailwind for immediate good responsive behavior on all viewports).
          Will be hidden by default, shown on #configureAnalysis click. Follows reference: clean sections, button-group toggles.
@@ -164,7 +167,7 @@
         </div>
       </div>
     </div>
-    <div class="calc-grid">
+    <div class="hold-layout">
       <div class="input-panels">
         <div class="calc-panel">
           <h4>Property &amp; Financing</h4>
@@ -208,7 +211,7 @@
           </div>
 
           <div class="preset-chips" id="buyholdPresets" style="margin: 4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-            <span style="font-size:0.7rem; color:#1e3a8a; font-weight:700; margin-right:4px;">Presets:</span>
+            <span class="preset-label" style="margin:0 4px 0 0;">Presets</span>
             <button type="button" class="preset-chip" data-preset="marion-default">Marion County (Default)</button>
             <button type="button" class="preset-chip" data-preset="indy-turnkey">Indy Turnkey 3/2</button>
             <button type="button" class="preset-chip" data-preset="lafayette">Lafayette / College Town</button>
@@ -308,8 +311,8 @@
             </div>
           </div>
         </div>
-        <div class="calc-panel">
-          <h4>Long-Term Projection</h4>
+        <details class="calc-panel hold-proj">
+          <summary>Long-term projection</summary>
           <div class="input-row">
             <div class="input-group">
               <label>Annual Appreciation <span class="value-display" id="appreciationDisplay"></span></label>
@@ -322,10 +325,10 @@
               <input type="number" id="holdingYears" min="1" max="30" step="1">
             </div>
           </div>
-        </div>
+        </details>
       </div>
 
-      <div class="calc-panel results-panel">
+      <aside class="hold-results">
         <div id="verdictBanner" class="verdict-banner moderate"></div>
 
         <!-- Live impact moved here for desktop sidebar visibility (real-time while adjusting inputs on left) -->
@@ -352,64 +355,60 @@
           <div class="inline-note">Drag the rent &amp; expenses sliders on the left - watch these numbers move in real time.</div>
         </div>
 
-        <div class="metrics-grid">
-          <div class="metric-card positive">
+        <div class="metrics-primary">
+          <div class="metric-card">
             <div class="metric-label">Monthly Cash Flow</div>
             <div class="metric-value" id="monthlyCashFlow">-</div>
-            <div class="metric-sub">After all expenses</div>
+            <div class="metric-sub">After expenses and debt</div>
           </div>
-          <div class="metric-card neutral">
-            <div class="metric-label"><abbr title="Capitalization Rate - annual Net Operating Income divided by the purchase price. Measures the property's yield independent of financing.">Cap Rate</abbr></div>
-            <div class="metric-value" id="capRate">-</div>
-            <div class="metric-sub"><abbr title="Net Operating Income">NOI</abbr> / Purchase Price</div>
-          </div>
-          <div class="metric-card neutral">
-            <div class="metric-label"><abbr title="Cash-on-Cash Return - annual cash flow divided by the actual cash invested (down payment)">Cash-on-Cash</abbr></div>
+          <div class="metric-card">
+            <div class="metric-label">Cash-on-Cash</div>
             <div class="metric-value" id="cashOnCash">-</div>
             <div class="metric-sub" id="cashOnCashSub">Annual return on down payment</div>
           </div>
-          <div class="metric-card accent">
-            <div class="metric-label"><abbr title="Return on Investment - total profit (cumulative cash flow + equity buildup from appreciation and principal paydown) divided by cash invested, over the full holding period">Total ROI</abbr></div>
-            <div class="metric-value" id="totalROI">-</div>
-            <div class="metric-sub">Cash flow + equity gain</div>
-          </div>
-          <div class="metric-card positive">
-            <div class="metric-label">Future Equity</div>
-            <div class="metric-value" id="futureEquity">-</div>
-            <div class="metric-sub">Value minus loan balance</div>
-          </div>
-          <div class="metric-card accent">
-            <div class="metric-label">Total Wealth</div>
-            <div class="metric-value" id="totalWealth">-</div>
-            <div class="metric-sub">Equity + cumulative cash flow</div>
-          </div>
-          <div class="metric-card neutral">
-            <div class="metric-label">Mortgage Payment</div>
-            <div class="metric-value" id="mortgagePayment">-</div>
-            <div class="metric-sub" id="mortgageSub">Principal &amp; interest</div>
-          </div>
-          <div class="metric-card positive">
-            <div class="metric-label">Annual Cash Flow</div>
-            <div class="metric-value" id="annualCashFlow">-</div>
-            <div class="metric-sub">Year 1 net income</div>
-          </div>
-          <div class="metric-card accent" id="dscrMetricCard">
-            <div class="metric-label"><abbr title="Monthly rent divided by PITIA. Most DSCR lenders want 1.25; some programs accept 1.00 at a higher rate.">Lender DSCR</abbr></div>
+          <div class="metric-card" id="dscrMetricCard">
+            <div class="metric-label">Lender DSCR</div>
             <div class="metric-value" id="dscrValue">-</div>
             <div class="metric-sub" id="dscrSub">Rent / PITIA</div>
           </div>
         </div>
-
-          <div class="disclaimer-box">
-            <strong>⚠️ Educational model only - not financial, tax, or legal advice.</strong>
-            Real estate involves material risk of loss of principal. Factors include (but are not limited to) negative cash flow, capex surprises, extended vacancy, interest rate / financing risk, natural disasters, tenant issues, regulatory changes, and local price corrections. All projections are simplified models and exclude closing costs, selling costs, income taxes, and many other real-world frictions. OC/HB examples are for illustration only. Do your own thorough due diligence. Consult a licensed real estate attorney, CPA, financial advisor, home inspector, and mortgage professional before investing.
+        <div class="metrics-secondary">
+          <div class="metric-card">
+            <div class="metric-label">Cap Rate</div>
+            <div class="metric-value" id="capRate">-</div>
+            <div class="metric-sub">NOI / price</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Annual Cash Flow</div>
+            <div class="metric-value" id="annualCashFlow">-</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Mortgage</div>
+            <div class="metric-value" id="mortgagePayment">-</div>
+            <div class="metric-sub" id="mortgageSub">P&amp;I</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total ROI</div>
+            <div class="metric-value" id="totalROI">-</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Future Equity</div>
+            <div class="metric-value" id="futureEquity">-</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total Wealth</div>
+            <div class="metric-value" id="totalWealth">-</div>
           </div>
         </div>
-      </div>
+
+          <div class="disclaimer-box">
+            <strong>Educational model. Not financial, tax, or legal advice.</strong>
+            Projections are simplified. Do your own due diligence.
+          </div>
+      </aside>
     </div>
 
-    <!-- Full width analysis sections (these detailed sections like What-If Sensitivity are now full width below the two-column sidebar area for better readability on full-size screens; no longer crammed in the narrow sidebar) -->
-    <div class="analysis-sections" style="margin-top: 16px;">
+    <div class="hold-deep">
       <!-- Moved detailed analysis sections to full width below the two-column (inputs + key metrics sidebar) for better readability on full-size screens. Sidebar is now only for live/important numbers. -->
       <div class="chart-wrap">
         <h5>Annual Income &amp; Expense Breakdown</h5>
@@ -453,6 +452,6 @@
     </div>
 
   </section>
-    <script type="module" src="../../calculator.js?v=41"></script>
+    <script type="module" src="../../calculator.js?v=42"></script>
 </body>
 </html>

@@ -1,0 +1,366 @@
+/* Buy & Hold only. Loaded after styles.css. */
+
+#buy-hold-calculator.hold-app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+  color: #e2e8f0;
+  background: transparent;
+}
+
+#buy-hold-calculator .hold-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+#buy-hold-calculator h1 {
+  margin: 0 0 6px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #f8fafc;
+  font-family: inherit;
+}
+
+#buy-hold-calculator .hold-top p {
+  margin: 0;
+  color: #94a3b8;
+  max-width: 42rem;
+}
+
+#buy-hold-calculator .hold-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+#buy-hold-calculator .hold-extras {
+  margin: 0 0 16px;
+  color: #cbd5e1;
+}
+
+#buy-hold-calculator .hold-extras summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+#buy-hold-calculator .hold-extras-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+#buy-hold-calculator .priority-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+#buy-hold-calculator .priority-btn {
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  background: #0b1220;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+#buy-hold-calculator .priority-btn.active {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+
+#buy-hold-calculator .hold-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  #buy-hold-calculator .hold-layout {
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  }
+
+  #buy-hold-calculator .hold-results {
+    position: sticky;
+    top: 80px;
+  }
+}
+
+#buy-hold-calculator .input-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: none;
+}
+
+#buy-hold-calculator .calc-panel,
+#buy-hold-calculator .chart-wrap {
+  background: #0b1220;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  box-shadow: none;
+  padding: 16px 18px;
+}
+
+#buy-hold-calculator .calc-panel h4,
+#buy-hold-calculator .chart-wrap h5 {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  font-family: inherit;
+}
+
+#buy-hold-calculator .input-group label,
+#buy-hold-calculator .cash-toggle-text,
+#buy-hold-calculator .chart-desc,
+#buy-hold-calculator .metric-sub,
+#buy-hold-calculator .loan-type-hint,
+#buy-hold-calculator .computed-note {
+  color: #94a3b8;
+}
+
+#buy-hold-calculator .value-display,
+#buy-hold-calculator #inlineLoanAmount,
+#buy-hold-calculator #inlineMortgage {
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+#buy-hold-calculator input[type="number"],
+#buy-hold-calculator input[type="text"],
+#buy-hold-calculator select {
+  background: #020617;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 8px;
+}
+
+#buy-hold-calculator input[type="range"] {
+  accent-color: #38bdf8;
+}
+
+#buy-hold-calculator .input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 560px) {
+  #buy-hold-calculator .input-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+#buy-hold-calculator .preset-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  background: #0b1220;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#buy-hold-calculator .preset-chip.active {
+  background: #1e3a8a;
+  border-color: #1e3a8a;
+  color: #f8fafc;
+}
+
+#buy-hold-calculator .loan-type-btn,
+#buy-hold-calculator .dscr-target-btn {
+  background: #0b1220;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+}
+
+#buy-hold-calculator .loan-type-btn.active,
+#buy-hold-calculator .dscr-target-btn.active {
+  background: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+
+#buy-hold-calculator .dscr-panel {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #cbd5e1;
+}
+
+#buy-hold-calculator .dscr-panel p,
+#buy-hold-calculator .dscr-status {
+  color: #cbd5e1;
+}
+
+#buy-hold-calculator .dscr-status.pass { color: #34d399; }
+#buy-hold-calculator .dscr-status.warn { color: #fbbf24; }
+#buy-hold-calculator .dscr-status.fail { color: #f87171; }
+
+#buy-hold-calculator .metrics-primary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#buy-hold-calculator .metrics-primary .metric-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #f8fafc;
+}
+
+#buy-hold-calculator .metrics-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#buy-hold-calculator .metric-card {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: none;
+}
+
+#buy-hold-calculator .metric-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+#buy-hold-calculator .metric-value {
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+#buy-hold-calculator .metric-card.positive .metric-value,
+#buy-hold-calculator .metric-value.positive,
+#buy-hold-calculator .im-value.positive {
+  color: #34d399;
+}
+
+#buy-hold-calculator .metric-card.negative .metric-value,
+#buy-hold-calculator .metric-value.negative,
+#buy-hold-calculator .im-value.negative {
+  color: #f87171;
+}
+
+#buy-hold-calculator .verdict-banner {
+  background: #0b1220;
+  border: 1px solid #1e293b;
+  border-left: 4px solid #64748b;
+  color: #e2e8f0;
+  margin-bottom: 12px;
+  box-shadow: none;
+}
+
+#buy-hold-calculator .verdict-banner.good { border-left-color: #34d399; background: #0b1220; }
+#buy-hold-calculator .verdict-banner.poor { border-left-color: #f87171; background: #0b1220; }
+#buy-hold-calculator .verdict-banner h5 { color: #f8fafc; margin: 0 0 4px; }
+#buy-hold-calculator .verdict-banner p { color: #94a3b8; margin: 0; font-size: 0.85rem; }
+
+#buy-hold-calculator .inline-dynamics {
+  display: none;
+}
+
+#buy-hold-calculator .inline-dynamics-label,
+#buy-hold-calculator .inline-note,
+#buy-hold-calculator .im-label {
+  color: #94a3b8;
+}
+
+#buy-hold-calculator .im-value {
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+}
+
+#buy-hold-calculator .disclaimer-box {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+#buy-hold-calculator .hold-deep {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+#buy-hold-calculator .benchmark-card {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #e2e8f0;
+}
+
+#buy-hold-calculator .breakdown-table th { color: #94a3b8; }
+#buy-hold-calculator .breakdown-table td { color: #f8fafc; font-variant-numeric: tabular-nums; }
+
+#buy-hold-calculator .sensitivity-card {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #e2e8f0;
+}
+
+#buy-hold-calculator .calc-btn.ghost {
+  background: transparent;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+
+#buy-hold-calculator .calc-btn.primary {
+  background: #1e3a8a;
+  border-color: #1e3a8a;
+  color: #fff;
+}
+
+#buy-hold-calculator #comparisonView {
+  background: #0b1220 !important;
+  border-color: #1e293b !important;
+  color: #e2e8f0;
+}
+
+#buy-hold-calculator #analysisConfigModal .modal-content {
+  background: #0b1220;
+  color: #e2e8f0;
+  border: 1px solid #1e293b;
+}
+
+#buy-hold-calculator .hold-proj summary {
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+#buy-hold-calculator .hold-proj[open] summary {
+  margin-bottom: 12px;
+}
+
+#buy-hold-calculator .inline-finance-impact {
+  color: #94a3b8 !important;
+}
