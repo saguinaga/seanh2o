@@ -78,9 +78,9 @@
     rehabContingency: { el: '#flipRehabContingency', slider: '#flipRehabContingencySlider', display: '#flipRehabContingencyDisplay', min: 0, max: 30, step: 1, default: 10, suffix: '%' },
     holdMonths: { el: '#flipHoldMonths', slider: '#flipHoldMonthsSlider', display: '#flipHoldMonthsDisplay', min: 1, max: 18, step: 1, default: 4, suffix: ' mo' },
     purchaseDown: { el: '#flipPurchaseDown', slider: '#flipPurchaseDownSlider', display: '#flipPurchaseDownDisplay', min: 0, max: 50, step: 1, default: 20, suffix: '%' },
-    purchaseRate: { el: '#flipPurchaseRate', slider: '#flipPurchaseRateSlider', display: '#flipPurchaseRateDisplay', min: 4, max: 18, step: 0.25, default: 11.5, suffix: '%', decimals: 2 },
+    purchaseRate: { el: '#flipPurchaseRate', slider: '#flipPurchaseRateSlider', display: '#flipPurchaseRateDisplay', min: 4, max: 18, step: 0.125, default: 11.5, suffix: '%', decimals: 3 },
     purchasePoints: { el: '#flipPurchasePoints', slider: '#flipPurchasePointsSlider', display: '#flipPurchasePointsDisplay', min: 0, max: 5, step: 0.25, default: 2, suffix: '%', decimals: 1 },
-    rehabRate: { el: '#flipRehabRate', slider: '#flipRehabRateSlider', display: '#flipRehabRateDisplay', min: 4, max: 18, step: 0.25, default: 12, suffix: '%', decimals: 2 },
+    rehabRate: { el: '#flipRehabRate', slider: '#flipRehabRateSlider', display: '#flipRehabRateDisplay', min: 4, max: 18, step: 0.125, default: 12, suffix: '%', decimals: 3 },
     propertyTaxMo: { el: '#flipPropertyTaxMo', slider: '#flipPropertyTaxMoSlider', display: '#flipPropertyTaxMoDisplay', min: 0, max: 800, step: 25, default: 175 },
     insuranceMo: { el: '#flipInsuranceMo', slider: '#flipInsuranceMoSlider', display: '#flipInsuranceMoDisplay', min: 0, max: 400, step: 25, default: 90 },
     utilitiesMo: { el: '#flipUtilitiesMo', slider: '#flipUtilitiesMoSlider', display: '#flipUtilitiesMoDisplay', min: 0, max: 600, step: 25, default: 175 },
@@ -348,19 +348,19 @@
   function flipBenchmarkStatus(kind, value, r) {
     if (kind === 'seventy') {
       if (r.offerGap <= 0) return { cls: 'pass', note: 'At or under ' + r.v.seventyRulePct + '% rule max offer' };
-      if (r.offerGap <= 8000) return { cls: 'warn', note: fmt(r.offerGap) + ' over max — negotiate harder' };
-      return { cls: 'fail', note: fmt(r.offerGap) + ' over rule — thin or negative after stress' };
+      if (r.offerGap <= 8000) return { cls: 'warn', note: fmt(r.offerGap) + ' over max. Negotiate harder.' };
+      return { cls: 'fail', note: fmt(r.offerGap) + ' over rule. Thin or negative after stress.' };
     }
     if (kind === 'minProfit') {
       if (value >= 25000) return { cls: 'pass', note: 'Meets $25k+ flip profit target' };
       if (value >= 15000) return { cls: 'warn', note: 'Workable but below typical $25k floor' };
-      if (value >= 0) return { cls: 'warn', note: 'Positive but thin — one overrun kills it' };
+      if (value >= 0) return { cls: 'warn', note: 'Positive but thin. One overrun kills it.' };
       return { cls: 'fail', note: 'Underwater at current assumptions' };
     }
     if (kind === 'margin') {
       if (value >= 12) return { cls: 'pass', note: 'Healthy margin on ARV' };
       if (value >= 8) return { cls: 'warn', note: 'Acceptable in tight markets' };
-      return { cls: 'fail', note: 'Low margin — fees and slippage hurt' };
+      return { cls: 'fail', note: 'Low margin. Fees and slippage hurt.' };
     }
     if (kind === 'annualized') {
       if (value >= 50) return { cls: 'pass', note: 'Strong velocity-adjusted return' };
@@ -369,12 +369,12 @@
     }
     if (kind === 'spread') {
       if (value >= 35) return { cls: 'pass', note: 'Wide spread vs purchase + rehab' };
-      if (value >= 20) return { cls: 'warn', note: 'Tighter — watch rehab scope' };
+      if (value >= 20) return { cls: 'warn', note: 'Tighter. Watch rehab scope.' };
       return { cls: 'fail', note: 'Spread may not cover friction costs' };
     }
     if (kind === 'rehabPct') {
       if (value <= 25) return { cls: 'pass', note: 'Rehab is reasonable share of ARV' };
-      if (value <= 35) return { cls: 'warn', note: 'Heavier scope — contingency matters' };
+      if (value <= 35) return { cls: 'warn', note: 'Heavier scope. Contingency matters.' };
       return { cls: 'fail', note: 'Rehab eating too much of exit value' };
     }
     return { cls: 'neutral', note: '' };
@@ -399,7 +399,7 @@
       flipBenchmarkCard('Annualized ROI', pct(r.annualizedRoi), 'annualized', r.annualizedRoi, r),
       flipBenchmarkCard('Spread %', pct(r.spreadPct), 'spread', r.spreadPct, r),
       flipBenchmarkCard('Rehab % of ARV', pct(r.rehabPctOfArv), 'rehabPct', r.rehabPctOfArv, r),
-      flipBenchmarkCard('Profit / $1 Invested', (r.profitPerDollar * 100).toFixed(1) + '¢', 'neutral', 0, r),
+      flipBenchmarkCard('Profit per $1 cash', '$' + r.profitPerDollar.toFixed(2), 'neutral', 0, r),
       flipBenchmarkCard('Max 70% Offer', fmt(r.maxOffer70), 'neutral', 0, r),
     ].join('');
   }
@@ -471,7 +471,7 @@
       }
       return '<div class="sensitivity-card' + (isBase ? ' base' : '') + '">' +
         '<div class="scenario-label">' + scenario.label + '</div>' +
-        '<div class="scenario-value" style="color:' + (res.netProfit >= 0 ? '#059669' : '#dc2626') + '">' +
+        '<div class="scenario-value" style="color:' + (res.netProfit >= 0 ? '#34d399' : '#f87171') + '">' +
         fmt(res.netProfit) + '</div>' +
         '<div class="scenario-delta ' + deltaClass + '">' + deltaText + '</div></div>';
     }).join('');
@@ -489,7 +489,7 @@
         labels.push(row.label);
         bases.push(0);
         heights.push(row.value);
-        colors.push('#3b82f6');
+        colors.push('#38bdf8');
         running = row.value;
         return;
       }
@@ -499,14 +499,14 @@
         labels.push(row.label);
         bases.push(Math.max(0, running));
         heights.push(abs);
-        colors.push('#e11d48');
+        colors.push('#f87171');
         return;
       }
       if (row.type === 'end') {
         labels.push(row.label);
         bases.push(0);
         heights.push(Math.max(0, row.value));
-        colors.push(row.value >= 0 ? '#059669' : '#dc2626');
+        colors.push(row.value >= 0 ? '#34d399' : '#f87171');
       }
     });
 
@@ -548,11 +548,11 @@
         },
       },
       scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 40, font: { size: 10 } } },
+        x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 40, font: { size: 11 }, color: '#94a3b8' } },
         y: {
           stacked: true,
-          ticks: { callback: function (v) { return '$' + (v / 1000).toFixed(0) + 'k'; } },
-          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { callback: function (v) { return '$' + (v / 1000).toFixed(0) + 'k'; }, color: '#94a3b8' },
+          grid: { color: 'rgba(148,163,184,0.15)' },
         },
       },
     };
@@ -572,7 +572,7 @@
 
     const labels = r.capitalStack.map(function (x) { return x.label; });
     const values = r.capitalStack.map(function (x) { return x.value; });
-    const palette = ['#be123c', '#f43f5e', '#fb7185', '#fda4af', '#fecdd3'];
+    const palette = ['#1d4ed8', '#38bdf8', '#64748b', '#34d399', '#fbbf24'];
 
     const data = {
       labels: labels,
@@ -588,7 +588,7 @@
       maintainAspectRatio: true,
       aspectRatio: 1.1,
       plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, color: '#94a3b8' } },
         tooltip: {
           callbacks: {
             label: function (ctx) {
@@ -621,8 +621,8 @@
     const data = {
       labels: labels,
       datasets: [
-        { label: 'Carry (tax, ins, utils)', data: carry, backgroundColor: '#fda4af', borderRadius: 4 },
-        { label: 'Loan interest', data: interest, backgroundColor: '#be123c', borderRadius: 4 },
+        { label: 'Carry (tax, ins, utils)', data: carry, backgroundColor: '#64748b', borderRadius: 4 },
+        { label: 'Loan interest', data: interest, backgroundColor: '#38bdf8', borderRadius: 4 },
       ],
     };
 
@@ -631,7 +631,7 @@
       maintainAspectRatio: true,
       aspectRatio: window.innerWidth < 600 ? 1.4 : 2.4,
       plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, color: '#94a3b8' } },
         tooltip: {
           callbacks: {
             footer: function (items) {
@@ -642,11 +642,11 @@
         },
       },
       scales: {
-        x: { stacked: true, grid: { display: false } },
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#94a3b8' } },
         y: {
           stacked: true,
-          ticks: { callback: function (v) { return '$' + v; } },
-          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { callback: function (v) { return '$' + v; }, color: '#94a3b8' },
+          grid: { color: 'rgba(148,163,184,0.15)' },
         },
       },
     };
