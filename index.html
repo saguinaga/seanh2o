@@ -9,7 +9,7 @@
     <title>Sean Aguinaga</title>
     <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
     <link rel="icon" href="favicon.ico" sizes="32x32">
-    <meta name="description" content="Sean Aguinaga. Tools I actually use, plus 15 years on marketplace and transaction systems at Auction.com.">
+    <meta name="description" content="Sean Aguinaga. Product on marketplace and transaction systems. Fifteen years at Auction.com.">
 
     <!-- Birdseye Theme Assets (already in your repo) -->
     <link rel="stylesheet" href="files/main_style.css">
@@ -494,6 +494,40 @@
                 height: 72px;
             }
         }
+        .side-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0;
+            border-top: 1px solid #1e293b;
+        }
+        .side-list a {
+            display: grid;
+            grid-template-columns: minmax(0, 220px) 1fr;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #1e293b;
+            color: #e2e8f0;
+            text-decoration: none;
+        }
+        .side-list a:hover strong {
+            color: #67e8f9;
+        }
+        .side-list strong {
+            font-size: 1rem;
+            font-weight: 650;
+        }
+        .side-list span {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 640px) {
+            .side-list a {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -509,9 +543,9 @@
                 <span></span><span></span><span></span>
             </button>
             <div class="nav-links" id="navMenu">
-                <a href="#tools" data-plausible-event="Nav - Tools">Tools</a>
                 <a href="#work" data-plausible-event="Nav - Work">Work</a>
                 <a href="#about" data-plausible-event="Nav - About">About</a>
+                <a href="#tools" data-plausible-event="Nav - Tools">Also</a>
                 <a href="#contact" class="nav-cta" data-plausible-event="Nav - Contact">Contact</a>
             </div>
         </div>
@@ -526,12 +560,12 @@
             </div>
             <span class="tag">Product · Systems · Huntington Beach</span>
 
-            <p class="hero-lead">Marketplace and transaction systems where config and ops have to hold up together. Working prototypes with a real problem behind them.</p>
+            <p class="hero-lead">Product on marketplace and transaction systems. Fifteen years at Auction.com on the in-house auction platform: system of record for the transaction, public site, native iOS and Android, field tools, ops config.</p>
 
-            <p>Fifteen years at Auction.com while in-person foreclosure went from a California pilot to a national line of business. Intake, catalog, field tools, Salesforce, bidding, contracting, seller flows. Disney and Boeing before that. The tools below are how I go deep on a problem: rental and flip underwriting, household offer math, an e-bike compare. Built to think the decision through.</p>
+            <p>Disney and Boeing before that.</p>
 
             <div class="hero-cta-row" style="margin-top: 12px;">
-                <a href="#tools" class="cta-button" data-plausible-event="CTA - Open tools">Open tools</a>
+                <a href="#work" class="cta-button" data-plausible-event="CTA - Work">Work</a>
             </div>
 
         </div>
@@ -546,124 +580,21 @@
         </ul>
     </section>
 
-    <!-- Tools first -->
-    <section id="tools" style="padding: 80px 24px; background: #020617; color: #e0f2fe; position: relative;">
-        <div style="max-width: 1100px; margin: 0 auto;">
-            <div class="projects-header">
-                <div>
-                    <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Tools</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Working prototypes. Open them.</p>
-                </div>
-            </div>
-            <div class="work-block work-block--links" style="margin-bottom: 0;">
-                <div class="projects-grid">
-                    <article class="project-card glass-card project-card--link">
-                        <a href="calculators/buy-hold/" class="project-card-link" data-plausible-event="Launch Tool - Buy & Hold">
-                            <div class="project-card-visual project-card-visual--blue">
-                                <span class="project-card-visual-title">Buy &amp; Hold Calculator</span>
-                            </div>
-                            <div class="project-card-body">
-                                <h3 class="project-card-heading">Rental underwriting</h3>
-                                <p class="project-card-text">Cash flow, CoC, cap rate, conventional or DSCR financing. DSCR qualifies on rent vs PITIA.</p>
-                                <span class="project-card-cta">Open calculator <span aria-hidden="true">→</span></span>
-                            </div>
-                        </a>
-                    </article>
-
-                    <article class="project-card glass-card project-card--link">
-                        <a href="calculators/fix-flip/" class="project-card-link" data-plausible-event="Launch Tool - Fix & Flip">
-                            <div class="project-card-visual project-card-visual--rose">
-                                <span class="project-card-visual-title">Fix &amp; Flip Analyzer</span>
-                            </div>
-                            <div class="project-card-body">
-                                <h3 class="project-card-heading">Deal stress-testing</h3>
-                                <p class="project-card-text">ARV, rehab tiers, hard money, profit waterfall, sensitivity. Grounded in real Midwest numbers.</p>
-                                <span class="project-card-cta">Open analyzer <span aria-hidden="true">→</span></span>
-                            </div>
-                        </a>
-                    </article>
-
-                    <article class="project-card glass-card project-card--link">
-                        <a href="ebike-comparison/" class="project-card-link" data-plausible-event="Launch Tool - E-Bike Comparison">
-                            <div class="project-card-visual project-card-visual--blue">
-                                <span class="project-card-badge">Family project</span>
-                                <span class="project-card-visual-title">E-Bike Comparison</span>
-                            </div>
-                            <div class="project-card-body">
-                                <h3 class="project-card-heading">Surf City HB school and commute rides</h3>
-                                <p class="project-card-text">Safety scores, legal notes, and side-by-side compare for a 5'2" rider: pedal baseline vs 20+ options.</p>
-                                <span class="project-card-cta">Open comparison <span aria-hidden="true">→</span></span>
-                            </div>
-                        </a>
-                    </article>
-
-                    <article class="project-card glass-card project-card--link">
-                        <a href="promo-tracker/" class="project-card-link" data-plausible-event="Launch Tool - Bonus Board">
-                            <div class="project-card-visual project-card-visual--cozy">
-                                <span class="project-card-badge">Household</span>
-                                <span class="project-card-visual-title">Bonus Board</span>
-                            </div>
-                            <div class="project-card-body">
-                                <h3 class="project-card-heading">Credit card offer planner</h3>
-                                <p class="project-card-text">Pin offers, model credit impact, trip upside from everyday spend. Not financial advice.</p>
-                                <span class="project-card-cta">Open Bonus Board <span aria-hidden="true">→</span></span>
-                            </div>
-                        </a>
-                    </article>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Work -->
+    <!-- Work, collapsed -->
     <section id="work" style="padding: 80px 24px; background: #0b1220; color: #e0f2fe; position: relative;">
-        <div style="max-width: 1100px; margin: 0 auto;">
+        <div style="max-width: 860px; margin: 0 auto;">
             <div class="projects-header">
                 <div>
                     <h2 style="font-size: 2.1rem; color: white; margin-bottom: 6px;">Work</h2>
-                    <p style="color: #94a3b8; font-size: 1.05rem;">Auction.com.</p>
+                    <p style="color: #94a3b8; font-size: 1.05rem;">Auction.com · ~15 years</p>
                 </div>
             </div>
-
-            <div class="work-block work-block--experience">
-                <p class="work-block-label">Auction.com · ~15 years</p>
-                <div class="experience-panel">
-                    <p class="work-block-intro" style="margin-bottom: 0;">In-person foreclosure auctions grew from a California pilot into a major line of business. I worked the system underneath that growth, and the buyer and seller surfaces, as the transaction needed them. Same product, horizontal as required.</p>
-                    <div class="experience-panel-grid">
-                        <div class="experience-item">
-                            <span class="experience-kicker">Calendar</span>
-                            <h3>Week of slots in 2-3 clicks</h3>
-                            <p>Templates with separate FCL and REO rules. About 26+ steps down to a handful. Crew on that work from about 5 to 2.</p>
-                        </div>
-                        <div class="experience-item">
-                            <span class="experience-kicker">Scheduling</span>
-                            <h3>~85% assigned by rules</h3>
-                            <p>FCL postponement vs REO relist as separate rules. First Look used the same engine so sellers did not run a second process.</p>
-                        </div>
-                        <div class="experience-item">
-                            <span class="experience-kicker">Intake</span>
-                            <h3>60+ servicers, 90%+ automated</h3>
-                            <p>They kept their file formats. Universal plus per-servicer rules. Publish in real time when requirements were met.</p>
-                        </div>
-                        <div class="experience-item">
-                            <span class="experience-kicker">Contracts</span>
-                            <h3>~4,000 permutations, in-house</h3>
-                            <p>Winning-bid packets with 100+ fill-in variables. Rebuilt so Auction owned the process instead of a third-party builder.</p>
-                        </div>
-                        <div class="experience-item">
-                            <span class="experience-kicker">Salesforce</span>
-                            <h3>Working system for listings</h3>
-                            <p>REO and FCL, real time with the core platform. Contracting and closing lived there. Internals managed the book by exception.</p>
-                        </div>
-                        <div class="experience-item">
-                            <span class="experience-kicker">0-to-1</span>
-                            <h3>SmartSale and Offer Path</h3>
-                            <p>Lead to listing published, including an offer path as an alternative to auction. Property marketing agreement through DocuSign. Same transaction system, different door in.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <p style="font-size: 1.08rem; line-height: 1.65; color: #e2e8f0; margin: 0 0 16px;">
+                In-person foreclosure grew from a California pilot to a national line of business. I worked that platform horizontally: core record, ops config, field, Salesforce-backed seller programs, bidding, contracting, seller flows.
+            </p>
+            <p style="font-size: 1.02rem; line-height: 1.65; color: #cbd5e1; margin: 0;">
+                Partnered on Salesforce asset intake. Owned Credit Bid Validation and First Look on Salesforce. Major contributor on configuration, contracting, and real-time updates to the core. Calendar, servicer intake, winning-bid contracts. Lead to Listing: self-serve path from a seller lead to a published listing, including Offer Path as an alternative to auction.
+            </p>
         </div>
     </section>
 
@@ -672,12 +603,49 @@
             <h2 style="font-size: 2.1rem; margin-bottom: 18px; letter-spacing: -.5px;">About</h2>
 
             <p style="font-size: 1.15rem; line-height: 1.65; color: #1e2937; margin-bottom: 18px;">
-                Nearly 20 years in software and product. Real estate and auctions were the long chapter. The problems repeat: multi-sided platforms, messy operations, configuration and data that has to hold up across states and teams.
+                Nearly 20 years in software and product. CSULB MIS. CSPO. Last year at Auction.com ran in SAFe / PI increments. Last couple of months: 12+ user interview sessions, synthesis in Dovetail.
+            </p>
+
+            <p style="font-size: 1.05rem; line-height: 1.65; color: #334155; margin-bottom: 18px;">
+                Earlier: Disney (BI/ETL, partner feeds so analytics could be trusted) and Boeing (internal reporting and tools). Around 2013, listing data went from about a day onto the site to about a minute.
             </p>
 
             <p style="font-size: 1.05rem; line-height: 1.65; color: #334155;">
-                Earlier: Disney (partner data into a warehouse so analytics could be trusted) and Boeing (engineering-adjacent tooling). Brokers, lenders, ops, field crews. The work has to hold for the whole chain, usually in the tools they already use.
+                Brokers, lenders, ops, field crews. The work has to hold for the whole chain, usually in the tools they already use.
             </p>
+        </div>
+    </section>
+
+    <section id="tools" style="padding: 64px 24px; background: #020617; color: #e0f2fe;">
+        <div style="max-width: 860px; margin: 0 auto;">
+            <h2 style="font-size: 1.5rem; color: white; margin: 0 0 8px;">Also</h2>
+            <p style="color: #94a3b8; font-size: 1rem; margin: 0 0 20px; line-height: 1.55;">A few pages I built to poke at investing and household decisions. Open if you want.</p>
+            <ul class="side-list">
+                <li>
+                    <a href="calculators/buy-hold/" data-plausible-event="Launch Tool - Buy & Hold">
+                        <strong>Buy &amp; Hold</strong>
+                        <span>Rental cash flow, cap rate, DSCR</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="calculators/fix-flip/" data-plausible-event="Launch Tool - Fix & Flip">
+                        <strong>Fix &amp; Flip</strong>
+                        <span>ARV, rehab, hard money</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="ebike-comparison/" data-plausible-event="Launch Tool - E-Bike Comparison">
+                        <strong>E-bike compare</strong>
+                        <span>School and commute options for a 5'2" rider</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="promo-tracker/" data-plausible-event="Launch Tool - Bonus Board">
+                        <strong>Bonus Board</strong>
+                        <span>Credit card offer planner</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </section>
 
@@ -685,11 +653,11 @@
     <section id="contact" class="contact-section">
         <div class="contact-inner">
             <p class="contact-eyebrow">Contact</p>
-            <h2 class="contact-title">Say hello</h2>
-            <p class="contact-lead">If something on the site is useful, or you want to talk shop, LinkedIn is the easiest path. The form also works.</p>
+            <h2 class="contact-title">Contact</h2>
+            <p class="contact-lead">LinkedIn is the best path. The form below also reaches me.</p>
 
             <div class="contact-direct">
-                <a href="https://www.linkedin.com/in/sean-aguinaga-7a88243" target="_blank" rel="noopener noreferrer" data-plausible-event="Contact - LinkedIn">LinkedIn</a>
+                <a href="https://www.linkedin.com/in/sean-aguinaga" target="_blank" rel="noopener noreferrer" data-plausible-event="Contact - LinkedIn">LinkedIn</a>
             </div>
 
             <form class="contact-form" action="https://formspree.io/f/xgvzqlaa" method="POST">
@@ -706,7 +674,7 @@
                     <textarea name="message" placeholder="Message" rows="5" required></textarea>
                 </label>
                 <button type="submit" class="contact-submit">Send</button>
-                <p class="contact-footnote">I'll reply when I can.</p>
+                <p class="contact-footnote">I read every note.</p>
             </form>
         </div>
     </section>
@@ -721,14 +689,14 @@
                 <div class="site-footer-col">
                     <p class="site-footer-heading">On this page</p>
                     <ul>
-                        <li><a href="#tools">Tools</a></li>
                         <li><a href="#work">Work</a></li>
+                        <li><a href="#tools">Also</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="site-footer-col">
-                    <p class="site-footer-heading">Tools</p>
+                    <p class="site-footer-heading">Side projects</p>
                     <ul>
                         <li><a href="calculators/buy-hold/">Buy &amp; Hold Calculator</a></li>
                         <li><a href="calculators/fix-flip/">Fix &amp; Flip Analyzer</a></li>
@@ -739,7 +707,7 @@
                 <div class="site-footer-col">
                     <p class="site-footer-heading">Elsewhere</p>
                     <ul>
-                        <li><a href="https://www.linkedin.com/in/sean-aguinaga-7a88243" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                        <li><a href="https://www.linkedin.com/in/sean-aguinaga" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
                         <li><a href="blossom/" data-plausible-event="Launch - Blossom Life">Blossom Life</a></li>
                     </ul>
                 </div>
